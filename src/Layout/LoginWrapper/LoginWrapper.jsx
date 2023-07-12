@@ -3,7 +3,9 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import SvgUri from 'react-native-svg-uri';
 
 const styles = StyleSheet.create({
-  main_wrap: {},
+  main_wrap: {
+    
+  },
   logo_image: {
     alignItems:'center',
     paddingBottom:100,
@@ -12,6 +14,7 @@ const styles = StyleSheet.create({
   loginContainer: {
     paddingVertical: 52,
     paddingHorizontal: 20,
+    
   },
   tinyLogo:{
     width:180
