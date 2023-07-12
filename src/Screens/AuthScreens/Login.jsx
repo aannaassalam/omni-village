@@ -14,6 +14,7 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 const styles = StyleSheet.create({
   form_section: {
     alignItems: 'center',
+    // flex: 1,
   },
   LoginHead: {
     color: '#36393B',
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   register_text_scnd: {
     color: '#268C43',
     fontSize: 13,
-    marginLeft:5
+    marginLeft: 5,
   },
 });
 
