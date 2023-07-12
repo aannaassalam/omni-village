@@ -9,11 +9,13 @@ import React from 'react';
 import {Text} from 'react-native';
 import AuthStack from './src/Navigation/AuthStack';
 import {NavigationContainer} from '@react-navigation/native';
+import CultivationLand from './src/Screens/CultivationScreens/CultivationLand';
 
 function App() {
   return (
     <NavigationContainer>
-      <AuthStack />
+      {/* <AuthStack /> */}
+      <CultivationLand/>
     </NavigationContainer>
   );
 }
