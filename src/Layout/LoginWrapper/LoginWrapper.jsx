@@ -5,10 +5,11 @@ import SvgUri from 'react-native-svg-uri';
 const styles = StyleSheet.create({
   main_wrap: {
     // flex: 1,
+    backgroundColor: '#fff',
   },
   logo_image: {
     alignItems: 'center',
-    paddingBottom: 100,
+    paddingBottom: 20,
   },
   loginContainer: {
     paddingVertical: 52,
@@ -28,7 +29,7 @@ export default function LoginWrapper({children}) {
         <View style={styles.logo_image}>
           <Image
             style={styles.tinyLogo}
-            source={require('../../assets/logo.png')}
+            source={require('../../../assets/logo.png')}
             // height={100}
           />
           {/* <SvgUri source={require('../../assets/logo.svg')} /> */}

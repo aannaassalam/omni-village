@@ -76,7 +76,7 @@ export default function Splash({isAppReady}) {
       style={[styles.container, {opacity: containerOpacity}]}>
       <View style={styles.imageContainer}>
         <Animated.Image
-          source={require('../../assets/logo-white.png')}
+          source={require('../../../assets/logo-white.png')}
           resizeMode="cover"
           fadeDuration={0}
           onLoad={() => {
