@@ -18,8 +18,13 @@ const styles = StyleSheet.create({
   LoginHead: {
     color: '#36393B',
     fontSize: 22,
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'ubuntu_medium',
+  },
+  subtitle: {
+    fontFamily: 'ubuntu',
+    color: '#36393B',
   },
   login_input: {
     width: '100%',
@@ -40,10 +45,13 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 5,
     height: 30,
+    backgroundColor: '#fff',
+    width: 100,
   },
   form_btm_text: {
     width: '100%',
     marginBottom: 40,
+    alignItems: 'center',
   },
   social_btn: {
     width: '100%',
@@ -55,6 +63,7 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#EBEBEB',
     marginTop: -20,
+    width: '100%',
   },
   register_text: {
     flexDirection: 'row',
