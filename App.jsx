@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text} from 'react-native';
 import AuthStack from './src/Navigation/AuthStack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -14,17 +14,28 @@ import CultivationTwice from './src/Screens/CultivationScreens/CultivationTwice'
 import CultivationThrice from './src/Screens/CultivationScreens/CultivationThrice';
 import LandForSea from './src/Screens/CultivationScreens/LandForSea';
 import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
+import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
 
 function App() {
+  const [isAppReady, setIsAppReady] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsAppReady(true);
+    }, 1000);
+  }, []);
+
   return (
-    <NavigationContainer>
-      <AuthStack />
-      {/* <RegisterSuccessfull /> */}
-      {/* <CultivationLand /> */}
-      {/* <CultivationThrice/> */}
-      {/* <LandForSea/> */}
-      {/* <CultivationTwice/> */}
-    </NavigationContainer>
+    <SplashScreen isAppReady={isAppReady}>
+      <NavigationContainer>
+        <AuthStack />
+        {/* <RegisterSuccessfull /> */}
+        {/* <CultivationLand /> */}
+        {/* <CultivationThrice/> */}
+        {/* <LandForSea/> */}
+        {/* <CultivationTwice/> */}
+      </NavigationContainer>
+    </SplashScreen>
   );
 }
 

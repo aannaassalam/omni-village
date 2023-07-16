@@ -14,12 +14,19 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 const styles = StyleSheet.create({
   form_section: {
     alignItems: 'center',
+    // flex: 1,
+    paddingTop: 50,
   },
   LoginHead: {
     color: '#36393B',
     fontSize: 22,
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'ubuntu_medium',
+  },
+  subtitle: {
+    fontFamily: 'ubuntu',
+    color: '#36393B',
   },
   login_input: {
     width: '100%',
@@ -40,6 +47,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 5,
     height: 30,
+    // backgroundColor: '#fff',
   },
   form_btm_text: {
     width: '100%',
@@ -76,7 +84,7 @@ export default function Login({navigation, route}) {
         <View style={styles.form_section}>
           <View style={styles.form_head}>
             <Text style={styles.LoginHead}>Login</Text>
-            <Text>Login with sent OTP</Text>
+            <Text style={styles.subtitle}>Login with sent OTP</Text>
           </View>
           <View style={styles.login_input}>
             <InputTextComponent placeholder={'Phone Number'} />
@@ -96,7 +104,7 @@ export default function Login({navigation, route}) {
           <View style={styles.social_btn}>
             <Image
               style={styles.socialbuttons}
-              source={require('../../assets/socialbuttons.png')}
+              source={require('../../../assets/socialbuttons.png')}
             />
           </View>
         </View>

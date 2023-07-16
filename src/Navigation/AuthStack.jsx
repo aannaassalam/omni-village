@@ -5,6 +5,7 @@ import LoginWithOtp from '../Screens/AuthScreens/LoginWithOtp';
 import Register from '../Screens/AuthScreens/Register';
 import LoginSuccessfull from '../Screens/AuthScreens/LoginSuccessfull';
 import RegisterSuccessfull from '../Screens/AuthScreens/RegisterSuccessfull';
+import StartupScreen from '../Screens/AuthScreens/StartupScreen';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ export default function AuthStack() {
       <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
+      <Stack.Screen name="startup" component={StartupScreen} />
     </Stack.Navigator>
   );
 }
