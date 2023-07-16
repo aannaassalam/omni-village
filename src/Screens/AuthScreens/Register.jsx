@@ -69,28 +69,28 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Login({navigation, route}) {
+export default function Register({navigation, route}) {
   return (
     <SafeAreaView>
       <LoginWrapper>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Login</Text>
-            <Text>Login with sent OTP</Text>
+            <Text style={styles.LoginHead}>Register</Text>
+            <Text>Register with sent OTP</Text>
           </View>
           <View style={styles.login_input}>
             <InputTextComponent placeholder={'Phone Number'} />
           </View>
           <View style={styles.login_submit}>
             <CustomButton
-              btnText={'Login'}
-              onPress={() => navigation.navigate('loginotp')}
+              btnText={'Register'}
+              onPress={() => navigation.navigate('loginsuccess')}
             />
           </View>
         </View>
         <View style={styles.form_btm}>
           <View style={styles.form_btm_text}>
-            <Text style={styles.login_text}>Or login with</Text>
+            <Text style={styles.login_text}>Or register with</Text>
             <View style={styles.line_border}></View>
           </View>
           <View style={styles.social_btn}>
@@ -101,8 +101,10 @@ export default function Login({navigation, route}) {
           </View>
         </View>
         <View style={styles.register_text}>
-          <Text style={styles.register_text_frst}>Don’t have an account?</Text>
-          <Text style={styles.register_text_scnd}>Register</Text>
+          <Text style={styles.register_text_frst}>
+            Already have an account?
+          </Text>
+          <Text style={styles.register_text_scnd}>Login</Text>
         </View>
       </LoginWrapper>
     </SafeAreaView>

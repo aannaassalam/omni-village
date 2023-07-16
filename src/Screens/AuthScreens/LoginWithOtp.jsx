@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Linking,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import {Box, Flex} from '@react-native-material/core';
 
 const styles = StyleSheet.create({
   form_section: {
@@ -67,42 +69,64 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 5,
   },
+  login_input_flex: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  resend_sec: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 25,
+  },
+  resend_text: {
+    flexDirection: 'row',
+    alignItems: 'cenetr',
+  },
+  green: {
+    color: `#268C43`,
+    fontSize: 13,
+    marginLeft: 6,
+  },
+  normal_text: {
+    color: '#36393B',
+    fontSize: 13,
+  },
 });
 
-export default function Login({navigation, route}) {
+export default function LoginWithOtp({navigation}) {
   return (
     <SafeAreaView>
       <LoginWrapper>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
             <Text style={styles.LoginHead}>Login</Text>
-            <Text>Login with sent OTP</Text>
+            <Text>Enter OTP recieved in XXX89</Text>
           </View>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Phone Number'} />
+            <Flex style={styles.login_input_flex}>
+              <InputTextComponent placeholder={'_'} className />
+              <InputTextComponent placeholder={'_'} className />
+              <InputTextComponent placeholder={'_'} className />
+              <InputTextComponent placeholder={'_'} className />
+            </Flex>
           </View>
           <View style={styles.login_submit}>
-            <CustomButton
-              btnText={'Login'}
-              onPress={() => navigation.navigate('loginotp')}
-            />
+            <CustomButton btnText={'Confirm'} onPress={()=>navigation.navigate('register')}/>
           </View>
-        </View>
-        <View style={styles.form_btm}>
-          <View style={styles.form_btm_text}>
-            <Text style={styles.login_text}>Or login with</Text>
-            <View style={styles.line_border}></View>
-          </View>
-          <View style={styles.social_btn}>
-            <Image
-              style={styles.socialbuttons}
-              source={require('../../assets/socialbuttons.png')}
-            />
-          </View>
-        </View>
-        <View style={styles.register_text}>
-          <Text style={styles.register_text_frst}>Don’t have an account?</Text>
-          <Text style={styles.register_text_scnd}>Register</Text>
+          <Box style={styles.resend_sec}>
+            <Flex style={styles.resend_text}>
+              <Text style={styles.normal_text}>Haven’t received any?</Text>
+              <Text
+                style={styles.green}
+                onPress={() => Linking.openURL('http://google.com')}>
+                Resend
+              </Text>
+            </Flex>
+            <Text style={styles.normal_text}>00:00</Text>
+          </Box>
         </View>
       </LoginWrapper>
     </SafeAreaView>

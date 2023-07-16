@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function CustomButton({btnText}) {
+export default function CustomButton({btnText,onPress}) {
   return (
-    <TouchableOpacity style={styles.cmn_btn}>
+    <TouchableOpacity style={styles.cmn_btn} onPress={onPress}>
       <Text style={styles.cmn_btn_text}>{btnText}</Text>
     </TouchableOpacity>
   );
