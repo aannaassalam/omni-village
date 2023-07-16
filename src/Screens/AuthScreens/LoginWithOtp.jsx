@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 
 export default function LoginWithOtp({navigation}) {
   return (
-    <SafeAreaView>
+
       <LoginWrapper>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
@@ -129,6 +129,6 @@ export default function LoginWithOtp({navigation}) {
           </Box>
         </View>
       </LoginWrapper>
-    </SafeAreaView>
+ 
   );
 }

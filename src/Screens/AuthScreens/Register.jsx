@@ -59,7 +59,10 @@ const styles = StyleSheet.create({
   register_text: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 150,
+    // marginTop: 150,
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 50,
   },
   register_text_frst: {},
   register_text_scnd: {
@@ -71,42 +74,38 @@ const styles = StyleSheet.create({
 
 export default function Register({navigation, route}) {
   return (
-    <SafeAreaView>
-      <LoginWrapper>
-        <View style={styles.form_section}>
-          <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Register</Text>
-            <Text>Register with sent OTP</Text>
-          </View>
-          <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Phone Number'} />
-          </View>
-          <View style={styles.login_submit}>
-            <CustomButton
-              btnText={'Register'}
-              onPress={() => navigation.navigate('loginsuccess')}
-            />
-          </View>
+    <LoginWrapper>
+      <View style={styles.form_section}>
+        <View style={styles.form_head}>
+          <Text style={styles.LoginHead}>Register</Text>
+          <Text>Register with sent OTP</Text>
         </View>
-        <View style={styles.form_btm}>
-          <View style={styles.form_btm_text}>
-            <Text style={styles.login_text}>Or register with</Text>
-            <View style={styles.line_border}></View>
-          </View>
-          <View style={styles.social_btn}>
-            <Image
-              style={styles.socialbuttons}
-              source={require('../../assets/socialbuttons.png')}
-            />
-          </View>
+        <View style={styles.login_input}>
+          <InputTextComponent placeholder={'Phone Number'} />
         </View>
-        <View style={styles.register_text}>
-          <Text style={styles.register_text_frst}>
-            Already have an account?
-          </Text>
-          <Text style={styles.register_text_scnd}>Login</Text>
+        <View style={styles.login_submit}>
+          <CustomButton
+            btnText={'Register'}
+            onPress={() => navigation.navigate('loginsuccess')}
+          />
         </View>
-      </LoginWrapper>
-    </SafeAreaView>
+      </View>
+      <View style={styles.form_btm}>
+        <View style={styles.form_btm_text}>
+          <Text style={styles.login_text}>Or register with</Text>
+          <View style={styles.line_border}></View>
+        </View>
+        <View style={styles.social_btn}>
+          <Image
+            style={styles.socialbuttons}
+            source={require('../../../assets/socialbuttons.png')}
+          />
+        </View>
+      </View>
+      <View style={styles.register_text}>
+        <Text style={styles.register_text_frst}>Already have an account?</Text>
+        <Text style={styles.register_text_scnd}>Login</Text>
+      </View>
+    </LoginWrapper>
   );
 }

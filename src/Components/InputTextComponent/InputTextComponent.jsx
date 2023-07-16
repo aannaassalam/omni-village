@@ -29,7 +29,7 @@ export default function InputTextComponent({placeholder, className}) {
     <SafeAreaView>
       <TextInput
         style={className ? styles.inputSmall : styles.input}
-        onChangeText={e => setValue(e.target.value)}
+        onChangeText={e => setValue(e)}
         value={value}
         placeholder={placeholder}
         keyboardType="numeric"

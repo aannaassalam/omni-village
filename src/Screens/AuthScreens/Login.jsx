@@ -14,8 +14,6 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 const styles = StyleSheet.create({
   form_section: {
     alignItems: 'center',
-    // flex: 1,
-    paddingTop: 50,
   },
   LoginHead: {
     color: '#36393B',
@@ -47,11 +45,13 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 5,
     height: 30,
-    // backgroundColor: '#fff',
+    backgroundColor: '#fff',
+    width: 100,
   },
   form_btm_text: {
     width: '100%',
     marginBottom: 40,
+    alignItems: 'center',
   },
   social_btn: {
     width: '100%',
@@ -63,11 +63,15 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#EBEBEB',
     marginTop: -20,
+    width: '100%',
   },
   register_text: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 150,
+    // marginTop: 150,
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 50,
   },
   register_text_frst: {},
   register_text_scnd: {
@@ -79,40 +83,38 @@ const styles = StyleSheet.create({
 
 export default function Login({navigation, route}) {
   return (
-    <SafeAreaView>
-      <LoginWrapper>
-        <View style={styles.form_section}>
-          <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Login</Text>
-            <Text style={styles.subtitle}>Login with sent OTP</Text>
-          </View>
-          <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Phone Number'} />
-          </View>
-          <View style={styles.login_submit}>
-            <CustomButton
-              btnText={'Login'}
-              onPress={() => navigation.navigate('loginotp')}
-            />
-          </View>
+    <LoginWrapper>
+      <View style={styles.form_section}>
+        <View style={styles.form_head}>
+          <Text style={styles.LoginHead}>Login</Text>
+          <Text style={styles.subtitle}>Login with sent OTP</Text>
         </View>
-        <View style={styles.form_btm}>
-          <View style={styles.form_btm_text}>
-            <Text style={styles.login_text}>Or login with</Text>
-            <View style={styles.line_border}></View>
-          </View>
-          <View style={styles.social_btn}>
-            <Image
-              style={styles.socialbuttons}
-              source={require('../../../assets/socialbuttons.png')}
-            />
-          </View>
+        <View style={styles.login_input}>
+          <InputTextComponent placeholder={'Phone Number'} />
         </View>
-        <View style={styles.register_text}>
-          <Text style={styles.register_text_frst}>Don’t have an account?</Text>
-          <Text style={styles.register_text_scnd}>Register</Text>
+        <View style={styles.login_submit}>
+          <CustomButton
+            btnText={'Login'}
+            onPress={() => navigation.navigate('loginotp')}
+          />
         </View>
-      </LoginWrapper>
-    </SafeAreaView>
+      </View>
+      <View style={styles.form_btm}>
+        <View style={styles.form_btm_text}>
+          <Text style={styles.login_text}>Or login with</Text>
+          <View style={styles.line_border}></View>
+        </View>
+        <View style={styles.social_btn}>
+          <Image
+            style={styles.socialbuttons}
+            source={require('../../../assets/socialbuttons.png')}
+          />
+        </View>
+      </View>
+      <View style={styles.register_text}>
+        <Text style={styles.register_text_frst}>Don’t have an account?</Text>
+        <Text style={styles.register_text_scnd}>Register</Text>
+      </View>
+    </LoginWrapper>
   );
 }

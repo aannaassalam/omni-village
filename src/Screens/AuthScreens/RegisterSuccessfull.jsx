@@ -34,7 +34,7 @@ export default function RegisterSuccessfull() {
         <View style={styles.inner}>
           <Image
             style={styles.tickLogo}
-            source={require('../../assets/tick_icon.png')}
+            source={require('../../../assets/tick_icon.png')}
           />
           <Text
             variant="h3"
