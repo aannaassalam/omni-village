@@ -13,12 +13,14 @@ import CultivationLand from './src/Screens/CultivationScreens/CultivationLand';
 import CultivationTwice from './src/Screens/CultivationScreens/CultivationTwice';
 import CultivationThrice from './src/Screens/CultivationScreens/CultivationThrice';
 import LandForSea from './src/Screens/CultivationScreens/LandForSea';
+import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
 
 function App() {
   return (
     <NavigationContainer>
       <AuthStack />
-      {/* <CultivationLand/> */}
+      {/* <RegisterSuccessfull /> */}
+      {/* <CultivationLand /> */}
       {/* <CultivationThrice/> */}
       {/* <LandForSea/> */}
       {/* <CultivationTwice/> */}

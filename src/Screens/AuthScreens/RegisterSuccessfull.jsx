@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function LoginSuccessfull() {
+export default function RegisterSuccessfull() {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
@@ -39,7 +39,7 @@ export default function LoginSuccessfull() {
           <Text
             variant="h3"
             style={{fontSize: 22, color: '#263238', marginBottom: 20}}>
-            Successfully Logged In
+            Successfully Registered
           </Text>
           <Text variant="body1" style={styles.normalText}>
             Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
