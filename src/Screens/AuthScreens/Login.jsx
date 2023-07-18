@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Pressable,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
@@ -14,6 +15,7 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 const styles = StyleSheet.create({
   form_section: {
     alignItems: 'center',
+    marginTop: 30,
   },
   LoginHead: {
     color: '#36393B',
@@ -68,10 +70,8 @@ const styles = StyleSheet.create({
   register_text: {
     flexDirection: 'row',
     justifyContent: 'center',
-    // marginTop: 150,
-    position: 'absolute',
+    marginTop: 'auto',
     alignSelf: 'center',
-    bottom: 50,
   },
   register_text_frst: {},
   register_text_scnd: {
@@ -113,7 +113,9 @@ export default function Login({navigation, route}) {
       </View>
       <View style={styles.register_text}>
         <Text style={styles.register_text_frst}>Don’t have an account?</Text>
-        <Text style={styles.register_text_scnd}>Register</Text>
+        <Pressable onPress={() => navigation.navigate('register')}>
+          <Text style={styles.register_text_scnd}>Register</Text>
+        </Pressable>
       </View>
     </LoginWrapper>
   );
