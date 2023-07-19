@@ -6,14 +6,15 @@ const initialState = {
   status: 'idle',
 };
 
-export const RegisterUser = createAsyncThunk('register', async user => {
-  try {
-    let res = await axiosInstance.post(endpoints?.auth?.register, user);
-    return res;
-  } catch (err) {
-    throw err;
-  }
-});
+export const RegisterUser = createAsyncThunk('register', 
+async (user) => {
+    try {
+      let res = await axiosInstance.post(endpoints?.auth?.register, user);
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  });
 
 
 export const AuthSlice = createSlice({

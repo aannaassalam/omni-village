@@ -15,6 +15,8 @@ import CultivationThrice from './src/Screens/CultivationScreens/CultivationThric
 import LandForSea from './src/Screens/CultivationScreens/LandForSea';
 import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
 import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
+import {Provider} from 'react-redux';
+import {store} from './src/Store/store';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -26,16 +28,18 @@ function App() {
   }, []);
 
   return (
-    <SplashScreen isAppReady={isAppReady}>
-      <NavigationContainer>
-        <AuthStack />
-        {/* <RegisterSuccessfull /> */}
-        {/* <CultivationLand /> */}
-        {/* <CultivationThrice/> */}
-        {/* <LandForSea/> */}
-        {/* <CultivationTwice/> */}
-      </NavigationContainer>
-    </SplashScreen>
+    <Provider store={store}>
+      <SplashScreen isAppReady={isAppReady}>
+        <NavigationContainer>
+          <AuthStack />
+          {/* <RegisterSuccessfull /> */}
+          {/* <CultivationLand /> */}
+          {/* <CultivationThrice/> */}
+          {/* <LandForSea/> */}
+          {/* <CultivationTwice/> */}
+        </NavigationContainer>
+      </SplashScreen>
+    </Provider>
   );
 }
 
