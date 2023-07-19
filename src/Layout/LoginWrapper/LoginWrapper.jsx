@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   logo_image: {
     alignItems: 'center',
     paddingBottom: 20,
-    marginBottom: 90,
+    marginBottom: 20,
   },
   logo_image_less_gap:{
     alignItems: 'center',
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     paddingVertical: 52,
     paddingHorizontal: 20,
     flex: 1,
+    paddingBottom: 30,
   },
   tinyLogo: {
     width: '50%',
