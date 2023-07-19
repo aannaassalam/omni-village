@@ -95,7 +95,7 @@ export default function Register({navigation, route}) {
         <View style={styles.login_submit}>
           <CustomButton
             btnText={'Register'}
-            onPress={() => navigation.navigate('loginsuccess')}
+            onPress={() => navigation.navigate('registerdetails')}
           />
         </View>
       </View>

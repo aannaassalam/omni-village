@@ -21,6 +21,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: 90,
   },
+  logo_image_less_gap:{
+    alignItems: 'center',
+    paddingBottom: 20,
+    marginBottom: 30,
+  },
   loginContainer: {
     paddingVertical: 52,
     paddingHorizontal: 20,
@@ -33,20 +38,32 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function LoginWrapper({children}) {
+export default function LoginWrapper({children, no_gap}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.main_wrap}>
           <View style={styles.loginContainer}>
-            <View style={styles.logo_image}>
-              <Image
-                style={styles.tinyLogo}
-                source={require('../../../assets/logo.png')}
-                // height={100}
-              />
-              {/* <SvgUri source={require('../../assets/logo.svg')} /> */}
-            </View>
+            {no_gap ? (
+              <View style={styles.logo_image_less_gap}>
+                <Image
+                  style={styles.tinyLogo}
+                  source={require('../../../assets/logo.png')}
+                  // height={100}
+                />
+                {/* <SvgUri source={require('../../assets/logo.svg')} /> */}
+              </View>
+            ) : (
+              <View style={styles.logo_image}>
+                <Image
+                  style={styles.tinyLogo}
+                  source={require('../../../assets/logo.png')}
+                  // height={100}
+                />
+                {/* <SvgUri source={require('../../assets/logo.svg')} /> */}
+              </View>
+            )}
+
             {children}
           </View>
         </View>
