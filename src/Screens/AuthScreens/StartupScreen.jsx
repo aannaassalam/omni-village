@@ -30,7 +30,7 @@ export default function StartupScreen({navigation, route}) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  console.log(activeIndex);
+  // console.log(activeIndex);
   return (
     <LoginWrapper>
       <View>
