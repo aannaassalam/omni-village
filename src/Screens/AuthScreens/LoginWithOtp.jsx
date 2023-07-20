@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,6 +20,8 @@ import { LoginUser, RegisterUser } from '../../Redux/AuthSlice';
 export default function LoginWithOtp({navigation}) {
 
   const {user} = useSelector((state)=>state.auth)
+
+  console.log(user,"user")
 
   const dispatch = useDispatch()
 

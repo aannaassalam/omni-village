@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axiosInstance from '../Helper/Helper';
 import {endpoints} from '../Endpoints/endpoints';
 import {AsyncStorage} from 'react-native';
+import { storage } from '../Helper/Storage';
 
 
 
@@ -12,6 +13,7 @@ const initialState = {
 
 export const SendOTP = createAsyncThunk('sendotp', async (user) => {
   try {
+    console.log(user,"user")
     let res = await axiosInstance.post(endpoints?.auth?.otp, {...user,country_code:"+91"});
     return {api_payload:res,...user,country_code:"+91"};
   } catch (err) {
@@ -49,9 +51,9 @@ export const AuthSlice = createSlice({
         state.status = 'pending';
       })
       .addCase(RegisterUser.fulfilled, (state, {payload}) => {
-        if(payload?.status === 200){
-          AsyncStorage.setItem('token', payload?.data?.token)
-          AsyncStorage.setItem('refresh_token',payload?.data?.refresh_token)
+        if(payload?.api_payload?.status === 200){
+          storage.set('token', payload?.api_payload?.data?.token)
+          storage.set('refresh_token',payload?.api_payload?.data?.refresh_token)
           state.status = 'idle';
         }
         
@@ -65,10 +67,11 @@ export const AuthSlice = createSlice({
         state.status = 'pending';
       })
       .addCase(SendOTP.fulfilled, (state, {payload}) => {
-        if(payload?.status === 200){
+        // if(payload?.api_payload?.status === 200){
+          console.log(payload,"payload")
           state.user = {...state.user,phone:payload?.phone,country_code:payload?.country_code}
           state.status = 'idle';
-        }
+        // }
         
       })
       .addCase(SendOTP.rejected, (state, {payload}) => {
@@ -81,9 +84,11 @@ export const AuthSlice = createSlice({
         state.status = 'pending';
       })
       .addCase(LoginUser.fulfilled, (state, {payload}) => {
-        if(payload?.status === 200){
-          AsyncStorage.setItem('token', payload?.data?.token)
-          AsyncStorage.setItem('refresh_token',payload?.data?.refresh_token)
+        if(payload?.api_payload?.status === 200){
+          storage.set('token', payload?.api_payload?.data?.token)
+          storage.set('refresh_token',payload?.api_payload?.data?.refresh_token)
+          // AsyncStorage.setItem('token', payload?.data?.token)
+          // AsyncStorage.setItem('refresh_token',payload?.data?.refresh_token)
           state.status = 'idle';
         }
       })

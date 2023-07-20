@@ -1,7 +1,9 @@
-import {AsyncStorage} from 'react-native';
+import { storage } from "./Storage";
+
 
 export const CheckToken = () =>{
-    const token = AsyncStorage.getItem('token');
+    const token = storage.getString('token');
+    console.log(token,"token")
     if(token){
         return true
     }

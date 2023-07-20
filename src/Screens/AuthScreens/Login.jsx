@@ -27,7 +27,7 @@ export default function Login({navigation, route}) {
 
 
   const FormSubmit = () =>{
-    dispatch(SendOTP(inputVal)).unwrap().then(()=>navigation.navigate('loginotp'))
+    dispatch(SendOTP(inputVal)).then(()=>navigation.navigate('loginotp'))
   }
   
   return (
