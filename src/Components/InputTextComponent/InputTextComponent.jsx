@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {SafeAreaView, StyleSheet, TextInput} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -23,13 +23,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function InputTextComponent({placeholder, className}) {
-  const [value, setValue] = useState('');
+export default function InputTextComponent({placeholder, className , InputValueCallback , value}) {
+  // const [value, setValue] = useState('');
+
+  // useEffect(() => {
+  //   InputValueCallback(value)
+  // }, [value])
+  
   return (
     <SafeAreaView>
       <TextInput
         style={className ? styles.inputSmall : styles.input}
-        onChangeText={e => setValue(e)}
+        onChangeText={InputValueCallback}
         value={value}
         placeholder={placeholder}
         keyboardType="numeric"

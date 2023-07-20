@@ -1,6 +1,6 @@
 import axios from "axios";
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
-let adminUrl = "https://api.escuelajs.co/api/v1";
+let adminUrl = "https://omnivillage.azurewebsites.net/api";
 
 export const baseURL = adminUrl
 
@@ -8,12 +8,12 @@ let axiosInstance = axios.create({
   baseURL,
 });
 
-export const imagePath = (media) => {
-  return `https://wtsacademy.dedicateddevelopers.us/uploads/product/${media}`;
-}
-export const imagePathProfile = (media) => {
-  return `https://wtsacademy.dedicateddevelopers.us/product/${media}`
-}
+// export const imagePath = (media) => {
+//   return `https://wtsacademy.dedicateddevelopers.us/uploads/product/${media}`;
+// }
+// export const imagePathProfile = (media) => {
+//   return `https://wtsacademy.dedicateddevelopers.us/product/${media}`
+// }
 
 
 axiosInstance.interceptors.request.use(

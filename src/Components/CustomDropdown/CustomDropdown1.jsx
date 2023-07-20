@@ -15,7 +15,7 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 
-export default CustomDropdown1 = () => {
+export default CustomDropdown1 = ({placeholder}) => {
   const countries = [
     'Egypt',
     'Canada',
@@ -35,7 +35,7 @@ export default CustomDropdown1 = () => {
     <SelectDropdown
       data={countries}
       onSelect={(selectedItem, index) => {
-        console.log(selectedItem, index);
+        // console.log(selectedItem, index);
       }}
       buttonTextAfterSelection={(selectedItem, index) => {
         // text represented after item is selected
@@ -51,18 +51,22 @@ export default CustomDropdown1 = () => {
       buttonTextStyle={styles.dropdown1BtnTxtStyle}
       renderDropdownIcon={isOpened => {
         return (
-          <FontAwesomeIcon
+          <View style={styles.icon_btn}>
+            <FontAwesomeIcon
             icon={isOpened ? faChevronUp : faChevronDown}
             color="rgba(38, 140, 67, 1)"
-            size={18}
-            style={styles.icon_btn}
+            size={15}
           />
+          </View>
         );
       }}
       dropdownIconPosition={'right'}
       dropdownStyle={styles.dropdown1DropdownStyle}
       rowStyle={styles.dropdown1RowStyle}
       rowTextStyle={styles.dropdown1RowTxtStyle}
+      
+      defaultButtonText={placeholder}
+      dropdownOverlayColor='rgba(0,0,0,.1)'
     />
   );
 };
@@ -78,13 +82,16 @@ const styles = StyleSheet.create({
     borderColor: '#268C43',
   },
   dropdown1BtnTxtStyle: {color: '#263238', textAlign: 'left', fontSize: 13},
-  dropdown1DropdownStyle: {backgroundColor: '#fff'},
+  dropdown1DropdownStyle: {backgroundColor: '#fff',borderRadius:10},
   dropdown1RowStyle: {
-    backgroundColor: '#fff',
-    borderBottomColor: '#268C43',
+    // backgroundColor: '#fff',
+    // borderBottomColor: '#268C43',
+    paddingHorizontal:15
   },
   dropdown1RowTxtStyle: {color: '#263238', textAlign: 'left', fontSize: 13},
   icon_btn: {
     backgroundColor: 'rgb(168,209,180)',
+    borderRadius:5,
+    padding:7,
   },
 });

@@ -13,11 +13,11 @@ import InputTextComponent from '../../Components/InputTextComponent/InputTextCom
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {Box, Flex} from '@react-native-material/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginUser, RegisterUser } from '../../Redux/AuthSlice';
+import { RegisterUser } from '../../Redux/AuthSlice';
 
 
 
-export default function LoginWithOtp({navigation}) {
+export default function RegisterWithOtp({navigation}) {
 
   const {user} = useSelector((state)=>state.auth)
 
@@ -45,7 +45,7 @@ export default function LoginWithOtp({navigation}) {
   const FormSubmit = () =>{
       const OTP = otp1 + otp2 + otp3 + otp4
       if(OTP.length === 4){
-        dispatch(LoginUser({...user,otp:OTP})).unwrap().then(()=>navigation.navigate('loginsuccess')).catch((err)=>err && console.log(err,"err"))
+        dispatch(RegisterUser({...user,otp:OTP})).unwrap().then(()=>navigation.navigate('registerdetails')).catch((err)=>err && console.log(err,"err"))
       }
   }
 
@@ -54,7 +54,7 @@ export default function LoginWithOtp({navigation}) {
       <LoginWrapper>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Login</Text>
+            <Text style={styles.LoginHead}>Register</Text>
             <Text>Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}</Text>
           </View>
           <View style={styles.login_input}>

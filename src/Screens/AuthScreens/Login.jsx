@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,6 +11,64 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import { useDispatch } from 'react-redux';
+import { SendOTP } from '../../Redux/AuthSlice';
+
+
+
+export default function Login({navigation, route}) {
+
+  const dispatch = useDispatch()
+  const [inputVal , setInputVal] = useState("")
+
+  const InputValueCallback = (data) =>{
+    setInputVal(data)
+  }
+
+
+  const FormSubmit = () =>{
+    dispatch(SendOTP(inputVal)).unwrap().then(()=>navigation.navigate('loginotp'))
+  }
+  
+  return (
+    <LoginWrapper>
+      <View style={styles.form_section}>
+        <View style={styles.form_head}>
+          <Text style={styles.LoginHead}>Login</Text>
+          <Text style={styles.subtitle}>Login with sent OTP</Text>
+        </View>
+        <View style={styles.login_input}>
+          <InputTextComponent placeholder={'Phone Number'} InputValueCallback={InputValueCallback} value={inputVal}/>
+        </View>
+        <View style={styles.login_submit}>
+          <CustomButton
+            btnText={'Login'}
+            onPress={FormSubmit}
+          />
+        </View>
+      </View>
+      <View style={styles.form_btm}>
+        <View style={styles.form_btm_text}>
+          <Text style={styles.login_text}>Or login with</Text>
+          <View style={styles.line_border}></View>
+        </View>
+        <View style={styles.social_btn}>
+          <Image
+            style={styles.socialbuttons}
+            source={require('../../../assets/socialbuttons.png')}
+          />
+        </View>
+      </View>
+      <View style={styles.register_text}>
+        <Text style={styles.register_text_frst}>Don’t have an account?</Text>
+        <Pressable onPress={() => navigation.navigate('register')}>
+          <Text style={styles.register_text_scnd}>Register</Text>
+        </Pressable>
+      </View>
+    </LoginWrapper>
+  );
+}
+
 
 const styles = StyleSheet.create({
   form_section: {
@@ -80,43 +138,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-
-export default function Login({navigation, route}) {
-  return (
-    <LoginWrapper>
-      <View style={styles.form_section}>
-        <View style={styles.form_head}>
-          <Text style={styles.LoginHead}>Login</Text>
-          <Text style={styles.subtitle}>Login with sent OTP</Text>
-        </View>
-        <View style={styles.login_input}>
-          <InputTextComponent placeholder={'Phone Number'} />
-        </View>
-        <View style={styles.login_submit}>
-          <CustomButton
-            btnText={'Login'}
-            onPress={() => navigation.navigate('loginotp')}
-          />
-        </View>
-      </View>
-      <View style={styles.form_btm}>
-        <View style={styles.form_btm_text}>
-          <Text style={styles.login_text}>Or login with</Text>
-          <View style={styles.line_border}></View>
-        </View>
-        <View style={styles.social_btn}>
-          <Image
-            style={styles.socialbuttons}
-            source={require('../../../assets/socialbuttons.png')}
-          />
-        </View>
-      </View>
-      <View style={styles.register_text}>
-        <Text style={styles.register_text_frst}>Don’t have an account?</Text>
-        <Pressable onPress={() => navigation.navigate('register')}>
-          <Text style={styles.register_text_scnd}>Register</Text>
-        </Pressable>
-      </View>
-    </LoginWrapper>
-  );
-}
