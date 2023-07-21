@@ -21,6 +21,7 @@ import {
   faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 
 export default function RegisterDetails({navigation, route}) {
   const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
@@ -70,12 +71,33 @@ export default function RegisterDetails({navigation, route}) {
           <View style={styles.line_border}></View>
         </View>
         <Box style={styles.cmn_wrp}>
-        <CustomDropdown1 placeholder={'Village Name'}/>
+          <CustomDropdown1 placeholder={'Village Name'} />
         </Box>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <InputTextComponent placeholder={'Family Name'} />
           </View>
+        </Box>
+        <Box style={styles.cmn_wrp}>
+          <View style={styles.login_input}>
+            <InputTextComponent placeholder={'User Name'} />
+          </View>
+        </Box>
+        <Box style={styles.cmn_wrp}>
+          <View style={styles.login_input}>
+            <InputTextComponent placeholder={'Social Security number'} />
+          </View>
+        </Box>
+        <Box style={styles.cmn_wrp}>
+          <View style={styles.login_input}>
+            <InputTextComponent placeholder={'Address'} />
+          </View>
+          <Image
+
+              style={styles.tinyLogo1}
+              source={require('../../../assets/gps.png')}
+              // height={100}
+            />
         </Box>
         <Box style={styles.file_box}>
           <Box style={styles.file_box_lft}>
@@ -84,7 +106,9 @@ export default function RegisterDetails({navigation, route}) {
               source={require('../../../assets/file_img.png')}
               // height={100}
             />
-            <Text varint="body1">Upload address proof</Text>
+            <Text varint="body1" style={styles.upload_txt}>
+              Upload address proof
+            </Text>
           </Box>
           <Box style={styles.file_box_rgt}>
             {fileResponse.map((file, index) => (
@@ -96,7 +120,32 @@ export default function RegisterDetails({navigation, route}) {
                 {file?.name}
               </Text>
             ))}
-            <Button title="Browse" onPress={handleDocumentSelection} />
+            {/* <Button title="Browse" style={styles.btn} onPress={handleDocumentSelection} /> */}
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={handleDocumentSelection}>
+              <Text style={styles.cmn_btn_text}>Browse</Text>
+            </TouchableOpacity>
+          </Box>
+        </Box>
+        <Box style={styles.file_box2}>
+          <Box style={styles.file_box_lft}>
+            <Image
+              style={styles.tinyLogo}
+              source={require('../../../assets/file_img.png')}
+              // height={100}
+            />
+            <Text varint="body1" style={styles.upload_txt}>
+              Document.jpg
+            </Text>
+          </Box>
+          <Box style={styles.file_box_rgt2}>
+            <Box
+              h={30}
+              w={4}
+              style={{backgroundColor: 'rgba(38, 50, 56, 0.09)',marginRight:40}}
+            />
+            <CustomProgress color={'#268C43'} />
           </Box>
         </Box>
         <View style={styles.login_submit}>
@@ -111,6 +160,58 @@ export default function RegisterDetails({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
+  tinyLogo1:{
+    position:"absolute",
+    top:10,
+    right:10,
+  },
+  btn: {
+    minWidth: 78,
+    minHeight: 28,
+    borderRadius: 8,
+    backgroundColor: '#268C43',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  file_box_rgt2: {
+    alignItems:'center',
+    flexDirection: 'row',
+  },
+  cmn_btn_text: {
+    fontSize: 13,
+    marginBottom: 4,
+    color: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  file_box2: {
+    // border: 1px solid #C6F1D3,
+    borderWidth: 1,
+    borderColor: '#C6F1D3',
+    borderRadius: 8,
+    padding: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 8,
+    marginBottom:16,
+  },
+  file_box: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(38, 140, 67, .2)',
+    width: '100%',
+    justifyContent: 'space-between',
+    padding: 20,
+    borderRadius: 8,
+  },
+  file_box_lft: {
+    flexDirection: 'row',
+  },
+  upload_txt: {
+    color: '#268C43',
+    fontSize: 13,
+    marginLeft: 7,
+  },
   cmn_wrp: {
     flexDirection: 'row',
     marginBottom: 15,
