@@ -15,17 +15,15 @@ const Stack = createStackNavigator();
 export default function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-       <Stack.Screen name="home" component={Home} />
-       {/* <Stack.Screen name="registerdetails" component={RegisterDetails} /> */}
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
-      {/* <Stack.Screen name="registerdetails" component={RegisterDetails} /> */}
+      <Stack.Screen name="registerdetails" component={RegisterDetails} />
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
-      {/* <Stack.Screen name="home" component={Home} /> */}
+      <Stack.Screen name="home" component={Home} />
     </Stack.Navigator>
   );
 }

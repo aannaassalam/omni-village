@@ -19,9 +19,10 @@ import { LoginUser, RegisterUser } from '../../Redux/AuthSlice';
 
 export default function LoginWithOtp({navigation}) {
 
-  const {user} = useSelector((state)=>state.auth)
+  const {user,otpData} = useSelector((state)=>state.auth)
 
   console.log(user,"user")
+  console.log(otpData,"otpData")
 
   const dispatch = useDispatch()
 
