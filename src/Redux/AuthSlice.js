@@ -15,6 +15,7 @@ export const SendOTP = createAsyncThunk('sendotp', async (user) => {
   try {
     console.log(user,"user")
     let res = await axiosInstance.post(endpoints?.auth?.otp, {...user,country_code:"+91"});
+    console.log(res,"respond")
     return {api_payload:res,...user,country_code:"+91"};
   } catch (err) {
     throw err;
@@ -65,16 +66,19 @@ export const AuthSlice = createSlice({
       // OTP
       .addCase(SendOTP.pending, (state, {payload}) => {
         state.status = 'pending';
+        console.log(state,'pending')
       })
       .addCase(SendOTP.fulfilled, (state, {payload}) => {
-        // if(payload?.api_payload?.status === 200){
+        console.log(state,'fullfilled')
+        if(payload?.api_payload?.status === 200){
           console.log(payload,"payload")
           state.user = {...state.user,phone:payload?.phone,country_code:payload?.country_code}
           state.status = 'idle';
-        // }
+        }
         
       })
       .addCase(SendOTP.rejected, (state, {payload}) => {
+        console.log(state,'reject')
         state.status = 'idle';
       })
 
