@@ -28,10 +28,12 @@ function App() {
   }, []);
 
   return (
-    <Provider store={store}>
+
       <SplashScreen isAppReady={isAppReady}>
         <NavigationContainer>
+        <Provider store={store}>
           <AuthStack />
+          </Provider>
           {/* <RegisterSuccessfull /> */}
           {/* <CultivationLand /> */}
           {/* <CultivationThrice/> */}
@@ -39,7 +41,7 @@ function App() {
           {/* <CultivationTwice/> */}
         </NavigationContainer>
       </SplashScreen>
-    </Provider>
+  
   );
 }
 
