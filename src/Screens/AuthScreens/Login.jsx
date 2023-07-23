@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,25 +11,18 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { useDispatch } from 'react-redux';
-import { SendOTP } from '../../Redux/AuthSlice';
-
-
+import {useDispatch} from 'react-redux';
+import {SendOTP} from '../../Redux/AuthSlice';
+import {TextInput} from 'react-native-gesture-handler';
 
 export default function Login({navigation, route}) {
+  const dispatch = useDispatch();
+  const [inputVal, setInputVal] = useState('');
 
-  const dispatch = useDispatch()
-  const [inputVal , setInputVal] = useState("")
+  const FormSubmit = () => {
+    dispatch(SendOTP(inputVal)).then(() => navigation.navigate('loginotp'));
+  };
 
-  const InputValueCallback = (data) =>{
-    setInputVal(data)
-  }
-
-
-  const FormSubmit = () =>{
-    dispatch(SendOTP(inputVal)).then(()=>navigation.navigate('loginotp'))
-  }
-  
   return (
     <LoginWrapper>
       <View style={styles.form_section}>
@@ -38,13 +31,21 @@ export default function Login({navigation, route}) {
           <Text style={styles.subtitle}>Login with sent OTP</Text>
         </View>
         <View style={styles.login_input}>
-          <InputTextComponent placeholder={'Phone Number'} InputValueCallback={InputValueCallback} value={inputVal}/>
+          <InputTextComponent
+            placeholder={'Phone Number'}
+            onChangeText={setInputVal}
+            value={inputVal}
+            keyboardType="number-pad"
+          />
+          {/* <TextInput
+            placeholder={'Phone Number'}
+            onChangeText={setInputVal}
+            value={inputVal.toString()}
+            keyboardType="number-pad"
+          /> */}
         </View>
         <View style={styles.login_submit}>
-          <CustomButton
-            btnText={'Login'}
-            onPress={FormSubmit}
-          />
+          <CustomButton btnText={'Login'} onPress={FormSubmit} />
         </View>
       </View>
       <View style={styles.form_btm}>
@@ -68,7 +69,6 @@ export default function Login({navigation, route}) {
     </LoginWrapper>
   );
 }
-
 
 const styles = StyleSheet.create({
   form_section: {
@@ -99,10 +99,11 @@ const styles = StyleSheet.create({
   socialbuttons: {},
   form_btm: {
     marginTop: 40,
+    marginBottom: 20,
   },
   login_text: {
     textAlign: 'center',
-    position: 'relative',
+    // position: 'relative',
     zIndex: 5,
     height: 30,
     backgroundColor: '#fff',

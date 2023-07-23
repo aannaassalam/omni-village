@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,80 +12,95 @@ import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {Box, Flex} from '@react-native-material/core';
-import { useDispatch, useSelector } from 'react-redux';
-import { RegisterUser } from '../../Redux/AuthSlice';
-
-
+import {useDispatch, useSelector} from 'react-redux';
+import {RegisterUser} from '../../Redux/AuthSlice';
 
 export default function RegisterWithOtp({navigation}) {
+  const {user} = useSelector(state => state.auth);
 
-  const {user} = useSelector((state)=>state.auth)
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const [otp1, setOtp1] = useState('');
+  const [otp2, setOtp2] = useState('');
+  const [otp3, setOtp3] = useState('');
+  const [otp4, setOtp4] = useState('');
 
-  const [otp1 , setOtp1] = useState("")
-  const [otp2 , setOtp2] = useState("")
-  const [otp3 , setOtp3] = useState("")
-  const [otp4 , setOtp4] = useState("")
+  const InputValueCallback1 = data => {
+    setOtp1(data);
+  };
+  const InputValueCallback2 = data => {
+    setOtp2(data);
+  };
+  const InputValueCallback3 = data => {
+    setOtp3(data);
+  };
+  const InputValueCallback4 = data => {
+    setOtp4(data);
+  };
 
-  const InputValueCallback1 = (data) =>{
-    setOtp1(data)
-  }
-  const InputValueCallback2 = (data) =>{
-    setOtp2(data)
-  }
-  const InputValueCallback3 = (data) =>{
-    setOtp3(data)
-  }
-  const InputValueCallback4 = (data) =>{
-    setOtp4(data)
-  }
-
-
-  const FormSubmit = () =>{
-      const OTP = otp1 + otp2 + otp3 + otp4
-      if(OTP.length === 4){
-        dispatch(RegisterUser({...user,otp:OTP})).unwrap().then(()=>navigation.navigate('registerdetails')).catch((err)=>err && console.log(err,"err"))
-      }
-  }
+  const FormSubmit = () => {
+    const OTP = otp1 + otp2 + otp3 + otp4;
+    if (OTP.length === 4) {
+      dispatch(RegisterUser({...user, otp: OTP}))
+        .unwrap()
+        .then(() => navigation.navigate('registerdetails'))
+        .catch(err => err && console.log(err, 'err'));
+    }
+  };
 
   return (
-
-      <LoginWrapper>
-        <View style={styles.form_section}>
-          <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Register</Text>
-            <Text>Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}</Text>
-          </View>
-          <View style={styles.login_input}>
-            <Flex style={styles.login_input_flex}>
-              <InputTextComponent placeholder={'_'} className InputValueCallback={InputValueCallback1} value={otp1}/>
-              <InputTextComponent placeholder={'_'} className InputValueCallback={InputValueCallback2} value={otp2}/>
-              <InputTextComponent placeholder={'_'} className InputValueCallback={InputValueCallback3} value={otp3}/>
-              <InputTextComponent placeholder={'_'} className InputValueCallback={InputValueCallback4} value={otp4}/>
-            </Flex>
-          </View>
-          <View style={styles.login_submit}>
-            <CustomButton btnText={'Confirm'} onPress={FormSubmit}/>
-          </View>
-          <Box style={styles.resend_sec}>
-            <Flex style={styles.resend_text}>
-              <Text style={styles.normal_text}>Haven’t received any?</Text>
-              <Text
-                style={styles.green}
-                onPress={() => Linking.openURL('http://google.com')}>
-                Resend
-              </Text>
-            </Flex>
-            <Text style={styles.normal_text}>00:00</Text>
-          </Box>
+    <LoginWrapper>
+      <View style={styles.form_section}>
+        <View style={styles.form_head}>
+          <Text style={styles.LoginHead}>Register</Text>
+          <Text>Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}</Text>
         </View>
-      </LoginWrapper>
- 
+        <View style={styles.login_input}>
+          <Flex style={styles.login_input_flex}>
+            <InputTextComponent
+              placeholder={'_'}
+              className
+              onChangeText={InputValueCallback1}
+              value={otp1}
+            />
+            <InputTextComponent
+              placeholder={'_'}
+              className
+              onChangeText={InputValueCallback2}
+              value={otp2}
+            />
+            <InputTextComponent
+              placeholder={'_'}
+              className
+              onChangeText={InputValueCallback3}
+              value={otp3}
+            />
+            <InputTextComponent
+              placeholder={'_'}
+              className
+              onChangeText={InputValueCallback4}
+              value={otp4}
+            />
+          </Flex>
+        </View>
+        <View style={styles.login_submit}>
+          <CustomButton btnText={'Confirm'} onPress={FormSubmit} />
+        </View>
+        <Box style={styles.resend_sec}>
+          <Flex style={styles.resend_text}>
+            <Text style={styles.normal_text}>Haven’t received any?</Text>
+            <Text
+              style={styles.green}
+              onPress={() => Linking.openURL('http://google.com')}>
+              Resend
+            </Text>
+          </Flex>
+          <Text style={styles.normal_text}>00:00</Text>
+        </Box>
+      </View>
+    </LoginWrapper>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   form_section: {

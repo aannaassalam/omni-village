@@ -5,8 +5,10 @@ import {
   ScrollView,
   Text,
   View,
+  KeyboardAvoidingView,
   Dimensions,
 } from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SvgUri from 'react-native-svg-uri';
 
@@ -21,7 +23,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: 20,
   },
-  logo_image_less_gap:{
+  logo_image_less_gap: {
     alignItems: 'center',
     paddingBottom: 20,
     // marginBottom: 30,
@@ -42,23 +44,27 @@ const styles = StyleSheet.create({
 export default function LoginWrapper({children, no_gap}) {
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ScrollView contentContainerStyle={[!no_gap && {flex: 1}]} style={[no_gap && {flex:1}]}>
+      <KeyboardAwareScrollView
+        behavior="padding"
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[!no_gap && {flex: 1}]}
+        style={[no_gap && {flex: 1}]}>
         <View style={styles.main_wrap}>
           <View style={styles.loginContainer}>
-          <View style={[no_gap ? styles.logo_image_less_gap : styles.logo_image]}>
-                <Image
-                  style={styles.tinyLogo}
-                  source={require('../../../assets/logo.png')}
-                  // height={100}
-                />
-                {/* <SvgUri source={require('../../assets/logo.svg')} /> */}
-              </View>
-            
+            <View
+              style={[no_gap ? styles.logo_image_less_gap : styles.logo_image]}>
+              <Image
+                style={styles.tinyLogo}
+                source={require('../../../assets/logo.png')}
+                // height={100}
+              />
+              {/* <SvgUri source={require('../../assets/logo.svg')} /> */}
+            </View>
 
             {children}
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

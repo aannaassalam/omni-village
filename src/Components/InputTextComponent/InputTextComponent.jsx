@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView, StyleSheet, TextInput} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     borderColor: '#268C43',
     borderWidth: 1,
     borderRadius: 8,
-    lineHeight: 1,
   },
   inputSmall: {
     width: 50,
@@ -23,22 +22,26 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function InputTextComponent({placeholder, className , InputValueCallback , value}) {
+export default function InputTextComponent({
+  placeholder,
+  className,
+  onChangeText,
+  value,
+  ...others
+}) {
   // const [value, setValue] = useState('');
 
   // useEffect(() => {
   //   InputValueCallback(value)
   // }, [value])
-  
+  console.log(typeof value);
   return (
-    <SafeAreaView>
-      <TextInput
-        style={className ? styles.inputSmall : styles.input}
-        onChangeText={InputValueCallback}
-        value={value}
-        placeholder={placeholder}
-        keyboardType="numeric"
-      />
-    </SafeAreaView>
+    <TextInput
+      style={className ? styles.inputSmall : styles.input}
+      onChangeText={onChangeText}
+      value={value.toString()}
+      placeholder={placeholder}
+      keyboardType={others.keyboardType || 'default'}
+    />
   );
 }

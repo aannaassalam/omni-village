@@ -9,12 +9,15 @@ import StartupScreen from '../Screens/AuthScreens/StartupScreen';
 import RegisterDetails from '../Screens/AuthScreens/RegisterDetails';
 import RegisterWithOtp from '../Screens/AuthScreens/RegisterWithOtp';
 import Home from '../Screens/AuthScreens/Home';
+import {CheckToken} from '../Helper/CheckToken';
 
 const Stack = createStackNavigator();
 
-export default function AuthStack() {
+export default function AuthStack({isLoggedIn}) {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      initialRouteName={isLoggedIn ? 'home' : 'startup'}
+      screenOptions={{headerShown: false}}>
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
