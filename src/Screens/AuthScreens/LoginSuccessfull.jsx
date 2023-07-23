@@ -30,12 +30,12 @@ const styles = StyleSheet.create({
 
 export default function LoginSuccessfull({navigation}) {
   useEffect(() => {
-    if (CheckToken) {
+    if (CheckToken()) {
       setTimeout(() => {
         navigation.navigate('home');
       }, 3000);
     }
-  }, [CheckToken]);
+  }, [CheckToken()]);
 
   return (
     <SafeAreaView style={{flex: 1}}>

@@ -15,8 +15,8 @@ import {Box, TextInput, Wrap} from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {Controller, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   faChevronCircleDown,
@@ -25,11 +25,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
-import { validation } from '../../Validation/Validation';
+import {validation} from '../../Validation/Validation';
+import {useDispatch} from 'react-redux';
+import {EditUser} from '../../Redux/AuthSlice';
 
 export default function RegisterDetails({navigation, route}) {
-  const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
+  // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
+
   console.log(fileResponse);
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -44,23 +47,54 @@ export default function RegisterDetails({navigation, route}) {
   }, []);
 
   const schema = yup
-  .object()
-  .shape({
-    first_name: yup.string().required(validation?.error?.first_name),
-    last_name: yup.string().required(validation?.error?.last_name),
-    village_name: yup.string().required(validation?.error?.village_name),
-    phone: yup.string().required(validation?.error?.phone),
-    family_name: yup.string().required(validation?.error?.family_name),
-    username : yup.string().required(validation?.error?.username),
-    social_security_number: yup.string().required(validation?.error?.social_security_number),
-    address: yup.string().required(validation?.error?.address)
-  })
-  .required();
+    .object()
+    .shape({
+      first_name: yup.string().required(validation?.error?.first_name),
+      last_name: yup.string().required(validation?.error?.last_name),
+      village_name: yup.string().required(validation?.error?.village_name),
+      phone: yup.string().required(validation?.error?.phone),
+      family_name: yup.string().required(validation?.error?.family_name),
+      username: yup.string().required(validation?.error?.username),
+      social_security_number: yup
+        .string()
+        .required(validation?.error?.social_security_number),
+      address: yup.string().required(validation?.error?.address),
+    })
+    .required();
 
-  const { register, handleSubmit , setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: {errors},
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
+  const [inputVal, setInputVal] = useState('');
+
+  const [dropdownVal, setDropdownVal] = useState('');
+
+  const InputValueCallback = data => {
+    setInputVal(data);
+    
+  };
+
+  const DropdownSelectedValue = data => {
+    setDropdownVal(data);
+    setValue('village_name', data);
+  };
+
+  const dispatch = useDispatch();
+
+  const FormSubmit = formData => {
+
+    dispatch(EditUser(formData))
+      .unwrap()
+      .then(res => res && navigation.naviagte('registersuccess'))
+      .catch(err => err && console.log(err, 'err from register details'));
+  };
 
   return (
     <LoginWrapper no_gap>
@@ -72,22 +106,51 @@ export default function RegisterDetails({navigation, route}) {
         <Box style={styles.cmn_wrp}>
           <Box style={styles.input_wrap}>
             <View style={styles.half_input}>
-              <InputTextComponent placeholder={'First Name'} />
+              <Controller
+                control={control}
+                name="first_name"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputTextComponent
+                    placeholder={'First Name'}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+              <Text style={{color: 'red'}}>{errors?.first_name?.message}</Text>
             </View>
 
             <View style={styles.half_input}>
-              <InputTextComponent placeholder={'Last Name'} />
+              <Controller
+                control={control}
+                name="last_name"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputTextComponent
+                    placeholder={'Last Name'}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+              <Text style={{color: 'red'}}>{errors?.last_name?.message}</Text>
             </View>
           </Box>
         </Box>
-        {/* <Box style={styles.cmn_wrp}>
-          <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Last Name'} />
-          </View>
-        </Box> */}
+
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Phone No'} />
+            <Controller
+              control={control}
+              name="phone"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'Phone No'}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <Text style={{color: 'red'}}>{errors?.phone?.message}</Text>
           </View>
         </Box>
         <View style={styles.form_btm_text}>
@@ -95,26 +158,91 @@ export default function RegisterDetails({navigation, route}) {
           <View style={styles.line_border}></View>
         </View>
         <Box style={styles.cmn_wrp}>
-          <CustomDropdown1 placeholder={'Village Name'} />
+          <Controller
+            control={control}
+            name="village_name"
+            render={({field: {onChange, onBlur, value, name, ref}}) => (
+              <CustomDropdown1
+                placeholder={'Village Name'}
+                selectedValue={DropdownSelectedValue}
+              />
+            )}
+          />
         </Box>
+        {
+          errors?.village_name && (
+            <Text style={{color: 'red', width: '100%', marginBottom: 15}}>
+            {errors?.village_name?.message}
+          </Text>
+          )
+        }
+    
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Family Name'} />
+            <Controller
+              control={control}
+              name="family_name"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'Family Name'}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            {errors?.family_name && (
+              <Text style={{color: 'red'}}>{errors?.family_name?.message}</Text>
+            )}
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'User Name'} />
+            <Controller
+              control={control}
+              name="username"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'User Name'}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <Text style={{color: 'red'}}>{errors?.username?.message}</Text>
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Social Security number'} />
+            <Controller
+              control={control}
+              name="social_security_number"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'Social Security number'}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <Text style={{color: 'red'}}>
+              {errors?.social_security_number?.message}
+            </Text>
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Address'} />
+            <Controller
+              control={control}
+              name="address"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'Address'}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+            />
+            <Text style={{color: 'red'}}>{errors?.address?.message}</Text>
           </View>
           <Image
             style={styles.tinyLogo1}
@@ -158,9 +286,22 @@ export default function RegisterDetails({navigation, route}) {
               source={require('../../../assets/file_img.png')}
               // height={100}
             />
-            <Text varint="body1" style={styles.upload_txt}>
-              Document.jpg
-            </Text>
+            {fileResponse.length > 0 ? (
+              <>
+                {fileResponse.map((file, index) => (
+                  <Text
+                    varint="body1"
+                    style={styles.upload_txt}
+                    key={index.toString()}>
+                    {file?.name}
+                  </Text>
+                ))}
+              </>
+            ) : (
+              <Text varint="body1" style={styles.upload_txt}>
+                Document.jpg
+              </Text>
+            )}
           </Box>
           <Box style={styles.file_box_rgt2}>
             <Box
@@ -175,10 +316,7 @@ export default function RegisterDetails({navigation, route}) {
           </Box>
         </Box>
         <View style={styles.login_submit}>
-          <CustomButton
-            btnText={'Submit'}
-            onPress={() => navigation.navigate('registersuccess')}
-          />
+          <CustomButton btnText={'Submit'} onPress={handleSubmit(FormSubmit)} />
         </View>
       </View>
     </LoginWrapper>
@@ -191,6 +329,7 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+  tinyLogo: {},
   btn: {
     minWidth: 78,
     minHeight: 28,
@@ -203,6 +342,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  file_box_rgt: {},
   cmn_btn_text: {
     fontSize: 13,
     marginBottom: 4,

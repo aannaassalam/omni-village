@@ -10,13 +10,16 @@ import {
 } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { useSelector } from 'react-redux';
 
 export default function Home({navigation, route}) {
+  const {userToken} = useSelector(s => s.auth);
+
+  console.log(userToken, 'userToken');
   return (
     <SafeAreaView>
       <ScrollView>
         <Box style={styles.container}>
-  
           {/* <Box>
             <Text variant="h2">Hello from {route?.name}</Text>
           </Box> */}
@@ -28,14 +31,14 @@ export default function Home({navigation, route}) {
               </Text>
             </Box>
             <AnimatedCircularProgress
-            size={105}
-            width={4}
-            fill={30}
-            tintColor="#000000"
-            onAnimationComplete={() => console.log('onAnimationComplete')}
-            backgroundColor="#ECECEC"
-            style={styles.circular}
-          />
+              size={105}
+              width={4}
+              fill={30}
+              tintColor="#000000"
+              onAnimationComplete={() => console.log('onAnimationComplete')}
+              backgroundColor="#ECECEC"
+              style={styles.circular}
+            />
 
             <TouchableOpacity style={styles.usr_btn}>
               <Text style={styles.usr_btn_txt}>Doe</Text>
@@ -130,8 +133,8 @@ export default function Home({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  circular:{
-    marginTop:-95,
+  circular: {
+    marginTop: -95,
   },
   user: {
     borderColor: '#ECECEC',

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { storage } from "./Storage";
+
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
 let adminUrl = "https://omnivillage.azurewebsites.net/api";
 
@@ -17,10 +18,12 @@ let axiosInstance = axios.create({
 // }
 
 
+
 axiosInstance.interceptors.request.use(
   async function (config) {
     const token =
-    storage.getString("access_token");
+    storage.getString("token");
+    console.log(token,"helper")
     if (token !== null || token !== undefined) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

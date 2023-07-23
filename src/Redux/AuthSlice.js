@@ -8,6 +8,8 @@ import {storage} from '../Helper/Storage';
 const initialState = {
   status: 'idle',
   user: {},
+  userDetails: {},
+  userToken:''
 };
 
 export const SendOTP = createAsyncThunk('sendotp', async phone => {
@@ -51,10 +53,9 @@ export const LoginUser = createAsyncThunk('login', async user => {
   }
 });
 
-
-export const EditUser = createAsyncThunk('login', async (user) => {
+export const EditUser = createAsyncThunk('edituser', async user => {
   try {
-    console.log(user,"edituser")
+    console.log(user, 'edituser');
     let res = await axiosInstance.post(endpoints?.auth?.editUser, user);
     return res;
   } catch (err) {
@@ -112,12 +113,28 @@ export const AuthSlice = createSlice({
       })
       .addCase(LoginUser.fulfilled, (state, {payload}) => {
         if (payload?.status === 200) {
+          state.userToken = payload?.data?.token
           storage.set('token', payload?.data?.token);
           storage.set('refresh_token', payload?.data?.refreshToken);
           state.status = 'idle';
         }
       })
       .addCase(LoginUser.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+
+      // Edit User
+
+      .addCase(EditUser.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(EditUser.fulfilled, (state, {payload}) => {
+        if (payload?.status === 200) {
+          state.userDetails = payload?.data;
+          state.status = 'idle';
+        }
+      })
+      .addCase(EditUser.rejected, (state, {payload}) => {
         state.status = 'idle';
       });
   },

@@ -15,7 +15,7 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 
-export default CustomDropdown1 = ({placeholder}) => {
+export default CustomDropdown1 = ({placeholder,selectedValue}) => {
   const countries = [
     'Egypt',
     'Canada',
@@ -35,7 +35,7 @@ export default CustomDropdown1 = ({placeholder}) => {
     <SelectDropdown
       data={countries}
       onSelect={(selectedItem, index) => {
-        // console.log(selectedItem, index);
+        selectedValue(selectedItem)
       }}
       buttonTextAfterSelection={(selectedItem, index) => {
         // text represented after item is selected
