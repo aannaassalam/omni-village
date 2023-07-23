@@ -15,6 +15,9 @@ import {Box, TextInput, Wrap} from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
   faChevronCircleDown,
   faChevronDown,
@@ -22,6 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
+import { validation } from '../../Validation/Validation';
 
 export default function RegisterDetails({navigation, route}) {
   const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
@@ -38,6 +42,26 @@ export default function RegisterDetails({navigation, route}) {
       console.warn(err);
     }
   }, []);
+
+  const schema = yup
+  .object()
+  .shape({
+    first_name: yup.string().required(validation?.error?.first_name),
+    last_name: yup.string().required(validation?.error?.last_name),
+    village_name: yup.string().required(validation?.error?.village_name),
+    phone: yup.string().required(validation?.error?.phone),
+    family_name: yup.string().required(validation?.error?.family_name),
+    username : yup.string().required(validation?.error?.username),
+    social_security_number: yup.string().required(validation?.error?.social_security_number),
+    address: yup.string().required(validation?.error?.address)
+  })
+  .required();
+
+  const { register, handleSubmit , setValue } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+
   return (
     <LoginWrapper no_gap>
       <View style={styles.form_section}>
@@ -56,14 +80,14 @@ export default function RegisterDetails({navigation, route}) {
             </View>
           </Box>
         </Box>
-        <Box style={styles.cmn_wrp}>
+        {/* <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <InputTextComponent placeholder={'Last Name'} />
           </View>
-        </Box>
+        </Box> */}
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-            <InputTextComponent placeholder={'Last Name'} />
+            <InputTextComponent placeholder={'Phone No'} />
           </View>
         </Box>
         <View style={styles.form_btm_text}>

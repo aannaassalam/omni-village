@@ -51,6 +51,17 @@ export const LoginUser = createAsyncThunk('login', async user => {
   }
 });
 
+
+export const EditUser = createAsyncThunk('login', async (user) => {
+  try {
+    console.log(user,"edituser")
+    let res = await axiosInstance.post(endpoints?.auth?.editUser, user);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+});
+
 export const AuthSlice = createSlice({
   name: 'userAuth',
   initialState,
@@ -116,6 +127,30 @@ export const AuthSlice = createSlice({
         }
       })
       .addCase(LoginUser.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+
+       // Edit User
+
+       .addCase(EditUser.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(EditUser.fulfilled, (state, {payload}) => {
+        if(payload?.status === 200){
+          console.log(typeof payload?.data?.token,"token")
+         try{
+          // storage.set('token', JSON.stringify(payload?.data?.token))
+          // storage.set('refresh_token',JSON.stringify(payload?.data?.refresh_token))
+         }
+         catch(err){
+          throw err
+         }
+          // AsyncStorage.setItem('token', payload?.data?.token)
+          // AsyncStorage.setItem('refresh_token',payload?.data?.refresh_token)
+          state.status = 'idle';
+        }
+      })
+      .addCase(EditUser.rejected, (state, {payload}) => {
         state.status = 'idle';
       })
   },
