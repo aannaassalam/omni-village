@@ -117,11 +117,10 @@ export default function RegisterDetails({navigation, route}) {
             <InputTextComponent placeholder={'Address'} />
           </View>
           <Image
-
-              style={styles.tinyLogo1}
-              source={require('../../../assets/gps.png')}
-              // height={100}
-            />
+            style={styles.tinyLogo1}
+            source={require('../../../assets/gps.png')}
+            // height={100}
+          />
         </Box>
         <Box style={styles.file_box}>
           <Box style={styles.file_box_lft}>
@@ -167,7 +166,10 @@ export default function RegisterDetails({navigation, route}) {
             <Box
               h={30}
               w={4}
-              style={{backgroundColor: 'rgba(38, 50, 56, 0.09)',marginRight:40}}
+              style={{
+                backgroundColor: 'rgba(38, 50, 56, 0.09)',
+                marginRight: 40,
+              }}
             />
             <CustomProgress color={'#268C43'} />
           </Box>
@@ -184,10 +186,10 @@ export default function RegisterDetails({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  tinyLogo1:{
-    position:"absolute",
-    top:10,
-    right:10,
+  tinyLogo1: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   btn: {
     minWidth: 78,
@@ -198,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   file_box_rgt2: {
-    alignItems:'center',
+    alignItems: 'center',
     flexDirection: 'row',
   },
   cmn_btn_text: {
@@ -218,7 +220,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 8,
-    marginBottom:16,
+    marginBottom: 16,
   },
   file_box: {
     flexDirection: 'row',

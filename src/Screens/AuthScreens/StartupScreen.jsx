@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import {CheckToken} from '../../Helper/CheckToken';
 
 export default function StartupScreen({navigation, route}) {
   const data = [
@@ -29,7 +30,6 @@ export default function StartupScreen({navigation, route}) {
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
-
   // console.log(activeIndex);
   return (
     <LoginWrapper>

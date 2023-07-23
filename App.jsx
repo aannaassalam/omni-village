@@ -17,31 +17,34 @@ import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
 import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
 import {Provider} from 'react-redux';
 import {store} from './src/Store/store';
+import {CheckToken} from './src/Helper/CheckToken';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const hasToken = CheckToken();
 
   useEffect(() => {
-    setTimeout(() => {
+    console.log(hasToken);
+    if (hasToken !== undefined) {
+      setIsLoggedIn(hasToken);
       setIsAppReady(true);
-    }, 1000);
-  }, []);
+    }
+  }, [hasToken]);
 
   return (
-
-      <SplashScreen isAppReady={isAppReady}>
+    <SplashScreen isAppReady={isAppReady}>
+      <Provider store={store}>
         <NavigationContainer>
-        <Provider store={store}>
-          <AuthStack />
-          </Provider>
+          <AuthStack isLoggedIn={isLoggedIn} />
           {/* <RegisterSuccessfull /> */}
           {/* <CultivationLand /> */}
           {/* <CultivationThrice/> */}
           {/* <LandForSea/> */}
           {/* <CultivationTwice/> */}
         </NavigationContainer>
-      </SplashScreen>
-  
+      </Provider>
+    </SplashScreen>
   );
 }
 

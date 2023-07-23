@@ -1,8 +1,8 @@
 import {Box, Flex, Text} from '@react-native-material/core';
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import { CheckToken } from '../../Helper/CheckToken';
+import {CheckToken} from '../../Helper/CheckToken';
 
 const styles = StyleSheet.create({
   tickLogo: {
@@ -29,15 +29,14 @@ const styles = StyleSheet.create({
 });
 
 export default function LoginSuccessfull({navigation}) {
-  
   useEffect(() => {
-    if(CheckToken){
-      setTimeout(()=>{
-        navigation.navigate('home')
-      },3000)
+    if (CheckToken) {
+      setTimeout(() => {
+        navigation.navigate('home');
+      }, 3000);
     }
-  }, [CheckToken])
-  
+  }, [CheckToken]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
