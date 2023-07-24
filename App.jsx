@@ -25,7 +25,6 @@ function App() {
   const hasToken = CheckToken();
 
   useEffect(() => {
-    console.log(hasToken);
     if (hasToken !== undefined) {
       setIsLoggedIn(hasToken);
       setIsAppReady(true);

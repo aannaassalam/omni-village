@@ -17,7 +17,6 @@ const Stack = createStackNavigator();
 export default function AuthStack({isLoggedIn}) {
   const [isToken, setIsToken] = useState(false);
   const token = storage.getString('token');
-  console.log(token, 'token');
   useEffect(() => {
     if (token !== undefined && token !== null) {
       setIsToken(true);
@@ -26,7 +25,6 @@ export default function AuthStack({isLoggedIn}) {
     }
   }, [token]);
 
-  console.log(isToken, 'isToken');
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {!isToken && <Stack.Screen name="startup" component={StartupScreen} />}

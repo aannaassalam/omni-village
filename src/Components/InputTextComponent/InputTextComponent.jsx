@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView, StyleSheet, TextInput} from 'react-native';
 
-
 export default function InputTextComponent({
   placeholder,
   className,
@@ -14,7 +13,6 @@ export default function InputTextComponent({
   // useEffect(() => {
   //   InputValueCallback(value)
   // }, [value])
-  console.log(typeof value);
   return (
     <TextInput
       style={className ? styles.inputSmall : styles.input}

@@ -28,17 +28,19 @@ import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 import {validation} from '../../Validation/Validation';
 import {useDispatch} from 'react-redux';
 import {EditUser} from '../../Redux/AuthSlice';
+import axiosInstance from '../../Helper/Helper';
+
+// const FormData = global.FormData;
 
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
-
-  console.log(fileResponse);
   const handleDocumentSelection = useCallback(async () => {
     try {
       const response = await DocumentPicker.pick({
         presentationStyle: 'fullScreen',
-        type: [types.pdf],
+        type: [types.images],
+        allowMultiSelection: false,
       });
       setFileResponse(response);
     } catch (err) {
@@ -78,7 +80,6 @@ export default function RegisterDetails({navigation, route}) {
 
   const InputValueCallback = data => {
     setInputVal(data);
-    
   };
 
   const DropdownSelectedValue = data => {
@@ -88,12 +89,12 @@ export default function RegisterDetails({navigation, route}) {
 
   const dispatch = useDispatch();
 
-  const FormSubmit = formData => {
-
-    dispatch(EditUser(formData))
+  const FormSubmit = data => {
+    // console.log(formData.getParts());
+    dispatch(EditUser({data, file: fileResponse[0]}))
       .unwrap()
-      .then(res => res && navigation.naviagte('registersuccess'))
-      .catch(err => err && console.log(err, 'err from register details'));
+      .then(res => navigation.navigate('registersuccess'))
+      .catch(err => console.log(err, 'err from register details'));
   };
 
   return (
@@ -169,14 +170,12 @@ export default function RegisterDetails({navigation, route}) {
             )}
           />
         </Box>
-        {
-          errors?.village_name && (
-            <Text style={{color: 'red', width: '100%', marginBottom: 15}}>
+        {errors?.village_name && (
+          <Text style={{color: 'red', width: '100%', marginBottom: 15}}>
             {errors?.village_name?.message}
           </Text>
-          )
-        }
-    
+        )}
+
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller

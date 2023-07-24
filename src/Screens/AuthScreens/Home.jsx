@@ -10,12 +10,11 @@ import {
 } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 export default function Home({navigation, route}) {
   const {userToken} = useSelector(s => s.auth);
 
-  console.log(userToken, 'userToken');
   return (
     <SafeAreaView>
       <ScrollView>
@@ -35,7 +34,7 @@ export default function Home({navigation, route}) {
               width={4}
               fill={30}
               tintColor="#000000"
-              onAnimationComplete={() => console.log('onAnimationComplete')}
+              // onAnimationComplete={() => console.log('onAnimationComplete')}
               backgroundColor="#ECECEC"
               style={styles.circular}
             />

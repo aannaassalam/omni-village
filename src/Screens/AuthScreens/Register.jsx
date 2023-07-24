@@ -13,6 +13,7 @@ import InputTextComponent from '../../Components/InputTextComponent/InputTextCom
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {useDispatch} from 'react-redux';
 import {SendOTP} from '../../Redux/AuthSlice';
+import axiosInstance from '../../Helper/Helper';
 
 export default function Register({navigation, route}) {
   const dispatch = useDispatch();
@@ -22,10 +23,11 @@ export default function Register({navigation, route}) {
     setInputVal(data);
   };
 
-  const FormSubmit = () => {
+  const FormSubmit = async () => {
     dispatch(SendOTP(inputVal))
       .unwrap()
-      .then(() => navigation.navigate('registerotp'));
+      .then(() => navigation.navigate('registerotp'))
+      .catch(err => console.log(err));
   };
 
   return (

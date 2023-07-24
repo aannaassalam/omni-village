@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "devtools": "react-devtools"
+    "devtools": "react-devtools",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
@@ -22,6 +23,8 @@
     "@react-navigation/stack": "^6.3.17",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
+    "form-data": "^4.0.0",
+    "patch-package": "^7.0.2",
     "react": "18.2.0",
     "react-hook-form": "^7.45.2",
     "react-native": "0.72.2",
@@ -36,7 +39,7 @@
     "react-native-select-dropdown": "^3.3.4",
     "react-native-svg": "^13.10.0",
     "react-native-svg-uri": "^1.2.3",
-    "react-native-vector-icons": "^9.2.0",
+    "react-native-vector-icons": "^10.0.0",
     "react-redux": "^8.1.1",
     "yup": "^1.2.0"
   },

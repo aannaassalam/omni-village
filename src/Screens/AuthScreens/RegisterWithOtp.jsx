@@ -16,7 +16,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RegisterUser} from '../../Redux/AuthSlice';
 
 export default function RegisterWithOtp({navigation}) {
-  const {user} = useSelector(state => state.auth);
+  const {user, otp} = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
 
@@ -97,6 +97,7 @@ export default function RegisterWithOtp({navigation}) {
           </Flex>
           <Text style={styles.normal_text}>00:00</Text>
         </Box>
+        <Text>{otp}</Text>
       </View>
     </LoginWrapper>
   );

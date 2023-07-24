@@ -44,11 +44,9 @@ export default function LoginWithOtp({navigation}) {
   const FormSubmit = () => {
     const OTP = otp1 + otp2 + otp3 + otp4;
     if (OTP.length === 4) {
-      console.log({...user, otp: OTP}, 'data');
       dispatch(LoginUser({...user, otp: OTP}))
         .unwrap()
         .then(() => {
-          console.log('11');
           navigation.navigate('loginsuccess');
         })
         .catch(err => console.log(err, 'err'));
