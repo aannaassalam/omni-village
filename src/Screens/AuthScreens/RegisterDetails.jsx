@@ -26,7 +26,7 @@ import {
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 import {validation} from '../../Validation/Validation';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {EditUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
 
@@ -47,6 +47,8 @@ export default function RegisterDetails({navigation, route}) {
       console.warn(err);
     }
   }, []);
+
+  const {user} = useSelector(state => state.auth);
 
   const schema = yup
     .object()
@@ -72,6 +74,9 @@ export default function RegisterDetails({navigation, route}) {
     formState: {errors},
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      phone: user.phone,
+    },
   });
 
   const [inputVal, setInputVal] = useState('');
@@ -148,6 +153,7 @@ export default function RegisterDetails({navigation, route}) {
                   placeholder={'Phone No'}
                   onChangeText={onChange}
                   value={value}
+                  editable={false}
                 />
               )}
             />

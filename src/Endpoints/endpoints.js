@@ -4,5 +4,6 @@ export const endpoints = {
     register: '/user/register',
     login: '/user/login',
     editUser: '/user/edit_user',
+    getUser: '/user/current_user',
   },
 };

@@ -20,6 +20,7 @@ export default function InputTextComponent({
       value={value?.toString()}
       placeholder={placeholder}
       keyboardType={others.keyboardType || 'default'}
+      {...others}
     />
   );
 }

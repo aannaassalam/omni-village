@@ -15,34 +15,38 @@ import CultivationThrice from './src/Screens/CultivationScreens/CultivationThric
 import LandForSea from './src/Screens/CultivationScreens/LandForSea';
 import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
 import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
-import {Provider} from 'react-redux';
+import {Provider, useDispatch} from 'react-redux';
 import {store} from './src/Store/store';
 import {CheckToken} from './src/Helper/CheckToken';
+import {getUser} from './src/Redux/AuthSlice';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const hasToken = CheckToken();
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (hasToken !== undefined) {
       setIsLoggedIn(hasToken);
-      setIsAppReady(true);
+      dispatch(getUser())
+        .unwrap()
+        .then(() => setIsAppReady(true))
+        .catch(err => console.log(err));
     }
   }, [hasToken]);
 
   return (
     <SplashScreen isAppReady={isAppReady}>
-      <Provider store={store}>
-        <NavigationContainer>
-          <AuthStack isLoggedIn={isLoggedIn} />
-          {/* <RegisterSuccessfull /> */}
-          {/* <CultivationLand /> */}
-          {/* <CultivationThrice/> */}
-          {/* <LandForSea/> */}
-          {/* <CultivationTwice/> */}
-        </NavigationContainer>
-      </Provider>
+      <NavigationContainer>
+        <AuthStack isLoggedIn={isLoggedIn} />
+        {/* <RegisterSuccessfull /> */}
+        {/* <CultivationLand /> */}
+        {/* <CultivationThrice/> */}
+        {/* <LandForSea/> */}
+        {/* <CultivationTwice/> */}
+      </NavigationContainer>
     </SplashScreen>
   );
 }

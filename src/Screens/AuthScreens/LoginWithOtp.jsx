@@ -11,40 +11,33 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Flex} from '@react-native-material/core';
+import {Box, Flex, Pressable} from '@react-native-material/core';
 import {useDispatch, useSelector} from 'react-redux';
-import {LoginUser, RegisterUser} from '../../Redux/AuthSlice';
+import {LoginUser, RegisterUser, SendOTP} from '../../Redux/AuthSlice';
+import OtpInput from '../../Components/OtpInputs';
 
 export default function LoginWithOtp({navigation}) {
-  const {user, otpData} = useSelector(state => state.auth);
+  const {user} = useSelector(state => state.auth);
 
-  // console.log(user, 'user');
-  // console.log(otpData, 'otpData');
+  const [timer, setTimer] = useState(30);
+  const [otp, setOtp] = useState('');
 
   const dispatch = useDispatch();
 
-  const [otp1, setOtp1] = useState('');
-  const [otp2, setOtp2] = useState('');
-  const [otp3, setOtp3] = useState('');
-  const [otp4, setOtp4] = useState('');
+  useEffect(() => {
+    const interval = setInterval(
+      () => setTimer(prev => (prev > 0 ? prev - 1 : 0)),
+      1000,
+    );
 
-  const InputValueCallback1 = data => {
-    setOtp1(data);
-  };
-  const InputValueCallback2 = data => {
-    setOtp2(data);
-  };
-  const InputValueCallback3 = data => {
-    setOtp3(data);
-  };
-  const InputValueCallback4 = data => {
-    setOtp4(data);
-  };
+    return () => {
+      clearInterval(interval);
+    };
+  });
 
   const FormSubmit = () => {
-    const OTP = otp1 + otp2 + otp3 + otp4;
-    if (OTP.length === 4) {
-      dispatch(LoginUser({...user, otp: OTP}))
+    if (otp.length === 4) {
+      dispatch(LoginUser({...user, otp}))
         .unwrap()
         .then(() => {
           navigation.navigate('loginsuccess');
@@ -61,32 +54,7 @@ export default function LoginWithOtp({navigation}) {
           <Text>Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}</Text>
         </View>
         <View style={styles.login_input}>
-          <Flex style={styles.login_input_flex}>
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback1}
-              value={otp1}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback2}
-              value={otp2}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback3}
-              value={otp3}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback4}
-              value={otp4}
-            />
-          </Flex>
+          <OtpInput setParentOtp={setOtp} />
         </View>
         <View style={styles.login_submit}>
           <CustomButton btnText={'Confirm'} onPress={FormSubmit} />
@@ -94,11 +62,14 @@ export default function LoginWithOtp({navigation}) {
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
             <Text style={styles.normal_text}>Haven’t received any?</Text>
-            <Text
-              style={styles.green}
-              onPress={() => Linking.openURL('http://google.com')}>
-              Resend
-            </Text>
+            <Pressable
+              onPress={() =>
+                timer === 0 ? dispatch(SendOTP(user.phone)) : null
+              }>
+              <Text style={[timer === 0 ? styles.green : styles.low_green]}>
+                Resend
+              </Text>
+            </Pressable>
           </Flex>
           <Text style={styles.normal_text}>00:00</Text>
         </Box>
@@ -181,6 +152,11 @@ const styles = StyleSheet.create({
   },
   green: {
     color: `#268C43`,
+    fontSize: 13,
+    marginLeft: 6,
+  },
+  low_green: {
+    color: `#268c4387`,
     fontSize: 13,
     marginLeft: 6,
   },

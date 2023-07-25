@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,44 +7,43 @@ import {
   View,
   Image,
   Linking,
+  Pressable,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {Box, Flex} from '@react-native-material/core';
 import {useDispatch, useSelector} from 'react-redux';
-import {RegisterUser} from '../../Redux/AuthSlice';
+import {RegisterUser, SendOTP} from '../../Redux/AuthSlice';
+import OtpInput from '../../Components/OtpInputs';
 
 export default function RegisterWithOtp({navigation}) {
-  const {user, otp} = useSelector(state => state.auth);
+  const {user} = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
 
-  const [otp1, setOtp1] = useState('');
-  const [otp2, setOtp2] = useState('');
-  const [otp3, setOtp3] = useState('');
-  const [otp4, setOtp4] = useState('');
+  const [timer, setTimer] = useState(30);
+  // const [otp, setOtp] = useState('');
+  const otp = useRef('');
 
-  const InputValueCallback1 = data => {
-    setOtp1(data);
-  };
-  const InputValueCallback2 = data => {
-    setOtp2(data);
-  };
-  const InputValueCallback3 = data => {
-    setOtp3(data);
-  };
-  const InputValueCallback4 = data => {
-    setOtp4(data);
-  };
+  useEffect(() => {
+    const interval = setInterval(
+      () => setTimer(prev => (prev > 0 ? prev - 1 : 0)),
+      1000,
+    );
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
 
   const FormSubmit = () => {
-    const OTP = otp1 + otp2 + otp3 + otp4;
-    if (OTP.length === 4) {
-      dispatch(RegisterUser({...user, otp: OTP}))
+    console.log(otp.current, 'otp');
+    if (otp.current.length === 4) {
+      dispatch(RegisterUser({...user, otp: otp.current}))
         .unwrap()
         .then(() => navigation.navigate('registerdetails'))
-        .catch(err => err && console.log(err, 'err'));
+        .catch(err => console.log(err, 'err'));
     }
   };
 
@@ -56,32 +55,7 @@ export default function RegisterWithOtp({navigation}) {
           <Text>Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}</Text>
         </View>
         <View style={styles.login_input}>
-          <Flex style={styles.login_input_flex}>
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback1}
-              value={otp1}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback2}
-              value={otp2}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback3}
-              value={otp3}
-            />
-            <InputTextComponent
-              placeholder={'_'}
-              className
-              onChangeText={InputValueCallback4}
-              value={otp4}
-            />
-          </Flex>
+          <OtpInput setParentOtp={ot => (otp.current = ot)} />
         </View>
         <View style={styles.login_submit}>
           <CustomButton btnText={'Confirm'} onPress={FormSubmit} />
@@ -89,15 +63,20 @@ export default function RegisterWithOtp({navigation}) {
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
             <Text style={styles.normal_text}>Haven’t received any?</Text>
-            <Text
-              style={styles.green}
-              onPress={() => Linking.openURL('http://google.com')}>
-              Resend
-            </Text>
+            <Pressable
+              onPress={() =>
+                timer === 0 ? dispatch(SendOTP(user.phone)) : null
+              }>
+              <Text style={[timer === 0 ? styles.green : styles.low_green]}>
+                Resend
+              </Text>
+            </Pressable>
           </Flex>
-          <Text style={styles.normal_text}>00:00</Text>
+          <Text style={styles.normal_text}>
+            00:{timer < 10 ? '0' + timer : timer}
+          </Text>
         </Box>
-        <Text>{otp}</Text>
+        <Text>{otp.current}</Text>
       </View>
     </LoginWrapper>
   );
@@ -159,11 +138,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 5,
   },
-  login_input_flex: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   resend_sec: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -177,6 +151,11 @@ const styles = StyleSheet.create({
   },
   green: {
     color: `#268C43`,
+    fontSize: 13,
+    marginLeft: 6,
+  },
+  low_green: {
+    color: `#268c4387`,
     fontSize: 13,
     marginLeft: 6,
   },

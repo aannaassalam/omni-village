@@ -14,6 +14,16 @@ const initialState = {
   otp: '',
 };
 
+export const getUser = createAsyncThunk('getuser', async () => {
+  try {
+    const res = await axiosInstance.get(endpoints.auth.getUser);
+    console.log(res);
+    return {status: res.status, data: res.data};
+  } catch (err) {
+    throw err;
+  }
+});
+
 export const SendOTP = createAsyncThunk('sendotp', async phone => {
   try {
     // console.log(user,"userincoming")
@@ -88,6 +98,21 @@ export const AuthSlice = createSlice({
   extraReducers: builder => {
     builder
 
+      //Get User
+      .addCase(getUser.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(getUser.fulfilled, (state, {payload}) => {
+        console.log(payload);
+        if (payload.status === 200) {
+          state.user = payload.data;
+          state.status = 'idle';
+        }
+      })
+      .addCase(getUser.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+
       // Register User
       .addCase(RegisterUser.pending, (state, {payload}) => {
         state.status = 'pending';
@@ -114,8 +139,8 @@ export const AuthSlice = createSlice({
             ...state.user,
             phone: payload?.phone,
             country_code: payload?.country_code,
-            otp: payload.data.split(' - ')[1],
           };
+          state.otp = payload.data.split(' - ')[1];
           state.status = 'idle';
         }
         // console.log(state.status, 'fullfilled');

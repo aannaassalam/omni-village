@@ -11,12 +11,16 @@ import RegisterWithOtp from '../Screens/AuthScreens/RegisterWithOtp';
 import Home from '../Screens/AuthScreens/Home';
 import {CheckToken} from '../Helper/CheckToken';
 import {storage} from '../Helper/Storage';
+import {useSelector} from 'react-redux';
 
 const Stack = createStackNavigator();
 
 export default function AuthStack({isLoggedIn}) {
   const [isToken, setIsToken] = useState(false);
   const token = storage.getString('token');
+
+  const {user} = useSelector(state => state.auth);
+
   useEffect(() => {
     if (token !== undefined && token !== null) {
       setIsToken(true);
@@ -25,14 +29,24 @@ export default function AuthStack({isLoggedIn}) {
     }
   }, [token]);
 
+  console.log(user);
+
+  const renderScreen = () => {
+    if (user.first_name === '-') return 'registerdetails';
+    else if (!isToken) return 'startup';
+    else return 'home';
+  };
+
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      {!isToken && <Stack.Screen name="startup" component={StartupScreen} />}
-      <Stack.Screen name="registerdetails" component={RegisterDetails} />
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName={renderScreen()}>
+      <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
-      <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="register" component={Register} />
+      <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
+      <Stack.Screen name="registerdetails" component={RegisterDetails} />
 
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
