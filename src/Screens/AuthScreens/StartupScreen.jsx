@@ -10,6 +10,7 @@ import {
   FlatList,
   ScrollView,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import {CheckToken} from '../../Helper/CheckToken';
 
@@ -30,7 +31,10 @@ export default function StartupScreen({navigation, route}) {
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
-  // console.log(activeIndex);
+
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+
   return (
     <LoginWrapper>
       <View>
@@ -91,97 +95,98 @@ export default function StartupScreen({navigation, route}) {
   );
 }
 
-const styles = StyleSheet.create({
-  contentImageContainer: {
-    width: Dimensions.get('window').width - 40,
-    alignItems: 'center',
-  },
-  contentImage: {
-    width: '80%',
-    height: 300,
-    resizeMode: 'contain',
-    opacity: 0.3,
-  },
-  contentText: {
-    fontFamily: 'ubuntu_regualar',
-    color: '#268C43',
-    fontSize: 14,
-    width: '65%',
-    textAlign: 'center',
-    marginTop: 15,
-  },
-  dotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    zIndex: 8,
-    elevation: 8,
-    marginTop: 20,
-    alignSelf: 'center',
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    marginHorizontal: 3,
-    marginVertical: 2,
-    backgroundColor: '#E9EBEA',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E9EBEA',
-    position: 'relative',
-  },
-  activeDot: {
-    width: 20,
-    height: 10,
-    marginHorizontal: 3,
-    marginVertical: 2,
-    backgroundColor: '#268C43',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#268C43',
-    position: 'relative',
-  },
-  bottomContainer: {
-    marginTop: 25,
-    flex: 1,
-  },
-  title: {
-    fontFamily: 'ubuntu_bold',
-    fontSize: 22,
-    color: '#36393B',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  subtitle: {
-    fontFamily: 'ubuntu_regular',
-    fontSize: 14,
-    color: '#36393B',
-    textAlign: 'center',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#EBECED',
-    borderRadius: 8,
-    elevation: 2,
-    minWidth: 105,
-    minHeight: 40,
-  },
-  buttonDarkText: {
-    fontFamily: 'ubuntu_bold',
-    color: '#263238',
-    fontSize: 18,
-    textAlign: 'center',
-  },
-  buttonLightText: {
-    fontFamily: 'ubuntu_bold',
-    color: '#fff',
-    fontSize: 17,
-    textAlign: 'center',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    contentImageContainer: {
+      width: Dimensions.get('window').width - 40,
+      alignItems: 'center',
+    },
+    contentImage: {
+      width: '80%',
+      height: 270,
+      resizeMode: 'contain',
+      opacity: 0.3,
+    },
+    contentText: {
+      fontFamily: 'ubuntu_regualar',
+      color: '#268C43',
+      fontSize: 14 / fontScale,
+      width: '65%',
+      textAlign: 'center',
+      marginTop: 15,
+    },
+    dotContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      zIndex: 8,
+      elevation: 8,
+      marginTop: 20,
+      alignSelf: 'center',
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      marginHorizontal: 3,
+      marginVertical: 2,
+      backgroundColor: '#E9EBEA',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#E9EBEA',
+      position: 'relative',
+    },
+    activeDot: {
+      width: 20,
+      height: 10,
+      marginHorizontal: 3,
+      marginVertical: 2,
+      backgroundColor: '#268C43',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#268C43',
+      position: 'relative',
+    },
+    bottomContainer: {
+      marginTop: 25,
+      flex: 1,
+    },
+    title: {
+      fontFamily: 'ubuntu_bold',
+      fontSize: 22 / fontScale,
+      color: '#36393B',
+      textAlign: 'center',
+      marginBottom: 15,
+    },
+    subtitle: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 13 / fontScale,
+      color: '#36393B',
+      textAlign: 'center',
+    },
+    buttonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 'auto',
+    },
+    button: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      backgroundColor: '#EBECED',
+      borderRadius: 8,
+      elevation: 2,
+      minWidth: 105,
+      minHeight: 40,
+    },
+    buttonDarkText: {
+      fontFamily: 'ubuntu_bold',
+      color: '#263238',
+      fontSize: 18 / fontScale,
+      textAlign: 'center',
+    },
+    buttonLightText: {
+      fontFamily: 'ubuntu_bold',
+      color: '#fff',
+      fontSize: 17 / fontScale,
+      textAlign: 'center',
+    },
+  });

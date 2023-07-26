@@ -32,7 +32,7 @@ export default function AuthStack({isLoggedIn}) {
   console.log(user);
 
   const renderScreen = () => {
-    if (user.first_name === '-') return 'registerdetails';
+    if (user?.first_name === '-') return 'registerdetails';
     else if (!isToken) return 'startup';
     else return 'home';
   };

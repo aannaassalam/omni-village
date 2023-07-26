@@ -9,32 +9,32 @@ export default function OtpInput({setParentOtp}) {
 
   useEffect(() => {
     inputRefs[0].focus();
-  });
+  }, []);
 
   const focusPrevious = (key, index) => {
-    console.log(key);
+    // console.log('back');
     if (key === 'Backspace' && index !== 0) {
       inputRefs[index - 1].focus();
     }
   };
 
   const focusNext = (index, value) => {
-    // console.log(inputRefs);
-    if (index < inputRefs.length - 1 && value) {
+    // console.log(inputRefs);\
+    if (index < inputRefs.length - 1 && value.trim().length > 0) {
       inputRefs[index + 1].focus();
     }
     // console.log(index, inputRefs.length - 1, 'sd');
     if (index === inputRefs.length - 1) {
       // console.log('two');
-      const local_otp = otp;
-      local_otp[index] = value;
-      setOtp(local_otp);
-      setParentOtp(otp.join(''));
-      // inputRefs[index].blur();
+      // const local_otp = otp;
+      // local_otp[index] = value;
+      // setOtp(local_otp);
+      inputRefs[index].blur();
     }
     const local_otp = otp;
     local_otp[index] = value;
     setOtp(local_otp);
+    setParentOtp(otp.join(''));
     // this.props.getOtp(otp.join(''));
   };
 

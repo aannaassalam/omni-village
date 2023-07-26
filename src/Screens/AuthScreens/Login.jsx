@@ -7,6 +7,7 @@ import {
   View,
   Image,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
@@ -18,6 +19,9 @@ import {TextInput} from 'react-native-gesture-handler';
 export default function Login({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
+
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
 
   const FormSubmit = () => {
     dispatch(SendOTP(inputVal)).then(() => navigation.navigate('loginotp'));
@@ -70,72 +74,83 @@ export default function Login({navigation, route}) {
   );
 }
 
-const styles = StyleSheet.create({
-  form_section: {
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  LoginHead: {
-    color: '#36393B',
-    fontSize: 22,
-    marginBottom: 10,
-    textAlign: 'center',
-    fontFamily: 'ubuntu_medium',
-  },
-  subtitle: {
-    fontFamily: 'ubuntu',
-    color: '#36393B',
-  },
-  login_input: {
-    width: '100%',
-  },
-  form_head: {
-    marginBottom: 35,
-  },
-  login_submit: {
-    marginTop: 20,
-    width: '100%',
-  },
-  socialbuttons: {},
-  form_btm: {
-    marginTop: 40,
-    marginBottom: 20,
-  },
-  login_text: {
-    textAlign: 'center',
-    // position: 'relative',
-    zIndex: 5,
-    height: 30,
-    backgroundColor: '#fff',
-    width: 100,
-  },
-  form_btm_text: {
-    width: '100%',
-    marginBottom: 40,
-    alignItems: 'center',
-  },
-  social_btn: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  line_border: {
-    flexDirection: 'row',
-    height: 2,
-    backgroundColor: '#EBEBEB',
-    marginTop: -20,
-    width: '100%',
-  },
-  register_text: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 'auto',
-    alignSelf: 'center',
-  },
-  register_text_frst: {},
-  register_text_scnd: {
-    color: '#268C43',
-    fontSize: 13,
-    marginLeft: 5,
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    form_section: {
+      alignItems: 'center',
+      marginTop: 30,
+    },
+    LoginHead: {
+      color: '#36393B',
+      fontSize: 22 / fontScale,
+      marginBottom: 10,
+      textAlign: 'center',
+      fontFamily: 'ubuntu_medium',
+    },
+    subtitle: {
+      fontFamily: 'ubuntu',
+      color: '#36393B',
+      fontSize: 14 / fontScale,
+    },
+    login_input: {
+      width: '100%',
+    },
+    form_head: {
+      marginBottom: 35,
+    },
+    login_submit: {
+      marginTop: 20,
+      width: '100%',
+    },
+    socialbuttons: {},
+    form_btm: {
+      marginTop: 40,
+      marginBottom: 20,
+    },
+    login_text: {
+      textAlign: 'center',
+      // position: 'relative',
+      zIndex: 5,
+      height: 28,
+      backgroundColor: '#fff',
+      width: 100,
+      fontSize: 12 / fontScale,
+      color: '#5C6066',
+      fontFamily: 'ubuntu_medium',
+    },
+    form_btm_text: {
+      width: '100%',
+      marginBottom: 40,
+      alignItems: 'center',
+    },
+    social_btn: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    line_border: {
+      flexDirection: 'row',
+      height: 2,
+      backgroundColor: '#EBEBEB',
+      marginTop: -20,
+      width: '100%',
+    },
+    register_text: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 'auto',
+      // alignSelf: 'center',
+      alignItems: 'center',
+    },
+    register_text_frst: {
+      fontSize: 13 / fontScale,
+      color: '#36393B',
+      fontFamily: 'ubuntu_regular',
+    },
+    register_text_scnd: {
+      color: '#268C43',
+      fontSize: 13 / fontScale,
+      marginLeft: 5,
+      fontFamily: 'ubuntu_medium',
+    },
+  });

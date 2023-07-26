@@ -5,26 +5,32 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 
-const styles = StyleSheet.create({
-  cmn_btn: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    cmn_btn: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
 
-    borderRadius: 10,
-    backgroundColor: '#268C43',
-    height: 50,
-    paddingHorizontal: 20,
-  },
-  cmn_btn_text: {
-    fontSize: 14,
-    color: '#FFF',
-  },
-});
+      borderRadius: 10,
+      backgroundColor: '#268C43',
+      height: 50,
+      paddingHorizontal: 20,
+    },
+    cmn_btn_text: {
+      fontFamily: 'ubuntu_medium',
+      fontSize: 14 / fontScale,
+      color: '#FFF',
+    },
+  });
 
-export default function CustomButton({btnText,onPress}) {
+export default function CustomButton({btnText, onPress}) {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+
   return (
     <TouchableOpacity style={styles.cmn_btn} onPress={onPress}>
       <Text style={styles.cmn_btn_text}>{btnText}</Text>
