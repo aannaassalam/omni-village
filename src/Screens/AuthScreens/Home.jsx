@@ -80,48 +80,55 @@ export default function Home({navigation, route}) {
               </Box>
             </Box>
           </Box>
-          <Box style={styles.home_box}>
-            <Box style={styles.home_box_lft_upr}>
-              <Box style={styles.hme_box_lft}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ProductionStack', {screen: 'totalLand'})
+            }>
+            <Box style={styles.home_box}>
+              <Box style={styles.home_box_lft_upr}>
+                <Box style={styles.hme_box_lft}>
+                  <Image
+                    style={styles.tinyLogo1}
+                    source={require('../../../assets/e2.png')}
+                    // height={100}
+                  />
+                </Box>
+                <Text variant="h3" style={styles.hme_box_txt}>
+                  Production
+                </Text>
+              </Box>
+              <Box style={styles.hme_box_rgt}>
                 <Image
-                  style={styles.tinyLogo1}
-                  source={require('../../../assets/e2.png')}
+                  style={styles.tinyIcon}
+                  source={require('../../../assets/e4.png')}
                   // height={100}
                 />
               </Box>
-              <Text variant="h3" style={styles.hme_box_txt}>
-                Production
-              </Text>
             </Box>
-            <Box style={styles.hme_box_rgt}>
-              <Image
-                style={styles.tinyIcon}
-                source={require('../../../assets/e4.png')}
-                // height={100}
-              />
-            </Box>
-          </Box>
-          <Box style={styles.home_box}>
-            <Box style={styles.home_box_lft_upr}>
-              <Box style={styles.hme_box_lft2}>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Box style={styles.home_box}>
+              <Box style={styles.home_box_lft_upr}>
+                <Box style={styles.hme_box_lft2}>
+                  <Image
+                    style={styles.tinyLogo1}
+                    source={require('../../../assets/e3.png')}
+                    // height={100}
+                  />
+                </Box>
+                <Text variant="h3" style={styles.hme_box_txt2}>
+                  Consumption
+                </Text>
+              </Box>
+              <Box style={styles.hme_box_rgt}>
                 <Image
-                  style={styles.tinyLogo1}
-                  source={require('../../../assets/e3.png')}
+                  style={styles.tinyIcon}
+                  source={require('../../../assets/e5.png')}
                   // height={100}
                 />
               </Box>
-              <Text variant="h3" style={styles.hme_box_txt2}>
-                Production
-              </Text>
             </Box>
-            <Box style={styles.hme_box_rgt}>
-              <Image
-                style={styles.tinyIcon}
-                source={require('../../../assets/e5.png')}
-                // height={100}
-              />
-            </Box>
-          </Box>
+          </TouchableOpacity>
 
           <View style={StyleSheet.login_submit}>
             <CustomButton btnText={'Submit'} />

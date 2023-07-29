@@ -12,6 +12,7 @@ import Home from '../Screens/AuthScreens/Home';
 import {CheckToken} from '../Helper/CheckToken';
 import {storage} from '../Helper/Storage';
 import {useSelector} from 'react-redux';
+import Productionstack from './ProductionStack';
 
 const Stack = createStackNavigator();
 
@@ -30,11 +31,14 @@ export default function AuthStack({isLoggedIn}) {
   }, [token]);
 
   const renderScreen = () => {
-    if (user?.first_name === '-') return 'registerdetails';
-    else if (token === undefined || token === null) {
+    if (user?.first_name === '-') {
+      return 'registerdetails';
+    } else if (token === undefined || token === null) {
       console.log('isToken', isToken);
       return 'startup';
-    } else return 'home';
+    } else {
+      return 'home';
+    }
   };
 
   return (
@@ -51,6 +55,7 @@ export default function AuthStack({isLoggedIn}) {
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
+      <Stack.Screen name="ProductionStack" component={Productionstack} />
     </Stack.Navigator>
   );
 }
