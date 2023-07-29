@@ -1,11 +1,15 @@
 import {Flex} from '@react-native-material/core';
 import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, TextInput} from 'react-native';
+import {StyleSheet, TextInput, useWindowDimensions} from 'react-native';
+import {Scale} from '../../Helper/utils';
 
 export default function OtpInput({setParentOtp}) {
   //   const inputRefs = useRef([]);
   const inputRefs = [];
   const [otp, setOtp] = useState([]);
+
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
 
   useEffect(() => {
     inputRefs[0].focus();
@@ -56,17 +60,19 @@ export default function OtpInput({setParentOtp}) {
   return <Flex style={styles.login_input_flex}>{renderedInputs}</Flex>;
 }
 
-const styles = StyleSheet.create({
-  login_input_flex: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-  },
-  inputRadius: {
-    width: '15%',
-    textAlign: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    login_input_flex: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-around',
+    },
+    inputRadius: {
+      width: '15%',
+      textAlign: 'center',
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#eee',
+      fontSize: 14 / fontScale,
+    },
+  });

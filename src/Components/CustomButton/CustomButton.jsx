@@ -7,6 +7,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import {Scale} from '../../Helper/utils';
 
 const makeStyles = fontScale =>
   StyleSheet.create({

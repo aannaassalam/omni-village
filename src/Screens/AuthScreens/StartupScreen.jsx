@@ -37,60 +37,62 @@ export default function StartupScreen({navigation, route}) {
 
   return (
     <LoginWrapper>
-      <View>
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          pagingEnabled
-          alwaysBounceVertical
-          onScroll={e => {
-            let slide = Math.round(
-              e.nativeEvent.contentOffset.x / Dimensions.get('window').width,
-            );
-            if (slide !== activeIndex) {
-              setActiveIndex(slide); //here we will set our active index num
-            }
-          }}>
-          {data.map((item, idx) => (
-            <View key={idx} style={styles.contentImageContainer}>
-              <Image source={item.img} alt="" style={styles.contentImage} />
-              <Text style={styles.contentText}>{item.text}</Text>
-            </View>
-          ))}
-        </ScrollView>
-        <View style={styles.dotContainer}>
-          {data.map((item, index) => {
-            if (data.length !== 1) {
-              return (
-                <View
-                  key={index}
-                  style={[
-                    index === activeIndex ? styles.activeDot : styles.dot,
-                  ]}
-                />
+      <>
+        <View>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            pagingEnabled
+            alwaysBounceVertical
+            onScroll={e => {
+              let slide = Math.round(
+                e.nativeEvent.contentOffset.x / Dimensions.get('window').width,
               );
-            }
-          })}
+              if (slide !== activeIndex) {
+                setActiveIndex(slide); //here we will set our active index num
+              }
+            }}>
+            {data.map((item, idx) => (
+              <View key={idx} style={styles.contentImageContainer}>
+                <Image source={item.img} alt="" style={styles.contentImage} />
+                <Text style={styles.contentText}>{item.text}</Text>
+              </View>
+            ))}
+          </ScrollView>
+          <View style={styles.dotContainer}>
+            {data.map((item, index) => {
+              if (data.length !== 1) {
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      index === activeIndex ? styles.activeDot : styles.dot,
+                    ]}
+                  />
+                );
+              }
+            })}
+          </View>
         </View>
-      </View>
-      <View style={styles.bottomContainer}>
-        <Text style={styles.title}>Welcome to Omni-village</Text>
-        <Text style={styles.subtitle}>
-          All your Agricultural monitoring needs one tap away
-        </Text>
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('register')}>
-            <Text style={styles.buttonDarkText}>Register</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, {backgroundColor: '#268C43'}]}
-            onPress={() => navigation.navigate('login')}>
-            <Text style={styles.buttonLightText}>Login</Text>
-          </TouchableOpacity>
+        <View style={styles.bottomContainer}>
+          <Text style={styles.title}>Welcome to Omni-village</Text>
+          <Text style={styles.subtitle}>
+            All your Agricultural monitoring needs one tap away
+          </Text>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('register')}>
+              <Text style={styles.buttonDarkText}>Register</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, {backgroundColor: '#268C43'}]}
+              onPress={() => navigation.navigate('login')}>
+              <Text style={styles.buttonLightText}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </>
     </LoginWrapper>
   );
 }

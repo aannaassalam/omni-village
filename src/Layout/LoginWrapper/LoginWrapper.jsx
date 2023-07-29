@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   tinyLogo: {
-    width: '50%',
+    width: '55%',
     height: 80,
     resizeMode: 'contain',
   },

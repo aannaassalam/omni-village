@@ -65,7 +65,7 @@ export default function LoginWithOtp({navigation}) {
       <View style={styles.form_section}>
         <View style={styles.form_head}>
           <Text style={styles.LoginHead}>Login</Text>
-          <Text>
+          <Text style={styles.subtitle}>
             Enter OTP recieved in {`XXX${user?.phone?.toString()?.slice(-2)}`}
           </Text>
         </View>
@@ -100,12 +100,20 @@ const makeStyles = fontScale =>
   StyleSheet.create({
     form_section: {
       alignItems: 'center',
+      marginTop: 20,
     },
     LoginHead: {
       color: '#36393B',
-      fontSize: Scale(22),
-      marginBottom: 20,
+      // fontSize: 22 / fontScale,
+      fontSize: 22 / fontScale,
+      marginBottom: 10,
       textAlign: 'center',
+      fontFamily: 'ubuntu_medium',
+    },
+    subtitle: {
+      color: '#36393B',
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
     },
     login_input: {
       width: '100%',
@@ -150,7 +158,7 @@ const makeStyles = fontScale =>
     register_text_frst: {},
     register_text_scnd: {
       color: '#268C43',
-      fontSize: 13 / fontScale,
+      fontSize: 14 / fontScale,
       marginLeft: 5,
     },
     login_input_flex: {
@@ -163,24 +171,29 @@ const makeStyles = fontScale =>
       alignItems: 'center',
       justifyContent: 'space-between',
       width: '100%',
-      marginTop: 25,
+      marginTop: 15,
     },
     resend_text: {
       flexDirection: 'row',
-      alignItems: 'cenetr',
+      alignItems: 'center',
     },
     green: {
       color: `#268C43`,
-      fontSize: 13 / fontScale,
+      fontSize: 14 / fontScale,
       marginLeft: 6,
+      fontFamily: 'ubuntu_medium',
+      lineHeight: 13,
     },
     low_green: {
       color: `#268c4387`,
-      fontSize: 13 / fontScale,
+      fontSize: 14 / fontScale,
       marginLeft: 6,
+      fontFamily: 'ubuntu_medium',
+      lineHeight: 13,
     },
     normal_text: {
       color: '#36393B',
-      fontSize: 13 / fontScale,
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu_regular',
     },
   });

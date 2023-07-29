@@ -5,6 +5,7 @@ import {
   TextInput,
   useWindowDimensions,
 } from 'react-native';
+import {Scale} from '../../Helper/utils';
 
 export default function InputTextComponent({
   placeholder,
@@ -43,6 +44,8 @@ const makeStyles = fontScale =>
       borderColor: '#268C43',
       borderWidth: 1,
       fontSize: 14 / fontScale,
+      color: '#263238',
+      fontFamily: 'ubuntu_regular',
     },
     inputSmall: {
       width: 50,
@@ -52,5 +55,8 @@ const makeStyles = fontScale =>
       borderRadius: 8,
       backgroundColor: '#F8F8F8',
       textAlign: 'center',
+      fontSize: 14 / fontScale,
+      color: '#263238',
+      fontFamily: 'ubuntu_regular',
     },
   });

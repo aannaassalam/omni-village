@@ -7,11 +7,12 @@ import {
   View,
   Image,
   Button,
+  useWindowDimensions,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, TextInput, Wrap} from '@react-native-material/core';
+import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
@@ -29,6 +30,7 @@ import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
 import {EditUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
+import {Scale} from '../../Helper/utils';
 
 // const FormData = global.FormData;
 
@@ -49,6 +51,9 @@ export default function RegisterDetails({navigation, route}) {
   }, []);
 
   const {user} = useSelector(state => state.auth);
+
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
 
   const schema = yup
     .object()
@@ -75,7 +80,7 @@ export default function RegisterDetails({navigation, route}) {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      phone: user.phone,
+      phone: user?.phone || '',
     },
   });
 
@@ -107,7 +112,7 @@ export default function RegisterDetails({navigation, route}) {
       <View style={styles.form_section}>
         <View style={styles.form_head}>
           <Text style={styles.LoginHead}>Register</Text>
-          <Text>Enter Details</Text>
+          <Text style={styles.subtitle}>Enter Details</Text>
         </View>
         <Box style={styles.cmn_wrp}>
           <Box style={styles.input_wrap}>
@@ -123,7 +128,9 @@ export default function RegisterDetails({navigation, route}) {
                   />
                 )}
               />
-              <Text style={{color: 'red'}}>{errors?.first_name?.message}</Text>
+              {errors?.first_name?.message ? (
+                <Text style={styles.error}>{errors?.first_name?.message}</Text>
+              ) : null}
             </View>
 
             <View style={styles.half_input}>
@@ -138,7 +145,9 @@ export default function RegisterDetails({navigation, route}) {
                   />
                 )}
               />
-              <Text style={{color: 'red'}}>{errors?.last_name?.message}</Text>
+              {errors?.last_name?.message ? (
+                <Text style={styles.error}>{errors?.last_name?.message}</Text>
+              ) : null}
             </View>
           </Box>
         </Box>
@@ -157,12 +166,14 @@ export default function RegisterDetails({navigation, route}) {
                 />
               )}
             />
-            <Text style={{color: 'red'}}>{errors?.phone?.message}</Text>
+            {errors?.phone?.message ? (
+              <Text style={styles.error}>{errors?.phone?.message}</Text>
+            ) : null}
           </View>
         </Box>
         <View style={styles.form_btm_text}>
           <Text style={styles.login_text}>Household Informations</Text>
-          <View style={styles.line_border}></View>
+          <View style={styles.line_border} />
         </View>
         <Box style={styles.cmn_wrp}>
           <Controller
@@ -177,7 +188,7 @@ export default function RegisterDetails({navigation, route}) {
           />
         </Box>
         {errors?.village_name && (
-          <Text style={{color: 'red', width: '100%', marginBottom: 15}}>
+          <Text style={{...styles.error, width: '100%', marginBottom: 15}}>
             {errors?.village_name?.message}
           </Text>
         )}
@@ -196,7 +207,7 @@ export default function RegisterDetails({navigation, route}) {
               )}
             />
             {errors?.family_name && (
-              <Text style={{color: 'red'}}>{errors?.family_name?.message}</Text>
+              <Text style={styles.error}>{errors?.family_name?.message}</Text>
             )}
           </View>
         </Box>
@@ -213,7 +224,9 @@ export default function RegisterDetails({navigation, route}) {
                 />
               )}
             />
-            <Text style={{color: 'red'}}>{errors?.username?.message}</Text>
+            {errors?.username?.message ? (
+              <Text style={styles.error}>{errors?.username?.message}</Text>
+            ) : null}
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
@@ -229,9 +242,11 @@ export default function RegisterDetails({navigation, route}) {
                 />
               )}
             />
-            <Text style={{color: 'red'}}>
-              {errors?.social_security_number?.message}
-            </Text>
+            {errors.social_security_number?.message ? (
+              <Text style={styles.error}>
+                {errors?.social_security_number?.message}
+              </Text>
+            ) : null}
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
@@ -247,13 +262,15 @@ export default function RegisterDetails({navigation, route}) {
                 />
               )}
             />
-            <Text style={{color: 'red'}}>{errors?.address?.message}</Text>
+            {errors.address?.message ? (
+              <Text style={styles.error}>{errors?.address?.message}</Text>
+            ) : null}
           </View>
-          <Image
+          {/* <Image
             style={styles.tinyLogo1}
             source={require('../../../assets/gps.png')}
             // height={100}
-          />
+          /> */}
         </Box>
         <Box style={styles.file_box}>
           <Box style={styles.file_box_lft}>
@@ -267,15 +284,6 @@ export default function RegisterDetails({navigation, route}) {
             </Text>
           </Box>
           <Box style={styles.file_box_rgt}>
-            {fileResponse.map((file, index) => (
-              <Text
-                key={index.toString()}
-                style={styles.uri}
-                numberOfLines={1}
-                ellipsizeMode={'middle'}>
-                {file?.name}
-              </Text>
-            ))}
             {/* <Button title="Browse" style={styles.btn} onPress={handleDocumentSelection} /> */}
             <TouchableOpacity
               style={styles.btn}
@@ -284,42 +292,26 @@ export default function RegisterDetails({navigation, route}) {
             </TouchableOpacity>
           </Box>
         </Box>
-        <Box style={styles.file_box2}>
-          <Box style={styles.file_box_lft}>
-            <Image
-              style={styles.tinyLogo}
-              source={require('../../../assets/file_img.png')}
-              // height={100}
-            />
-            {fileResponse.length > 0 ? (
-              <>
-                {fileResponse.map((file, index) => (
-                  <Text
-                    varint="body1"
-                    style={styles.upload_txt}
-                    key={index.toString()}>
-                    {file?.name}
-                  </Text>
-                ))}
-              </>
-            ) : (
-              <Text varint="body1" style={styles.upload_txt}>
-                Document.jpg
+        {fileResponse.map((file, index) => (
+          <Box style={styles.file_box2}>
+            <Box style={styles.file_box_lft}>
+              <Image
+                style={styles.tinyLogo}
+                source={require('../../../assets/file_img.png')}
+                // height={100}
+              />
+              <Text
+                varint="body1"
+                style={styles.upload_txt}
+                key={index.toString()}>
+                {file?.name}
               </Text>
-            )}
+              <Pressable onPress={() => setFileResponse([])}>
+                <Text style={{...styles.error, marginTop: 0}}>Remove</Text>
+              </Pressable>
+            </Box>
           </Box>
-          <Box style={styles.file_box_rgt2}>
-            <Box
-              h={30}
-              w={4}
-              style={{
-                backgroundColor: 'rgba(38, 50, 56, 0.09)',
-                marginRight: 40,
-              }}
-            />
-            <CustomProgress color={'#268C43'} />
-          </Box>
-        </Box>
+        ))}
         <View style={styles.login_submit}>
           <CustomButton btnText={'Submit'} onPress={handleSubmit(FormSubmit)} />
         </View>
@@ -328,114 +320,137 @@ export default function RegisterDetails({navigation, route}) {
   );
 }
 
-const styles = StyleSheet.create({
-  tinyLogo1: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-  tinyLogo: {},
-  btn: {
-    minWidth: 78,
-    minHeight: 28,
-    borderRadius: 8,
-    backgroundColor: '#268C43',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  file_box_rgt2: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  file_box_rgt: {},
-  cmn_btn_text: {
-    fontSize: 13,
-    marginBottom: 4,
-    color: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  file_box2: {
-    // border: 1px solid #C6F1D3,
-    borderWidth: 1,
-    borderColor: '#C6F1D3',
-    borderRadius: 8,
-    padding: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  file_box: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(38, 140, 67, .2)',
-    width: '100%',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 8,
-  },
-  file_box_lft: {
-    flexDirection: 'row',
-  },
-  upload_txt: {
-    color: '#268C43',
-    fontSize: 13,
-    marginLeft: 7,
-  },
-  cmn_wrp: {
-    flexDirection: 'row',
-    marginBottom: 15,
-  },
-  form_section: {
-    alignItems: 'center',
-  },
-  LoginHead: {
-    color: '#36393B',
-    fontSize: 22,
-    marginBottom: 10,
-    textAlign: 'center',
-    fontFamily: 'ubuntu_medium',
-  },
-  subtitle: {
-    fontFamily: 'ubuntu',
-    color: '#36393B',
-  },
-  half_input: {
-    flexBasis: '50%',
-    width: '50%',
-    paddingHorizontal: 7,
-  },
-  login_input: {flexBasis: '100%', width: '100%'},
-  input_wrap: {
-    flexDirection: 'row',
-    marginHorizontal: -7,
-  },
-  form_head: {
-    marginBottom: 35,
-  },
-  login_submit: {
-    marginTop: 20,
-    width: '100%',
-  },
-  login_text: {
-    textAlign: 'left',
-    position: 'relative',
-    zIndex: 5,
-    height: 30,
-    backgroundColor: '#fff',
-    width: 160,
-  },
-  form_btm_text: {
-    width: '100%',
-    marginBottom: 40,
-    // alignItems: 'center',
-  },
-  line_border: {
-    flexDirection: 'row',
-    height: 2,
-    backgroundColor: '#EBEBEB',
-    marginTop: -20,
-    width: '100%',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    // tinyLogo1: {
+    //   position: 'absolute',
+    //   top: 10,
+    //   right: 10,
+    // },
+    tinyLogo: {},
+    btn: {
+      minWidth: 78,
+      minHeight: 28,
+      borderRadius: 8,
+      backgroundColor: '#268C43',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    file_box_rgt2: {
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+    file_box_rgt: {},
+    cmn_btn_text: {
+      fontSize: 14 / fontScale,
+      marginBottom: 4,
+      color: '#FFF',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontFamily: 'ubuntu_medium',
+    },
+    file_box2: {
+      // border: 1px solid #C6F1D3,
+      borderWidth: 1,
+      borderColor: '#C6F1D3',
+      borderRadius: 8,
+      padding: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginTop: 8,
+      marginBottom: 16,
+    },
+    file_box: {
+      flexDirection: 'row',
+      backgroundColor: 'rgba(38, 140, 67, .2)',
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 20,
+      borderRadius: 8,
+    },
+    file_box_lft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    upload_txt: {
+      color: '#268C43',
+      fontSize: 14 / fontScale,
+      marginLeft: 7,
+      fontFamily: 'ubuntu_regular',
+      marginRight: 'auto',
+    },
+    cmn_wrp: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 15,
+    },
+    form_section: {
+      alignItems: 'center',
+    },
+    LoginHead: {
+      color: '#36393B',
+      fontSize: 22 / fontScale,
+      marginBottom: 10,
+      textAlign: 'center',
+      fontFamily: 'ubuntu_medium',
+    },
+    subtitle: {
+      fontFamily: 'ubuntu',
+      color: '#263238',
+      fontSize: 14 / fontScale,
+    },
+    half_input: {
+      flexBasis: '50%',
+      width: '50%',
+      paddingHorizontal: 7,
+    },
+    login_input: {flexBasis: '100%', width: '100%'},
+    input_wrap: {
+      flexDirection: 'row',
+      marginHorizontal: -7,
+    },
+    form_head: {
+      marginBottom: 35,
+    },
+    login_submit: {
+      marginTop: 20,
+      width: '100%',
+    },
+    form_btm_text: {
+      width: '100%',
+      marginBottom: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      // marginRight: 20,
+      // alignItems: 'center',
+    },
+    login_text: {
+      textAlign: 'left',
+      position: 'relative',
+      // zIndex: 5,
+      // height: 15,
+      backgroundColor: '#fff',
+      // width: 100,
+      fontSize: 10 / fontScale,
+      fontFamily: 'ubuntu_regular',
+      color: '#263238',
+    },
+    line_border: {
+      // flexDirection: 'row',
+      height: 1,
+      backgroundColor: '#EBEBEB',
+      // marginTop: -18,
+      marginLeft: 'auto',
+      width: '64%',
+    },
+    error: {
+      color: 'red',
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      marginTop: 5,
+    },
+  });
