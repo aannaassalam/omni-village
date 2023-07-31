@@ -2,45 +2,42 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-paper';
 
-const CustomInputField = ({label, value, onChangeText, placeholder}) => {
+const InputWithoutRightElement = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  onFocus,
+}) => {
   return (
     <View style={styles.textInputContainer}>
       <View>
         <TextInput
           onChangeText={onChangeText}
-          outlineColor="#268C43"
+          outlineColor="green"
           underlineColorAndroid="transparent"
-          activeOutlineColor="#268C43"
-          mode="outlined"
+          activeOutlineColor="green"
           outlineStyle={{
             borderRadius: 10,
           }}
+          mode="outlined"
           label={label}
           value={value}
           style={styles.textInput}
           placeholder={placeholder}
-          right={
-            <TextInput.Affix
-              text="acres"
-              textStyle={{color: '#000', fontFamily: 'ubuntu_medium'}}
-            />
-          }
+          onFocus={onFocus}
         />
       </View>
     </View>
   );
 };
 
-export default CustomInputField;
+export default InputWithoutRightElement;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    width: '90%',
-  },
   textInputContainer: {
     paddingTop: 10,
-    width: '95%',
+    width: '100%',
     alignSelf: 'center',
   },
   textInput: {

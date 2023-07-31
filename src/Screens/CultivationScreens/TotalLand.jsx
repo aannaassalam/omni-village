@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -8,8 +8,28 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 
 const TotalLand = ({navigation}) => {
   const [totalLand, setTotalLand] = useState(0);
-  const [land, setLand] = useState({});
-  console.log('land', land);
+  const [land, setLand] = useState([
+    {name: 'Cultivation', area: 0},
+    {name: 'Trees, Shrubs & Grasslands', area: 0},
+    {name: 'Poultry', area: 0},
+    {name: 'Fishery', area: 0},
+    {name: 'Storage', area: 0},
+  ]);
+  const onSave = () => {
+    let sumofAreas = land.reduce((accumulator, currentObject) => {
+      return accumulator + currentObject?.area;
+    }, 0);
+    if (sumofAreas > totalLand) {
+      Alert.alert('Your sub area acres are greater than total land area');
+    } else {
+      console.log('go ahead');
+      navigation.navigate('production', {
+        totalLand: totalLand,
+        usedLand: sumofAreas,
+        data: land,
+      });
+    }
+  };
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -24,45 +44,47 @@ const TotalLand = ({navigation}) => {
           onChangeText={e => setTotalLand(e)}
         />
       </View>
-      <View style={styles.subArea}>
-        <Text style={styles.subAreaText}>Sub area</Text>
-        <Divider bold={true} style={styles.divider} horizontalInset={true} />
-      </View>
-      <View style={styles.textInputArea}>
-        <InputWithoutBorder
-          productionName={'Cultivation'}
-          placeholder={'0'}
-          value={land?.cultivation ? land?.cultivation : 0}
-          onChangeText={e => setLand({...land, cultivation: e})}
-        />
-        <InputWithoutBorder
-          productionName={'Trees, Shrubs & Grasslands'}
-          placeholder={'0'}
-          value={land?.treeShrubGrassland ? land?.treeShrubGrassland : 0}
-          onChangeText={e => setLand({...land, treeShrubGrassland: e})}
-        />
-        <InputWithoutBorder
-          productionName={'Poultry'}
-          placeholder={'0'}
-          value={land?.poultry ? land?.poultry : 0}
-          onChangeText={e => setLand({...land, poultry: e})}
-        />
-        <InputWithoutBorder
-          productionName={'Fishery'}
-          placeholder={'0'}
-          value={land?.fishery ? land?.fishery : 0}
-          onChangeText={e => setLand({...land, fishery: e})}
-        />
-        <InputWithoutBorder
-          productionName={'Storage'}
-          placeholder={'0'}
-          value={land?.storage ? land?.storage : 0}
-          onChangeText={e => setLand({...land, storage: e})}
-        />
-      </View>
-      <View style={styles.save}>
-        <CustomButton btnText={'Save'} />
-      </View>
+      <ScrollView>
+        <>
+          <View style={styles.subArea}>
+            <Text style={styles.subAreaText}>Sub area</Text>
+            <Divider
+              bold={true}
+              style={styles.divider}
+              horizontalInset={true}
+            />
+          </View>
+          <View style={styles.textInputArea}>
+            {land.map((item, indx) => {
+              return (
+                <InputWithoutBorder
+                  productionName={item?.name}
+                  placeholder={'0'}
+                  value={item?.area}
+                  onChangeText={e => {
+                    let targetedArea = land.findIndex(
+                      lan => lan?.name == item?.name,
+                    );
+                    if (targetedArea !== -1) {
+                      const updatedDataArray = [...land];
+                      updatedDataArray[targetedArea].area = parseInt(e);
+                      setLand(updatedDataArray);
+                    }
+                  }}
+                />
+              );
+            })}
+          </View>
+          <View style={styles.save}>
+            <CustomButton
+              btnText={'Save'}
+              onPress={() => {
+                onSave();
+              }}
+            />
+          </View>
+        </>
+      </ScrollView>
     </View>
   );
 };
@@ -82,8 +104,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 5,
+    paddingHorizontal: 13,
     margin: 10,
+    marginTop: '5%',
   },
   divider: {
     alignSelf: 'center',
@@ -102,7 +125,5 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
     alignSelf: 'center',
-    position: 'absolute',
-    bottom: 10,
   },
 });

@@ -28,12 +28,12 @@ const makeStyles = fontScale =>
     },
   });
 
-export default function CustomButton({btnText, onPress}) {
+export default function CustomButton({btnText, onPress, style}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   return (
-    <TouchableOpacity style={styles.cmn_btn} onPress={onPress}>
+    <TouchableOpacity style={[styles.cmn_btn, style]} onPress={onPress}>
       <Text style={styles.cmn_btn_text}>{btnText}</Text>
     </TouchableOpacity>
   );

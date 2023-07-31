@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-const CustomHeader = ({headerName, backIcon, goBack}) => {
+const CustomHeader = ({headerName, backIcon, goBack, rightIcon}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
@@ -26,7 +26,7 @@ const CustomHeader = ({headerName, backIcon, goBack}) => {
         <View>
           <Text style={styles.headerText}>{headerName}</Text>
         </View>
-        <View />
+        {rightIcon ? {rightIcon} : <View />}
       </View>
     </View>
   );
@@ -38,8 +38,8 @@ const makeStyles = fontScale =>
   StyleSheet.create({
     container: {
       backgroundColor: '#fff',
-      padding: 5,
-      margin: '5%',
+      padding: 3,
+      margin: '4%',
     },
     header: {
       justifyContent: 'space-between',

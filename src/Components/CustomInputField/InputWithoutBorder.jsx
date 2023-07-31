@@ -9,22 +9,47 @@ const InputWithoutBorder = ({
   onChangeText,
   placeholder,
   productionName,
+  measureName,
+  onFocus,
+  notRightText,
+  editable,
+  keyboardType,
 }) => {
   return (
     <View>
-      <View style={styles.textInputContainer}>
+      <View style={[styles.textInputContainer]}>
         <View style={styles.textInputInner}>
-          <View style={styles.textInputAcres}>
-            <View style={styles.textInput}>
+          <View
+            style={[
+              styles.textInputAcres,
+              {
+                justifyContent: notRightText ? 'flex-start' : 'space-evenly',
+                marginLeft: notRightText ? '5%' : 0,
+              },
+            ]}>
+            <View style={[styles.textInput]}>
               <Text style={styles.cultivationText}>{productionName}</Text>
               <TextInput
+                style={styles.inputText}
                 onChangeText={onChangeText}
                 value={value}
                 placeholder={placeholder}
+                placeholderTextColor={'#000'}
+                onFocus={onFocus}
+                // editable={!editable}
+                // keyboardType={keyboardType}
+                multiline={notRightText ? true : false}
+                numberOfLines={notRightText && 2}
               />
             </View>
-            <Divider horizontalInset={false} style={styles.divider} />
-            <Text style={styles.acresText}>acres</Text>
+            {notRightText ? null : (
+              <>
+                <Divider horizontalInset={false} style={styles.divider} />
+                <Text style={styles.acresText}>
+                  {!measureName ? 'acres' : measureName}
+                </Text>
+              </>
+            )}
           </View>
         </View>
       </View>
@@ -42,11 +67,19 @@ const styles = StyleSheet.create({
   textInputContainer: {
     paddingTop: 5,
     marginTop: 10,
+    width: '95%',
+    alignSelf: 'center',
+  },
+  inputText: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: '500',
+    // backgroundColor: 'red',
   },
   textInputInner: {
     backgroundColor: '#fff',
-    borderColor: 'grey',
-    borderWidth: 1,
+    borderColor: '#268C43',
+    borderWidth: 0.5,
     borderRadius: 10,
   },
   textInput: {
