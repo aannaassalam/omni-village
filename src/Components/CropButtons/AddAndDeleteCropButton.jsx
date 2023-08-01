@@ -16,9 +16,15 @@ const AddAndDeleteCropButton = ({onPress, add, cropName}) => {
       <Text style={styles.addButtonText}>{cropName}</Text>
       <TouchableOpacity onPress={onPress}>
         {add ? (
-          <Image source={require('../../../assets/plus.png')} />
+          <Image
+            source={require('../../../assets/plus.png')}
+            style={styles.addCropIcon}
+          />
         ) : (
-          <Image source={require('../../../assets/delete.png')} />
+          <Image
+            source={require('../../../assets/delete.png')}
+            style={styles.addCropIcon}
+          />
         )}
       </TouchableOpacity>
     </View>
@@ -45,5 +51,9 @@ const makeStyles = fontScale =>
       fontWeight: '500',
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',
+    },
+    addCropIcon: {
+      height: 30,
+      width: 30,
     },
   });

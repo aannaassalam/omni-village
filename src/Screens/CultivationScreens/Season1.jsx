@@ -142,7 +142,10 @@ const Season1 = ({navigation}) => {
           <TouchableOpacity
             style={styles.crossButton}
             onPress={() => setCropModal(!cropModal)}>
-            <Image source={require('../../../assets/cross.png')} />
+            <Image
+              source={require('../../../assets/cross.png')}
+              style={styles.addCropIcon}
+            />
           </TouchableOpacity>
           <CustomButton
             btnText={'Create'}
@@ -229,5 +232,9 @@ const makeStyles = fontScale =>
     },
     dropdownSection: {
       width: '90%',
+    },
+    addCropIcon: {
+      height: 50,
+      width: 50,
     },
   });

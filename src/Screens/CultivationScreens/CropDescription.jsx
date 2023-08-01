@@ -97,10 +97,10 @@ const makeStyles = fontScale =>
       width: '95%',
     },
     subArea: {
-      alignSelf: 'flex-start',
+      alignSelf: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingHorizontal: 13,
+      paddingHorizontal: 20,
       margin: 10,
       marginTop: '5%',
       width: width / 1,

@@ -18,7 +18,7 @@ const CustomHeader = ({headerName, backIcon, goBack, rightIcon}) => {
           <TouchableOpacity onPress={goBack}>
             <Image
               style={styles.tinyIcon}
-              source={require('../../../assets/arrowright2.jpg')}
+              source={require('../../../assets/arrowright2.png')}
               // height={100}
             />
           </TouchableOpacity>
@@ -56,6 +56,8 @@ const makeStyles = fontScale =>
     },
     tinyIcon: {
       position: 'absolute',
+      height: 30,
+      width: 30,
       top: 0,
       left: 0,
     },

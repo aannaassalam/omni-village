@@ -99,7 +99,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
             <Box style={styles.exclamationMark}>
               <Image
-                style={styles.tinyIcon}
+                style={styles.tinyIcon2}
                 source={require('../../../assets/infocircle.png')}
                 // height={100}
               />
@@ -343,5 +343,12 @@ const makeStyles = fontScale =>
       position: 'absolute',
       bottom: 10,
       alignSelf: 'center',
+    },
+    tinyIcon2: {
+      // position: 'absolute',
+      height: 20,
+      width: 20,
+      // top: 0,
+      // left: 0,
     },
   });
