@@ -1,4 +1,12 @@
-import {StyleSheet, Text, View, Image, ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  Dimensions,
+  useWindowDimensions,
+} from 'react-native';
 import {Divider} from 'react-native-paper';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -7,6 +15,8 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 
 const Production = ({navigation, route}) => {
   const {totalLand, usedLand, data} = route.params;
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -30,7 +40,7 @@ const Production = ({navigation, route}) => {
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text
-            style={[styles.land_allocated_text, {fontSize: 12}]}
+            style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
             onPress={() => navigation.goBack()}>
             Modify
           </Text>
@@ -73,47 +83,49 @@ const Production = ({navigation, route}) => {
 };
 
 export default Production;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  top_container: {
-    width: '90%',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#268C43',
-    borderRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-  },
-  top_container_inner: {
-    padding: 10,
-    alignSelf: 'center',
-  },
-  land_allocated_text: {
-    fontSize: 14,
-    color: '#C1D8C7',
-    fontFamily: 'ubuntu_medium',
-  },
-  value_text: {
-    fontSize: 14,
-    color: '#fff',
-    fontFamily: 'ubuntu_medium',
-  },
-  divider: {
-    height: '70%',
-    width: 2,
-    borderRadius: 10,
-    alignSelf: 'center',
-    color: '#FFFFFF17',
-  },
-  continue: {
-    marginTop: '5%',
-    width: '90%',
-    alignSelf: 'center',
-    marginBottom: '5%',
-  },
-});
+const width = Dimensions.get('window').width;
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    top_container: {
+      width: width / 1.1,
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#268C43',
+      borderRadius: 10,
+      paddingVertical: 20,
+      paddingHorizontal: 5,
+      margin: 5,
+      flexDirection: 'row',
+    },
+    top_container_inner: {
+      padding: 5,
+      alignSelf: 'center',
+    },
+    land_allocated_text: {
+      fontSize: 14 / fontScale,
+      color: '#C1D8C7',
+      fontFamily: 'ubuntu_medium',
+    },
+    value_text: {
+      fontSize: 14 / fontScale,
+      color: '#fff',
+      fontFamily: 'ubuntu_medium',
+    },
+    divider: {
+      height: '70%',
+      width: 2,
+      borderRadius: 10,
+      alignSelf: 'center',
+      color: '#FFFFFF17',
+    },
+    continue: {
+      marginTop: '5%',
+      width: '90%',
+      alignSelf: 'center',
+      marginBottom: '5%',
+    },
+  });

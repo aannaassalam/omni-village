@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   KeyboardAvoidingView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -18,6 +19,8 @@ import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 
 const Season1 = ({navigation}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -65,7 +68,7 @@ const Season1 = ({navigation}) => {
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text
-            style={[styles.land_allocated_text, {fontSize: 12}]}
+            style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
             onPress={() => navigation.goBack()}>
             Modify
           </Text>
@@ -154,76 +157,77 @@ const Season1 = ({navigation}) => {
 
 export default Season1;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  top_container: {
-    width: '90%',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#268C43',
-    borderRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-  },
-  top_container_inner: {
-    padding: 10,
-    alignSelf: 'center',
-  },
-  land_allocated_text: {
-    fontSize: 14,
-    color: '#C1D8C7',
-    fontFamily: 'ubuntu_medium',
-  },
-  value_text: {
-    fontSize: 14,
-    color: '#fff',
-    fontFamily: 'ubuntu_medium',
-  },
-  divider: {
-    height: '70%',
-    width: 2,
-    borderRadius: 10,
-    alignSelf: 'center',
-    color: '#FFFFFF17',
-  },
-  addAndDeleteButtonSection: {
-    marginTop: '5%',
-  },
-  BottomTopContainer: {
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    margin: 10,
-    padding: 5,
-    flexDirection: 'row',
-  },
-  headerText: {
-    fontFamily: 'ubuntu_medium',
-    fontSize: 16,
-    color: '#000',
-    alignSelf: 'center',
-    width: '87%',
-  },
-  closeIcon: {
-    height: 30,
-    width: 30,
-    alignSelf: 'center',
-  },
-  BottomSheetButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '5%',
-    padding: 10,
-    margin: 5,
-    alignSelf: 'center',
-  },
-  crossButton: {
-    marginRight: 10,
-  },
-  dropdownSection: {
-    width: '90%',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    top_container: {
+      width: '90%',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#268C43',
+      borderRadius: 10,
+      paddingVertical: 20,
+      paddingHorizontal: 10,
+      flexDirection: 'row',
+    },
+    top_container_inner: {
+      padding: 10,
+      alignSelf: 'center',
+    },
+    land_allocated_text: {
+      fontSize: 14 / fontScale,
+      color: '#C1D8C7',
+      fontFamily: 'ubuntu_medium',
+    },
+    value_text: {
+      fontSize: 14 / fontScale,
+      color: '#fff',
+      fontFamily: 'ubuntu_medium',
+    },
+    divider: {
+      height: '70%',
+      width: 2,
+      borderRadius: 10,
+      alignSelf: 'center',
+      color: '#FFFFFF17',
+    },
+    addAndDeleteButtonSection: {
+      marginTop: '5%',
+    },
+    BottomTopContainer: {
+      justifyContent: 'space-between',
+      alignSelf: 'center',
+      margin: 10,
+      padding: 5,
+      flexDirection: 'row',
+    },
+    headerText: {
+      fontFamily: 'ubuntu_medium',
+      fontSize: 16 / fontScale,
+      color: '#000',
+      alignSelf: 'center',
+      width: '87%',
+    },
+    closeIcon: {
+      height: 30,
+      width: 30,
+      alignSelf: 'center',
+    },
+    BottomSheetButton: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+      padding: 10,
+      margin: 5,
+      alignSelf: 'center',
+    },
+    crossButton: {
+      marginRight: 10,
+    },
+    dropdownSection: {
+      width: '90%',
+    },
+  });

@@ -1,7 +1,16 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  useWindowDimensions,
+} from 'react-native';
 import React from 'react';
 
 const InputLikeButton = ({text, onPress, rightIcon, date, calendarPress}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <View
       style={[
@@ -40,26 +49,27 @@ const InputLikeButton = ({text, onPress, rightIcon, date, calendarPress}) => {
 
 export default InputLikeButton;
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  button: {
-    width: '95%',
-    borderColor: '#268C43',
-    borderWidth: 0.5,
-    borderRadius: 10,
-    alignSelf: 'center',
-    padding: 10,
-    marginTop: '5%',
-  },
-  text: {
-    padding: 5,
-    fontFamily: 'ubuntu',
-    fontSize: 14,
-    color: 'green',
-  },
-  calendar: {
-    alignSelf: 'center',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      width: '100%',
+    },
+    button: {
+      width: '95%',
+      borderColor: '#268C43',
+      borderWidth: 0.5,
+      borderRadius: 10,
+      alignSelf: 'center',
+      padding: 10,
+      marginTop: '5%',
+    },
+    text: {
+      padding: 5,
+      fontFamily: 'ubuntu',
+      fontSize: 14 / fontScale,
+      color: 'green',
+    },
+    calendar: {
+      alignSelf: 'center',
+    },
+  });

@@ -1,10 +1,18 @@
-import {KeyboardAvoidingView, StyleSheet, Text, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 
 const LandAllocation = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const {totalLand} = route.params;
   const [cultivation, setCultivation] = useState([
     {name: 'Cultivated once in a year', area: 0},
@@ -66,20 +74,21 @@ const LandAllocation = ({navigation, route}) => {
 
 export default LandAllocation;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  textInputArea: {
-    alignSelf: 'center',
-    width: '95%',
-  },
-  save: {
-    marginTop: '5%',
-    width: '90%',
-    position: 'absolute',
-    bottom: 10,
-    alignSelf: 'center',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    textInputArea: {
+      alignSelf: 'center',
+      width: '95%',
+    },
+    save: {
+      marginTop: '5%',
+      width: '90%',
+      position: 'absolute',
+      bottom: 10,
+      alignSelf: 'center',
+    },
+  });

@@ -1,4 +1,10 @@
-import {StyleSheet, Text, View, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  useWindowDimensions,
+} from 'react-native';
 import React from 'react';
 import {Divider} from 'react-native-paper';
 // import {TextInput} from 'react-native-paper';
@@ -15,6 +21,8 @@ const InputWithoutBorder = ({
   editable,
   keyboardType,
 }) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <View>
       <View style={[styles.textInputContainer]}>
@@ -59,53 +67,54 @@ const InputWithoutBorder = ({
 
 export default InputWithoutBorder;
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    width: '95%',
-  },
-  textInputContainer: {
-    paddingTop: 5,
-    marginTop: 10,
-    width: '95%',
-    alignSelf: 'center',
-  },
-  inputText: {
-    color: '#000',
-    fontSize: 14,
-    fontWeight: '500',
-    // backgroundColor: 'red',
-  },
-  textInputInner: {
-    backgroundColor: '#fff',
-    borderColor: '#268C43',
-    borderWidth: 0.5,
-    borderRadius: 10,
-  },
-  textInput: {
-    width: '70%',
-    margin: -10,
-    padding: 5,
-  },
-  textInputAcres: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  cultivationText: {
-    color: 'green',
-    fontSize: 14,
-    marginBottom: -10,
-    marginTop: 10,
-    fontFamily: 'ubuntu_medium',
-  },
-  divider: {
-    height: '80%',
-    width: '1%',
-    alignSelf: 'center',
-  },
-  acresText: {
-    alignSelf: 'center',
-    fontSize: 14,
-    color: '#000',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: '#fff',
+      width: '95%',
+    },
+    textInputContainer: {
+      paddingTop: 5,
+      marginTop: 10,
+      width: '95%',
+      alignSelf: 'center',
+    },
+    inputText: {
+      color: '#000',
+      fontSize: 16 / fontScale,
+      fontWeight: '500',
+      // backgroundColor: 'red',
+    },
+    textInputInner: {
+      backgroundColor: '#fff',
+      borderColor: '#268C43',
+      borderWidth: 0.5,
+      borderRadius: 10,
+    },
+    textInput: {
+      width: '70%',
+      margin: -10,
+      padding: 5,
+    },
+    textInputAcres: {
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+    },
+    cultivationText: {
+      color: 'green',
+      fontSize: 16 / fontScale,
+      marginBottom: -10,
+      marginTop: 10,
+      fontFamily: 'ubuntu_medium',
+    },
+    divider: {
+      height: '80%',
+      width: '1%',
+      alignSelf: 'center',
+    },
+    acresText: {
+      alignSelf: 'center',
+      fontSize: 16 / fontScale,
+      color: '#000',
+    },
+  });

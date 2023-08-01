@@ -1,9 +1,11 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React, {useState} from 'react';
 import InputWithoutBorder from '../CustomInputField/InputWithoutBorder';
 import {Divider} from 'react-native-paper';
 
 const UtilisationAccordion = () => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const [utilisationArray, setUtilisationArray] = useState([
     {name: 'Self consumed', value: 0},
     {name: 'Fed to Livestock', value: 0},
@@ -73,24 +75,25 @@ const UtilisationAccordion = () => {
 
 export default UtilisationAccordion;
 
-const styles = StyleSheet.create({
-  container: {
-    width: '95%',
-    alignSelf: 'center',
-  },
-  divider: {
-    // backgroundColor: 'grey',
-    alignSelf: 'flex-start',
-    height: '100%',
-    marginTop: 9,
-    width: '1%',
-    borderRadius: 10,
-  },
-  innerInputView: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    width: '95%',
-    marginBottom: '5%',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      width: '95%',
+      alignSelf: 'center',
+    },
+    divider: {
+      // backgroundColor: 'grey',
+      alignSelf: 'flex-start',
+      height: '100%',
+      marginTop: 9,
+      width: '1%',
+      borderRadius: 10,
+    },
+    innerInputView: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      width: '95%',
+      marginBottom: '5%',
+    },
+  });

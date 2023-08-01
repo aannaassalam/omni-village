@@ -1,6 +1,6 @@
 import BottomSheet from '@gorhom/bottom-sheet';
 import * as React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, useWindowDimensions} from 'react-native';
 
 const AddBottomSheet = ({children}) => {
   // Creates a reference to the DOM element that we can interact with
@@ -14,7 +14,8 @@ const AddBottomSheet = ({children}) => {
   const handleSheetChanges = React.useCallback(index => {
     // console.log("handleSheetChanges", index);
   }, []);
-
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -29,18 +30,19 @@ const AddBottomSheet = ({children}) => {
 
 export default AddBottomSheet;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: 'grey',
-  },
-  contentContainer: {
-    flex: 1,
-    paddingLeft: 50,
-  },
-  bottomSheetTitle: {
-    fontSize: 24,
-    fontWeight: '500',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 24,
+      backgroundColor: 'grey',
+    },
+    contentContainer: {
+      flex: 1,
+      paddingLeft: 50,
+    },
+    bottomSheetTitle: {
+      fontSize: 24,
+      fontWeight: '500',
+    },
+  });

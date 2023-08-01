@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, useWindowDimensions} from 'react-native';
 import React, {useState} from 'react';
 import CustomDropdown3 from '../CustomDropdown/CustomDropdown3';
 import {fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
@@ -11,12 +11,14 @@ import CalendarPicker from 'react-native-calendar-picker';
 import CustomButton from '../CustomButton/CustomButton';
 
 const ImportantInformation = () => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const [soilHeal, setSoilHeal] = useState('');
   const [fertili, setFertili] = useState('');
   const [pesti, setPesti] = useState('');
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
-  const [proccessing, setProccessing] = useState(false);
+  const [proccessing, setProccessing] = useState(true);
   const [popup, setPopup] = useState(false);
   const [harvestedPopup, setHarvestedPopup] = useState(false);
   const [savepopup, setSavepopup] = useState(false);
@@ -211,72 +213,73 @@ const ImportantInformation = () => {
 
 export default ImportantInformation;
 
-const styles = StyleSheet.create({
-  container: {
-    width: '93%',
-    alignSelf: 'center',
-    marginBottom: '5%',
-  },
-  divider: {
-    // backgroundColor: 'grey',
-    alignSelf: 'flex-start',
-    height: '100%',
-    marginTop: 9,
-    width: '1%',
-    borderRadius: 10,
-  },
-  innerInputView: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    width: '95%',
-    marginBottom: '5%',
-  },
-  savePopup: {
-    justifyContent: 'center',
-    width: '97%',
-    borderRadius: 20,
-  },
-  popupButton: {
-    width: '70%',
-    alignSelf: 'center',
-  },
-  bottomPopupbutton: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    marginTop: '5%',
-  },
-  submitButton: {
-    width: '45%',
-    margin: 10,
-  },
-  draftButton: {
-    width: '45%',
-    margin: 10,
-    backgroundColor: 'grey',
-  },
-  confirmText: {
-    alignSelf: 'center',
-    fontSize: 16,
-    color: '#000',
-    fontFamily: 'ubuntu_medium',
-    fontWeight: '500',
-    padding: 10,
-    textAlign: 'center',
-  },
-  nextText: {
-    alignSelf: 'center',
-    fontSize: 16,
-    color: '#000',
-    fontFamily: 'ubuntu',
-    textAlign: 'center',
-  },
-  submitPopup: {
-    alignItems: 'center',
-    padding: 10,
-  },
-  noteImage: {
-    padding: 10,
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      width: '93%',
+      alignSelf: 'center',
+      marginBottom: '5%',
+    },
+    divider: {
+      // backgroundColor: 'grey',
+      alignSelf: 'flex-start',
+      height: '100%',
+      marginTop: 9,
+      width: '1%',
+      borderRadius: 10,
+    },
+    innerInputView: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      width: '95%',
+      marginBottom: '5%',
+    },
+    savePopup: {
+      justifyContent: 'center',
+      width: '97%',
+      borderRadius: 20,
+    },
+    popupButton: {
+      width: '70%',
+      alignSelf: 'center',
+    },
+    bottomPopupbutton: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+    },
+    submitButton: {
+      width: '45%',
+      margin: 10,
+    },
+    draftButton: {
+      width: '45%',
+      margin: 10,
+      backgroundColor: 'grey',
+    },
+    confirmText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu_medium',
+      fontWeight: '500',
+      padding: 10,
+      textAlign: 'center',
+    },
+    nextText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu',
+      textAlign: 'center',
+    },
+    submitPopup: {
+      alignItems: 'center',
+      padding: 10,
+    },
+    noteImage: {
+      padding: 10,
+    },
+  });

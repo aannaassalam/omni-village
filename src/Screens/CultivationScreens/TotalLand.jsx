@@ -1,4 +1,11 @@
-import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import React, {useState} from 'react';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -30,6 +37,8 @@ const TotalLand = ({navigation}) => {
       });
     }
   };
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -91,39 +100,40 @@ const TotalLand = ({navigation}) => {
 
 export default TotalLand;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  textInputArea: {
-    alignSelf: 'center',
-    width: '95%',
-  },
-  subArea: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 13,
-    margin: 10,
-    marginTop: '5%',
-  },
-  divider: {
-    alignSelf: 'center',
-    height: 1,
-    width: '80%',
-    marginTop: 5,
-    color: 'grey',
-  },
-  subAreaText: {
-    alignSelf: 'center',
-    fontSize: 14,
-    color: '#000',
-    fontFamily: 'ubuntu_medium',
-  },
-  save: {
-    marginTop: '5%',
-    width: '90%',
-    alignSelf: 'center',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    textInputArea: {
+      alignSelf: 'center',
+      width: '95%',
+    },
+    subArea: {
+      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: 13,
+      margin: 10,
+      marginTop: '5%',
+    },
+    divider: {
+      alignSelf: 'center',
+      height: 1,
+      width: '74%',
+      margin: 5,
+      color: 'grey',
+    },
+    subAreaText: {
+      alignSelf: 'center',
+      fontSize: 16 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu_medium',
+    },
+    save: {
+      marginTop: '5%',
+      width: '90%',
+      alignSelf: 'center',
+    },
+  });

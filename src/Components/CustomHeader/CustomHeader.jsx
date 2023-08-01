@@ -42,9 +42,9 @@ const makeStyles = fontScale =>
       margin: '4%',
     },
     header: {
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      flexDirection: 'row',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+      // flexDirection: 'row',
     },
     headerText: {
       alignSelf: 'center',
@@ -53,5 +53,10 @@ const makeStyles = fontScale =>
       textAlign: 'center',
       fontSize: 18 / fontScale,
       fontFamily: 'ubuntu_medium',
+    },
+    tinyIcon: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
     },
   });

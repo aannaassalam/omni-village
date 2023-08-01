@@ -5,6 +5,8 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -14,6 +16,8 @@ import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordio
 import ImportantInformation from '../../Components/Accordion/ImportantInformation';
 
 const CropDescription = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const {cropType} = route.params;
   const [area, setArea] = useState('');
   const [utilisation, setUtilisation] = useState(true);
@@ -81,39 +85,41 @@ const CropDescription = ({navigation, route}) => {
 };
 
 export default CropDescription;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  textInputArea: {
-    alignSelf: 'center',
-    width: '95%',
-  },
-  subArea: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 13,
-    margin: 10,
-    marginTop: '5%',
-  },
-  divider: {
-    alignSelf: 'center',
-    height: 1,
-    width: '67%',
-    marginTop: 5,
-    color: 'grey',
-  },
-  subAreaText: {
-    alignSelf: 'center',
-    fontSize: 14,
-    color: '#000',
-    fontFamily: 'ubuntu',
-  },
-  uparrow: {
-    height: 20,
-    width: 20,
-  },
-});
+const width = Dimensions.get('window').width;
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    textInputArea: {
+      alignSelf: 'center',
+      width: '95%',
+    },
+    subArea: {
+      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: 13,
+      margin: 10,
+      marginTop: '5%',
+      width: width / 1,
+    },
+    divider: {
+      alignSelf: 'center',
+      height: 1,
+      width: '67%',
+      marginTop: 5,
+      color: 'grey',
+    },
+    subAreaText: {
+      alignSelf: 'center',
+      fontSize: 14 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu',
+    },
+    uparrow: {
+      height: 20,
+      width: 20,
+    },
+  });

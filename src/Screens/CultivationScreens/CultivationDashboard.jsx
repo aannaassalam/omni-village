@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   Modal,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -14,8 +15,11 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import BottomModal from '../../Components/BottomSheet/BottomModal';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import {BlurView} from '@react-native-community/blur';
 
 const CultivationDashboard = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   const {totalLand} = route.params;
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -134,12 +138,12 @@ const CultivationDashboard = ({navigation, route}) => {
         </TouchableOpacity>
       </View>
       <View style={styles.save}>
-        <CustomButton
+        {/* <CustomButton
           btnText={'Continue'}
           onPress={() => {
             // onSave();
           }}
-        />
+        /> */}
       </View>
       <BottomModal
         modalVisible={modify}
@@ -199,143 +203,145 @@ const CultivationDashboard = ({navigation, route}) => {
 
 export default CultivationDashboard;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  topContainer: {
-    padding: 20,
-    margin: 10,
-    alignSelf: 'center',
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
-    backgroundColor: '#D9D9D9',
-    width: '90%',
-    borderRadius: 5,
-  },
-  topText: {
-    fontSize: 14,
-    color: '#576A74',
-    fontFamily: 'ubuntu_medium',
-    width: '25%',
-    marginLeft: 5,
-  },
-  arrow: {
-    alignSelf: 'center',
-    height: 10,
-    width: 8,
-  },
-  secondTopContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignSelf: 'center',
-    backgroundColor: '#d4e8d9',
-    width: '90%',
-    borderRadius: 10,
-    padding: 10,
-    justifyContent: 'space-evenly',
-  },
-  secondTopContainerInner: {
-    padding: 10,
-  },
-  divider: {
-    alignSelf: 'center',
-    height: 40,
-    width: '1%',
-    marginTop: 5,
-    color: 'grey',
-  },
-  acresText: {
-    alignSelf: 'center',
-    fontFamily: 'ubuntu_medium',
-    color: 'green',
-  },
-  modifyButton: {
-    height: 35,
-    alignSelf: 'center',
-    padding: 5,
-  },
-  optionsContainer: {
-    alignSelf: 'center',
-    width: '90%',
-    marginTop: '5%',
-  },
-  home_box: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#268C43',
-    paddingVertical: 20,
-    paddingLeft: 5,
-    paddingRight: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 16,
-    alignSelf: 'center',
-  },
-  home_box_lft_upr: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-  },
-  hme_box_txt: {
-    color: '#268C43',
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 20,
-  },
-  hme_box_txt2: {
-    color: '#263238',
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 20,
-  },
-  exclamationMark: {
-    position: 'absolute',
-    right: 6,
-    top: 5,
-  },
-  BottomTopContainer: {
-    justifyContent: 'space-between',
-    alignSelf: 'flex-start',
-    margin: 10,
-    padding: 5,
-    flexDirection: 'row',
-  },
-  headerText: {
-    fontFamily: 'ubuntu_medium',
-    fontSize: 16,
-    color: '#000',
-    alignSelf: 'center',
-    width: '90%',
-  },
-  closeIcon: {
-    height: 30,
-    width: 30,
-    alignSelf: 'center',
-  },
-  textInputArea: {
-    alignSelf: 'center',
-    width: '95%',
-  },
-  BottomSheetButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '5%',
-    padding: 10,
-    margin: 5,
-    alignSelf: 'center',
-  },
-  crossButton: {
-    marginRight: 10,
-  },
-  save: {
-    marginTop: '5%',
-    width: '90%',
-    position: 'absolute',
-    bottom: 10,
-    alignSelf: 'center',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    topContainer: {
+      padding: 20,
+      margin: 10,
+      alignSelf: 'center',
+      justifyContent: 'flex-start',
+      flexDirection: 'row',
+      backgroundColor: '#D9D9D9',
+      width: '90%',
+      borderRadius: 5,
+    },
+    topText: {
+      fontSize: 14 / fontScale,
+      color: '#576A74',
+      fontFamily: 'ubuntu_medium',
+      width: '25%',
+      marginLeft: 5,
+    },
+    arrow: {
+      alignSelf: 'center',
+      height: 10,
+      width: 8,
+    },
+    secondTopContainer: {
+      marginTop: 10,
+      flexDirection: 'row',
+      alignSelf: 'center',
+      backgroundColor: '#d4e8d9',
+      width: '90%',
+      borderRadius: 10,
+      padding: 5,
+      justifyContent: 'space-around',
+    },
+    secondTopContainerInner: {
+      padding: 10,
+    },
+    divider: {
+      alignSelf: 'center',
+      height: 40,
+      width: '1%',
+      marginTop: 5,
+      color: 'grey',
+    },
+    acresText: {
+      alignSelf: 'center',
+      fontFamily: 'ubuntu_medium',
+      color: 'green',
+      fontSize: 16 / fontScale,
+    },
+    modifyButton: {
+      height: 35,
+      alignSelf: 'center',
+      padding: 5,
+    },
+    optionsContainer: {
+      alignSelf: 'center',
+      width: '90%',
+      marginTop: '5%',
+    },
+    home_box: {
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#268C43',
+      paddingVertical: 20,
+      paddingLeft: 5,
+      paddingRight: 20,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginBottom: 16,
+      alignSelf: 'center',
+    },
+    home_box_lft_upr: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 10,
+    },
+    hme_box_txt: {
+      color: '#268C43',
+      fontSize: 16 / fontScale,
+      fontWeight: '500',
+      marginLeft: 20,
+    },
+    hme_box_txt2: {
+      color: '#263238',
+      fontSize: 16 / fontScale,
+      fontWeight: '500',
+      marginLeft: 20,
+    },
+    exclamationMark: {
+      position: 'absolute',
+      right: 6,
+      top: 5,
+    },
+    BottomTopContainer: {
+      justifyContent: 'space-between',
+      alignSelf: 'flex-start',
+      margin: 10,
+      padding: 5,
+      flexDirection: 'row',
+    },
+    headerText: {
+      fontFamily: 'ubuntu_medium',
+      fontSize: 16 / fontScale,
+      color: '#000',
+      alignSelf: 'center',
+      width: '90%',
+    },
+    closeIcon: {
+      height: 30,
+      width: 30,
+      alignSelf: 'center',
+    },
+    textInputArea: {
+      alignSelf: 'center',
+      width: '95%',
+    },
+    BottomSheetButton: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+      padding: 10,
+      margin: 5,
+      alignSelf: 'center',
+    },
+    crossButton: {
+      marginRight: 10,
+    },
+    save: {
+      marginTop: '5%',
+      width: '90%',
+      position: 'absolute',
+      bottom: 10,
+      alignSelf: 'center',
+    },
+  });
