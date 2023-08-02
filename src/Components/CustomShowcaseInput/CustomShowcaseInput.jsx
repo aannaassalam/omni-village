@@ -1,13 +1,25 @@
-import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import {Divider} from 'react-native-paper';
 import * as Progress from 'react-native-progress';
 
-const CustomShowcaseInput = ({productionName, productionArea, progressBar}) => {
+const CustomShowcaseInput = ({
+  productionName,
+  productionArea,
+  progressBar,
+  onPress,
+}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
       style={[
         styles.container,
         progressBar
@@ -29,7 +41,7 @@ const CustomShowcaseInput = ({productionName, productionArea, progressBar}) => {
           </View>
         </>
       ) : null}
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -43,9 +55,10 @@ const makeStyles = fontScale =>
       borderWidth: 1,
       borderRadius: 10,
       alignSelf: 'center',
-      marginTop: '5%',
+      marginTop: '3%',
       justifyContent: 'flex-start',
       flexDirection: 'row',
+      marginBottom: '2%',
     },
     areaProduction: {
       width: '70%',

@@ -17,6 +17,11 @@ const Production = ({navigation, route}) => {
   const {totalLand, usedLand, data} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const goToNext = name => {
+    if (name == 'Cultivation') {
+      navigation.navigate('landAllocation', {totalLand: totalLand});
+    }
+  };
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -55,6 +60,7 @@ const Production = ({navigation, route}) => {
                 productionName={item?.name}
                 productionArea={`${item?.area} acres`}
                 progressBar={true}
+                onPress={() => goToNext(item?.name)}
               />
             );
           })}
@@ -68,14 +74,6 @@ const Production = ({navigation, route}) => {
             productionArea={''}
             progressBar={true}
           />
-          <View style={styles.continue}>
-            <CustomButton
-              btnText={'Continue'}
-              onPress={() => {
-                navigation.navigate('landAllocation', {totalLand: totalLand});
-              }}
-            />
-          </View>
         </>
       </ScrollView>
     </View>
