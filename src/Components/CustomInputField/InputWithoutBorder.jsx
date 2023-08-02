@@ -18,6 +18,7 @@ const InputWithoutBorder = ({
   measureName,
   onFocus,
   notRightText,
+  multiline,
   editable,
   keyboardType,
 }) => {
@@ -46,8 +47,8 @@ const InputWithoutBorder = ({
                 onFocus={onFocus}
                 // editable={!editable}
                 // keyboardType={keyboardType}
-                multiline={notRightText ? true : false}
-                numberOfLines={notRightText && 2}
+                multiline={multiline}
+                // numberOfLines={multiline == true ? 2 : 0}
               />
             </View>
             {notRightText ? null : (

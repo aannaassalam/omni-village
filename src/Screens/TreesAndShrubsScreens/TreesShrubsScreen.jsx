@@ -8,16 +8,19 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import {Divider} from 'react-native-paper';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
+import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import BottomModal from '../../Components/BottomSheet/BottomModal';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 
-const Season1 = ({navigation}) => {
+const TreesShrubsScreen = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const {totalLand} = route.params;
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -48,35 +51,30 @@ const Season1 = ({navigation}) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
       <CustomHeader
-        backIcon={true}
-        headerName={'Season 1'}
         goBack={() => navigation.goBack()}
+        headerName={'Trees, Shrubs & Grasslands'}
+        backIcon={true}
       />
-      {/* top container for land allocated and modify */}
-      <View style={styles.top_container}>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>Land allocated</Text>
-        </View>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.value_text}>10 acres</Text>
-        </View>
-        <Divider style={styles.divider} />
-        <View style={styles.top_container_inner}>
-          <Text
-            style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
-            onPress={() => navigation.goBack()}>
-            Modify
-          </Text>
-        </View>
-      </View>
+      {/*Top Dashboard  */}
+      <CustomDashboard
+        first={'production'}
+        second={'Trees,Shrubs & Grasslands'}
+      />
+      {/* Next Dashboard */}
+      <CustomDashboard2
+        allocatedFor={'Trees, Shrubs & Grasslands'}
+        usedLand={totalLand}
+      />
+      {/* Crop adding */}
       {cropType?.map((element, i) => {
         return (
           <TouchableOpacity
             style={styles.addAndDeleteButtonSection}
             onPress={() =>
-              navigation.navigate('cropDescription', {
+              navigation.navigate('type', {
                 cropType: element?.cropName,
               })
             }>
@@ -151,48 +149,17 @@ const Season1 = ({navigation}) => {
           />
         </View>
       </BottomModal>
-    </View>
+    </SafeAreaView>
   );
 };
 
-export default Season1;
+export default TreesShrubsScreen;
 
 const makeStyles = fontScale =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
-    },
-    top_container: {
-      width: '90%',
-      alignSelf: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: '#268C43',
-      borderRadius: 10,
-      paddingVertical: 20,
-      paddingHorizontal: 10,
-      flexDirection: 'row',
-    },
-    top_container_inner: {
-      padding: 10,
-      alignSelf: 'center',
-    },
-    land_allocated_text: {
-      fontSize: 14 / fontScale,
-      color: '#C1D8C7',
-      fontFamily: 'ubuntu_medium',
-    },
-    value_text: {
-      fontSize: 14 / fontScale,
-      color: '#fff',
-      fontFamily: 'ubuntu_medium',
-    },
-    divider: {
-      height: '70%',
-      width: 2,
-      borderRadius: 10,
-      alignSelf: 'center',
-      color: '#FFFFFF17',
     },
     addAndDeleteButtonSection: {
       marginTop: '5%',
