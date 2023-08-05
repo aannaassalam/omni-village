@@ -16,23 +16,49 @@ import {useDispatch} from 'react-redux';
 import {SendOTP} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
 import {Scale} from '../../Helper/utils';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {Controller, useForm} from 'react-hook-form';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 
 export default function Register({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
+  const [api_err, setApi_err] = useState('');
 
   const InputValueCallback = data => {
     setInputVal(data);
   };
 
+  const loginSchema = yup
+    .object()
+    .shape({
+      phone: yup.string().required('Phone number is required!'),
+    })
+    .required();
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: {errors},
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
+
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
-  const FormSubmit = async () => {
-    dispatch(SendOTP(inputVal))
+  const FormSubmit = async data => {
+    dispatch(SendOTP({...data, type: 'register'}))
       .unwrap()
       .then(() => navigation.navigate('registerotp'))
-      .catch(err => console.log(err));
+      .catch(err => {
+        if (err.status === 400) {
+          setApi_err(err.data.message);
+        }
+        console.log(err.data.message);
+      });
   };
 
   return (
@@ -44,15 +70,49 @@ export default function Register({navigation, route}) {
             <Text style={styles.subtitle}>Register with sent OTP</Text>
           </View>
           <View style={styles.login_input}>
-            <InputTextComponent
-              placeholder={'Phone Number'}
-              onChangeText={InputValueCallback}
-              value={inputVal}
-              keyboardType="numeric"
+            <Controller
+              control={control}
+              name="phone"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputWithoutRightElement
+                  label={'Phone Number'}
+                  onChangeText={e => {
+                    setApi_err('');
+                    onChange(e);
+                  }}
+                  value={value}
+                  keyboardType="number-pad"
+                />
+              )}
             />
+            {errors.phone?.message.length > 0 && (
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginLeft: 10,
+                  color: '#ff000e',
+                  fontFamily: 'ubuntu_regular',
+                }}>
+                {errors.phone.message}
+              </Text>
+            )}
+            {api_err.length > 0 && (
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginLeft: 10,
+                  color: '#ff000e',
+                  fontFamily: 'ubuntu_regular',
+                }}>
+                {api_err}
+              </Text>
+            )}
           </View>
           <View style={styles.login_submit}>
-            <CustomButton btnText={'Register'} onPress={FormSubmit} />
+            <CustomButton
+              btnText={'Register'}
+              onPress={handleSubmit(FormSubmit)}
+            />
           </View>
         </View>
         {/* <View style={styles.form_btm}>

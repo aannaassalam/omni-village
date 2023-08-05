@@ -61,7 +61,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Text
             style={[
               styles.acresText,
-              {color: '#000', alignSelf: 'flex-start'},
+              {color: '#000', alignSelf: 'flex-start', marginTop: 5},
             ]}>
             Cultivation
           </Text>
@@ -169,6 +169,7 @@ const CultivationDashboard = ({navigation, route}) => {
                 productionName={item?.name}
                 placeholder={'0'}
                 value={item?.area}
+                key={indx}
                 onChangeText={e => {
                   let targetedArea = cultivation.findIndex(
                     lan => lan?.name == item?.name,
@@ -188,7 +189,10 @@ const CultivationDashboard = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.crossButton}
             onPress={() => setModify(!modify)}>
-            <Image source={require('../../../assets/cross.png')} />
+            <Image
+              source={require('../../../assets/cross.png')}
+              style={{width: 50, height: 50}}
+            />
           </TouchableOpacity>
           <CustomButton
             btnText={'Modify'}
@@ -255,7 +259,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',
       color: 'green',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
     },
     modifyButton: {
       height: 35,

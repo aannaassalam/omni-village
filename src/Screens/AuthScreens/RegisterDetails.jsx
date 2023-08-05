@@ -37,6 +37,8 @@ import {Scale} from '../../Helper/utils';
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
+  const [file_err, setFile_err] = useState('');
+
   const handleDocumentSelection = useCallback(async () => {
     try {
       const response = await DocumentPicker.pick({
@@ -44,6 +46,7 @@ export default function RegisterDetails({navigation, route}) {
         type: [types.images],
         allowMultiSelection: false,
       });
+      setFile_err('');
       setFileResponse(response);
     } catch (err) {
       console.warn(err);
@@ -84,26 +87,25 @@ export default function RegisterDetails({navigation, route}) {
     },
   });
 
-  const [inputVal, setInputVal] = useState('');
-
-  const [dropdownVal, setDropdownVal] = useState('');
-
   const InputValueCallback = data => {
     setInputVal(data);
   };
 
   const DropdownSelectedValue = data => {
-    setDropdownVal(data);
+    // setDropdownVal(data);
     setValue('village_name', data);
   };
 
   const dispatch = useDispatch();
 
   const FormSubmit = data => {
-    // console.log(formData.getParts());
+    if (fileResponse.length === 0) {
+      setFile_err('Please select a document!');
+      return;
+    }
     dispatch(EditUser({data, file: fileResponse[0]}))
       .unwrap()
-      .then(res => navigation.navigate('registersuccess'))
+      .then(res => navigation.replace('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
   };
 
@@ -182,13 +184,19 @@ export default function RegisterDetails({navigation, route}) {
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
                 placeholder={'Village Name'}
-                selectedValue={DropdownSelectedValue}
+                selectedValue={onChange}
               />
             )}
           />
         </Box>
         {errors?.village_name && (
-          <Text style={{...styles.error, width: '100%', marginBottom: 15}}>
+          <Text
+            style={{
+              ...styles.error,
+              width: '100%',
+              marginBottom: 15,
+              marginTop: -10,
+            }}>
             {errors?.village_name?.message}
           </Text>
         )}
@@ -292,6 +300,7 @@ export default function RegisterDetails({navigation, route}) {
             </TouchableOpacity>
           </Box>
         </Box>
+        {file_err.length > 0 && <Text style={styles.error}>{file_err}</Text>}
         {fileResponse.map((file, index) => (
           <Box style={styles.file_box2}>
             <Box style={styles.file_box_lft}>
@@ -307,7 +316,9 @@ export default function RegisterDetails({navigation, route}) {
                 {file?.name}
               </Text>
               <Pressable onPress={() => setFileResponse([])}>
-                <Text style={{...styles.error, marginTop: 0}}>Remove</Text>
+                <Text style={{...styles.error, marginTop: 0, marginRight: 5}}>
+                  Remove
+                </Text>
               </Pressable>
             </Box>
           </Box>
@@ -448,9 +459,10 @@ const makeStyles = fontScale =>
       width: '64%',
     },
     error: {
-      color: 'red',
       fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 5,
     },
   });

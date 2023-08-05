@@ -8,6 +8,7 @@ const InputWithoutRightElement = ({
   onChangeText,
   placeholder,
   onFocus,
+  keyboardType = 'default',
 }) => {
   return (
     <View style={styles.textInputContainer}>
@@ -26,6 +27,7 @@ const InputWithoutRightElement = ({
           style={styles.textInput}
           placeholder={placeholder}
           onFocus={onFocus}
+          keyboardType={keyboardType}
         />
       </View>
     </View>

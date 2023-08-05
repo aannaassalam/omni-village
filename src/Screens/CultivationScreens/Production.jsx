@@ -91,7 +91,7 @@ const makeStyles = fontScale =>
     top_container: {
       width: width / 1.1,
       alignSelf: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
       backgroundColor: '#268C43',
       borderRadius: 10,
       paddingVertical: 20,

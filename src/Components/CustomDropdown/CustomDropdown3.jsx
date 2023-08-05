@@ -76,13 +76,14 @@ const makeStyles = fontScale =>
       marginTop: 10,
       width: '95%',
       alignSelf: 'center',
+      position: 'relative',
     },
     textInputInner: {
       backgroundColor: '#fff',
       borderColor: '#268C43',
       borderWidth: 0.5,
       borderRadius: 10,
-      paddingHorizontal: 10,
+      paddingRight: 5,
       paddingVertical: 5,
     },
     infoName: {

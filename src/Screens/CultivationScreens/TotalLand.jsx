@@ -127,7 +127,7 @@ const makeStyles = fontScale =>
     },
     subAreaText: {
       alignSelf: 'center',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
       color: '#000',
       fontFamily: 'ubuntu_medium',
     },

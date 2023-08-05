@@ -85,6 +85,7 @@ const ImportantInformation = () => {
               productionName={'Description'}
               value={'Lorem ipsum'}
               onChangeText={e => {}}
+              keyboardType="default"
             />
           </View>
         </View>
