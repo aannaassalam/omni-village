@@ -37,6 +37,7 @@ export default function AuthStack({isLoggedIn}) {
       console.log('isToken', isToken);
       return 'startup';
     } else {
+      // return 'registerdetails';
       return 'home';
     }
   };

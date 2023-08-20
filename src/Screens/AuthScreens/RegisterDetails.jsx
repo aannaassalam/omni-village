@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,29 +12,29 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
+import { Box, Pressable, TextInput, Wrap } from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
+import DocumentPicker, { types } from 'react-native-document-picker';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   faChevronCircleDown,
   faChevronDown,
   faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
-import {validation} from '../../Validation/Validation';
-import {useDispatch, useSelector} from 'react-redux';
-import {EditUser} from '../../Redux/AuthSlice';
+import { validation } from '../../Validation/Validation';
+import { useDispatch, useSelector } from 'react-redux';
+import { EditUser } from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
-import {Scale} from '../../Helper/utils';
+import { Scale } from '../../Helper/utils';
 
 // const FormData = global.FormData;
 
-export default function RegisterDetails({navigation, route}) {
+export default function RegisterDetails({ navigation, route }) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
   const handleDocumentSelection = useCallback(async () => {
@@ -50,9 +50,9 @@ export default function RegisterDetails({navigation, route}) {
     }
   }, []);
 
-  const {user} = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
 
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   const schema = yup
@@ -76,16 +76,36 @@ export default function RegisterDetails({navigation, route}) {
     handleSubmit,
     setValue,
     control,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       phone: user?.phone || '',
     },
   });
-
+  const [numMembers,setNumMembers] = useState(null);
+  const [familyMembers, setFamilyMembers] = useState([]);
   const [inputVal, setInputVal] = useState('');
-
+  const handleMemberChange = (value) => {
+    setNumMembers(value);
+    if (value > familyMembers.length) {
+      const newMembers = Array.from({ length: value - familyMembers.length }, (_, index) => ({
+        id: familyMembers.length + index + 1,
+        member_name: '',
+        member_gender:'',
+        member_age: ''
+      }));
+      setFamilyMembers([...familyMembers, ...newMembers]);
+    } else {
+      const updatedMembers = familyMembers.slice(0, value);
+      setFamilyMembers(updatedMembers);
+    }
+  };
+  const handleMemberNameChange = (index, newName, member) => {
+    const updatedNames = [...familyMembers];
+    updatedNames[index][member] = newName;
+    setFamilyMembers(updatedNames);
+  };
   const [dropdownVal, setDropdownVal] = useState('');
 
   const InputValueCallback = data => {
@@ -101,7 +121,7 @@ export default function RegisterDetails({navigation, route}) {
 
   const FormSubmit = data => {
     // console.log(formData.getParts());
-    dispatch(EditUser({data, file: fileResponse[0]}))
+    dispatch(EditUser({ data, file: fileResponse[0] }))
       .unwrap()
       .then(res => navigation.navigate('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
@@ -120,7 +140,7 @@ export default function RegisterDetails({navigation, route}) {
               <Controller
                 control={control}
                 name="first_name"
-                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
                   <InputTextComponent
                     placeholder={'First Name'}
                     onChangeText={onChange}
@@ -137,7 +157,7 @@ export default function RegisterDetails({navigation, route}) {
               <Controller
                 control={control}
                 name="last_name"
-                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
                   <InputTextComponent
                     placeholder={'Last Name'}
                     onChangeText={onChange}
@@ -157,7 +177,7 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="phone"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
                   placeholder={'Phone No'}
                   onChangeText={onChange}
@@ -179,7 +199,7 @@ export default function RegisterDetails({navigation, route}) {
           <Controller
             control={control}
             name="village_name"
-            render={({field: {onChange, onBlur, value, name, ref}}) => (
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <CustomDropdown1
                 placeholder={'Village Name'}
                 selectedValue={DropdownSelectedValue}
@@ -188,53 +208,84 @@ export default function RegisterDetails({navigation, route}) {
           />
         </Box>
         {errors?.village_name && (
-          <Text style={{...styles.error, width: '100%', marginBottom: 15}}>
+          <Text style={{ ...styles.error, width: '100%', marginBottom: 15 }}>
             {errors?.village_name?.message}
           </Text>
         )}
-
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="family_name"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              name="family_memnbers"
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
-                  placeholder={'Family Name'}
-                  onChangeText={onChange}
-                  value={value}
+                  placeholder={'Family Members'}
+                  onChangeText={(e) => {
+                    handleMemberChange(e)
+                  }}
+                value={numMembers}
                 />
               )}
             />
-            {errors?.family_name && (
-              <Text style={styles.error}>{errors?.family_name?.message}</Text>
-            )}
           </View>
         </Box>
+        {familyMembers.map((item, index)=>{
+          return(
+        <View>
+        <Text style={[styles.LoginHead, { fontSize: 16 / fontScale, alignSelf: 'flex-start', padding: 3 }]}>Member {item?.id}</Text>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="username"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              name="member_name"
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
-                  placeholder={'User Name'}
-                  onChangeText={onChange}
-                  value={value}
+                  placeholder={'Member Name'}
+                  onChangeText={(e)=>handleMemberNameChange(index,e,'member_name')}
+                  value={item?.member_name}
                 />
               )}
             />
-            {errors?.username?.message ? (
-              <Text style={styles.error}>{errors?.username?.message}</Text>
-            ) : null}
+            <View style={[styles.input_wrap, { marginTop: '4%' }]}>
+              <View style={styles.half_input}>
+                <Controller
+                  control={control}
+                  name="member_gender"
+                  render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                    <InputTextComponent
+                      placeholder={'Member Gender'}
+                    onChangeText={(e)=>handleMemberNameChange(index,e,'member_gender')}
+                    value={item?.member_gender}
+                    />
+                  )}
+                />
+              </View>
+              <View style={styles.half_input}>
+                <Controller
+                  control={control}
+                  name="member_age"
+                  render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                    <InputTextComponent
+                      placeholder={'Member Age'}
+                      keyboardType={'numeric'}
+                    onChangeText={(e)=>handleMemberNameChange(index,e,'member_age')}
+                    value={item?.member_age}
+                    />
+                  )}
+                />
+              </View>
+            </View>
           </View>
         </Box>
+        </View>
+          )
+        })}
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
               control={control}
               name="social_security_number"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
                   placeholder={'Social Security number'}
                   onChangeText={onChange}
@@ -254,7 +305,7 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="address"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
                   placeholder={'Address'}
                   onChangeText={onChange}
@@ -277,7 +328,7 @@ export default function RegisterDetails({navigation, route}) {
             <Image
               style={styles.tinyLogo}
               source={require('../../../assets/file_img.png')}
-              // height={100}
+            // height={100}
             />
             <Text varint="body1" style={styles.upload_txt}>
               Upload address proof
@@ -298,7 +349,7 @@ export default function RegisterDetails({navigation, route}) {
               <Image
                 style={styles.tinyLogo}
                 source={require('../../../assets/file_img.png')}
-                // height={100}
+              // height={100}
               />
               <Text
                 varint="body1"
@@ -307,7 +358,7 @@ export default function RegisterDetails({navigation, route}) {
                 {file?.name}
               </Text>
               <Pressable onPress={() => setFileResponse([])}>
-                <Text style={{...styles.error, marginTop: 0}}>Remove</Text>
+                <Text style={{ ...styles.error, marginTop: 0 }}>Remove</Text>
               </Pressable>
             </Box>
           </Box>
@@ -408,7 +459,7 @@ const makeStyles = fontScale =>
       width: '50%',
       paddingHorizontal: 7,
     },
-    login_input: {flexBasis: '100%', width: '100%'},
+    login_input: { flexBasis: '100%', width: '100%' },
     input_wrap: {
       flexDirection: 'row',
       marginHorizontal: -7,
@@ -453,4 +504,10 @@ const makeStyles = fontScale =>
       fontSize: 14 / fontScale,
       marginTop: 5,
     },
+    memberDetailsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 15,
+    }
   });
