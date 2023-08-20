@@ -16,6 +16,8 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import BottomModal from '../../Components/BottomSheet/BottomModal';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import {BlurView} from '@react-native-community/blur';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -40,20 +42,13 @@ const CultivationDashboard = ({navigation, route}) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CustomHeader
         backIcon={true}
         headerName={'Cultivation'}
         goBack={() => navigation.goBack()}
       />
-      <View style={styles.topContainer}>
-        <Text style={styles.topText}>production</Text>
-        <Image
-          source={require('../../../assets/right_black_arrow.png')}
-          style={styles.arrow}
-        />
-        <Text style={[styles.topText, {color: '#000'}]}>cultivation</Text>
-      </View>
+      <CustomDashboard first={'production'} second={'cultivation'} />
       {/* land allocated and modify section */}
       <View style={styles.secondTopContainer}>
         <View style={styles.secondTopContainerInner}>
@@ -201,7 +196,7 @@ const CultivationDashboard = ({navigation, route}) => {
           />
         </View>
       </BottomModal>
-    </View>
+    </SafeAreaView>
   );
 };
 

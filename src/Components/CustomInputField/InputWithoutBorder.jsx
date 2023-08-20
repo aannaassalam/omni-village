@@ -18,6 +18,7 @@ const InputWithoutBorder = ({
   measureName,
   onFocus,
   notRightText,
+  multiline,
   editable,
   keyboardType = 'number-pad',
 }) => {

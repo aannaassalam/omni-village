@@ -78,7 +78,7 @@ const CropDescription = ({navigation, route}) => {
             )}
           </TouchableOpacity>
         </View>
-        {impInfo ? <ImportantInformation /> : null}
+        {impInfo ? <ImportantInformation navigation={navigation} /> : null}
       </ScrollView>
     </View>
   );

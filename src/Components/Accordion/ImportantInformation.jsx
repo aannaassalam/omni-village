@@ -10,7 +10,7 @@ import PopupModal from '../Popups/PopupModal';
 import CalendarPicker from 'react-native-calendar-picker';
 import CustomButton from '../CustomButton/CustomButton';
 
-const ImportantInformation = () => {
+const ImportantInformation = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [soilHeal, setSoilHeal] = useState('');
@@ -84,6 +84,7 @@ const ImportantInformation = () => {
               notRightText={true}
               productionName={'Description'}
               value={'Lorem ipsum'}
+              multiline={true}
               onChangeText={e => {}}
               keyboardType="default"
             />
@@ -168,12 +169,16 @@ const ImportantInformation = () => {
             <CustomButton
               style={styles.submitButton}
               btnText={'Submit'}
-              onPress={() => setSavepopup(false)}
+              onPress={() => {
+                setSavepopup(false), navigation.goBack();
+              }}
             />
             <CustomButton
               style={styles.draftButton}
               btnText={'Cancel'}
-              onPress={() => setSavepopup(false)}
+              onPress={() => {
+                setSavepopup(false), navigation.goBack();
+              }}
             />
           </View>
         </View>

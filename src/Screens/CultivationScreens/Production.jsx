@@ -12,6 +12,7 @@ import React, {useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Production = ({navigation, route}) => {
   const {totalLand, usedLand, data} = route.params;
@@ -20,10 +21,12 @@ const Production = ({navigation, route}) => {
   const goToNext = name => {
     if (name == 'Cultivation') {
       navigation.navigate('landAllocation', {totalLand: totalLand});
+    } else if (name == 'Trees, Shrubs & Grasslands') {
+      navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CustomHeader
         backIcon={true}
         headerName={'Production'}
@@ -76,7 +79,7 @@ const Production = ({navigation, route}) => {
           />
         </>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

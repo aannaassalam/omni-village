@@ -8,6 +8,8 @@ import Season1 from '../Screens/CultivationScreens/Season1';
 import CultivationTwice from '../Screens/CultivationScreens/CultivationTwice';
 import CultivationThrice from '../Screens/CultivationScreens/CultivationThrice';
 import CropDescription from '../Screens/CultivationScreens/CropDescription';
+import TreesShrubsScreen from '../Screens/TreesAndShrubsScreens/TreesShrubsScreen';
+import Type01 from '../Screens/TreesAndShrubsScreens/Type01';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,9 @@ export default function Productionstack() {
       <Stack.Screen name="cultivationThrice" component={CultivationThrice} />
       <Stack.Screen name="season1" component={Season1} />
       <Stack.Screen name="cropDescription" component={CropDescription} />
+      {/* Tress,shrubs and grassland */}
+      <Stack.Screen name="treesShrubGrassland" component={TreesShrubsScreen} />
+      <Stack.Screen name="type" component={Type01} />
     </Stack.Navigator>
   );
 }

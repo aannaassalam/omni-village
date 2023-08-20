@@ -35,6 +35,8 @@ const UtilisationAccordion = () => {
                   measureName={'kg'}
                   productionName={item?.name}
                   value={item?.value}
+                  multiline={false}
+                  notRightText={item?.name == 'Others' ? true : false}
                   onChangeText={e => {
                     let targetedArea = utilisationArray.findIndex(
                       lan => lan?.name == item?.name,
