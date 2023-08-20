@@ -220,6 +220,7 @@ export default function RegisterDetails({ navigation, route }) {
               render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <InputTextComponent
                   placeholder={'Family Members'}
+                  keyboardType='numeric'
                   onChangeText={(e) => {
                     handleMemberChange(e)
                   }}
