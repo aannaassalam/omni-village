@@ -21,6 +21,7 @@ export default CustomDropdown3 = ({
   selectedValue,
   data,
   infoName,
+  value,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -37,7 +38,7 @@ export default CustomDropdown3 = ({
           buttonTextAfterSelection={(selectedItem, index) => {
             // text represented after item is selected
             // if data array is an array of objects then return selectedItem.property to render after item is selected
-            return selectedItem;
+            return value;
           }}
           rowTextForSelection={(item, index) => {
             // text represented for each item in dropdown
@@ -61,7 +62,7 @@ export default CustomDropdown3 = ({
           dropdownStyle={styles.dropdown1DropdownStyle}
           rowStyle={styles.dropdown1RowStyle}
           rowTextStyle={styles.dropdown1RowTxtStyle}
-          defaultButtonText={placeholder}
+          defaultButtonText={value ? value : placeholder}
           dropdownOverlayColor="rgba(0,0,0,.1)"
         />
       </View>
@@ -112,6 +113,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform: 'capitalize',
     },
     dropdown1DropdownStyle: {
       backgroundColor: '#fff',
@@ -129,6 +131,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform: 'capitalize',
     },
     icon_btn: {
       backgroundColor: '#a8adaf',

@@ -19,7 +19,6 @@ export const getUser = createAsyncThunk(
   async (_, {rejectWithValue}) => {
     try {
       const res = await axiosInstance.get(endpoints.auth.getUser);
-      console.log(res);
       return {status: res.status, data: res.data};
     } catch (err) {
       return rejectWithValue({
@@ -121,6 +120,24 @@ export const EditUser = createAsyncThunk(
   },
 );
 
+export const cultivationLandAllocation = createAsyncThunk(
+  'cultivationLandAllocation',
+  async (data, {rejectWithValue}) => {
+    try {
+      const res = await axiosInstance.post(
+        endpoints.auth.cultivationLandAllocation,
+        data,
+      );
+      return {status: res.status, data: res.data};
+    } catch (err) {
+      return rejectWithValue({
+        status: err.response.status,
+        data: err.response.data,
+      });
+    }
+  },
+);
+
 export const AuthSlice = createSlice({
   name: 'userAuth',
   initialState,
@@ -133,7 +150,6 @@ export const AuthSlice = createSlice({
         state.status = 'pending';
       })
       .addCase(getUser.fulfilled, (state, {payload}) => {
-        console.log(payload);
         if (payload.status === 200) {
           state.user = payload.data;
           state.status = 'idle';

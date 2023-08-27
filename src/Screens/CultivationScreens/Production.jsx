@@ -13,15 +13,26 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSelector} from 'react-redux';
 
 const Production = ({navigation, route}) => {
   const {totalLand, usedLand, data} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const {user} = useSelector(s => s.auth);
+
   const goToNext = name => {
-    if (name == 'Cultivation') {
-      navigation.navigate('landAllocation', {totalLand: totalLand});
-    } else if (name == 'Trees, Shrubs & Grasslands') {
+    if (name === 'Cultivation') {
+      if (
+        Object.values(user?.sub_area.cultivation.distribution || {}).filter(
+          d => d !== 0,
+        ).length > 0
+      ) {
+        navigation.navigate('cultivationDashboard');
+      } else {
+        navigation.navigate('landAllocation');
+      }
+    } else if (name === 'Trees, Shrubs & Grasslands') {
       navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
     }
   };
@@ -57,25 +68,20 @@ const Production = ({navigation, route}) => {
       {/* showcase input of used land */}
       <ScrollView>
         <>
-          {data.map(item => {
+          {data.map((item, index) => {
             return (
               <CustomShowcaseInput
                 productionName={item?.name}
                 productionArea={`${item?.area} acres`}
-                progressBar={true}
                 onPress={() => goToNext(item?.name)}
+                key={index}
               />
             );
           })}
-          <CustomShowcaseInput
-            productionName={'Hunting'}
-            productionArea={''}
-            progressBar={true}
-          />
+          <CustomShowcaseInput productionName={'Hunting'} productionArea={''} />
           <CustomShowcaseInput
             productionName={'Selling Channel'}
             productionArea={''}
-            progressBar={true}
           />
         </>
       </ScrollView>
@@ -84,6 +90,7 @@ const Production = ({navigation, route}) => {
 };
 
 export default Production;
+
 const width = Dimensions.get('window').width;
 const makeStyles = fontScale =>
   StyleSheet.create({

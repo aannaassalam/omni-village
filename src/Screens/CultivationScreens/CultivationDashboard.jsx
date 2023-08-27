@@ -18,13 +18,18 @@ import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBo
 import {BlurView} from '@react-native-community/blur';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDispatch} from 'react-redux';
+import {setCultivationType, setSeason} from '../../Redux/CultivationSlice';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {totalLand} = route.params;
+  // const {totalLand = 20} = route.params;
+  const totalLand = 20;
+  const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
+
   const [cultivation, setCultivation] = useState([
     {name: 'Cultivated once in a year', area: 0},
     {name: 'Cultivated twice in a year', area: 0},
@@ -37,7 +42,6 @@ const CultivationDashboard = ({navigation, route}) => {
     if (sumofAreas > totalLand) {
       alert('Your  cultivation area acres are greater than total land area');
     } else {
-      console.log('go ahead');
       navigation.navigate('cultivationDashboard', {totalLand: totalLand});
     }
   };
@@ -72,7 +76,15 @@ const CultivationDashboard = ({navigation, route}) => {
       {/* options */}
       <View style={styles.optionsContainer}>
         {/* once in a year */}
-        <TouchableOpacity onPress={() => navigation.navigate('season1')}>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(setSeason(1));
+            dispatch(setCultivationType(1))
+              .unwrap()
+              .then(() => {
+                navigation.navigate('season1');
+              });
+          }}>
           <Box style={styles.home_box}>
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt}>
@@ -90,7 +102,13 @@ const CultivationDashboard = ({navigation, route}) => {
         </TouchableOpacity>
         {/* twice in a year */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('cultivationTwice')}>
+          onPress={() => {
+            dispatch(setCultivationType(2))
+              .unwrap()
+              .then(() => {
+                navigation.navigate('cultivationTwice');
+              });
+          }}>
           <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
             <Box style={styles.exclamationMark}>
               <Image
@@ -115,7 +133,13 @@ const CultivationDashboard = ({navigation, route}) => {
         </TouchableOpacity>
         {/* thrice in a year */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('cultivationThrice')}>
+          onPress={() => {
+            dispatch(setCultivationType(3))
+              .unwrap()
+              .then(() => {
+                navigation.navigate('cultivationThrice');
+              });
+          }}>
           <Box style={[styles.home_box, {borderColor: 'grey'}]}>
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt2}>

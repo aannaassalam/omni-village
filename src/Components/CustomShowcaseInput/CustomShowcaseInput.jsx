@@ -61,8 +61,9 @@ const makeStyles = fontScale =>
       marginBottom: '2%',
     },
     areaProduction: {
-      width: '70%',
-      paddingHorizontal: 20,
+      // width: '70%',
+      flex: 1,
+      paddingHorizontal: 10,
       paddingVertical: 5,
       margin: 10,
       alignSelf: 'center',

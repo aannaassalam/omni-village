@@ -34,7 +34,6 @@ export default function AuthStack({isLoggedIn}) {
     if (user?.first_name === '-') {
       return 'registerdetails';
     } else if (token === undefined || token === null) {
-      console.log('isToken', isToken);
       return 'startup';
     } else {
       return 'home';

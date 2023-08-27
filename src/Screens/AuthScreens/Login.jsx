@@ -57,8 +57,6 @@ export default function Login({navigation, route}) {
       });
   };
 
-  console.log(errors);
-
   return (
     <LoginWrapper>
       <>

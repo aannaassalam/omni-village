@@ -19,7 +19,7 @@ const InputWithoutBorder = ({
   onFocus,
   notRightText,
   multiline,
-  editable,
+  editable = true,
   keyboardType = 'number-pad',
 }) => {
   const {fontScale} = useWindowDimensions();
@@ -45,11 +45,12 @@ const InputWithoutBorder = ({
                 placeholder={placeholder}
                 placeholderTextColor={'#000'}
                 onFocus={onFocus}
-                // editable={!editable}
+                editable={editable}
                 // keyboardType={keyboardType}
                 multiline={notRightText ? true : false}
-                numberOfLines={notRightText && 2}
+                numberOfLines={notRightText ? 2 : null}
                 keyboardType={keyboardType}
+                // editable={!disabled}
               />
             </View>
             {notRightText ? null : (

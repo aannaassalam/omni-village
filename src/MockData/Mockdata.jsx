@@ -1,11 +1,11 @@
-export const soilHealth = ['Stable', 'Decreasing Yield'];
+export const soilHealth = ['stable', 'decreasing yield'];
 export const fertilisers = [
-  'Organic Self made',
-  'Organic Purchased',
-  'Chemical Based',
+  'organic self made',
+  'organic purchased',
+  'chemical based',
 ];
 export const pesticides = [
-  'Organic Self made',
-  'Organic Purchased',
-  'Chemical Based',
+  'organic self made',
+  'organic purchased',
+  'chemical based',
 ];

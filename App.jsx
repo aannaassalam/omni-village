@@ -19,6 +19,8 @@ import {Provider, useDispatch} from 'react-redux';
 import {store} from './src/Store/store';
 import {CheckToken} from './src/Helper/CheckToken';
 import {getUser} from './src/Redux/AuthSlice';
+import ToastManager from 'toastify-react-native';
+import Toast from 'react-native-toast-message';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);

@@ -24,6 +24,7 @@ const AddAndDeleteCropButton = ({onPress, add, cropName}) => {
           <Image
             source={require('../../../assets/delete.png')}
             style={styles.addCropIcon}
+            onPress={onPress}
           />
         )}
       </TouchableOpacity>

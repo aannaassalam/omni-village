@@ -29,7 +29,6 @@ const TotalLand = ({navigation}) => {
     if (sumofAreas > totalLand) {
       Alert.alert('Your sub area acres are greater than total land area');
     } else {
-      console.log('go ahead');
       navigation.navigate('production', {
         totalLand: totalLand,
         usedLand: sumofAreas,
@@ -40,7 +39,7 @@ const TotalLand = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <CustomHeader
         backIcon={true}
         headerName={'Total Land'}
@@ -94,7 +93,7 @@ const TotalLand = ({navigation}) => {
           </View>
         </>
       </ScrollView>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -105,6 +104,7 @@ const makeStyles = fontScale =>
     container: {
       flex: 1,
       backgroundColor: '#fff',
+      // paddingBottom: 20,
     },
     textInputArea: {
       alignSelf: 'center',
@@ -135,5 +135,6 @@ const makeStyles = fontScale =>
       marginTop: '5%',
       width: '90%',
       alignSelf: 'center',
+      marginBottom: 20,
     },
   });

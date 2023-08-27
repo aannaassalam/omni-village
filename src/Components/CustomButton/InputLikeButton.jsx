@@ -38,7 +38,7 @@ const InputLikeButton = ({text, onPress, rightIcon, date, calendarPress}) => {
               {date}
             </Text>
           </View>
-          <TouchableOpacity style={styles.calendar} onPress={calendarPress}>
+          <TouchableOpacity style={styles.calendar} onPress={onPress}>
             <Image source={require('../../../assets/calendar.png')} />
           </TouchableOpacity>
         </>
