@@ -18,14 +18,15 @@ import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBo
 import {BlurView} from '@react-native-community/blur';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setCultivationType, setSeason} from '../../Redux/CultivationSlice';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   // const {totalLand = 20} = route.params;
-  const totalLand = 20;
+  const {userDetails} = useSelector(s => s.auth);
+  const totalLand = userDetails?.totalLand;
   const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);

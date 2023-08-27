@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useDispatch} from 'react-redux';
-import {cultivationLandAllocation} from '../../Redux/AuthSlice';
+import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
 import Toast, {BaseToast} from 'react-native-toast-message';
 
 const LandAllocation = ({navigation, route}) => {
@@ -78,7 +78,14 @@ const LandAllocation = ({navigation, route}) => {
       await schema.validate(data);
       dispatch(cultivationLandAllocation(data))
         .unwrap()
-        .then(() => navigation.navigate('cultivationDashboard'))
+        .then(() => {
+          dispatch(getUser())
+            .unwrap()
+            .then(() => {
+              navigation.replace('cultivationDashboard');
+            })
+            .catch(err => console.log(err));
+        })
         .catch(err => {
           Toast.show({
             type: 'error',

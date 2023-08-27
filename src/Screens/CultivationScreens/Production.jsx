@@ -8,7 +8,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {Divider} from 'react-native-paper';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import CustomButton from '../../Components/CustomButton/CustomButton';
@@ -16,13 +16,20 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 
 const Production = ({navigation, route}) => {
-  const {totalLand, usedLand, data} = route.params;
+  // const {totalLand, usedLand, data} = route.params;
+  const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {user} = useSelector(s => s.auth);
 
   const goToNext = name => {
-    if (name === 'Cultivation') {
+    if (name === 'cultivation') {
+      console.log(
+        Object.values(user?.sub_area.cultivation.distribution || {}).filter(
+          d => d !== 0,
+        ).length,
+        'as',
+      );
       if (
         Object.values(user?.sub_area.cultivation.distribution || {}).filter(
           d => d !== 0,
@@ -36,6 +43,16 @@ const Production = ({navigation, route}) => {
       navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
     }
   };
+
+  const usedLand = useMemo(() => {
+    const data = Object.keys(userDetails?.sub_area).reduce((acc, key) => {
+      if (key === 'cultivation') {
+        return acc + userDetails?.sub_area[key].land;
+      }
+      return acc + userDetails?.sub_area[key];
+    }, 0);
+    return data;
+  }, [userDetails?.sub_area]);
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader
@@ -47,7 +64,7 @@ const Production = ({navigation, route}) => {
       <View style={styles.top_container}>
         <View style={styles.top_container_inner}>
           <Text style={styles.land_allocated_text}>Land allocated</Text>
-          <Text style={styles.value_text}>{totalLand} acres</Text>
+          <Text style={styles.value_text}>{userDetails?.total_land} acres</Text>
         </View>
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
@@ -60,7 +77,7 @@ const Production = ({navigation, route}) => {
         <View style={styles.top_container_inner}>
           <Text
             style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.navigate('totalLand')}>
             Modify
           </Text>
         </View>
@@ -68,13 +85,18 @@ const Production = ({navigation, route}) => {
       {/* showcase input of used land */}
       <ScrollView>
         <>
-          {data.map((item, index) => {
+          {Object.keys(userDetails?.sub_area).map(item => {
             return (
               <CustomShowcaseInput
-                productionName={item?.name}
-                productionArea={`${item?.area} acres`}
-                onPress={() => goToNext(item?.name)}
-                key={index}
+                key={item}
+                productionName={item}
+                productionArea={`${
+                  item === 'cultivation'
+                    ? userDetails?.sub_area[item].land
+                    : userDetails?.sub_area[item]
+                } acres`}
+                progressBar={false}
+                onPress={() => goToNext(item)}
               />
             );
           })}

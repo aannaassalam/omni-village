@@ -18,7 +18,12 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
           outlineStyle={{
             borderRadius: 10,
           }}
-          label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
+          label={
+            <Text
+              style={{fontSize: 16 / fontScale, textTransform: 'capitalize'}}>
+              {label}
+            </Text>
+          }
           value={value}
           style={styles.textInput}
           placeholder={placeholder}

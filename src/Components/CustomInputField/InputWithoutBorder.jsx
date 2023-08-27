@@ -109,6 +109,7 @@ const makeStyles = fontScale =>
       marginBottom: -10,
       marginTop: 10,
       fontFamily: 'ubuntu_medium',
+      textTransform: 'capitalize',
     },
     divider: {
       height: '80%',
