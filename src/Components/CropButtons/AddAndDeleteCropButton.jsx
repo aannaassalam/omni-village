@@ -52,6 +52,7 @@ const makeStyles = fontScale =>
       fontWeight: '500',
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',
+      textTransform: 'capitalize',
     },
     addCropIcon: {
       height: 30,

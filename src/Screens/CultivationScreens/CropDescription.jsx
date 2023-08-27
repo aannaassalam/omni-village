@@ -92,8 +92,6 @@ const CropDescription = ({navigation, route}) => {
     // important_information,
   });
 
-  console.log(currentCrop);
-
   const {
     handleSubmit,
     setValue,
@@ -195,11 +193,13 @@ const CropDescription = ({navigation, route}) => {
         }),
       )
         .unwrap()
-        .then(() =>
-          Toast.show({
-            text1: 'Success',
-            text2: 'Cultivation added successfully!',
-          }),
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Cultivation added successfully!',
+            }),
+          navigation.goBack(),
         )
         .catch(err => {
           console.log('err', err);

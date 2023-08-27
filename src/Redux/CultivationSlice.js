@@ -30,6 +30,7 @@ export const getCultivation = createAsyncThunk(
         endpoints.cultivation.fetchCultivation,
         {cultivation_type: cultivationType, season},
       );
+      console.log(res.data, cultivationType, season, 'is it this');
       return {status: res.status, data: res.data};
     } catch (err) {
       rejectWithValue({
@@ -129,7 +130,7 @@ export const CultivationSlice = createSlice({
       })
       .addCase(addCultivation.fulfilled, (state, {payload}) => {
         if (payload.status === 200) {
-          state.cultivations = payload.data;
+          // state.cultivations = payload.data;
         }
         state.status = 'idle';
       })
@@ -142,7 +143,7 @@ export const CultivationSlice = createSlice({
       })
       .addCase(editCultivation.fulfilled, (state, {payload}) => {
         if (payload.status === 200) {
-          state.cultivations = payload.data;
+          // state.cultivations = payload.data;
         }
         state.status = 'idle';
       })

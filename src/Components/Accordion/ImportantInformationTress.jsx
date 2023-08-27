@@ -1,13 +1,13 @@
-import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
+import {StyleSheet, Text, TouchableHighlight, View, useWindowDimensions} from 'react-native';
 import React, {useState} from 'react';
 import CustomDropdown3 from '../CustomDropdown/CustomDropdown3';
-import {fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
+import {averageTreeAge, fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
 import {Divider} from 'react-native-paper';
 import InputWithoutBorder from '../CustomInputField/InputWithoutBorder';
 import InputLikeButton from '../CustomButton/InputLikeButton';
 import InputWithoutRightElement from '../CustomInputField/InputWithoutRightElement';
 
-const ImportantInformationTress = () => {
+const ImportantInformationTress = ({ treeAgePress }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [soilHeal, setSoilHeal] = useState('');
@@ -31,6 +31,13 @@ const ImportantInformationTress = () => {
         onChangeText={e => console.log(e)}
         notRightText={true}
       />
+      <TouchableHighlight onPress={treeAgePress}>
+      <CustomDropdown3
+        data={averageTreeAge}
+        selectedValue={e => setPesti(e)}
+        infoName={'Average age of the tree'}
+      />
+      </TouchableHighlight>
       <CustomDropdown3
         data={soilHealth}
         selectedValue={e => setSoilHeal(e)}

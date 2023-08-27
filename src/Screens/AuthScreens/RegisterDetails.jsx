@@ -65,8 +65,18 @@ export default function RegisterDetails({navigation, route}) {
       last_name: yup.string().required(validation?.error?.last_name),
       village_name: yup.string().required(validation?.error?.village_name),
       phone: yup.string().required(validation?.error?.phone),
-      family_name: yup.string().required(validation?.error?.family_name),
-      username: yup.string().required(validation?.error?.username),
+      number_of_members: yup
+        .string()
+        .required(validation.error.number_of_members),
+      members: yup
+        .array(
+          yup.object().shape({
+            name: yup.string().required(validation.error.member_name),
+            age: yup.string().required(validation.error.member_age),
+            gender: yup.string().required(validation.error.member_gender),
+          }),
+        )
+        .required('Members is required'),
       social_security_number: yup
         .string()
         .required(validation?.error?.social_security_number),
@@ -86,6 +96,33 @@ export default function RegisterDetails({navigation, route}) {
       phone: user?.phone || '',
     },
   });
+  const [numMembers, setNumMembers] = useState(null);
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [inputVal, setInputVal] = useState('');
+  const handleMemberChange = value => {
+    setNumMembers(value);
+    if (value > familyMembers.length) {
+      const newMembers = Array.from(
+        {length: value - familyMembers.length},
+        (_, index) => ({
+          id: familyMembers.length + index + 1,
+          member_name: '',
+          member_gender: '',
+          member_age: '',
+        }),
+      );
+      setFamilyMembers([...familyMembers, ...newMembers]);
+    } else {
+      const updatedMembers = familyMembers.slice(0, value);
+      setFamilyMembers(updatedMembers);
+    }
+  };
+  const handleMemberNameChange = (index, newName, member) => {
+    const updatedNames = [...familyMembers];
+    updatedNames[index][member] = newName;
+    setFamilyMembers(updatedNames);
+  };
+  const [dropdownVal, setDropdownVal] = useState('');
 
   const InputValueCallback = data => {
     setInputVal(data);
@@ -200,43 +237,95 @@ export default function RegisterDetails({navigation, route}) {
             {errors?.village_name?.message}
           </Text>
         )}
-
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="family_name"
+              name="number_of_members"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Family Name'}
-                  onChangeText={onChange}
+                  placeholder={'Number of Family Members'}
+                  keyboardType="number-pad"
+                  onChangeText={e => {
+                    onChange(e);
+                    if (e !== '' && parseInt(e) !== 0)
+                      setNumMembers(parseInt(e));
+                  }}
                   value={value}
                 />
               )}
             />
-            {errors?.family_name && (
-              <Text style={styles.error}>{errors?.family_name?.message}</Text>
-            )}
           </View>
         </Box>
-        <Box style={styles.cmn_wrp}>
-          <View style={styles.login_input}>
-            <Controller
-              control={control}
-              name="username"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
-                  placeholder={'User Name'}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-            />
-            {errors?.username?.message ? (
-              <Text style={styles.error}>{errors?.username?.message}</Text>
-            ) : null}
-          </View>
-        </Box>
+        {Array(numMembers)
+          .fill(0)
+          .map((item, index) => {
+            return (
+              <View key={index}>
+                <Text
+                  style={[
+                    styles.LoginHead,
+                    {
+                      fontSize: 16 / fontScale,
+                      alignSelf: 'flex-start',
+                      padding: 3,
+                    },
+                  ]}>
+                  Member #{index + 1}
+                </Text>
+                <Box style={styles.cmn_wrp}>
+                  <View style={styles.login_input}>
+                    <Controller
+                      control={control}
+                      name={`members[${index}].name`}
+                      render={({
+                        field: {onChange, onBlur, value, name, ref},
+                      }) => (
+                        <InputTextComponent
+                          placeholder={'Member Name'}
+                          onChangeText={onChange}
+                          value={value}
+                        />
+                      )}
+                    />
+                    <View style={[styles.input_wrap, {marginTop: '4%'}]}>
+                      <View style={styles.half_input}>
+                        <Controller
+                          control={control}
+                          name={`members[${index}].gender`}
+                          render={({
+                            field: {onChange, onBlur, value, name, ref},
+                          }) => (
+                            <InputTextComponent
+                              placeholder={'Member Gender'}
+                              onChangeText={onChange}
+                              value={value}
+                            />
+                          )}
+                        />
+                      </View>
+                      <View style={styles.half_input}>
+                        <Controller
+                          control={control}
+                          name={`members[${index}].age`}
+                          render={({
+                            field: {onChange, onBlur, value, name, ref},
+                          }) => (
+                            <InputTextComponent
+                              placeholder={'Member Age'}
+                              keyboardType={'numeric'}
+                              onChangeText={onChange}
+                              value={value}
+                            />
+                          )}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </Box>
+              </View>
+            );
+          })}
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
@@ -464,5 +553,11 @@ const makeStyles = fontScale =>
       marginTop: 5,
       color: '#ff000e',
       marginLeft: 5,
+    },
+    memberDetailsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 15,
     },
   });

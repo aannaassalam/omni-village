@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
+import Toast from 'react-native-toast-message';
 
 const BottomModal = ({
   noTopDvd,
@@ -33,6 +34,7 @@ const BottomModal = ({
           {/* {!noTopDvd && <View style={styles.topDiv} />} */}
           {children}
         </View>
+        <Toast style={{height: 'auto', minHeight: 70}} width={300} />
       </View>
     </Modal>
   );

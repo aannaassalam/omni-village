@@ -6,9 +6,9 @@ import {
   Image,
   useWindowDimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import {Divider} from 'react-native-paper';
+import {ActivityIndicator, Divider} from 'react-native-paper';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import BottomModal from '../../Components/BottomSheet/BottomModal';
 import CustomButton from '../../Components/CustomButton/CustomButton';
@@ -23,8 +23,9 @@ import {
 } from '../../Redux/CropSlice';
 import {getCultivation, setCropId} from '../../Redux/CultivationSlice';
 import Toast from 'react-native-toast-message';
+import {useFocusEffect} from '@react-navigation/native';
 
-const Season1 = ({navigation}) => {
+const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [cropType, setCropType] = useState([]);
@@ -37,36 +38,43 @@ const Season1 = ({navigation}) => {
   const [selectedCrop, setSelectedCrop] = useState({});
 
   const dispatch = useDispatch();
+  const {seasonName = 'Season 1'} = route.params;
 
-  const {cultivations} = useSelector(s => s.cultivation);
+  const {userDetails} = useSelector(s => s.auth);
+  const {cultivations, cultivationType, status} = useSelector(
+    s => s.cultivation,
+  );
   const {crops, cropCategories} = useSelector(s => s.crop);
 
-  useEffect(() => {
-    setSelectCrops(prev => [
-      ...prev,
-      ...cultivations.map(c => ({
-        name: c.cultivation_crop.name,
-        _id: c.cultivation_crop._id,
-      })),
-    ]);
-  }, [cultivations.length]);
+  useFocusEffect(
+    useCallback(() => {
+      setSelectCrops(prev =>
+        cultivations.map(c => ({
+          name: c.cultivation_crop.name,
+          _id: c.cultivation_crop._id,
+        })),
+      );
+      return () => {
+        setSelectCrops([]);
+      };
+    }, [cultivations]),
+  );
+
+  console.log(cultivations, 'cultivatins');
 
   const handleRemoveClick = id => {
     setSelectCrops(prev => prev.filter(el => el._id !== id));
   };
 
-  useEffect(() => {
-    dispatch(getCropCategories());
-    dispatch(getCultivation());
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCropCategories());
+      dispatch(getCultivation());
+    }, [dispatch, seasonName]),
+  );
 
   const addCrop = () => {
-    if (cultivations.find(c => c.crop_id !== selectedCrop._id)) {
-      setSelectCrops(prev => [...prev, selectedCrop]);
-      setCropModal(!cropModal);
-      setFocusOther(false);
-      setOtherCrop('');
-    } else {
+    if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
       setCropModal(false);
       setFocusOther(false);
       setOtherCrop('');
@@ -75,6 +83,11 @@ const Season1 = ({navigation}) => {
         text1: 'Error',
         text2: 'Crop is already added!',
       });
+    } else {
+      setSelectCrops(prev => [...prev, selectedCrop]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setOtherCrop('');
     }
   };
   const DropdownSelectedValue = data => {
@@ -87,7 +100,7 @@ const Season1 = ({navigation}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Season 1'}
+        headerName={seasonName}
         goBack={() => navigation.goBack()}
       />
       {/* top container for land allocated and modify */}
@@ -96,58 +109,68 @@ const Season1 = ({navigation}) => {
           <Text style={styles.land_allocated_text}>Land allocated</Text>
         </View>
         <View style={styles.top_container_inner}>
-          <Text style={styles.value_text}>10 acres</Text>
+          <Text style={styles.value_text}>
+            {
+              userDetails.sub_area.cultivation.distribution[
+                cultivationType === 1
+                  ? 'once'
+                  : cultivationType === 2
+                  ? 'twice'
+                  : 'thrice'
+              ]
+            }{' '}
+            acres
+          </Text>
         </View>
-        <Divider style={styles.divider} />
+        {/* <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text
             style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
             onPress={() => navigation.goBack()}>
             Modify
           </Text>
-        </View>
+        </View> */}
       </View>
-      {selectCrops?.map((element, i) => {
-        return (
+      {status === 'idle' ? (
+        <>
+          {selectCrops?.map((element, i) => {
+            return (
+              <TouchableOpacity
+                style={styles.addAndDeleteButtonSection}
+                key={element._id}
+                onPress={() => {
+                  dispatch(setCropId(element._id))
+                    .unwrap()
+                    .then(() => {
+                      navigation.navigate('cropDescription', {
+                        cropName: element?.name,
+                      });
+                    });
+                }}>
+                <AddAndDeleteCropButton
+                  add={false}
+                  cropName={element?.name}
+                  onPress={() => handleRemoveClick(element._id)}
+                />
+              </TouchableOpacity>
+            );
+          })}
+          {/* {cropType[0] === undefined ? ( */}
           <TouchableOpacity
             style={styles.addAndDeleteButtonSection}
-            key={element._id}
-            onPress={() => {
-              dispatch(setCropId(element._id))
-                .unwrap()
-                .then(() => {
-                  navigation.navigate('cropDescription', {
-                    cropName: element?.name,
-                  });
-                });
-            }}>
+            onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
-              add={false}
-              cropName={element?.name}
-              onPress={() => handleRemoveClick(element._id)}
+              add={true}
+              cropName={'Add Crop'}
+              onPress={() => null}
             />
           </TouchableOpacity>
-        );
-      })}
-      {/* {cropType[0] === undefined ? ( */}
-      <TouchableOpacity
-        style={styles.addAndDeleteButtonSection}
-        onPress={() => setCropModal(true)}>
-        <AddAndDeleteCropButton
-          add={true}
-          cropName={'Add Crop'}
-          onPress={() => null}
-        />
-      </TouchableOpacity>
-      {/* // ) : (
-      //   <View style={styles.addAndDeleteButtonSection}>
-      //     <AddAndDeleteCropButton
-      //       add={true}
-      //       cropName={'Add Crop'}
-      //       onPress={() => setCropModal(true)}
-      //     /> */}
-      {/* </View> */}
-      {/* )} */}
+        </>
+      ) : (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <ActivityIndicator animating size="large" color="#268C43" />
+        </View>
+      )}
       <BottomModal
         modalVisible={cropModal}
         setBottomModalVisible={setCropModal}

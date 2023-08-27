@@ -34,7 +34,7 @@ const LandAllocation = ({navigation, route}) => {
       message: 'Atleast one the field is required!',
       exclusive: true,
       params: {keys: list.join(', ')},
-      test: value => list.some(f => value[f] !== 0 && value[f] !== ''),
+      test: value => list.some(f => value[f] !== '0' && value[f] !== ''),
     });
   });
 
@@ -56,9 +56,9 @@ const LandAllocation = ({navigation, route}) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      once: 0,
-      twice: 0,
-      thrice: 0,
+      once: '0',
+      twice: '0',
+      thrice: '0',
     },
   });
 
@@ -167,7 +167,11 @@ const LandAllocation = ({navigation, route}) => {
       <View style={styles.save}>
         <CustomButton btnText={'Save'} onPress={handleSubmit(onSave)} />
       </View>
-      <Toast />
+      <Toast
+        positionValue={30}
+        style={{height: 'auto', minHeight: 70}}
+        width={300}
+      />
     </View>
   );
 };

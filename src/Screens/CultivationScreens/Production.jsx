@@ -24,12 +24,6 @@ const Production = ({navigation, route}) => {
 
   const goToNext = name => {
     if (name === 'cultivation') {
-      console.log(
-        Object.values(user?.sub_area.cultivation.distribution || {}).filter(
-          d => d !== 0,
-        ).length,
-        'as',
-      );
       if (
         Object.values(user?.sub_area.cultivation.distribution || {}).filter(
           d => d !== 0,
@@ -39,7 +33,7 @@ const Production = ({navigation, route}) => {
       } else {
         navigation.navigate('landAllocation');
       }
-    } else if (name === 'Trees, Shrubs & Grasslands') {
+    } else if (name === 'trees') {
       navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
     }
   };
@@ -53,6 +47,7 @@ const Production = ({navigation, route}) => {
     }, 0);
     return data;
   }, [userDetails?.sub_area]);
+
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader

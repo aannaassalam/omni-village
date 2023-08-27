@@ -27,7 +27,11 @@ const CustomShowcaseInput = ({
           : {justifyContent: 'flex-start'},
       ]}>
       <View style={styles.areaProduction}>
-        <Text style={styles.productionName}>{productionName}</Text>
+        <Text style={styles.productionName}>
+          {productionName === 'trees'
+            ? 'trees, grass & shrubs'
+            : productionName}
+        </Text>
         <Text style={styles.productionArea}>{productionArea}</Text>
       </View>
       {progressBar ? (
@@ -79,6 +83,7 @@ const makeStyles = fontScale =>
       fontSize: 16 / fontScale,
       color: '#000',
       fontFamily: 'ubuntu_medium',
+      textTransform: 'capitalize',
     },
     productionArea: {
       color: 'green',

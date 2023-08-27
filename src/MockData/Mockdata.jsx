@@ -9,3 +9,6 @@ export const pesticides = [
   'organic purchased',
   'chemical based',
 ];
+export const averageTreeAge = [
+  'Less than a year',
+];

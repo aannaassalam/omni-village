@@ -19,6 +19,7 @@ const makeStyles = fontScale =>
       marginTop: '2%',
       backgroundColor: '#268C43',
       width: '93%',
+      borderRadius:5,
       alignSelf: 'center',
     },
   });
