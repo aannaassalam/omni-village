@@ -8,6 +8,13 @@ export const validation = {
         family_name:"Family Name Required",
         username:'User name Required',
         social_security_number:"Social Security Number Required",
-        address:" Address Required"
+        address:" Address Required",
+        total_land:'Total Land is Required',
+         cultivation:'Cultivation is Required', 
+         trees:'Trees is Required', 
+         poultry:'Polutry is Required', 
+         fishery:'Fishery is REquired', 
+         storage:'Storage is Required'
+
     }
 }

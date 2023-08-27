@@ -26,6 +26,7 @@ export const getUser = createAsyncThunk(
         data: err.response.data,
         status: err.response.status,
       });
+      // return err
     }
   },
 );
@@ -121,6 +122,22 @@ export const EditUser = createAsyncThunk(
   },
 );
 
+
+export const LandAllocation = createAsyncThunk(
+  'landallocation',
+  async(data)=>{
+      try{
+        console.log(data,"data from thunk")
+          let res = await axiosInstance?.post(endpoints?.auth?.land_allocation,data)
+          return {data:res?.data,status:res?.status}
+      }
+     catch(err){
+      return err
+     }
+
+  }
+)
+
 export const AuthSlice = createSlice({
   name: 'userAuth',
   initialState,
@@ -136,6 +153,7 @@ export const AuthSlice = createSlice({
         console.log(payload);
         if (payload.status === 200) {
           state.user = payload.data;
+          state.userDetails = payload.data;
           state.status = 'idle';
         }
       })
@@ -210,6 +228,21 @@ export const AuthSlice = createSlice({
       })
       .addCase(EditUser.rejected, (state, {payload}) => {
         state.status = 'idle';
-      });
+      })
+
+      // Land Allocation
+
+      .addCase(LandAllocation.pending,(action,state)=>{
+        state.status = 'pending'
+    })
+    .addCase(LandAllocation.fulfilled,(state,{payload})=>{
+        if(payload?.status === 200){
+          state.userDetails = payload?.data
+          state.status = "idle"
+        }
+    })
+    .addCase(LandAllocation.rejected,(action,state)=>{
+      state.status = "idle"
+    })
   },
 });

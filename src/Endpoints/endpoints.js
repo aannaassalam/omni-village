@@ -5,5 +5,7 @@ export const endpoints = {
     login: '/user/login',
     editUser: '/user/edit_user',
     getUser: '/user/current_user',
+    land_allocation:'/user/land_allocation',
   },
+ 
 };

@@ -12,29 +12,56 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {Controller, useForm} from 'react-hook-form';
+import { validation } from '../../Validation/Validation';
+import { useDispatch } from 'react-redux';
+import { LandAllocation } from '../../Redux/AuthSlice';
+
+
+const landSchema = yup
+.object()
+.shape({
+  total_land: yup.string().required(validation?.error?.total_land),
+  cultivation: yup.string().required(validation?.error?.cultivation),
+  trees: yup.string().required(validation?.error?.trees),
+  poultry: yup.string().required(validation?.error?.poultry),
+  fishery: yup.string().required(validation?.error?.fishery),
+  storage: yup.string().required(validation?.error?.storage),
+})
+.required();
+
+
+
+
 
 const TotalLand = ({navigation}) => {
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    formState: {errors},
+    } = useForm({
+    resolver: yupResolver(landSchema),
+    });
   const [totalLand, setTotalLand] = useState(0);
-  const [land, setLand] = useState([
-    {name: 'Cultivation', area: 0},
-    {name: 'Trees, Shrubs & Grasslands', area: 0},
-    {name: 'Poultry', area: 0},
-    {name: 'Fishery', area: 0},
-    {name: 'Storage', area: 0},
-  ]);
-  const onSave = () => {
-    let sumofAreas = land.reduce((accumulator, currentObject) => {
-      return accumulator + currentObject?.area;
+  const [land, setLand] = useState([]);
+  const dispatch = useDispatch()
+  const onSave = (data) => {
+    console.log(data,"data")
+    let sumofAreas = Object.keys(data).reduce((accumulator, currentObject) => {
+      if(currentObject !== 'total_land'){
+      return accumulator + parseInt(data[currentObject]);
+     }
+     return accumulator
     }, 0);
-    if (sumofAreas > totalLand) {
-      Alert.alert('Your sub area acres are greater than total land area');
+    if (sumofAreas > parseInt(data?.total_land)) {
+      console.log('Your sub area acres are greater than total land area');
     } else {
-      console.log('go ahead');
-      navigation.navigate('production', {
-        totalLand: totalLand,
-        usedLand: sumofAreas,
-        data: land,
-      });
+      dispatch(LandAllocation(data))
+      navigation.navigate('production');
     }
   };
   const {fontScale} = useWindowDimensions();
@@ -47,11 +74,27 @@ const TotalLand = ({navigation}) => {
         goBack={() => navigation.goBack()}
       />
       <View style={styles.textInputArea}>
-        <CustomInputField
+        {/* <CustomInputField
           label={'Total Land area'}
           value={totalLand}
           onChangeText={e => setTotalLand(e)}
-        />
+        /> */}
+          <Controller
+                control={control}
+                name="total_land"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <CustomInputField
+                    placeholder={'0'}
+                    label={'Total Land area'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'total_land'}
+                  />
+                )}
+              />
+              {errors?.total_land?.message ? (
+                <Text style={styles.error}>{errors?.total_land?.message}</Text>
+              ) : null}
       </View>
       <ScrollView>
         <>
@@ -64,9 +107,99 @@ const TotalLand = ({navigation}) => {
             />
           </View>
           <View style={styles.textInputArea}>
-            {land.map((item, indx) => {
-              return (
-                <InputWithoutBorder
+          <Controller
+                control={control}
+                name="cultivation"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'cultivation'}
+                  />
+                )}
+              />
+              {errors?.cultivation?.message ? (
+                <Text style={styles.error}>{errors?.cultivation?.message}</Text>
+              ) : null}
+         
+          </View>
+          <View style={styles.textInputArea}>
+          <Controller
+                control={control}
+                name="trees"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'trees'}
+                  />
+                )}
+              />
+              {errors?.trees?.message ? (
+                <Text style={styles.error}>{errors?.trees?.message}</Text>
+              ) : null}
+         
+          </View>
+          <View style={styles.textInputArea}>
+          <Controller
+                control={control}
+                name="poultry"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'poultry'}
+                  />
+                )}
+              />
+              {errors?.poultry?.message ? (
+                <Text style={styles.error}>{errors?.poultry?.message}</Text>
+              ) : null}
+         
+          </View>
+
+          <View style={styles.textInputArea}>
+          <Controller
+                control={control}
+                name="fishery"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'fishery'}
+                  />
+                )}
+              />
+              {errors?.fishery?.message ? (
+                <Text style={styles.error}>{errors?.fishery?.message}</Text>
+              ) : null}
+         
+          </View>
+
+          <View style={styles.textInputArea}>
+          <Controller
+                control={control}
+                name="storage"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={'storage'}
+                  />
+                )}
+              />
+              {errors?.storage?.message ? (
+                <Text style={styles.error}>{errors?.storage?.message}</Text>
+              ) : null}
+         
+          </View>
+
+           {/* <InputWithoutBorder
                   productionName={item?.name}
                   placeholder={'0'}
                   value={item?.area}
@@ -80,16 +213,12 @@ const TotalLand = ({navigation}) => {
                       setLand(updatedDataArray);
                     }
                   }}
-                />
-              );
-            })}
-          </View>
+                /> */}
+
           <View style={styles.save}>
             <CustomButton
               btnText={'Save'}
-              onPress={() => {
-                onSave();
-              }}
+              onPress={handleSubmit(onSave)}
             />
           </View>
         </>
@@ -135,5 +264,11 @@ const makeStyles = fontScale =>
       marginTop: '5%',
       width: '90%',
       alignSelf: 'center',
+    }, error: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 5,
     },
   });

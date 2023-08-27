@@ -13,8 +13,9 @@ import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {useSelector} from 'react-redux';
 
 export default function Home({navigation, route}) {
-  const {userToken} = useSelector(s => s.auth);
+  const {userToken , userDetails} = useSelector(s => s.auth);
 
+  console.log(userDetails,"userDetails")
   return (
     <SafeAreaView>
       <ScrollView>
@@ -82,7 +83,8 @@ export default function Home({navigation, route}) {
           </Box>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('ProductionStack', {screen: 'totalLand'})
+              
+              navigation.navigate('ProductionStack', {screen: userDetails?.total_land > 0 ? 'production' : 'totalLand'})
             }>
             <Box style={styles.home_box}>
               <Box style={styles.home_box_lft_upr}>
