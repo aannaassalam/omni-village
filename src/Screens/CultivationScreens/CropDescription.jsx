@@ -27,7 +27,11 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import CalendarPicker from 'react-native-calendar-picker';
 import {useDispatch, useSelector} from 'react-redux';
-import {addCultivation, getCurrentCrop} from '../../Redux/CultivationSlice';
+import {
+  addCultivation,
+  editCultivation,
+  getCurrentCrop,
+} from '../../Redux/CultivationSlice';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 const CropDescription = ({navigation, route}) => {
@@ -42,6 +46,7 @@ const CropDescription = ({navigation, route}) => {
   const [harvestedPopup, setHarvestedPopup] = useState(false);
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
+  const [status, setStatus] = useState(-1);
 
   const dispatch = useDispatch();
 
@@ -67,10 +72,13 @@ const CropDescription = ({navigation, route}) => {
     }),
     important_information: yup.object().shape({
       soil_health: yup.string().required(validation.error.soil_health),
-      decreasing_rate: yup.string().when('soil_health', {
-        is: 'Decreasing Yield',
-        then: yup.string().required(validation.error.decreasing_rate),
-      }),
+      decreasing_rate: yup
+        .string()
+        .when('soil_health', (soil_health, schema2) =>
+          soil_health === 'decreasing yield'
+            ? yup.string().required(validation.error.decreasing_rate)
+            : schema2,
+        ),
       type_of_fertilizer_used: yup
         .string()
         .required(validation.error.type_of_fertilizer_used),
@@ -152,10 +160,18 @@ const CropDescription = ({navigation, route}) => {
       'important_information.yeild',
       String(
         parseInt(getValues('output'), 10) /
-          parseInt(getValues('area_allocated'), 10),
+          parseInt(getValues('area_allocated'), 10) || '0',
       ),
     );
   }, [watch('area_allocated'), watch('output')]);
+
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      setSavepopup(false);
+    }
+  }, [errors]);
+
+  console.log(errors);
 
   const onSubmit = data => {
     const output = parseInt(data.output) || 0;
@@ -179,37 +195,72 @@ const CropDescription = ({navigation, route}) => {
         sold_to_neighbours +
         wastage
     ) {
-      dispatch(
-        addCultivation({
-          ...data,
-          status: 1,
-          utilization: {
-            ...data.utilization,
-            other_value:
-              data.utilization.other.length > 0
-                ? data.utilization.other_value
-                : '',
-          },
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Cultivation added successfully!',
-            }),
-          navigation.goBack(),
+      if (currentCrop._id) {
+        dispatch(
+          editCultivation({
+            ...data,
+            status: status,
+            utilization: {
+              ...data.utilization,
+              other_value:
+                data.utilization.other.length > 0
+                  ? data.utilization.other_value
+                  : '',
+            },
+            cultivation_id: currentCrop._id,
+          }),
         )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setSavepopup(false));
+          .unwrap()
+          .then(
+            () =>
+              Toast.show({
+                text1: 'Success',
+                text2: 'Cultivation updated successfully!',
+              }),
+            navigation.goBack(),
+          )
+          .catch(err => {
+            console.log('err', err);
+            Toast.show({
+              type: 'error',
+              text1: 'Error Occurred',
+              text2: 'Something Went wrong, Please try again later!',
+            });
+          })
+          .finally(() => setSavepopup(false));
+      } else {
+        dispatch(
+          addCultivation({
+            ...data,
+            status: status,
+            utilization: {
+              ...data.utilization,
+              other_value:
+                data.utilization.other.length > 0
+                  ? data.utilization.other_value
+                  : '',
+            },
+          }),
+        )
+          .unwrap()
+          .then(
+            () =>
+              Toast.show({
+                text1: 'Success',
+                text2: 'Cultivation added successfully!',
+              }),
+            navigation.goBack(),
+          )
+          .catch(err => {
+            console.log('err', err);
+            Toast.show({
+              type: 'error',
+              text1: 'Error Occurred',
+              text2: 'Something Went wrong, Please try again later!',
+            });
+          })
+          .finally(() => setSavepopup(false));
+      }
     } else {
       setSavepopup(false);
       Toast.show({
@@ -243,6 +294,9 @@ const CropDescription = ({navigation, route}) => {
               );
             }}
           />
+          {errors?.area_allocated?.message ? (
+            <Text style={styles.error}>{errors?.area_allocated?.message}</Text>
+          ) : null}
         </View>
         <View style={styles.ultilisation_container}>
           <Controller
@@ -260,6 +314,9 @@ const CropDescription = ({navigation, route}) => {
               );
             }}
           />
+          {errors?.output?.message ? (
+            <Text style={styles.error}>{errors?.output?.message}</Text>
+          ) : null}
         </View>
         {/* utilisation section */}
         <View style={styles.subArea}>
@@ -304,6 +361,11 @@ const CropDescription = ({navigation, route}) => {
                     );
                   }}
                 />
+                {errors?.utilization?.self_consumed?.message ? (
+                  <Text style={styles.error}>
+                    {errors?.utilization?.self_consumed?.message}
+                  </Text>
+                ) : null}
                 <Controller
                   name="utilization.fed_to_livestock"
                   control={control}
@@ -321,6 +383,11 @@ const CropDescription = ({navigation, route}) => {
                     );
                   }}
                 />
+                {errors?.utilization?.fed_to_livestock?.message ? (
+                  <Text style={styles.error}>
+                    {errors?.utilization?.fed_to_livestock?.message}
+                  </Text>
+                ) : null}
                 <Controller
                   name="utilization.sold_to_neighbours"
                   control={control}
@@ -338,6 +405,11 @@ const CropDescription = ({navigation, route}) => {
                     );
                   }}
                 />
+                {errors?.utilization?.sold_to_neighbours?.message ? (
+                  <Text style={styles.error}>
+                    {errors?.utilization?.sold_to_neighbours?.message}
+                  </Text>
+                ) : null}
                 <Controller
                   name="utilization.sold_for_industrial_use"
                   control={control}
@@ -355,6 +427,11 @@ const CropDescription = ({navigation, route}) => {
                     );
                   }}
                 />
+                {errors?.utilization?.sold_for_industrial_use?.message ? (
+                  <Text style={styles.error}>
+                    {errors?.utilization?.sold_for_industrial_use?.message}
+                  </Text>
+                ) : null}
                 <Controller
                   name="utilization.wastage"
                   control={control}
@@ -372,6 +449,11 @@ const CropDescription = ({navigation, route}) => {
                     );
                   }}
                 />
+                {errors?.utilization?.wastage?.message ? (
+                  <Text style={styles.error}>
+                    {errors?.utilization?.wastage?.message}
+                  </Text>
+                ) : null}
                 <Controller
                   name="utilization.other"
                   control={control}
@@ -415,6 +497,11 @@ const CropDescription = ({navigation, route}) => {
                         );
                       }}
                     />
+                    {errors?.utilization?.other_value?.message ? (
+                      <Text style={styles.error}>
+                        {errors?.utilization?.other_value?.message}
+                      </Text>
+                    ) : null}
                   </View>
                 </View>
               </View>
@@ -465,6 +552,11 @@ const CropDescription = ({navigation, route}) => {
                 );
               }}
             />
+            {errors?.important_information?.soil_health?.message ? (
+              <Text style={styles.error}>
+                {errors?.important_information?.soil_health?.message}
+              </Text>
+            ) : null}
             {watch('important_information.soil_health') ===
               'decreasing yield' && (
               <View style={styles.innerInputView}>
@@ -485,6 +577,11 @@ const CropDescription = ({navigation, route}) => {
                       );
                     }}
                   />
+                  {errors?.important_information?.decreasing_rate?.message ? (
+                    <Text style={styles.error}>
+                      {errors?.important_information?.decreasing_rate?.message}
+                    </Text>
+                  ) : null}
                 </View>
               </View>
             )}
@@ -503,6 +600,14 @@ const CropDescription = ({navigation, route}) => {
                 );
               }}
             />
+            {errors?.important_information?.type_of_fertilizer_used?.message ? (
+              <Text style={styles.error}>
+                {
+                  errors?.important_information?.type_of_fertilizer_used
+                    ?.message
+                }
+              </Text>
+            ) : null}
             <Controller
               control={control}
               name="important_information.type_of_pesticide_used"
@@ -518,6 +623,11 @@ const CropDescription = ({navigation, route}) => {
                 );
               }}
             />
+            {errors?.important_information?.type_of_pesticide_used?.message ? (
+              <Text style={styles.error}>
+                {errors?.important_information?.type_of_pesticide_used?.message}
+              </Text>
+            ) : null}
             <Controller
               control={control}
               name="important_information.income_from_sale"
@@ -533,6 +643,11 @@ const CropDescription = ({navigation, route}) => {
                 );
               }}
             />
+            {errors?.important_information?.income_from_sale?.message ? (
+              <Text style={styles.error}>
+                {errors?.important_information?.income_from_sale?.message}
+              </Text>
+            ) : null}
             <Controller
               control={control}
               name="important_information.expenditure_on_inputs"
@@ -548,6 +663,11 @@ const CropDescription = ({navigation, route}) => {
                 );
               }}
             />
+            {errors?.important_information?.expenditure_on_inputs?.message ? (
+              <Text style={styles.error}>
+                {errors?.important_information?.expenditure_on_inputs?.message}
+              </Text>
+            ) : null}
             <InputLikeButton
               text={'Proccessing Method'}
               onPress={() => setProccessing(!proccessing)}
@@ -613,12 +733,18 @@ const CropDescription = ({navigation, route}) => {
           <CustomButton
             style={styles.submitButton}
             btnText={'Submit'}
-            onPress={() => setSavepopup(true)}
+            onPress={() => {
+              setStatus(1);
+              setSavepopup(true);
+            }}
           />
           <CustomButton
             style={styles.draftButton}
             btnText={'Save as draft'}
-            onPress={() => setDraftpopup(true)}
+            onPress={() => {
+              setStatus(0);
+              setDraftpopup(true);
+            }}
           />
         </View>
       </ScrollView>
@@ -689,7 +815,7 @@ const CropDescription = ({navigation, route}) => {
           </View>
           <Text style={styles.confirmText}>Confirm</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            Do you want to submit this cultivation?
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
@@ -701,7 +827,8 @@ const CropDescription = ({navigation, route}) => {
               style={styles.draftButton}
               btnText={'Cancel'}
               onPress={() => {
-                setSavepopup(false), navigation.goBack();
+                setStatus(-1);
+                setSavepopup(false);
               }}
             />
           </View>
@@ -721,18 +848,21 @@ const CropDescription = ({navigation, route}) => {
           </View>
           <Text style={styles.confirmText}>Save as Draft</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            Do you want to save this crop as draft?
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
               btnText={'Save'}
-              onPress={() => setDraftpopup(false)}
+              onPress={() => handleSubmit(onSubmit)}
             />
             <CustomButton
               style={styles.draftButton}
               btnText={'Cancel'}
-              onPress={() => setDraftpopup(false)}
+              onPress={() => {
+                setStatus(-1);
+                setDraftpopup(false);
+              }}
             />
           </View>
         </View>
@@ -855,5 +985,12 @@ const makeStyles = fontScale =>
     },
     noteImage: {
       padding: 10,
+    },
+    error: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 15,
     },
   });

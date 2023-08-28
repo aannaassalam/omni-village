@@ -49,8 +49,8 @@ export default function LoginWrapper({children, no_gap}) {
         keyboardShouldPersistTaps="handled"
         // contentContainerStyle={[!no_gap && {flex: 1}]}
         // style={[no_gap && {flex: 1}]}>
-        // style={{ flex: 1 }}
-        contentContainerStyle={{flex: 1}}>
+        style={no_gap && {flex: 1}}
+        contentContainerStyle={!no_gap && {flex: 1}}>
         <View style={styles.main_wrap}>
           <View style={styles.loginContainer}>
             <View

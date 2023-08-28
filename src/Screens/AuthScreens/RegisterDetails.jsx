@@ -90,15 +90,18 @@ export default function RegisterDetails({navigation, route}) {
     setValue,
     control,
     formState: {errors},
+    getValues,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       phone: user?.phone || '',
+      // number_of_members: '',
     },
   });
-  const [numMembers, setNumMembers] = useState(null);
+  const [numMembers, setNumMembers] = useState(0);
   const [familyMembers, setFamilyMembers] = useState([]);
   const [inputVal, setInputVal] = useState('');
+
   const handleMemberChange = value => {
     setNumMembers(value);
     if (value > familyMembers.length) {
@@ -117,11 +120,13 @@ export default function RegisterDetails({navigation, route}) {
       setFamilyMembers(updatedMembers);
     }
   };
+
   const handleMemberNameChange = (index, newName, member) => {
     const updatedNames = [...familyMembers];
     updatedNames[index][member] = newName;
     setFamilyMembers(updatedNames);
   };
+
   const [dropdownVal, setDropdownVal] = useState('');
 
   const InputValueCallback = data => {
@@ -255,6 +260,11 @@ export default function RegisterDetails({navigation, route}) {
                 />
               )}
             />
+            {errors?.number_of_members?.message ? (
+              <Text style={styles.error}>
+                {errors?.number_of_members?.message}
+              </Text>
+            ) : null}
           </View>
         </Box>
         {Array(numMembers)
@@ -288,6 +298,11 @@ export default function RegisterDetails({navigation, route}) {
                         />
                       )}
                     />
+                    {errors?.members?.[index]?.name?.message ? (
+                      <Text style={styles.error}>
+                        {errors?.members?.[index]?.name?.message}
+                      </Text>
+                    ) : null}
                     <View style={[styles.input_wrap, {marginTop: '4%'}]}>
                       <View style={styles.half_input}>
                         <Controller
@@ -303,6 +318,11 @@ export default function RegisterDetails({navigation, route}) {
                             />
                           )}
                         />
+                        {errors?.members?.[index]?.gender?.message ? (
+                          <Text style={styles.error}>
+                            {errors?.members?.[index]?.gender?.message}
+                          </Text>
+                        ) : null}
                       </View>
                       <View style={styles.half_input}>
                         <Controller
@@ -319,6 +339,11 @@ export default function RegisterDetails({navigation, route}) {
                             />
                           )}
                         />
+                        {errors?.members?.[index]?.age?.message ? (
+                          <Text style={styles.error}>
+                            {errors?.members?.[index]?.age?.message}
+                          </Text>
+                        ) : null}
                       </View>
                     </View>
                   </View>

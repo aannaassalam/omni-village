@@ -96,6 +96,14 @@ export const EditUser = createAsyncThunk(
       const formData = new FormData();
       Object.keys(data).forEach(key => {
         formData.append(key, data[key]);
+        if (key === 'members') {
+          formData.append('members', JSON.stringify(data[key]));
+          // data[key].forEach((item, idx) => {
+          //   formData.append(`members[${idx}]`, JSON.stringify(item));
+          //   // formData.append(`members[${idx}].age`, item.age);
+          //   // formData.append(`members[${idx}].gender`, item.gender);
+          // });
+        }
       });
       formData.append('address_proof', {
         uri: file.uri,

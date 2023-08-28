@@ -22,9 +22,14 @@ import {
   getCrops,
   saveCrop,
 } from '../../Redux/CropSlice';
-import {getCultivation, setCropId} from '../../Redux/CultivationSlice';
+import {
+  deleteCultivation,
+  getCultivation,
+  setCropId,
+} from '../../Redux/CultivationSlice';
 import Toast from 'react-native-toast-message';
 import {useFocusEffect} from '@react-navigation/native';
+import PopupModal from '../../Components/Popups/PopupModal';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -37,8 +42,9 @@ const Season1 = ({navigation, route}) => {
   const [selectedCategory, setSelectedCategory] = useState({name: ''});
   const [selectCrops, setSelectCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState({});
-  const [dropCrop, setDropCrop] = useState('');
-  const [dropCategoryCrop, setDropCategoryCrop] = useState('');
+  const [deletePopup, setDeletePopup] = useState(false);
+  const [delete_id, setDelete_id] = useState('');
+  const [deleteCrop, setDeleteCrop] = useState('');
 
   const dispatch = useDispatch();
   const {seasonName = 'Season 1'} = route.params;
@@ -55,6 +61,7 @@ const Season1 = ({navigation, route}) => {
         cultivations.map(c => ({
           name: c.cultivation_crop.name,
           _id: c.cultivation_crop._id,
+          cultivation_id: c._id,
         })),
       );
       return () => {
@@ -113,10 +120,21 @@ const Season1 = ({navigation, route}) => {
       }
     }
   };
-  const DropdownSelectedValue = data => {
-    setDropdownVal(data);
-    if (data !== 'Others') {
-      setFocusOther(false);
+
+  const handleDelete = () => {
+    if (delete_id) {
+      dispatch(deleteCultivation(delete_id))
+        .unwrap()
+        .then(() => {
+          setDelete_id('');
+          setDeleteCrop('');
+          setDeletePopup(false);
+        })
+        .catch(err => console.log(err));
+    } else {
+      setSelectCrops(prev => prev.filter(p => p._id !== deleteCrop));
+      setDeleteCrop('');
+      setDeletePopup(false);
     }
   };
 
@@ -174,7 +192,11 @@ const Season1 = ({navigation, route}) => {
                 <AddAndDeleteCropButton
                   add={false}
                   cropName={element?.name}
-                  onPress={() => handleRemoveClick(element._id)}
+                  onPress={() => {
+                    setDelete_id(element.cultivation_id);
+                    setDeleteCrop(element._id);
+                    setDeletePopup(true);
+                  }}
                 />
               </TouchableOpacity>
             );
@@ -280,6 +302,41 @@ const Season1 = ({navigation, route}) => {
           />
         </View>
       </BottomModal>
+      <PopupModal
+        modalVisible={deletePopup}
+        setBottomModalVisible={toggle => {
+          setDelete_id('');
+          setDeleteCrop('');
+          setDeletePopup(toggle);
+        }}
+        styleInner={[styles.savePopup, {width: '90%'}]}>
+        <View style={styles.submitPopup}>
+          <View style={styles.noteImage}>
+            <Image
+              source={require('../../../assets/note.png')}
+              style={styles.noteImage}
+            />
+          </View>
+          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.nextText}>Do you want to delete this crop?</Text>
+          <View style={styles.bottomPopupbutton}>
+            <CustomButton
+              style={styles.submitButton}
+              btnText={'Yes, Delete'}
+              onPress={handleDelete}
+            />
+            <CustomButton
+              style={styles.draftButton}
+              btnText={'No'}
+              onPress={() => {
+                setDelete_id('');
+                setDeleteCrop('');
+                setDeletePopup(false);
+              }}
+            />
+          </View>
+        </View>
+      </PopupModal>
       <Toast
         positionValue={30}
         style={{height: 'auto', minHeight: 70}}
@@ -368,5 +425,53 @@ const makeStyles = fontScale =>
     addCropIcon: {
       height: 50,
       width: 50,
+    },
+    savePopup: {
+      justifyContent: 'center',
+      width: '97%',
+      borderRadius: 20,
+    },
+    popupButton: {
+      width: '70%',
+      alignSelf: 'center',
+    },
+    bottomPopupbutton: {
+      width: '93%',
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+    },
+    submitButton: {
+      width: '45%',
+      margin: 10,
+    },
+    draftButton: {
+      width: '45%',
+      margin: 10,
+      backgroundColor: 'grey',
+    },
+    confirmText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu_medium',
+      fontWeight: '500',
+      padding: 10,
+      textAlign: 'center',
+    },
+    nextText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu',
+      textAlign: 'center',
+    },
+    submitPopup: {
+      alignItems: 'center',
+      padding: 10,
+    },
+    noteImage: {
+      padding: 10,
     },
   });

@@ -85,6 +85,27 @@ export const editCultivation = createAsyncThunk(
   },
 );
 
+export const deleteCultivation = createAsyncThunk(
+  'deletecultivation',
+  async (id, {rejectWithValue, dispatch}) => {
+    try {
+      const res = await axiosInstance.post(
+        endpoints.cultivation.deleteCultivation,
+        {
+          id,
+        },
+      );
+      await dispatch(getCultivation());
+      return {status: res.status, data: res.data};
+    } catch (err) {
+      rejectWithValue({
+        status: err.response.status,
+        data: err.response.data,
+      });
+    }
+  },
+);
+
 export const CultivationSlice = createSlice({
   name: 'cultivation',
   initialState,
@@ -148,6 +169,19 @@ export const CultivationSlice = createSlice({
         state.status = 'idle';
       })
       .addCase(editCultivation.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+      //Delete Cultivation
+      .addCase(deleteCultivation.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(deleteCultivation.fulfilled, (state, {payload}) => {
+        if (payload.status === 200) {
+          // state.cultivations = payload.data;
+        }
+        state.status = 'idle';
+      })
+      .addCase(deleteCultivation.rejected, (state, {payload}) => {
         state.status = 'idle';
       });
   },
