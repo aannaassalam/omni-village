@@ -34,7 +34,7 @@ const Production = ({navigation, route}) => {
         navigation.navigate('landAllocation');
       }
     } else if (name === 'trees') {
-      navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
+      navigation.navigate('treesShrubGrassland');
     }
   };
 

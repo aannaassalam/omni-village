@@ -16,11 +16,13 @@ import BottomModal from '../../Components/BottomSheet/BottomModal';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import {useSelector} from 'react-redux';
 
 const TreesShrubsScreen = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {totalLand} = route.params;
+  const {userDetails} = useSelector(s => s.auth);
+  const totalLand = userDetails.total_land;
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');

@@ -6,6 +6,7 @@ const initialState = {
   status: 'idle',
   cropCategories: [],
   crops: [],
+  addedCrop: {},
 };
 
 export const getCrops = createAsyncThunk(
@@ -40,15 +41,15 @@ export const getCropCategories = createAsyncThunk(
   },
 );
 
-export const addCrop = createAsyncThunk(
+export const saveCrop = createAsyncThunk(
   'addcrop',
-  async ({name, cropCategory}, {rejectWithValue}) => {
+  async ({name, categoryId}, {rejectWithValue, fulfillWithValue}) => {
     try {
       const res = await axiosInstance.post(endpoints.crop.addCrop, {
         name,
-        cropCategory,
+        categoryId,
       });
-      return {status: res.status, data: res.data};
+      return fulfillWithValue({status: res.status, data: res.data});
     } catch (err) {
       return rejectWithValue({
         status: err.response.status,
@@ -100,16 +101,17 @@ export const CropSlice = createSlice({
       .addCase(getCrops.rejected, state => {
         state.status = 'idle';
       })
-      .addCase(addCrop.pending, state => {
+      .addCase(saveCrop.pending, state => {
         state.status = 'pending';
       })
-      .addCase(addCrop.fulfilled, (state, {payload}) => {
+      .addCase(saveCrop.fulfilled, (state, {payload}) => {
         if (payload.status === 200) {
           state.crops = [...state.crops, payload.data];
+          state.addedCrop = payload.data;
           state.status = 'idle';
         }
       })
-      .addCase(addCrop.rejected, state => {
+      .addCase(saveCrop.rejected, state => {
         state.status = 'idle';
       });
   },

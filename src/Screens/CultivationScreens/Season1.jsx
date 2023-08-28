@@ -20,6 +20,7 @@ import {
   getCrop,
   getCropCategories,
   getCrops,
+  saveCrop,
 } from '../../Redux/CropSlice';
 import {getCultivation, setCropId} from '../../Redux/CultivationSlice';
 import Toast from 'react-native-toast-message';
@@ -36,6 +37,8 @@ const Season1 = ({navigation, route}) => {
   const [selectedCategory, setSelectedCategory] = useState({name: ''});
   const [selectCrops, setSelectCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState({});
+  const [dropCrop, setDropCrop] = useState('');
+  const [dropCategoryCrop, setDropCategoryCrop] = useState('');
 
   const dispatch = useDispatch();
   const {seasonName = 'Season 1'} = route.params;
@@ -44,7 +47,7 @@ const Season1 = ({navigation, route}) => {
   const {cultivations, cultivationType, status} = useSelector(
     s => s.cultivation,
   );
-  const {crops, cropCategories} = useSelector(s => s.crop);
+  const {crops, cropCategories, addedCrop} = useSelector(s => s.crop);
 
   useFocusEffect(
     useCallback(() => {
@@ -60,8 +63,6 @@ const Season1 = ({navigation, route}) => {
     }, [cultivations]),
   );
 
-  console.log(cultivations, 'cultivatins');
-
   const handleRemoveClick = id => {
     setSelectCrops(prev => prev.filter(el => el._id !== id));
   };
@@ -70,7 +71,7 @@ const Season1 = ({navigation, route}) => {
     useCallback(() => {
       dispatch(getCropCategories());
       dispatch(getCultivation());
-    }, [dispatch, seasonName]),
+    }, []),
   );
 
   const addCrop = () => {
@@ -84,10 +85,32 @@ const Season1 = ({navigation, route}) => {
         text2: 'Crop is already added!',
       });
     } else {
-      setSelectCrops(prev => [...prev, selectedCrop]);
-      setCropModal(!cropModal);
-      setFocusOther(false);
-      setOtherCrop('');
+      if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
+        if (selectedCategory?.length > 0) {
+          const cat = cropCategories.find(c => c.name === selectedCategory);
+          dispatch(saveCrop({name: otherCrop, categoryId: cat._id}))
+            .unwrap()
+            .then(res => {
+              setSelectCrops(prev => [...prev, res.data]);
+              setCropModal(false);
+              setCropModal(!cropModal);
+              setFocusOther(false);
+              setOtherCrop('');
+            })
+            .catch(err => console.log(err));
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Please select a Category!',
+          });
+        }
+      } else {
+        setSelectCrops(prev => [...prev, selectedCrop]);
+        setCropModal(false);
+        setFocusOther(false);
+        setOtherCrop('');
+      }
     }
   };
   const DropdownSelectedValue = data => {
@@ -96,6 +119,7 @@ const Season1 = ({navigation, route}) => {
       setFocusOther(false);
     }
   };
+
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -173,13 +197,21 @@ const Season1 = ({navigation, route}) => {
       )}
       <BottomModal
         modalVisible={cropModal}
-        setBottomModalVisible={setCropModal}
+        setBottomModalVisible={toggle => {
+          setCropModal(toggle);
+          setSelectedCategory({name: ''});
+          setSelectedCrop({});
+          setOtherCrop('');
+        }}
         styleInner={{height: focusOther ? '80%' : '35%'}}>
         <View style={styles.BottomTopContainer}>
           <Text style={styles.headerText}>Add Crop</Text>
           <TouchableOpacity
             onPress={() => {
-              setCropModal(!cropModal);
+              setCropModal(false);
+              setSelectedCategory({name: ''});
+              setSelectedCrop({});
+              setOtherCrop('');
               setFocusOther(false);
               setDropdownVal('');
             }}>
@@ -190,24 +222,34 @@ const Season1 = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.dropdownSection}>
+          <View style={{marginBottom: 15}}>
+            <CustomDropdown2
+              selectedValue={e => {
+                setSelectedCategory(e);
+                // setSelectCrops({name: ''});
+                dispatch(
+                  getCrops(cropCategories.find(cp => cp.name === e)._id),
+                );
+              }}
+              // value={selectedCategory.name}
+              placeholder="Select a category"
+              data={cropCategories}
+            />
+          </View>
           <CustomDropdown2
             selectedValue={e => {
-              setSelectedCategory(e);
-              dispatch(getCrops(cropCategories.find(cp => cp.name === e)._id));
-            }}
-            // value={selectedCategory.name}
-            data={cropCategories}
-          />
-          <CustomDropdown2
-            selectedValue={e => {
-              setSelectedCrop(crops.find(cp => cp.name === e));
+              setSelectedCrop(
+                crops.find(cp => cp.name === e) || {_id: 0, name: 'Others'},
+              );
+              setOtherCrop('');
               // dispatch(setCropId(crops.find(cp => cp.name === e)._id));
               // DropdownSelectedValue(e);
             }}
             // value={selectCrop.name}
+            placeholder="Select a crop"
             data={[...crops, {_id: 0, name: 'Others'}]}
           />
-          {dropdownVal === 'Others' ? (
+          {selectedCrop?.name === 'Others' ? (
             <InputWithoutRightElement
               label={'Crop Name'}
               placeholder={'Crop 01'}
@@ -220,7 +262,12 @@ const Season1 = ({navigation, route}) => {
         <View style={styles.BottomSheetButton}>
           <TouchableOpacity
             style={styles.crossButton}
-            onPress={() => setCropModal(!cropModal)}>
+            onPress={() => {
+              setCropModal(false);
+              setSelectedCategory({name: ''});
+              setSelectedCrop({});
+              setOtherCrop('');
+            }}>
             <Image
               source={require('../../../assets/cross.png')}
               style={styles.addCropIcon}
@@ -316,6 +363,7 @@ const makeStyles = fontScale =>
     },
     dropdownSection: {
       width: '90%',
+      // backgroundColor: 'red',
     },
     addCropIcon: {
       height: 50,

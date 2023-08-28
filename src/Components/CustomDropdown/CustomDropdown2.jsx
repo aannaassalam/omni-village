@@ -21,6 +21,7 @@ export default CustomDropdown2 = ({
   selectedValue,
   data,
   value,
+  style,
 }) => {
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
 
@@ -29,7 +30,7 @@ export default CustomDropdown2 = ({
 
   return (
     <SelectDropdown
-      data={data.map(dat => dat.name)}
+      data={data.length > 1 ? data.map(dat => dat.name) : []}
       onSelect={(selectedItem, index) => {
         selectedValue(selectedItem);
       }}

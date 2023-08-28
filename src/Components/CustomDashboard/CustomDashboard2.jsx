@@ -40,7 +40,7 @@ const makeStyles = fontScale =>
       backgroundColor: '#268C43',
       borderRadius: 10,
       paddingVertical: 20,
-      paddingHorizontal: 5,
+      paddingHorizontal: 10,
       margin: 5,
       flexDirection: 'row',
     },

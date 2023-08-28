@@ -17,6 +17,6 @@ export const endpoints = {
     getCrop: '/crop',
     getCropCategories: '/crop/crop_categories',
     editCrop: '/crop/edit_crop',
-    addCrop: '/crop',
+    addCrop: '/crop/add_crop',
   },
 };
