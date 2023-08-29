@@ -38,6 +38,7 @@ const Storage = ({navigation}) => {
     const [dropdownVal, setDropdownVal] = useState('');
     const [otherCrop, setOtherCrop] = useState('');
     const [focusOther, setFocusOther] = useState(false);
+    const [cropType,setCropType]=useState('')
     const addCrop = () => {
         setCropType([
             ...cropType,

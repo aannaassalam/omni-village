@@ -51,6 +51,7 @@ export default function LoginWithOtp({navigation}) {
             .then(res => {
               if (res.data?.first_name === '-') {
                 navigation.replace('registerdetails');
+                // navigation.replace('loginsuccess');
               } else {
                 navigation.replace('loginsuccess');
               }
