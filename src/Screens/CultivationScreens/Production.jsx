@@ -35,8 +35,18 @@ const Production = ({navigation, route}) => {
       }
     } else if (name === 'trees') {
       navigation.navigate('treesShrubGrassland');
-    }
+    } else if (name == "poultry") {
+      navigation.navigate('poultry', { totalLand: '50' })
+    } else if (name === 'fishery') {
+      navigation.navigate('fisheryIndex', { totalLand: '80' })
+    } else if (name == "hunting") {
+      navigation.navigate('hunting')
+    } else if (name == "storage") {
+      navigation.navigate('storage')
+    } else if (name == "sellingChannel") {
+      navigation.navigate('sellingChannel')
   };
+}
 
   const usedLand = useMemo(() => {
     const data = Object.keys(userDetails?.sub_area).reduce((acc, key) => {
@@ -95,10 +105,11 @@ const Production = ({navigation, route}) => {
               />
             );
           })}
-          <CustomShowcaseInput productionName={'Hunting'} productionArea={''} />
+          <CustomShowcaseInput productionName={'Hunting'} productionArea={''} onPress={()=>goToNext('hunting')} />
           <CustomShowcaseInput
             productionName={'Selling Channel'}
             productionArea={''}
+            onPress={()=>goToNext('sellingChannel')}
           />
         </>
       </ScrollView>

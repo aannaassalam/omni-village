@@ -12,3 +12,4 @@ export const pesticides = [
 export const averageTreeAge = [
   'Less than a year',
 ];
+export const Others = ['Others']

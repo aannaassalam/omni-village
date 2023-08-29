@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import InputWithoutBorder from '../CustomInputField/InputWithoutBorder';
 import {Divider} from 'react-native-paper';
 
-const UtilisationAccordion = () => {
+const UtilisationAccordion = ({fish,hunting}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [utilisationArray, setUtilisationArray] = useState([
@@ -19,9 +19,15 @@ const UtilisationAccordion = () => {
   // console.log('uli', utilisationArray);
   return (
     <View style={styles.container}>
+      {fish && <InputWithoutBorder
+        measureName={'kg'}
+        productionName={'Total feed'}
+        value={'10'}
+        onChangeText={e => console.log('output kg', e)}
+      />}
       <InputWithoutBorder
         measureName={'kg'}
-        productionName={'Output'}
+        productionName={fish?'Production output':hunting?'Meat':'Output'}
         value={'10'}
         onChangeText={e => console.log('output kg', e)}
       />

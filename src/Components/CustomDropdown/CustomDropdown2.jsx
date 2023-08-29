@@ -30,7 +30,7 @@ export default CustomDropdown2 = ({
 
   return (
     <SelectDropdown
-      data={data.length > 1 ? data.map(dat => dat.name) : []}
+      data={data?.length > 1 && data !== undefined ? data.map(dat => dat.name) : cropType}
       onSelect={(selectedItem, index) => {
         selectedValue(selectedItem);
       }}
