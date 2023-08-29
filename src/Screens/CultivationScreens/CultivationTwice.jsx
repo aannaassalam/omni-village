@@ -1,7 +1,9 @@
 import {Button, Text, Box, Flex} from '@react-native-material/core';
 import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import {useDispatch} from 'react-redux';
+import {setSeason} from '../../Redux/CultivationSlice';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -35,6 +37,8 @@ const styles = StyleSheet.create({
 });
 
 export default function CultivationTwice({navigation}) {
+  const dispatch = useDispatch();
+
   return (
     <>
       <View style={styles.container}>
@@ -44,20 +48,38 @@ export default function CultivationTwice({navigation}) {
           goBack={() => navigation.goBack()}
         />
         <View style={styles.mainContainer}>
-          <Flex style={styles.cultivate_sec}>
-            <Box style={styles.cul_lft}>
-              <Text variant="h4" style={styles.h4}>
-                Season 01
-              </Text>
-            </Box>
-          </Flex>
-          <Flex style={styles.cultivate_sec}>
-            <Box style={styles.cul_lft}>
-              <Text variant="h4" style={styles.h4}>
-                Season 02
-              </Text>
-            </Box>
-          </Flex>
+          <TouchableOpacity
+            onPress={() =>
+              dispatch(setSeason(1))
+                .unwrap()
+                .then(() => {
+                  navigation.navigate('season1', {seasonName: 'Season 1'});
+                })
+            }>
+            <Flex style={styles.cultivate_sec}>
+              <Box style={styles.cul_lft}>
+                <Text variant="h4" style={styles.h4}>
+                  Season 01
+                </Text>
+              </Box>
+            </Flex>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              dispatch(setSeason(2))
+                .unwrap()
+                .then(() => {
+                  navigation.navigate('season1', {seasonName: 'Season 2'});
+                })
+            }>
+            <Flex style={styles.cultivate_sec}>
+              <Box style={styles.cul_lft}>
+                <Text variant="h4" style={styles.h4}>
+                  Season 02
+                </Text>
+              </Box>
+            </Flex>
+          </TouchableOpacity>
         </View>
       </View>
     </>

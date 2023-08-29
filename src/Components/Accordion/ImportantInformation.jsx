@@ -86,6 +86,7 @@ const ImportantInformation = ({navigation}) => {
               value={'Lorem ipsum'}
               multiline={true}
               onChangeText={e => {}}
+              keyboardType="default"
             />
           </View>
         </View>
@@ -220,11 +221,7 @@ export default ImportantInformation;
 
 const makeStyles = fontScale =>
   StyleSheet.create({
-    container: {
-      width: '93%',
-      alignSelf: 'center',
-      marginBottom: '5%',
-    },
+    container: {},
     divider: {
       // backgroundColor: 'grey',
       alignSelf: 'flex-start',

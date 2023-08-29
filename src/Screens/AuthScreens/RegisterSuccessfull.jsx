@@ -16,7 +16,7 @@ export default function RegisterSuccessfull({navigation}) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      navigation.navigate('home');
+      navigation.replace('home');
     }, 3000);
     return () => clearTimeout(timeout);
   }, []);

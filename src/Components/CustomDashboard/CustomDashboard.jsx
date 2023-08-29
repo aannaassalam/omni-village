@@ -45,11 +45,13 @@ const makeStyles = fontScale =>
       fontFamily: 'ubuntu_medium',
       // width: '25%',
       marginLeft: 5,
+      textTransform: 'capitalize',
     },
     arrow: {
       alignSelf: 'center',
       height: 10,
       width: 8,
       left: 3,
+      marginHorizontal: 10,
     },
   });

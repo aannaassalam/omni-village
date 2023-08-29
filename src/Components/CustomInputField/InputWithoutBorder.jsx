@@ -19,8 +19,8 @@ const InputWithoutBorder = ({
   onFocus,
   notRightText,
   multiline,
-  editable,
-  keyboardType,
+  editable = true,
+  keyboardType = 'number-pad',
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -45,10 +45,12 @@ const InputWithoutBorder = ({
                 placeholder={placeholder}
                 placeholderTextColor={'#000'}
                 onFocus={onFocus}
-                // editable={!editable}
+                editable={editable}
                 // keyboardType={keyboardType}
-                multiline={multiline}
-                // numberOfLines={multiline == true ? 2 : 0}
+                multiline={notRightText ? true : false}
+                numberOfLines={notRightText ? 2 : null}
+                keyboardType={keyboardType}
+                // editable={!disabled}
               />
             </View>
             {notRightText ? null : (
@@ -93,7 +95,7 @@ const makeStyles = fontScale =>
       borderRadius: 10,
     },
     textInput: {
-      width: '70%',
+      width: '75%',
       margin: -10,
       padding: 5,
     },
@@ -103,10 +105,11 @@ const makeStyles = fontScale =>
     },
     cultivationText: {
       color: 'green',
-      fontSize: 14 / fontScale,
+      fontSize: 12 / fontScale,
       marginBottom: -10,
       marginTop: 10,
       fontFamily: 'ubuntu_medium',
+      textTransform: 'capitalize',
     },
     divider: {
       height: '80%',

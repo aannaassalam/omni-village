@@ -1,6 +1,7 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
-import {TextInput} from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
+// import {TextInput} from 'react-native-paper';
 
 const InputWithoutRightElement = ({
   label,
@@ -8,7 +9,10 @@ const InputWithoutRightElement = ({
   onChangeText,
   placeholder,
   onFocus,
+  keyboardType = 'default',
 }) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
   return (
     <View style={styles.textInputContainer}>
       <View>
@@ -21,11 +25,12 @@ const InputWithoutRightElement = ({
             borderRadius: 10,
           }}
           mode="outlined"
-          label={label}
+          label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
           value={value}
           style={styles.textInput}
           placeholder={placeholder}
           onFocus={onFocus}
+          keyboardType={keyboardType}
         />
       </View>
     </View>
@@ -34,14 +39,16 @@ const InputWithoutRightElement = ({
 
 export default InputWithoutRightElement;
 
-const styles = StyleSheet.create({
-  textInputContainer: {
-    paddingTop: 10,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  textInput: {
-    backgroundColor: '#fff',
-    fontFamily: 'ubuntu_medium',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    textInputContainer: {
+      paddingTop: 10,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    textInput: {
+      backgroundColor: '#fff',
+      fontFamily: 'ubuntu_medium',
+      fontSize: 16 / fontScale,
+    },
+  });

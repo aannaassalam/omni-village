@@ -26,6 +26,7 @@ export default function LoginWithOtp({navigation}) {
 
   const [timer, setTimer] = useState(30);
   const [otp, setOtp] = useState('');
+  const [err, setErr] = useState('');
 
   const dispatch = useDispatch();
 
@@ -49,14 +50,21 @@ export default function LoginWithOtp({navigation}) {
             .unwrap()
             .then(res => {
               if (res.data?.first_name === '-') {
-                navigation.navigate('registerdetails');
+                navigation.replace('registerdetails');
               } else {
-                navigation.navigate('loginsuccess');
+                navigation.replace('loginsuccess');
               }
             })
-            .catch(err => console.log(err));
+            .catch(error => console.log(error));
         })
-        .catch(err => console.log(err, 'err'));
+        .catch(error => {
+          if (error.status === 401) {
+            setErr(error.data.message);
+          }
+          console.log(error, 'err');
+        });
+    } else {
+      setErr('Invalid OTP!');
     }
   };
 
@@ -71,6 +79,17 @@ export default function LoginWithOtp({navigation}) {
         </View>
         <View style={styles.login_input}>
           <OtpInput setParentOtp={setOtp} />
+          {err.length > 0 && (
+            <Text
+              style={{
+                marginTop: 5,
+                marginLeft: 10,
+                color: '#ff000e',
+                fontFamily: 'ubuntu_regular',
+              }}>
+              {err}
+            </Text>
+          )}
         </View>
         <View style={styles.login_submit}>
           <CustomButton btnText={'Confirm'} onPress={FormSubmit} />

@@ -16,16 +16,45 @@ import {useDispatch} from 'react-redux';
 import {SendOTP} from '../../Redux/AuthSlice';
 import {TextInput} from 'react-native-gesture-handler';
 import {Scale} from '../../Helper/utils';
+import {yupResolver} from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import {Controller, useForm} from 'react-hook-form';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 
 export default function Login({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
+  const [api_err, setApi_err] = useState('');
+
+  const loginSchema = yup
+    .object()
+    .shape({
+      phone: yup.string().required('Phone number is required!'),
+    })
+    .required();
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    formState: {errors},
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
-  const FormSubmit = () => {
-    dispatch(SendOTP(inputVal)).then(() => navigation.navigate('loginotp'));
+  const FormSubmit = data => {
+    dispatch(SendOTP({...data, type: 'login'}))
+      .unwrap()
+      .then(() => navigation.navigate('loginotp'))
+      .catch(err => {
+        if (err.status === 400) {
+          setApi_err(err.data.message);
+        }
+        console.log(err.data.message);
+      });
   };
 
   return (
@@ -37,12 +66,43 @@ export default function Login({navigation, route}) {
             <Text style={styles.subtitle}>Login with sent OTP</Text>
           </View>
           <View style={styles.login_input}>
-            <InputTextComponent
-              placeholder={'Phone Number'}
-              onChangeText={setInputVal}
-              value={inputVal}
-              keyboardType="number-pad"
+            <Controller
+              control={control}
+              name="phone"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputWithoutRightElement
+                  label={'Phone Number'}
+                  onChangeText={e => {
+                    onChange(e);
+                    setApi_err('');
+                  }}
+                  value={value}
+                  keyboardType="number-pad"
+                />
+              )}
             />
+            {errors.phone?.message.length > 0 && (
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginLeft: 10,
+                  color: '#ff000e',
+                  fontFamily: 'ubuntu_regular',
+                }}>
+                {errors.phone.message}
+              </Text>
+            )}
+            {api_err.length > 0 && (
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginLeft: 10,
+                  color: '#ff000e',
+                  fontFamily: 'ubuntu_regular',
+                }}>
+                {api_err}
+              </Text>
+            )}
             {/* <TextInput
             placeholder={'Phone Number'}
             onChangeText={setInputVal}
@@ -51,7 +111,10 @@ export default function Login({navigation, route}) {
           /> */}
           </View>
           <View style={styles.login_submit}>
-            <CustomButton btnText={'Login'} onPress={FormSubmit} />
+            <CustomButton
+              btnText={'Login'}
+              onPress={handleSubmit(FormSubmit)}
+            />
           </View>
         </View>
         {/* <View style={styles.form_btm}>

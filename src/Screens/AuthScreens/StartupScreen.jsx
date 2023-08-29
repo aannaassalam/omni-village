@@ -51,7 +51,8 @@ export default function StartupScreen({navigation, route}) {
               if (slide !== activeIndex) {
                 setActiveIndex(slide); //here we will set our active index num
               }
-            }}>
+            }}
+            style={{height: '50%'}}>
             {data.map((item, idx) => (
               <View key={idx} style={styles.contentImageContainer}>
                 <Image source={item.img} alt="" style={styles.contentImage} />
@@ -105,7 +106,8 @@ const makeStyles = fontScale =>
     },
     contentImage: {
       width: '80%',
-      height: 270,
+      height: '100%',
+      // height: 350,
       resizeMode: 'contain',
       opacity: 0.3,
     },
@@ -156,12 +158,14 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       color: '#36393B',
       textAlign: 'center',
+      marginTop: 'auto',
       marginBottom: 15,
     },
     subtitle: {
       fontFamily: 'ubuntu_regular',
       fontSize: 13 / fontScale,
       color: '#36393B',
+      marginBottom: 'auto',
       textAlign: 'center',
     },
     buttonsContainer: {

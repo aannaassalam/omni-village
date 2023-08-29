@@ -1,8 +1,11 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-paper';
 
 const CustomInputField = ({label, value, onChangeText, placeholder}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+
   return (
     <View style={styles.textInputContainer}>
       <View>
@@ -15,7 +18,12 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
           outlineStyle={{
             borderRadius: 10,
           }}
-          label={label}
+          label={
+            <Text
+              style={{fontSize: 16 / fontScale, textTransform: 'capitalize'}}>
+              {label}
+            </Text>
+          }
           value={value}
           style={styles.textInput}
           placeholder={placeholder}
@@ -33,18 +41,20 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
 
 export default CustomInputField;
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    width: '90%',
-  },
-  textInputContainer: {
-    paddingTop: 10,
-    width: '95%',
-    alignSelf: 'center',
-  },
-  textInput: {
-    backgroundColor: '#fff',
-    fontFamily: 'ubuntu_medium',
-  },
-});
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: '#fff',
+      width: '90%',
+    },
+    textInputContainer: {
+      paddingTop: 10,
+      width: '95%',
+      alignSelf: 'center',
+    },
+    textInput: {
+      backgroundColor: '#fff',
+      fontFamily: 'ubuntu_medium',
+      fontSize: 16 / fontScale,
+    },
+  });

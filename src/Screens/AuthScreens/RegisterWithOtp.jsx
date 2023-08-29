@@ -27,6 +27,7 @@ export default function RegisterWithOtp({navigation}) {
   const [timer, setTimer] = useState(30);
   // const [otp, setOtp] = useState('');
   const otp = useRef('');
+  const [err, setErr] = useState('');
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -43,12 +44,18 @@ export default function RegisterWithOtp({navigation}) {
   });
 
   const FormSubmit = () => {
-    console.log(otp.current, 'otp');
     if (otp.current.length === 4) {
       dispatch(RegisterUser({...user, otp: otp.current}))
         .unwrap()
-        .then(() => navigation.navigate('registerdetails'))
-        .catch(err => console.log(err, 'err'));
+        .then(() => navigation.replace('registerdetails'))
+        .catch(error => {
+          if (error.status === 401) {
+            setErr(error.data.message);
+          }
+          console.log(error, 'err');
+        });
+    } else {
+      setErr('Invalid OTP!');
     }
   };
 
@@ -63,6 +70,17 @@ export default function RegisterWithOtp({navigation}) {
         </View>
         <View style={styles.login_input}>
           <OtpInput setParentOtp={ot => (otp.current = ot)} />
+          {err.length > 0 && (
+            <Text
+              style={{
+                marginTop: 5,
+                marginLeft: 10,
+                color: '#ff000e',
+                fontFamily: 'ubuntu_regular',
+              }}>
+              {err}
+            </Text>
+          )}
         </View>
         <View style={styles.login_submit}>
           <CustomButton btnText={'Confirm'} onPress={FormSubmit} />
@@ -83,7 +101,7 @@ export default function RegisterWithOtp({navigation}) {
             00:{timer < 10 ? '0' + timer : timer}
           </Text>
         </Box>
-        <Text>{otp.current}</Text>
+        {/* <Text>{otp.current}</Text> */}
       </View>
     </LoginWrapper>
   );

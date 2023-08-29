@@ -90,9 +90,9 @@ android {
     signingConfigs {
         release {
       storeFile file('your_key_name.keystore')
-      storePassword 'abcd123'
+      storePassword '123456'
       keyAlias 'your_key_alias'
-      keyPassword 'abcd123'
+      keyPassword '123456'
     }
         debug {
             storeFile file('debug.keystore')

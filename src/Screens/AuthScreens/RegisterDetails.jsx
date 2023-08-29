@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,31 +12,33 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { Box, Pressable, TextInput, Wrap } from '@react-native-material/core';
+import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
-import DocumentPicker, { types } from 'react-native-document-picker';
-import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import DocumentPicker, {types} from 'react-native-document-picker';
+import {Controller, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   faChevronCircleDown,
   faChevronDown,
   faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
-import { validation } from '../../Validation/Validation';
-import { useDispatch, useSelector } from 'react-redux';
-import { EditUser } from '../../Redux/AuthSlice';
+import {validation} from '../../Validation/Validation';
+import {useDispatch, useSelector} from 'react-redux';
+import {EditUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
-import { Scale } from '../../Helper/utils';
+import {Scale} from '../../Helper/utils';
 
 // const FormData = global.FormData;
 
-export default function RegisterDetails({ navigation, route }) {
+export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
+  const [file_err, setFile_err] = useState('');
+
   const handleDocumentSelection = useCallback(async () => {
     try {
       const response = await DocumentPicker.pick({
@@ -44,15 +46,16 @@ export default function RegisterDetails({ navigation, route }) {
         type: [types.images],
         allowMultiSelection: false,
       });
+      setFile_err('');
       setFileResponse(response);
     } catch (err) {
       console.warn(err);
     }
   }, []);
 
-  const { user } = useSelector(state => state.auth);
+  const {user} = useSelector(state => state.auth);
 
-  const { fontScale } = useWindowDimensions();
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   const schema = yup
@@ -62,8 +65,18 @@ export default function RegisterDetails({ navigation, route }) {
       last_name: yup.string().required(validation?.error?.last_name),
       village_name: yup.string().required(validation?.error?.village_name),
       phone: yup.string().required(validation?.error?.phone),
-      family_name: yup.string().required(validation?.error?.family_name),
-      username: yup.string().required(validation?.error?.username),
+      number_of_members: yup
+        .string()
+        .required(validation.error.number_of_members),
+      members: yup
+        .array(
+          yup.object().shape({
+            name: yup.string().required(validation.error.member_name),
+            age: yup.string().required(validation.error.member_age),
+            gender: yup.string().required(validation.error.member_gender),
+          }),
+        )
+        .required('Members is required'),
       social_security_number: yup
         .string()
         .required(validation?.error?.social_security_number),
@@ -76,36 +89,44 @@ export default function RegisterDetails({ navigation, route }) {
     handleSubmit,
     setValue,
     control,
-    formState: { errors },
+    formState: {errors},
+    getValues,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       phone: user?.phone || '',
+      // number_of_members: '',
     },
   });
-  const [numMembers,setNumMembers] = useState(null);
+  const [numMembers, setNumMembers] = useState(0);
   const [familyMembers, setFamilyMembers] = useState([]);
   const [inputVal, setInputVal] = useState('');
-  const handleMemberChange = (value) => {
+
+  const handleMemberChange = value => {
     setNumMembers(value);
     if (value > familyMembers.length) {
-      const newMembers = Array.from({ length: value - familyMembers.length }, (_, index) => ({
-        id: familyMembers.length + index + 1,
-        member_name: '',
-        member_gender:'',
-        member_age: ''
-      }));
+      const newMembers = Array.from(
+        {length: value - familyMembers.length},
+        (_, index) => ({
+          id: familyMembers.length + index + 1,
+          member_name: '',
+          member_gender: '',
+          member_age: '',
+        }),
+      );
       setFamilyMembers([...familyMembers, ...newMembers]);
     } else {
       const updatedMembers = familyMembers.slice(0, value);
       setFamilyMembers(updatedMembers);
     }
   };
+
   const handleMemberNameChange = (index, newName, member) => {
     const updatedNames = [...familyMembers];
     updatedNames[index][member] = newName;
     setFamilyMembers(updatedNames);
   };
+
   const [dropdownVal, setDropdownVal] = useState('');
 
   const InputValueCallback = data => {
@@ -113,17 +134,20 @@ export default function RegisterDetails({ navigation, route }) {
   };
 
   const DropdownSelectedValue = data => {
-    setDropdownVal(data);
+    // setDropdownVal(data);
     setValue('village_name', data);
   };
 
   const dispatch = useDispatch();
 
   const FormSubmit = data => {
-    // console.log(formData.getParts());
-    dispatch(EditUser({ data, file: fileResponse[0] }))
+    if (fileResponse.length === 0) {
+      setFile_err('Please select a document!');
+      return;
+    }
+    dispatch(EditUser({data, file: fileResponse[0]}))
       .unwrap()
-      .then(res => navigation.navigate('registersuccess'))
+      .then(res => navigation.replace('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
   };
 
@@ -140,7 +164,7 @@ export default function RegisterDetails({ navigation, route }) {
               <Controller
                 control={control}
                 name="first_name"
-                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
                   <InputTextComponent
                     placeholder={'First Name'}
                     onChangeText={onChange}
@@ -157,7 +181,7 @@ export default function RegisterDetails({ navigation, route }) {
               <Controller
                 control={control}
                 name="last_name"
-                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
                   <InputTextComponent
                     placeholder={'Last Name'}
                     onChangeText={onChange}
@@ -177,7 +201,7 @@ export default function RegisterDetails({ navigation, route }) {
             <Controller
               control={control}
               name="phone"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
                   placeholder={'Phone No'}
                   onChangeText={onChange}
@@ -199,16 +223,22 @@ export default function RegisterDetails({ navigation, route }) {
           <Controller
             control={control}
             name="village_name"
-            render={({ field: { onChange, onBlur, value, name, ref } }) => (
+            render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
                 placeholder={'Village Name'}
-                selectedValue={DropdownSelectedValue}
+                selectedValue={onChange}
               />
             )}
           />
         </Box>
         {errors?.village_name && (
-          <Text style={{ ...styles.error, width: '100%', marginBottom: 15 }}>
+          <Text
+            style={{
+              ...styles.error,
+              width: '100%',
+              marginBottom: 15,
+              marginTop: -10,
+            }}>
             {errors?.village_name?.message}
           </Text>
         )}
@@ -216,77 +246,117 @@ export default function RegisterDetails({ navigation, route }) {
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="family_memnbers"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              name="number_of_members"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Family Members'}
-                  keyboardType='numeric'
-                  onChangeText={(e) => {
-                    handleMemberChange(e)
+                  placeholder={'Number of Family Members'}
+                  keyboardType="number-pad"
+                  onChangeText={e => {
+                    onChange(e);
+                    if (e !== '' && parseInt(e) !== 0)
+                      setNumMembers(parseInt(e));
                   }}
-                value={numMembers}
+                  value={value}
                 />
               )}
             />
+            {errors?.number_of_members?.message ? (
+              <Text style={styles.error}>
+                {errors?.number_of_members?.message}
+              </Text>
+            ) : null}
           </View>
         </Box>
-        {familyMembers.map((item, index)=>{
-          return(
-        <View>
-        <Text style={[styles.LoginHead, { fontSize: 16 / fontScale, alignSelf: 'flex-start', padding: 3 }]}>Member {item?.id}</Text>
-        <Box style={styles.cmn_wrp}>
-          <View style={styles.login_input}>
-            <Controller
-              control={control}
-              name="member_name"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <InputTextComponent
-                  placeholder={'Member Name'}
-                  onChangeText={(e)=>handleMemberNameChange(index,e,'member_name')}
-                  value={item?.member_name}
-                />
-              )}
-            />
-            <View style={[styles.input_wrap, { marginTop: '4%' }]}>
-              <View style={styles.half_input}>
-                <Controller
-                  control={control}
-                  name="member_gender"
-                  render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                    <InputTextComponent
-                      placeholder={'Member Gender'}
-                    onChangeText={(e)=>handleMemberNameChange(index,e,'member_gender')}
-                    value={item?.member_gender}
+        {Array(numMembers)
+          .fill(0)
+          .map((item, index) => {
+            return (
+              <View key={index}>
+                <Text
+                  style={[
+                    styles.LoginHead,
+                    {
+                      fontSize: 16 / fontScale,
+                      alignSelf: 'flex-start',
+                      padding: 3,
+                    },
+                  ]}>
+                  Member #{index + 1}
+                </Text>
+                <Box style={styles.cmn_wrp}>
+                  <View style={styles.login_input}>
+                    <Controller
+                      control={control}
+                      name={`members[${index}].name`}
+                      render={({
+                        field: {onChange, onBlur, value, name, ref},
+                      }) => (
+                        <InputTextComponent
+                          placeholder={'Member Name'}
+                          onChangeText={onChange}
+                          value={value}
+                        />
+                      )}
                     />
-                  )}
-                />
+                    {errors?.members?.[index]?.name?.message ? (
+                      <Text style={styles.error}>
+                        {errors?.members?.[index]?.name?.message}
+                      </Text>
+                    ) : null}
+                    <View style={[styles.input_wrap, {marginTop: '4%'}]}>
+                      <View style={styles.half_input}>
+                        <Controller
+                          control={control}
+                          name={`members[${index}].gender`}
+                          render={({
+                            field: {onChange, onBlur, value, name, ref},
+                          }) => (
+                            <InputTextComponent
+                              placeholder={'Member Gender'}
+                              onChangeText={onChange}
+                              value={value}
+                            />
+                          )}
+                        />
+                        {errors?.members?.[index]?.gender?.message ? (
+                          <Text style={styles.error}>
+                            {errors?.members?.[index]?.gender?.message}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View style={styles.half_input}>
+                        <Controller
+                          control={control}
+                          name={`members[${index}].age`}
+                          render={({
+                            field: {onChange, onBlur, value, name, ref},
+                          }) => (
+                            <InputTextComponent
+                              placeholder={'Member Age'}
+                              keyboardType={'numeric'}
+                              onChangeText={onChange}
+                              value={value}
+                            />
+                          )}
+                        />
+                        {errors?.members?.[index]?.age?.message ? (
+                          <Text style={styles.error}>
+                            {errors?.members?.[index]?.age?.message}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </View>
+                  </View>
+                </Box>
               </View>
-              <View style={styles.half_input}>
-                <Controller
-                  control={control}
-                  name="member_age"
-                  render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                    <InputTextComponent
-                      placeholder={'Member Age'}
-                      keyboardType={'numeric'}
-                    onChangeText={(e)=>handleMemberNameChange(index,e,'member_age')}
-                    value={item?.member_age}
-                    />
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-        </Box>
-        </View>
-          )
-        })}
+            );
+          })}
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
               control={control}
               name="social_security_number"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
                   placeholder={'Social Security number'}
                   onChangeText={onChange}
@@ -306,7 +376,7 @@ export default function RegisterDetails({ navigation, route }) {
             <Controller
               control={control}
               name="address"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
                   placeholder={'Address'}
                   onChangeText={onChange}
@@ -329,7 +399,7 @@ export default function RegisterDetails({ navigation, route }) {
             <Image
               style={styles.tinyLogo}
               source={require('../../../assets/file_img.png')}
-            // height={100}
+              // height={100}
             />
             <Text varint="body1" style={styles.upload_txt}>
               Upload address proof
@@ -344,13 +414,14 @@ export default function RegisterDetails({ navigation, route }) {
             </TouchableOpacity>
           </Box>
         </Box>
+        {file_err.length > 0 && <Text style={styles.error}>{file_err}</Text>}
         {fileResponse.map((file, index) => (
           <Box style={styles.file_box2}>
             <Box style={styles.file_box_lft}>
               <Image
                 style={styles.tinyLogo}
                 source={require('../../../assets/file_img.png')}
-              // height={100}
+                // height={100}
               />
               <Text
                 varint="body1"
@@ -359,7 +430,9 @@ export default function RegisterDetails({ navigation, route }) {
                 {file?.name}
               </Text>
               <Pressable onPress={() => setFileResponse([])}>
-                <Text style={{ ...styles.error, marginTop: 0 }}>Remove</Text>
+                <Text style={{...styles.error, marginTop: 0, marginRight: 5}}>
+                  Remove
+                </Text>
               </Pressable>
             </Box>
           </Box>
@@ -460,7 +533,7 @@ const makeStyles = fontScale =>
       width: '50%',
       paddingHorizontal: 7,
     },
-    login_input: { flexBasis: '100%', width: '100%' },
+    login_input: {flexBasis: '100%', width: '100%'},
     input_wrap: {
       flexDirection: 'row',
       marginHorizontal: -7,
@@ -500,15 +573,16 @@ const makeStyles = fontScale =>
       width: '64%',
     },
     error: {
-      color: 'red',
       fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 5,
     },
     memberDetailsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: 15,
-    }
+    },
   });

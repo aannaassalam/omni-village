@@ -16,7 +16,7 @@ export default function LoginSuccessfull({navigation}) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      navigation.navigate('home');
+      navigation.replace('home');
     }, 3000);
     return () => clearTimeout(timeout);
   }, []);

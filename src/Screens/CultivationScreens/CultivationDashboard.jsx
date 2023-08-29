@@ -7,7 +7,7 @@ import {
   Modal,
   useWindowDimensions,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {Divider} from 'react-native-paper';
 import {Box, Button} from '@react-native-material/core';
@@ -18,29 +18,96 @@ import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBo
 import {BlurView} from '@react-native-community/blur';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDispatch, useSelector} from 'react-redux';
+import {setCultivationType, setSeason} from '../../Redux/CultivationSlice';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Controller, useForm} from 'react-hook-form';
+import Toast from 'react-native-toast-message';
+import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {totalLand} = route.params;
+  // const {totalLand = 20} = route.params;
+  const {userDetails} = useSelector(s => s.auth);
+  const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
-  const [cultivation, setCultivation] = useState([
-    {name: 'Cultivated once in a year', area: 0},
-    {name: 'Cultivated twice in a year', area: 0},
-    {name: 'Cultivated thrice in a year', area: 0},
-  ]);
-  const onSave = () => {
-    let sumofAreas = cultivation.reduce((accumulator, currentObject) => {
-      return accumulator + currentObject?.area;
-    }, 0);
-    if (sumofAreas > totalLand) {
-      alert('Your  cultivation area acres are greater than total land area');
-    } else {
-      console.log('go ahead');
-      navigation.navigate('cultivationDashboard', {totalLand: totalLand});
+
+  yup.addMethod(yup.object, 'atLeastOneOf', function (list) {
+    return this.test({
+      name: 'Validation Error',
+      message: 'Atleast one the field is required!',
+      exclusive: true,
+      params: {keys: list.join(', ')},
+      test: value => list.some(f => value[f] !== '0' && value[f] !== ''),
+    });
+  });
+
+  const schema = yup
+    .object()
+    .shape({
+      once: yup.mixed(),
+      twice: yup.mixed(),
+      thrice: yup.mixed(),
+    })
+    .atLeastOneOf(['once', 'twice', 'thrice']);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    reset,
+    formState: {errors},
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      once: String(userDetails.sub_area.cultivation.distribution.once || 0),
+      twice: String(userDetails.sub_area.cultivation.distribution.twice || 0),
+      thrice: String(userDetails.sub_area.cultivation.distribution.thrice || 0),
+    },
+  });
+
+  const onSave = async data => {
+    try {
+      console.log(data, 'asd');
+      await schema.validate(data);
+      dispatch(cultivationLandAllocation(data))
+        .unwrap()
+        .then(() => {
+          dispatch(getUser())
+            .unwrap()
+            .then(() => {
+              setModify(false);
+            })
+            .catch(err => console.log(err));
+        })
+        .catch(err => {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Something went wrong, Try again later!',
+          });
+          console.log(err);
+        });
+    } catch (err) {
+      console.log(err, 'err');
     }
   };
+
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errors[''].message,
+        topOffset: 40,
+      });
+    }
+  }, [errors]);
+
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader
@@ -56,7 +123,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Text
             style={[
               styles.acresText,
-              {color: '#000', alignSelf: 'flex-start'},
+              {color: '#000', alignSelf: 'flex-start', marginTop: 5},
             ]}>
             Cultivation
           </Text>
@@ -72,7 +139,23 @@ const CultivationDashboard = ({navigation, route}) => {
       {/* options */}
       <View style={styles.optionsContainer}>
         {/* once in a year */}
-        <TouchableOpacity onPress={() => navigation.navigate('season1')}>
+        <TouchableOpacity
+          onPress={() => {
+            if (userDetails.sub_area.cultivation.distribution.once > 0) {
+              dispatch(setSeason(1));
+              dispatch(setCultivationType(1))
+                .unwrap()
+                .then(() => {
+                  navigation.navigate('season1', {seasonNmae: 'Season 1'});
+                });
+            } else {
+              Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'No Land Allocated for Cultivated once in a year',
+              });
+            }
+          }}>
           <Box style={styles.home_box}>
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt}>
@@ -90,7 +173,21 @@ const CultivationDashboard = ({navigation, route}) => {
         </TouchableOpacity>
         {/* twice in a year */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('cultivationTwice')}>
+          onPress={() => {
+            if (userDetails.sub_area.cultivation.distribution.twice > 0) {
+              dispatch(setCultivationType(2))
+                .unwrap()
+                .then(() => {
+                  navigation.navigate('cultivationTwice');
+                });
+            } else {
+              Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'No Land Allocated for Cultivated twice in a year',
+              });
+            }
+          }}>
           <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
             <Box style={styles.exclamationMark}>
               <Image
@@ -115,7 +212,21 @@ const CultivationDashboard = ({navigation, route}) => {
         </TouchableOpacity>
         {/* thrice in a year */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('cultivationThrice')}>
+          onPress={() => {
+            if (userDetails.sub_area.cultivation.distribution.thrice > 0) {
+              dispatch(setCultivationType(3))
+                .unwrap()
+                .then(() => {
+                  navigation.navigate('cultivationThrice');
+                });
+            } else {
+              Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'No Land Allocated for Cultivated once in a year',
+              });
+            }
+          }}>
           <Box style={[styles.home_box, {borderColor: 'grey'}]}>
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt2}>
@@ -149,6 +260,17 @@ const CultivationDashboard = ({navigation, route}) => {
           <TouchableOpacity
             onPress={() => {
               setModify(!modify);
+              reset({
+                once: String(
+                  userDetails.sub_area.cultivation.distribution.once || 0,
+                ),
+                twice: String(
+                  userDetails.sub_area.cultivation.distribution.twice || 0,
+                ),
+                thrice: String(
+                  userDetails.sub_area.cultivation.distribution.thrice || 0,
+                ),
+              });
               setFocus(false);
             }}>
             <Image
@@ -158,40 +280,93 @@ const CultivationDashboard = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.textInputArea}>
-          {cultivation.map((item, indx) => {
-            return (
-              <InputWithoutBorder
-                productionName={item?.name}
-                placeholder={'0'}
-                value={item?.area}
-                onChangeText={e => {
-                  let targetedArea = cultivation.findIndex(
-                    lan => lan?.name == item?.name,
-                  );
-                  if (targetedArea !== -1) {
-                    const updatedDataArray = [...cultivation];
-                    updatedDataArray[targetedArea].area = parseInt(e);
-                    setCultivation(updatedDataArray);
-                  }
-                }}
-                onFocus={() => setFocus(true)}
-              />
-            );
-          })}
+          {/* {cultivation.map((item, indx) => {
+            return ( */}
+          <Controller
+            control={control}
+            name="once"
+            render={({field}) => {
+              const {onChange, value} = field;
+              return (
+                <InputWithoutBorder
+                  productionName="Cultivated once in a year"
+                  placeholder={'0'}
+                  value={value}
+                  onChangeText={onChange}
+                  onFocus={() => setFocus(true)}
+                />
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="twice"
+            render={({field}) => {
+              const {onChange, value} = field;
+              return (
+                <InputWithoutBorder
+                  productionName="Cultivated twice in a year"
+                  placeholder={'0'}
+                  value={value}
+                  onChangeText={onChange}
+                  onFocus={() => setFocus(true)}
+                />
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="thrice"
+            render={({field}) => {
+              const {onChange, value} = field;
+              return (
+                <InputWithoutBorder
+                  productionName="Cultivated once in a year"
+                  placeholder={'0'}
+                  value={value}
+                  onChangeText={onChange}
+                  onFocus={() => setFocus(true)}
+                />
+              );
+            }}
+          />
+          {/* //   );
+          // })} */}
         </View>
         <View style={styles.BottomSheetButton}>
           <TouchableOpacity
             style={styles.crossButton}
-            onPress={() => setModify(!modify)}>
-            <Image source={require('../../../assets/cross.png')} />
+            onPress={() => {
+              setModify(!modify);
+              reset({
+                once: String(
+                  userDetails.sub_area.cultivation.distribution.once || 0,
+                ),
+                twice: String(
+                  userDetails.sub_area.cultivation.distribution.twice || 0,
+                ),
+                thrice: String(
+                  userDetails.sub_area.cultivation.distribution.thrice || 0,
+                ),
+              });
+            }}>
+            <Image
+              source={require('../../../assets/cross.png')}
+              style={{width: 50, height: 50}}
+            />
           </TouchableOpacity>
           <CustomButton
             btnText={'Modify'}
             style={{width: '80%'}}
-            onPress={() => setModify(!modify)}
+            onPress={handleSubmit(onSave)}
           />
         </View>
       </BottomModal>
+      <Toast
+        positionValue={30}
+        style={{height: 'auto', minHeight: 70}}
+        width={300}
+      />
     </SafeAreaView>
   );
 };
@@ -250,7 +425,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',
       color: 'green',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
     },
     modifyButton: {
       height: 35,

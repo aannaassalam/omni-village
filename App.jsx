@@ -15,10 +15,12 @@ import CultivationThrice from './src/Screens/CultivationScreens/CultivationThric
 import LandForSea from './src/Screens/CultivationScreens/LandForSea';
 import RegisterSuccessfull from './src/Screens/AuthScreens/RegisterSuccessfull';
 import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
-import {Provider, useDispatch} from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
 import {store} from './src/Store/store';
 import {CheckToken} from './src/Helper/CheckToken';
 import {getUser} from './src/Redux/AuthSlice';
+import ToastManager from 'toastify-react-native';
+import Toast from 'react-native-toast-message';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -26,6 +28,10 @@ function App() {
   const hasToken = CheckToken();
 
   const dispatch = useDispatch();
+
+  // const user_details = useSelector((s)=>s.auth)
+
+  // console.log(user_details,"user_details_app")
 
   useEffect(() => {
     if (hasToken !== undefined) {

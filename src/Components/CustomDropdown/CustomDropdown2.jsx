@@ -16,7 +16,13 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 
-export default CustomDropdown2 = ({placeholder, selectedValue}) => {
+export default CustomDropdown2 = ({
+  placeholder,
+  selectedValue,
+  data,
+  value,
+  style,
+}) => {
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
 
   const {fontScale} = useWindowDimensions();
@@ -24,7 +30,7 @@ export default CustomDropdown2 = ({placeholder, selectedValue}) => {
 
   return (
     <SelectDropdown
-      data={cropType}
+      data={data.length > 1 ? data.map(dat => dat.name) : []}
       onSelect={(selectedItem, index) => {
         selectedValue(selectedItem);
       }}
@@ -38,6 +44,7 @@ export default CustomDropdown2 = ({placeholder, selectedValue}) => {
         // if data array is an array of objects then return item.property to represent item in dropdown
         return item;
       }}
+      search
       buttonStyle={styles.dropdown1BtnStyle}
       buttonTextStyle={styles.dropdown1BtnTxtStyle}
       renderDropdownIcon={isOpened => {
@@ -81,6 +88,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform: 'capitalize',
     },
     dropdown1DropdownStyle: {backgroundColor: '#fff', borderRadius: 10},
     dropdown1RowStyle: {
@@ -93,6 +101,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform: 'capitalize',
     },
     icon_btn: {
       backgroundColor: '#a8adaf',
