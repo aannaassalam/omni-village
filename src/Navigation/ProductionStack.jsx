@@ -10,6 +10,17 @@ import CultivationThrice from '../Screens/CultivationScreens/CultivationThrice';
 import CropDescription from '../Screens/CultivationScreens/CropDescription';
 import TreesShrubsScreen from '../Screens/TreesAndShrubsScreens/TreesShrubsScreen';
 import Type01 from '../Screens/TreesAndShrubsScreens/Type01';
+import EditType from '../Screens/TreesAndShrubsScreens/EditType';
+import Poultry from '../Screens/Poultry/Poultry';
+import PoultryType from '../Screens/Poultry/PoultryType';
+import Index from '../Screens/Fishery/Index';
+import Fishery from '../Screens/Fishery/Fishery';
+import SubArea from '../Screens/Fishery/SubArea';
+import FishTypeInput from '../Screens/Fishery/FishTypeInput';
+import Hunting from '../Screens/Hunting/Hunting';
+import HuntingType from '../Screens/Hunting/HuntingType';
+import Storage from '../Screens/Storage/Storage';
+import SellingChannel from '../Screens/Selling Channel/SellingChannel';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +41,22 @@ export default function Productionstack() {
       {/* Tress,shrubs and grassland */}
       <Stack.Screen name="treesShrubGrassland" component={TreesShrubsScreen} />
       <Stack.Screen name="type" component={Type01} />
+      <Stack.Screen name='editType' component={EditType}/>
+      {/* poultry stack */}
+      <Stack.Screen name="poultry" component={Poultry} />
+      <Stack.Screen name="poultryType" component={PoultryType} />
+      {/* fishery  */}
+      <Stack.Screen name="fisheryIndex" component={Index} />
+      <Stack.Screen name="fishery" component={Fishery} />
+      <Stack.Screen name="subArea" component={SubArea} />
+      <Stack.Screen name="fishTypeInput" component={FishTypeInput} />
+      {/* hunting */}
+      <Stack.Screen name="hunting" component={Hunting} />
+      <Stack.Screen name="huntingType" component={HuntingType} />
+      {/* storage */}
+      <Stack.Screen name="storage" component={Storage} />
+      {/* SellingChannel */}
+      <Stack.Screen name="sellingChannel" component={SellingChannel} />
     </Stack.Navigator>
   );
 }

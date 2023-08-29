@@ -19,10 +19,21 @@ const Production = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const goToNext = name => {
+    console.log("name", name)
     if (name == 'Cultivation') {
       navigation.navigate('landAllocation', {totalLand: totalLand});
     } else if (name == 'Trees, Shrubs & Grasslands') {
       navigation.navigate('treesShrubGrassland', {totalLand: totalLand});
+    }else if(name == "Poultry"){
+      navigation.navigate('poultry',{totalLand:totalLand})
+    }else if (name==='Fishery'){
+      navigation.navigate('fisheryIndex',{totalLand:totalLand})
+    }else if (name=="Hunting"){
+      navigation.navigate('hunting')
+    }else if(name=="Storage"){
+      navigation.navigate('storage')
+    }else if(name=="Selling Channel"){
+      navigation.navigate('sellingChannel')
     }
   };
   return (
@@ -71,11 +82,13 @@ const Production = ({navigation, route}) => {
             productionName={'Hunting'}
             productionArea={''}
             progressBar={true}
+            onPress={()=>goToNext('Hunting')}
           />
           <CustomShowcaseInput
             productionName={'Selling Channel'}
             productionArea={''}
             progressBar={true}
+            onPress={()=>goToNext('Selling Channel')}
           />
         </>
       </ScrollView>

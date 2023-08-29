@@ -103,7 +103,7 @@ const makeStyles = fontScale =>
     },
     cultivationText: {
       color: 'green',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
       marginBottom: -10,
       marginTop: 10,
       fontFamily: 'ubuntu_medium',
@@ -115,7 +115,7 @@ const makeStyles = fontScale =>
     },
     acresText: {
       alignSelf: 'center',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
       color: '#000',
     },
   });

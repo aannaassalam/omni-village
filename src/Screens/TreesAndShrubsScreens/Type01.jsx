@@ -17,6 +17,8 @@ import BottomModal from '../../Components/BottomSheet/BottomModal';
 import Checkbox from '../../Components/Checkboxes/Checkbox';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import PopupModal from '../../Components/Popups/PopupModal';
 
 const Type01 = ({ navigation, route }) => {
   const { cropType } = route.params;
@@ -27,6 +29,9 @@ const Type01 = ({ navigation, route }) => {
   const [treeAge, setTreeAge] = useState(false)
   const [harvestProdAdd, setHarvestProdAdd] = useState(false)
   const [focus,setFocus]=useState(false)
+  const [savepopup, setSavepopup] = useState(false);
+  const [draftpopup, setDraftpopup] = useState(false);
+  const [productName,setProductName]=useState('')
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
@@ -49,6 +54,41 @@ const Type01 = ({ navigation, route }) => {
       checked: false
     },
   ])
+  const [harvestedProductList,setHarvestedProductList] = useState([
+    {
+      id:1,
+      productName:'Fur',
+      date:'August 15, 2023',
+      qty:'1 kg',
+      productDetails:[
+        {
+          name: 'Self Consumed',
+          value: '10 kg'
+        },
+        {
+          name: 'Fed To Livestock',
+          value: '50 kg'
+        },{
+          name: 'Sold To Neighbour',
+          value: '10 kg'
+        },{
+          name: 'Sold To Industry',
+          value: '10 kg'
+        },{
+          name: 'Wastage',
+          value: '10 kg'
+        },{
+          name: 'Retain',
+          value: '10 kg'
+        }
+      ]
+    }
+  ])
+
+  const addProduct = () =>{
+    setHarvestedProductList([...harvestedProductList,{productName:productName}])
+    setProductName('')
+  }
   const toggleItem = (value, index) => {
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)
@@ -110,7 +150,7 @@ const Type01 = ({ navigation, route }) => {
             />
             <TouchableOpacity
               onPress={() => setHarvestedProduct(!harvestedProduct)}>
-              {impInfo ? (
+              {harvestedProduct ? (
                 <Image
                   source={require('../../../assets/arrowUp.png')}
                   style={styles.uparrow}
@@ -123,13 +163,48 @@ const Type01 = ({ navigation, route }) => {
               )}
             </TouchableOpacity>
           </View>
-          {harvestedProduct ? <ProductDescription /> : null}
+          <>
+          {harvestedProduct?
+          <>
+          {harvestedProductList[0]!==undefined ? 
+          <>
+          {harvestedProductList.map((item)=>{
+            return <ProductDescription 
+            productName={'Product Type'}
+            productNameValue={item?.productName}
+            date={'Harvested On'}
+            dateValue={'August 15,2023'}
+            qty={'Qty'}
+            qtyValue={'1'}
+            data={item?.productDetails}
+            edit={()=>navigation.navigate('editType',{cropType:item?.productName})}
+            />
+          })}
+          </>
+          : null}
+          </>
+          :
+          null
+        }
+          </>
           <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
             <Text style={styles.add_button_text}>Add</Text>
             <AntDesign
               name="plus" size={15} color="#fff"
             />
           </TouchableOpacity>
+        </View>
+        <View style={styles.bottomPopupbutton}>
+          <CustomButton
+            style={styles.submitButton}
+            btnText={'Submit'}
+            onPress={() => {setSavepopup(true)}}
+          />
+          <CustomButton
+            style={styles.draftButton}
+            btnText={'Save as draft'}
+            onPress={() => {setDraftpopup(true)}}
+          />
         </View>
         {
           treeAge &&
@@ -186,14 +261,87 @@ const Type01 = ({ navigation, route }) => {
               <InputWithoutBorder
                 measureName={'kg'}
                 productionName={'Name Of harvested Product'}
-                value={''}
-                onChangeText={e => console.log(e)}
+                value={productName}
+                onChangeText={e => {
+                  if (e.endsWith("\n")){
+                    setHarvestProdAdd(!harvestProdAdd)
+                    setFocus(!focus)
+                    addProduct()
+                  }else{
+                    setProductName(e)
+                  }
+                }}
+                multiline={true}
                 notRightText={true}
                 onFocus={()=>setFocus(true)}
               />
             </View>
           </BottomModal>
         }
+        {/* submit popup */}
+        <PopupModal
+          modalVisible={savepopup}
+          setBottomModalVisible={setSavepopup}
+          styleInner={[styles.savePopup, { width: '90%' }]}>
+          <View style={styles.submitPopup}>
+            <View style={styles.noteImage}>
+              <Image
+                source={require('../../../assets/note.png')}
+                style={styles.noteImage}
+              />
+            </View>
+            <Text style={styles.confirmText}>Confirm</Text>
+            <Text style={styles.nextText}>
+              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            </Text>
+            <View style={styles.bottomPopupbutton}>
+              <CustomButton
+                style={styles.submitButton}
+                btnText={'Submit'}
+                onPress={() => {
+                  setSavepopup(false), navigation.goBack();
+                }}
+              />
+              <CustomButton
+                style={styles.draftButton}
+                btnText={'Cancel'}
+                onPress={() => {
+                  setSavepopup(false), navigation.goBack();
+                }}
+              />
+            </View>
+          </View>
+        </PopupModal>
+        {/* draft popup */}
+        <PopupModal
+          modalVisible={draftpopup}
+          setBottomModalVisible={setDraftpopup}
+          styleInner={[styles.savePopup, { width: '90%' }]}>
+          <View style={styles.submitPopup}>
+            <View style={styles.noteImage}>
+              <Image
+                source={require('../../../assets/note.png')}
+                style={styles.noteImage}
+              />
+            </View>
+            <Text style={styles.confirmText}>Save as Draft</Text>
+            <Text style={styles.nextText}>
+              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            </Text>
+            <View style={styles.bottomPopupbutton}>
+              <CustomButton
+                style={styles.submitButton}
+                btnText={'Save'}
+                onPress={() => setDraftpopup(false)}
+              />
+              <CustomButton
+                style={styles.draftButton}
+                btnText={'Cancel'}
+                onPress={() => setDraftpopup(false)}
+              />
+            </View>
+          </View>
+        </PopupModal>
       </ScrollView>
     </View>
   );
@@ -281,5 +429,52 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       width: '90%',
       marginBottom: 10
-    }
+    },
+    savePopup: {
+      justifyContent: 'center',
+      width: '97%',
+      borderRadius: 20,
+    },
+    popupButton: {
+      width: '70%',
+      alignSelf: 'center',
+    },
+    bottomPopupbutton: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+    },
+    submitButton: {
+      width: '45%',
+      margin: 10,
+    },
+    draftButton: {
+      width: '45%',
+      margin: 10,
+      backgroundColor: 'grey',
+    },
+    confirmText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu_medium',
+      fontWeight: '500',
+      padding: 10,
+      textAlign: 'center',
+    },
+    nextText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu',
+      textAlign: 'center',
+    },
+    submitPopup: {
+      alignItems: 'center',
+      padding: 10,
+    },
+    noteImage: {
+      padding: 10,
+    },
   });
