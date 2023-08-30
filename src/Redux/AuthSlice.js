@@ -181,6 +181,10 @@ export const AuthSlice = createSlice({
         if (payload.status === 200) {
           state.user = payload.data;
           state.userDetails = payload.data;
+          if (payload.data === null) {
+            storage.delete('token');
+            storage.delete('refresh_token');
+          }
           state.status = 'idle';
         }
       })
