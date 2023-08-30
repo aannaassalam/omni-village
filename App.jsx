@@ -21,6 +21,7 @@ import {CheckToken} from './src/Helper/CheckToken';
 import {getUser} from './src/Redux/AuthSlice';
 import ToastManager from 'toastify-react-native';
 import Toast from 'react-native-toast-message';
+import {storage} from './src/Helper/Storage';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -38,8 +39,14 @@ function App() {
       setIsLoggedIn(hasToken);
       dispatch(getUser())
         .unwrap()
-        .then(() => setIsAppReady(true))
-        .catch(err => console.log(err));
+        .then(() => {
+          setIsAppReady(true);
+        })
+        .catch(err => {
+          storage.delete('token');
+          storage.delete('refresh_token');
+          console.log(err);
+        });
     }
   }, [hasToken]);
 
