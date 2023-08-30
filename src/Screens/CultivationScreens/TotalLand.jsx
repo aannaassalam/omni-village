@@ -64,7 +64,11 @@ const TotalLand = ({navigation}) => {
       return accumulator;
     }, 0);
     if (sumofAreas > parseInt(data?.total_land)) {
-      console.log('Your sub area acres are greater than total land area');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Your sub area acres are greater than total land area',
+      });
     } else {
       dispatch(LandAllocation(data))
         .unwrap()
