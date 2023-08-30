@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
+import Toast  from 'react-native-toast-message';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
@@ -64,6 +65,7 @@ const TotalLand = ({navigation}) => {
       return accumulator;
     }, 0);
     if (sumofAreas > parseInt(data?.total_land)) {
+      console.log("Your sub area acres are greater than total land area")
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -230,6 +232,11 @@ const TotalLand = ({navigation}) => {
           </View>
         </>
       </ScrollView>
+        <Toast
+          positionValue={30}
+          style={{ height: 'auto', minHeight: 70 }}
+          width={300}
+        />
     </ScrollView>
   );
 };
