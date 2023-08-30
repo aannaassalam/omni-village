@@ -34,7 +34,7 @@ const landSchema = yup
 const TotalLand = ({navigation}) => {
   const {userDetails} = useSelector(s => s.auth);
 
-  console.log(userDetails.sub_area);
+  // console.log(userDetails.sub_area);
 
   const {
     handleSubmit,
@@ -45,12 +45,12 @@ const TotalLand = ({navigation}) => {
   } = useForm({
     resolver: yupResolver(landSchema),
     defaultValues: {
-      total_land: String(userDetails.total_land || ''),
-      cultivation: String(userDetails.sub_area.cultivation.land || ''),
-      trees: String(userDetails.sub_area.trees || ''),
-      poultry: String(userDetails.sub_area.poultry || ''),
-      fishery: String(userDetails.sub_area.fishery || ''),
-      storage: String(userDetails.sub_area.storage || ''),
+      total_land: String(userDetails?.total_land || ''),
+      cultivation: String(userDetails?.sub_area.cultivation.land || ''),
+      trees: String(userDetails?.sub_area.trees || ''),
+      poultry: String(userDetails?.sub_area.poultry || ''),
+      fishery: String(userDetails?.sub_area.fishery || ''),
+      storage: String(userDetails?.sub_area.storage || ''),
     },
   });
 
