@@ -1,46 +1,73 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image, ScrollView } from 'react-native'
+import React, { useCallback, useEffect, useState, } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard'
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2'
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton'
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement'
-import BottomModal from '../../Components/BottomSheet/BottomModal'
+import { useDispatch, useSelector } from 'react-redux'
+import { useFocusEffect } from '@react-navigation/native'
+import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
+import { deleteFishery, getFishery } from '../../Redux/FisherySlice'
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
 
 const Fishery = ({ navigation, route }) => {
     const { totalLand, screenName } = route.params
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
+    const { fisheryCrop } = useSelector((state) => state.fisheryCrop)
+    const { fishery } = useSelector((state) => state.fishery)
     const [cropType, setCropType] = useState([]);
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
     const [otherCrop, setOtherCrop] = useState('');
     const [focusOther, setFocusOther] = useState(false);
-    const handleRemoveClick = index => {
+    const dispatch = useDispatch()
+    const handleRemoveClick = (id, index) => {
         const list = [...cropType];
         list.splice(index, 1);
         setCropType(list);
+        dispatch(deleteFishery(id))
+            .unwrap()
+            .then((res) => {
+                console.log(`delted hunting ${id}`, res)
+                dispatch(getFishery('pond'))
+            })
+            .catch((err) => console.log("error delete hunting", err))
     };
     const addCrop = () => {
+
         setCropType([
             ...cropType,
-            {
-                cropName: dropdownVal == 'Others' ? otherCrop : dropdownVal,
-                progress: '',
-            },
+            otherCrop
         ]);
         setCropModal(!cropModal);
         setFocusOther(false);
         setDropdownVal('');
         setOtherCrop('');
     };
+    // console.log("dropdonw value", cropType)
+    const addingHuntingCrop = () => {
+        addCrop()
+    }
+
     const DropdownSelectedValue = data => {
         setDropdownVal(data);
         if (data !== 'Others') {
             setFocusOther(false);
         }
     };
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(getFisheryCrops())
+            dispatch(getFishery('pond'))
+        }, []))
+    useEffect(() => {
+        setCropType(Object.keys(fishery))
+    }, [fishery])
+
+    // console.log("croptype", cropType)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -64,16 +91,25 @@ const Fishery = ({ navigation, route }) => {
                 return (
                     <TouchableOpacity
                         style={styles.addAndDeleteButtonSection}
-                        onPress={() =>
+                        onPress={() => {
                             navigation.navigate('subArea', {
-                                type: element?.cropName,
-                                screenName: screenName
+                                type: element,
+                                screenName: element,
+                                data: fishery !== "" ? fishery[element] : element
                             })
+                        }
                         }>
                         <AddAndDeleteCropButton
                             add={false}
-                            cropName={element?.cropName}
-                            onPress={() => handleRemoveClick(i)}
+                            cropName={element}
+                            onPress={() => {
+                                let findId = Object.values(fishery).flatMap((i) => i.filter((i) => i.pond_name == element ? i?._id : 0))
+                                // console.log("idddd", Object.values(fishery).flatMap((i) => i.filter((i) => i.pond_name == element?i?._id:0)))
+                                console.log("id", findId[0]?._id)
+                                handleRemoveClick(fishery ? findId[0]?._id : element?.id, i)
+                            }
+                            }
+                        // handleRemoveClick(fishery!==""?Object.values(fishery)[0].find((i) => i.pond_name == element)._id : element?.id, i)}
                         />
                     </TouchableOpacity>
                 );
@@ -82,7 +118,7 @@ const Fishery = ({ navigation, route }) => {
                 <View style={styles.addAndDeleteButtonSection}>
                     <AddAndDeleteCropButton
                         add={true}
-                        cropName={`Add ${screenName.includes('Pond')?'Pond':'Sea'} Sub Area`}
+                        cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
                         onPress={() => setCropModal(true)}
                     />
                 </View>
@@ -90,32 +126,29 @@ const Fishery = ({ navigation, route }) => {
                 <View style={styles.addAndDeleteButtonSection}>
                     <AddAndDeleteCropButton
                         add={true}
-                            cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
+                        cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
                         onPress={() => setCropModal(true)}
                     />
                 </View>
             )}
-            <BottomModal
-                modalVisible={cropModal}
-                setBottomModalVisible={setCropModal}
-                styleInner={{ height: focusOther ? '80%' : '35%' }}>
-                <View style={styles.BottomTopContainer}>
-                    <Text style={styles.headerText}>Add {screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area</Text>
-                    <TouchableOpacity
-                        onPress={() => {
-                            setCropModal(!cropModal);
-                            setFocusOther(false);
-                            setDropdownVal('');
-                        }}>
-                        <Image
-                            source={require('../../../assets/close.png')}
-                            style={styles.closeIcon}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.dropdownSection}>
-                    <CustomDropdown2 selectedValue={e => DropdownSelectedValue(e)} />
-                    {dropdownVal === 'Others' ? (
+            {cropModal &&
+                <AddBottomSheet>
+
+                    <View style={styles.BottomTopContainer}>
+                        <Text style={styles.headerText}>Add {screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setCropModal(!cropModal);
+                                setFocusOther(false);
+                                setDropdownVal('');
+                            }}>
+                            <Image
+                                source={require('../../../assets/close.png')}
+                                style={styles.closeIcon}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.dropdownSection}>
                         <InputWithoutRightElement
                             label={'Crop Name'}
                             placeholder={'Crop 01'}
@@ -123,24 +156,24 @@ const Fishery = ({ navigation, route }) => {
                             value={otherCrop}
                             onFocus={() => setFocusOther(true)}
                         />
-                    ) : null}
-                </View>
-                <View style={styles.BottomSheetButton}>
-                    <TouchableOpacity
-                        style={styles.crossButton}
-                        onPress={() => setCropModal(!cropModal)}>
-                        <Image
-                            source={require('../../../assets/cross.png')}
-                            style={styles.addCropIcon}
+                    </View>
+                    <View style={styles.BottomSheetButton}>
+                        <TouchableOpacity
+                            style={styles.crossButton}
+                            onPress={() => setCropModal(!cropModal)}>
+                            <Image
+                                source={require('../../../assets/cross.png')}
+                                style={styles.addCropIcon}
+                            />
+                        </TouchableOpacity>
+                        <CustomButton
+                            btnText={'Create'}
+                            style={{ width: '80%' }}
+                            onPress={() => addingHuntingCrop()}
                         />
-                    </TouchableOpacity>
-                    <CustomButton
-                        btnText={'Create'}
-                        style={{ width: '80%' }}
-                        onPress={() => addCrop()}
-                    />
-                </View>
-            </BottomModal>
+                    </View>
+                </AddBottomSheet>
+            }
         </View>
     )
 }
@@ -188,6 +221,9 @@ const makeStyles = fontScale =>
         },
         dropdownSection: {
             width: '90%',
+            justifyContent: 'center',
+            alignSelf: 'center',
+            // flex:1,
         },
         addCropIcon: {
             height: 50,

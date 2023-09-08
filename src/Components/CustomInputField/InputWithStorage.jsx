@@ -12,7 +12,7 @@ import { Divider } from 'react-native-paper';
 
 const InputWithStorage = ({
     label,
-    value,
+    val,
     onChangeText,
     placeholder,
     productionName,
@@ -44,12 +44,12 @@ const InputWithStorage = ({
                             <TextInput
                                 style={styles.inputText}
                                 onChangeText={onChangeText}
-                                value={value}
+                                value={val}
                                 placeholder={placeholder}
                                 placeholderTextColor={'#333'}
                                 onFocus={onFocus}
                                 // editable={!editable}
-                                // keyboardType={keyboardType}
+                                keyboardType={keyboardType}
                                 multiline={multiline}
                             // numberOfLines={multiline == true ? 2 : 0}
                             />
@@ -109,7 +109,7 @@ const makeStyles = fontScale =>
             fontSize: 14 / fontScale,
             marginBottom: -10,
             marginTop: 10,
-            fontFamily: 'ubuntu_medium',
+            fontFamily: 'ubuntu',
         },
         divider: {
             height: '80%',
@@ -126,7 +126,7 @@ const makeStyles = fontScale =>
             alignSelf:'center',
             paddingHorizontal:8,
             paddingVertical:5,
-            backgroundColor:'#BBD9C4',
+            backgroundColor:'#F1F7F3',
             margin:10,
             marginRight:15,
             borderRadius:7

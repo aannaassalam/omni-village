@@ -1,18 +1,35 @@
-import { StyleSheet, Text, View, useWindowDimensions,Image,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Divider } from 'react-native-paper';
 
-const ProductInner = ({ date, dateValue }) =>{
+const ProductInner = ({ date }) => {
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  return(
-        <View style={{width:'33%',marginVertical:'2%',alignSelf:'center',justifyContent:'center'}}>
-          <Text style={styles.main_text}>{date}</Text>
-          <Text style={styles.main_text_value}>{dateValue}</Text>
-        </View>
+  return (
+    <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'center'}}>
+    <View style={{ width: '33%', marginVertical: '2%', alignSelf: 'center', justifyContent: 'center', }}>
+      <Text style={styles.main_text}>Self Consumed</Text>
+        <Text style={styles.main_text_value}>{date?.self_consumed}</Text>
+      <Text style={styles.main_text}>Feed To livestock</Text>
+        <Text style={styles.main_text_value}>{date?.fed_to_livestock}</Text>
+    </View>
+      <View style={{ width: '33%', marginVertical: '2%', alignSelf: 'center', justifyContent: 'center', }}>
+        <Text style={styles.main_text}>Sold to Neighbour</Text>
+        <Text style={styles.main_text_value}>{date?.sold_to_neighbours}</Text>
+        <Text style={styles.main_text}>Sold to Industrial</Text>
+        <Text style={styles.main_text_value}>{date?.sold_for_industrial_use}</Text>
+      </View>
+      <View style={{ width: '33%', marginVertical: '2%', alignSelf: 'center', justifyContent: 'center', }}>
+        <Text style={styles.main_text}>Wastage</Text>
+        <Text style={styles.main_text_value}>{date?.wastage}</Text>
+        <Text style={styles.main_text}>Retain</Text>
+        <Text style={styles.main_text_value}>{date?.other_value}</Text>
+      </View>
+    </View>
   )
 }
-const ProductDescription = ({ productName, productNameValue, dateValue, date, qtyValue, qty,data,edit }) => {
+const ProductDescription = ({ productName, productNameValue, dateValue, date, qtyValue, qty, data, edit, del }) => {
+  // console.log("date", data)
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
@@ -36,25 +53,22 @@ const ProductDescription = ({ productName, productNameValue, dateValue, date, qt
         </View>
       </View>
       <View style={styles.second_container}>
-      {data.map((item)=>{
-        return <ProductInner
-        date={item?.name}
-        dateValue={item?.value}
+        <ProductInner
+          date={data}
         />
-      })}
       </View>
       <View style={styles.edit_del_button}>
-        <TouchableOpacity>
-        <Image
-          source={require('../../../assets/delete.png')}
-          style={styles.addCropIcon}
-        />
+        <TouchableOpacity onPress={del}>
+          <Image
+            source={require('../../../assets/delete.png')}
+            style={styles.addCropIcon}
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={edit}>
-        <Image
-          source={require('../../../assets/edit.png')}
-          style={styles.addCropIcon}
-        />
+          <Image
+            source={require('../../../assets/edit.png')}
+            style={styles.addCropIcon}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -81,10 +95,10 @@ const makeStyles = fontScale =>
     second_container: {
       marginTop: '2%',
       backgroundColor: '#1F7E3A',
-      flexDirection:'row',
-      justifyContent: 'flex-start',
-      alignContent:'center',
-      flexWrap:'wrap',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignContent: 'center',
+      flexWrap: 'wrap',
       width: '95%',
       borderRadius: 5,
       alignSelf: 'center',
@@ -113,11 +127,11 @@ const makeStyles = fontScale =>
     addCropIcon: {
       height: 30,
       width: 30,
-      marginLeft:10
+      marginLeft: 10
     },
-    edit_del_button:{
-      flexDirection:'row',
-      alignSelf:'flex-end',
-      margin:10
+    edit_del_button: {
+      flexDirection: 'row',
+      alignSelf: 'flex-end',
+      margin: 10
     }
   });

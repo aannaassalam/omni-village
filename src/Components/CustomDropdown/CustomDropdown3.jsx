@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,26 +11,29 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-const {width} = Dimensions.get('window');
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+const { width } = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
-import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { SelectList } from 'react-native-dropdown-select-list'
 
 export default CustomDropdown3 = ({
   placeholder,
   selectedValue,
+  defaultVal,
   data,
   infoName,
+  style,
   value,
 }) => {
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-
+  const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
   return (
     <View style={styles.textInputContainer}>
       <View style={styles.textInputInner}>
         <Text style={styles.infoName}>{infoName}</Text>
-        <SelectDropdown
+        {/* <SelectDropdown
           data={data}
           onSelect={(selectedItem, index) => {
             selectedValue(selectedItem);
@@ -64,6 +67,33 @@ export default CustomDropdown3 = ({
           rowTextStyle={styles.dropdown1RowTxtStyle}
           defaultButtonText={value ? value : placeholder}
           dropdownOverlayColor="rgba(0,0,0,.1)"
+        /> */}
+        <SelectList
+          setSelected={selectedValue}
+          data={data?.length >= 1 && data !== undefined ? data.map((j, index) => { return { key: index, value: j?.name } }) : cropType.map((i, index) => { return { key: index, value: i } })}
+          save="value"
+          dropdownTextStyles={{
+            color: '#000'
+          }}
+          placeholder='Select Option'
+          searchPlaceholder='Search here'
+          inputStyles={{
+            color: '#000',
+          }}
+          search
+          boxStyles={[styles.boxStyle, style]}
+          dropdownItemStyles={[styles.dropdownstyle]}
+          dropdownStyles={{
+            // backgroundColor:'yellow',
+            borderColor: '#fff',
+            borderWidth: 1,
+            elevation:5,
+            backgroundColor:"#fff",
+            width:'90%',
+            alignSelf:'center'
+          }}
+          defaultOption={defaultVal}
+
         />
       </View>
     </View>
@@ -138,4 +168,11 @@ const makeStyles = fontScale =>
       borderRadius: 5,
       padding: 5,
     },
+    boxStyle: {
+      borderColor: "#fff",
+      borderWidth: 1,
+    },
+    dropdownstyle: {
+      // backgroundColor: 'red'
+    }
   });

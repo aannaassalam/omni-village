@@ -8,12 +8,11 @@ import {
     Dimensions,
     ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
 import { Divider } from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import ProductDescription from '../../Components/CustomDashboard/ProductDescription';
-import BottomModal from '../../Components/BottomSheet/BottomModal';
 import Checkbox from '../../Components/Checkboxes/Checkbox';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
@@ -22,9 +21,15 @@ import PopupModal from '../../Components/Popups/PopupModal';
 import ImportantInformationHunting from '../../Components/Accordion/ImportantInformationHunting';
 import ProductionInformation from '../../Components/Accordion/ProductionInformation';
 import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion';
-
+import { validation } from '../../Validation/Validation';
+import Toast from 'react-native-toast-message';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { addHunting, editHunting, getHunting } from '../../Redux/HuntingSlice';
+import { useDispatch } from 'react-redux';
 const HuntingType = ({ navigation, route }) => {
-    const { cropType } = route.params;
+    const { cropType, data, cropId } = route.params;
     const [impInfo, setImpInfo] = useState(true);
     const [harvestedProduct, setHarvestedProduct] = useState(true);
     const [productionInfo, setProductionInfo] = useState(true)
@@ -38,60 +43,10 @@ const HuntingType = ({ navigation, route }) => {
     const [savepopup, setSavepopup] = useState(false);
     const [draftpopup, setDraftpopup] = useState(false);
     const [productName, setProductName] = useState('')
-    const [yields,setYields]=useState('')
+    const [yields, setYields] = useState('')
+    const dispatch = useDispatch()
+    const [others, setOthers] = useState('');
     const [toggleCheckBox, setToggleCheckBox] = useState('')
-    const [averageAge, setAverageAge] = useState([
-        {
-            id: 1,
-            age: 'Less than a year',
-            checked: true
-        },
-        {
-            id: 2,
-            age: '1 to 2 years',
-            checked: false
-        },
-        {
-            id: 3,
-            age: '2 to 3 years',
-            checked: false
-        },
-        {
-            id: 4,
-            age: '3 to 5 year',
-            checked: false
-        },
-    ])
-    const [harvestedProductList, setHarvestedProductList] = useState([
-        {
-            id: 1,
-            productName: 'Fur',
-            date: 'August 15, 2023',
-            qty: '1 kg',
-            productDetails: [
-                {
-                    name: 'Self Consumed',
-                    value: '10 kg'
-                },
-                {
-                    name: 'Fed To Livestock',
-                    value: '50 kg'
-                }, {
-                    name: 'Sold To Neighbour',
-                    value: '10 kg'
-                }, {
-                    name: 'Sold To Industry',
-                    value: '10 kg'
-                }, {
-                    name: 'Wastage',
-                    value: '10 kg'
-                }, {
-                    name: 'Retain',
-                    value: '10 kg'
-                }
-            ]
-        }
-    ])
     const addProduct = () => {
         setHarvestedProductList([...harvestedProductList, { productName: productName }])
         setProductName('')
@@ -114,6 +69,133 @@ const HuntingType = ({ navigation, route }) => {
         })
         setAverageAge(newValue)
     }
+    const schema = yup.object().shape({
+        important_information: yup.object().shape({
+            number_hunted: yup.string().required(validation.error.number_hunted),
+        }),
+        utilisation_information: yup.object().shape({
+            meat: yup.string().required(validation.error.meat),
+            self_consumed: yup.string().required(validation.error.self_consumed),
+            sold_to_neighbours: yup.string().required(validation.error.sold_to_neighbours),
+            sold_in_consumer_market: yup.string().required(validation.error.sold_for_industrial_use),
+            wastage: yup.string().required(validation.error.wastage),
+            other: yup.string().required(validation.error.other),
+            other_value: yup.string().required(validation.error.other_value),
+        }),
+        income_from_sale: yup.string().required(validation.error.income_from_sale),
+        expenditure_on_inputs: yup.string().required(validation.error.expenditure_on_inputs),
+        yeild: yup.string().required(validation.error.yeild),
+        processing_method: yup.string().required(validation.error.processing_method),
+    });
+// console.log("cropid", cropId)
+    const {
+        handleSubmit,
+        setValue,
+        getValues,
+        watch,
+        control,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            important_information: {
+                number_hunted: String(data?.number_hunted || 0),
+            },
+            utilisation_information: {
+                meat: String(data?.meat || 0),
+                self_consumed: String(data?.self_consumed || 0),
+                sold_in_consumer_market: String(data?.sold_in_consumer_market || 0),
+                sold_to_neighbours: String(data?.sold_in_consumer_market || 0),
+                wastage: String(data?.wastage || 0),
+                other: String(data?.other || ''),
+                other_value: String(data?.other_value || 0)
+            },
+            expenditure_on_inputs: String(data?.expenditure_on_inputs || 0),
+            income_from_sale: String(data?.income_from_sale || 0), // TODO: add validation for this field
+            yeild: String(data?.yeild || 0),
+            processing_method: Boolean(data?.processing_method || false),
+        },
+    });
+    useEffect(() => {
+        setValue(
+            'yeild',
+            String(
+                parseInt(getValues('utilisation_information.meat'), 10) /
+                parseInt(getValues('important_information.number_hunted'), 10) || '0',
+            ),
+        );
+    }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
+
+    const onSubmit = () => {
+        if (data?._id) {
+            dispatch(
+                editHunting({
+                    number_hunted: watch('important_information.number_hunted'),
+                    utilisation_information: watch('utilisation_information'),
+                    income_from_sale: watch('income_from_sale'),
+                    expenditure_on_inputs: watch('expenditure_on_inputs'),
+                    yeild: watch('yeild'),
+                    processing_method: watch('processing_method'),
+                    status: 1,
+                    crop_id: cropId,
+                }),
+            )
+                .unwrap()
+                .then(
+                    () =>
+                        Toast.show({
+                            text1: 'Success',
+                            text2: 'Trees updated successfully!',
+                        }),
+                    dispatch(getHunting()),
+                    navigation.goBack(),
+                )
+                .catch(err => {
+                    console.log('err', err);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error Occurred',
+                        text2: 'Something Went wrong, Please try again later!',
+                    });
+                })
+                .finally(() => setSavepopup(false));
+        } else {
+            dispatch(
+                addHunting({
+                    number_hunted: watch('important_information.number_hunted'),
+                    utilisation_information: watch('utilisation_information'),
+                    income_from_sale: watch('income_from_sale'),
+                    expenditure_on_inputs: watch('expenditure_on_inputs'),
+                    yeild: watch('yeild'),
+                    processing_method: watch('processing_method'),
+                    status: 1,
+                    crop_id: cropId
+                }),
+            )
+                .unwrap()
+                .then(
+                    () =>
+                        Toast.show({
+                            text1: 'Success',
+                            text2: 'Trees added successfully!',
+                        }),
+                    dispatch(getHunting()),
+                    navigation.goBack(),
+                )
+                .catch(err => {
+                    console.log('err at add', err);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error Occurred',
+                        text2: 'Something Went wrong, Please try again later!',
+                    });
+                })
+                .finally(() => setSavepopup(false));
+        }
+    };
+
+    // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
+
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -145,8 +227,27 @@ const HuntingType = ({ navigation, route }) => {
                             )}
                         </TouchableOpacity>
                     </View>
-                    {impInfo ? <ImportantInformationHunting
-                    /> : null}
+                    {impInfo ? <View style={styles.impContainer}>
+                        <Controller
+                            control={control}
+                            name='important_information.number_hunted'
+                            render={({ field }) => {
+                                const { onChange, value } = field;
+                                return (
+                                    <InputWithoutBorder
+                                        measureName={'kg'}
+                                        productionName={'Number'}
+                                        value={value}
+                                        onChangeText={onChange}
+                                        notRightText={true}
+                                    />
+                                );
+                            }}
+                        />
+                        {errors?.important_information?.number_hunted.message ? (
+                            <Text style={styles.error}>{errors?.important_information?.number_hunted.message}</Text>
+                        ) : null}
+                    </View> : null}
                     {/* production information */}
                     <View style={styles.subArea}>
                         <Text style={styles.subAreaText}>Production Information</Text>
@@ -170,60 +271,275 @@ const HuntingType = ({ navigation, route }) => {
                             )}
                         </TouchableOpacity>
                     </View>
-                    {productionInfo ? <UtilisationAccordion
-                    hunting={true}
-                    /> : null}
-                    <InputWithoutBorder
-                        measureName={'USD'}
-                        productionName={'Income from sale'}
-                        value={income}
-                        onChangeText={e => {
-                            setIncome(e);
+                    {productionInfo ?
+                        <View style={styles.perContainer}>
+                            <Controller
+                                control={control}
+                                name='utilisation_information.meat'
+                                render={({ field }) => {
+                                    const { onChange, value } = field;
+                                    return (
+                                        <InputWithoutBorder
+                                            measureName={'kg'}
+                                            productionName={'Meat'}
+                                            value={value}
+                                            onChangeText={onChange}
+                                        />
+                                    );
+                                }}
+                            />
+                            {errors?.utilisation_information?.meat.message ? (
+                                <Text style={styles.error}>{errors?.utilisation_information?.meat.message}</Text>
+                            ) : null}
+                            <View style={styles.innerInputView}>
+                                <Divider style={styles.divider2} />
+                                <View style={{ width: '100%' }} >
+                                    <Controller
+                                        control={control}
+                                        name='utilisation_information.self_consumed'
+                                        render={({ field }) => {
+                                            const { onChange, value } = field;
+                                            return (
+                                                <InputWithoutBorder
+                                                    measureName={'kg'}
+                                                    productionName={'Self Comsumed'}
+                                                    value={value}
+                                                    onChangeText={onChange}
+                                                />
+                                            )
+                                        }}
+                                    />
+                                    {errors?.utilisation_information?.self_consumed.message ? (
+                                        <Text style={styles.error}>{errors?.utilisation_information?.self_consumed.message}</Text>
+                                    ) : null}
+                                    <Controller
+                                        name="utilisation_information.sold_to_neighbours"
+                                        control={control}
+                                        render={({ field }) => {
+                                            const { onChange, value } = field;
+                                            return (
+                                                <InputWithoutBorder
+                                                    measureName={'kg'}
+                                                    productionName="Sold to Neighbours"
+                                                    value={value}
+                                                    multiline={false}
+                                                    notRightText={false}
+                                                    onChangeText={onChange}
+                                                />
+                                            );
+                                        }}
+                                    />
+                                    {errors?.utilisation_information?.sold_to_neighbours?.message ? (
+                                        <Text style={styles.error}>
+                                            {errors?.utilisation_information?.sold_to_neighbours?.message}
+                                        </Text>
+                                    ) : null}
+                                    <Controller
+                                        name="utilisation_information.sold_in_consumer_market"
+                                        control={control}
+                                        render={({ field }) => {
+                                            const { onChange, value } = field;
+                                            return (
+                                                <InputWithoutBorder
+                                                    measureName={'kg'}
+                                                    productionName="Sold for Industrial Use"
+                                                    value={value}
+                                                    multiline={false}
+                                                    notRightText={false}
+                                                    onChangeText={onChange}
+                                                />
+                                            );
+                                        }}
+                                    />
+                                    {errors?.utilisation_information?.sold_in_consumer_market?.message ? (
+                                        <Text style={styles.error}>
+                                            {errors?.utilisation_information?.sold_in_consumer_market?.message}
+                                        </Text>
+                                    ) : null}
+                                    <Controller
+                                        name="utilisation_information.wastage"
+                                        control={control}
+                                        render={({ field }) => {
+                                            const { onChange, value } = field;
+                                            return (
+                                                <InputWithoutBorder
+                                                    measureName={'kg'}
+                                                    productionName="Wastage"
+                                                    value={value}
+                                                    multiline={false}
+                                                    notRightText={false}
+                                                    onChangeText={onChange}
+                                                />
+                                            );
+                                        }}
+                                    />
+                                    {errors?.utilisation_information?.wastage?.message ? (
+                                        <Text style={styles.error}>
+                                            {errors?.utilisation_information?.wastage?.message}
+                                        </Text>
+                                    ) : null}
+                                    <Controller
+                                        name="utilisation_information.other"
+                                        control={control}
+                                        render={({ field }) => {
+                                            const { onChange, value } = field;
+                                            return (
+                                                <InputWithoutBorder
+                                                    measureName={'kg'}
+                                                    productionName="Others"
+                                                    value={value}
+                                                    multiline={false}
+                                                    notRightText={true}
+                                                    onChangeText={onChange}
+                                                    keyboardType='default'
+                                                />
+                                            );
+                                        }}
+                                    />
+                                    <View style={styles.innerInputView}>
+                                        <Divider style={styles.divider2} />
+                                        <View style={{ width: '100%' }}>
+                                            <Controller
+                                                name="utilisation_information.other_value"
+                                                control={control}
+                                                render={({ field }) => {
+                                                    const { onChange, value } = field;
+                                                    return (
+                                                        <InputWithoutBorder
+                                                            measureName={'kg'}
+                                                            productionName={
+                                                                watch('utilisation_information.other')
+                                                                    ? watch('utilisation_information.other')
+                                                                    : 'Other Value'
+                                                            }
+                                                            value={value}
+                                                            multiline={false}
+                                                            notRightText={false}
+                                                            editable={watch('utilisation_information.other').length > 0}
+                                                            onChangeText={onChange}
+                                                        />
+                                                    );
+                                                }}
+                                            />
+                                            {errors?.utilisation_information?.other_value?.message ? (
+                                                <Text style={styles.error}>
+                                                    {errors?.utilisation_information?.other_value?.message}
+                                                </Text>
+                                            ) : null}
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                        : null} 
+                        <View style={{width:'95%', alignSelf:'center'}}>
+
+                    <Controller
+                        name='income_from_sale'
+                        control={control}
+                        render={({ field }) => {
+                            const { onChange, value } = field;
+                            return (
+                                <InputWithoutBorder
+                                    measureName={'USD'}
+                                    productionName={'Income from sale'}
+                                    value={value}
+                                    onChangeText={onChange}
+                                />
+                            );
                         }}
                     />
-                    <InputWithoutBorder
-                        measureName={'USD'}
-                        productionName={'Expenditure on inputs'}
-                        value={expenditure}
-                        onChangeText={e => {
-                            setExpenditure(e);
+                    {errors?.income_from_sale?.message ? (
+                        <Text style={styles.error}>
+                            {errors?.income_from_sale?.message}
+                        </Text>
+                    ) : null}
+                    <Controller
+                        name='expenditure_on_inputs'
+                        control={control}
+                        render={({ field }) => {
+                            const { onChange, value } = field;
+                            return (
+                                <InputWithoutBorder
+                                    measureName={'USD'}
+                                    productionName={'Expenditure on inputs'}
+                                    value={value}
+                                    onChangeText={onChange}
+                                />
+                            );
                         }}
                     />
-                    <InputWithoutBorder
-                        measureName={'USD'}
-                        productionName={'Yields'}
-                        value={yields}
-                        onChangeText={e => {
-                            setYields(e);
+                    {errors?.expenditure_on_inputs?.message ? (
+                        <Text style={styles.error}>
+                            {errors?.expenditure_on_inputs?.message}
+                        </Text>
+                    ) : null}
+                    <Controller
+                        name='yeild'
+                        control={control}
+                        render={({ field }) => {
+                            const { onChange, value } = field;
+                            return (
+                                <InputWithoutBorder
+                                    measureName={'USD'}
+                                    productionName={'Yields'}
+                                    value={value}
+                                    onChangeText={onChange}
+                                    notRightText={true}
+                                    editable={false}
+                                />
+                            );
                         }}
-                        notRightText={true}
                     />
+                    {errors?.yeild?.message ? (
+                        <Text style={styles.error}>
+                            {errors?.yeild?.message}
+                        </Text>
+                    ) : null}
                     <Text style={styles.processing_text}>Required Processing method if any for the outputs</Text>
                     <View style={styles.processing_container}>
-                        <TouchableOpacity onPress={() => setToggleCheckBox('yes')}>
-                            {toggleCheckBox === 'yes' ?
-                                <Image
-                                    source={require('../../../assets/checked.png')}
-                                    style={{ height: 30, width: 30 }} />
-                                :
-                                <Image
-                                    source={require('../../../assets/unchecked.png')}
-                                    style={{ height: 30, width: 30 }} />
-                            }
-                        </TouchableOpacity>
+                        <Controller
+                            name='processing_method'
+                            control={control}
+                            render={({ field }) => {
+                                const { onChange, value } = field;
+                                return (
+                                    <TouchableOpacity onPress={() =>onChange(true)}>
+                                        {value === true ?
+                                            <Image
+                                                source={require('../../../assets/checked.png')}
+                                                style={{ height: 30, width: 30 }} />
+                                            :
+                                            <Image
+                                                source={require('../../../assets/unchecked.png')}
+                                                style={{ height: 30, width: 30 }} />
+                                        }
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
                         <Text style={styles.yes_text}>Yes</Text>
-                        <TouchableOpacity onPress={() => setToggleCheckBox('no')}>
-                            {toggleCheckBox === 'no' ?
-                                <Image
-                                    source={require('../../../assets/checked.png')}
-                                    style={{ height: 30, width: 30 }} />
-                                :
-                                <Image
-                                    source={require('../../../assets/unchecked.png')}
-                                    style={{ height: 30, width: 30 }} />
+                        <Controller
+                            name='processing_method'
+                            control={control}
+                            render={({ field }) => {
+                                const { onChange, value } = field;
+                                return (
+                                    <TouchableOpacity onPress={() => onChange(false)}>
+                                        {value === false?
+                                            <Image
+                                                source={require('../../../assets/checked.png')}
+                                                style={{ height: 30, width: 30 }} />
+                                            :
+                                            <Image
+                                                source={require('../../../assets/unchecked.png')}
+                                                style={{ height: 30, width: 30 }} />
 
-                            }
-                        </TouchableOpacity>
+                                        }
+                                    </TouchableOpacity>
+                                );
+                            }}
+                        />
                         <Text style={styles.yes_text}>No</Text>
                     </View>
                 </View>
@@ -239,78 +555,7 @@ const HuntingType = ({ navigation, route }) => {
                         onPress={() => { setDraftpopup(true) }}
                     />
                 </View>
-                {
-                    treeAge &&
-                    <BottomModal
-                        modalVisible={treeAge}
-                        setBottomModalVisible={setTreeAge}
-                        styleInner={{ height: '45%' }}
-                    >
-                        <View style={styles.BottomTopContainer}>
-                            <Text style={styles.headerText}>Average Age of the tree</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setTreeAge(!treeAge);
-                                }}>
-                                <Image
-                                    source={require('../../../assets/close.png')}
-                                    style={styles.closeIcon}
-                                />
-                            </TouchableOpacity>
                         </View>
-                        <View style={styles.chck_container}>
-                            {averageAge.map((item, indx) => {
-                                return (
-                                    <Checkbox
-                                        name={item?.age}
-                                        checked={item?.checked}
-                                        checking={(value) => toggleItem(value, indx)}
-                                    />
-                                )
-                            })}
-                        </View>
-                    </BottomModal>
-                }
-                {harvestProdAdd &&
-                    <BottomModal
-                        modalVisible={harvestProdAdd}
-                        setBottomModalVisible={setHarvestProdAdd}
-                        styleInner={{ height: focus ? '70%' : '35%' }}
-                    >
-                        <View style={styles.BottomTopContainer}>
-                            <Text style={styles.headerText}>Add Harvested Product</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setHarvestProdAdd(!harvestProdAdd);
-                                    setFocus(!focus)
-                                }}>
-                                <Image
-                                    source={require('../../../assets/close.png')}
-                                    style={styles.closeIcon}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.harvested_prod_container}>
-                            <InputWithoutBorder
-                                measureName={'kg'}
-                                productionName={'Name Of harvested Product'}
-                                value={productName}
-                                onChangeText={e => {
-                                    if (e.endsWith("\n")) {
-                                        setHarvestProdAdd(!harvestProdAdd)
-                                        setFocus(!focus)
-                                        addProduct()
-                                    } else {
-                                        setProductName(e)
-                                    }
-                                }}
-                                multiline={true}
-                                notRightText={true}
-                                onFocus={() => setFocus(true)}
-                            />
-                        </View>
-                    </BottomModal>
-                }
                 {/* submit popup */}
                 <PopupModal
                     modalVisible={savepopup}
@@ -332,7 +577,8 @@ const HuntingType = ({ navigation, route }) => {
                                 style={styles.submitButton}
                                 btnText={'Submit'}
                                 onPress={() => {
-                                    setSavepopup(false), navigation.goBack();
+                                    setSavepopup(false), 
+                                    onSubmit()
                                 }}
                             />
                             <CustomButton
@@ -376,6 +622,11 @@ const HuntingType = ({ navigation, route }) => {
                     </View>
                 </PopupModal>
             </ScrollView>
+            <Toast
+                positionValue={30}
+                style={{ height: 'auto', minHeight: 70 }}
+                width={300}
+            />
         </View>
     )
 }
@@ -400,7 +651,7 @@ const makeStyles = fontScale =>
             paddingHorizontal: 20,
             margin: 10,
             marginTop: '5%',
-            width: width / 1,
+            width: width / 1.04,
         },
         divider: {
             alignSelf: 'center',
@@ -408,6 +659,21 @@ const makeStyles = fontScale =>
             width: '67%',
             marginTop: 5,
             color: 'grey',
+        },
+        divider2: {
+            // backgroundColor: 'grey',
+            alignSelf: 'flex-start',
+            height: '100%',
+            marginTop: 9,
+            width: '1%',
+            borderRadius: 10,
+        },
+        innerInputView: {
+            flexDirection: 'row',
+            alignSelf: 'center',
+            justifyContent: 'space-between',
+            width: '95%',
+            marginBottom: '5%',
         },
         subAreaText: {
             alignSelf: 'center',
@@ -531,4 +797,12 @@ const makeStyles = fontScale =>
             fontSize: 14 / fontScale,
             fontFamily: 'ubuntu_medium'
         },
+        impContainer: {
+            width: '95%',
+            alignSelf: 'center',
+        },
+        perContainer: {
+            width: '95%',
+            alignSelf: 'center',
+        }
     });

@@ -13,13 +13,15 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import { getTree } from '../../Redux/TreesSlice';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
   const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const dispatch = useDispatch()
   const {user} = useSelector(s => s.auth);
 
   const goToNext = name => {
