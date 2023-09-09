@@ -1,13 +1,21 @@
 import { StyleSheet, Text, View,useWindowDimensions,Image,TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard'
 import {Box, Button} from '@react-native-material/core';
+import { useFocusEffect } from '@react-navigation/native';
+import { getFisheryCrops } from '../../Redux/FisheryCropSlice';
+import { useDispatch } from 'react-redux';
 
 const Index = ({navigation,route}) => {
     const {totalLand} = route.params
     const {fontScale} = useWindowDimensions()
+    const dispatch = useDispatch()
     const styles = makeStyles(fontScale)
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getFisheryCrops())
+    }, []))
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -35,7 +43,7 @@ const Index = ({navigation,route}) => {
         </Box>
       </TouchableOpacity>
       {/*  Harvested From River */}
-        <TouchableOpacity onPress={() => navigation.navigate('fishery', { totalLand: totalLand, screenName: 'Harvested From Sea' })}>
+        <TouchableOpacity onPress={() => navigation.navigate('fisheryRiver', { totalLand: totalLand, screenName: 'Harvested From Sea' })}>
         <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
           <Box style={styles.exclamationMark}>
             <Image

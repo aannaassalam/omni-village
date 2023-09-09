@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
+import Toast  from 'react-native-toast-message';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
@@ -34,7 +35,7 @@ const landSchema = yup
 const TotalLand = ({navigation}) => {
   const {userDetails} = useSelector(s => s.auth);
 
-  console.log(userDetails.sub_area);
+  // console.log(userDetails.sub_area);
 
   const {
     handleSubmit,
@@ -45,12 +46,12 @@ const TotalLand = ({navigation}) => {
   } = useForm({
     resolver: yupResolver(landSchema),
     defaultValues: {
-      total_land: String(userDetails.total_land || ''),
-      cultivation: String(userDetails.sub_area.cultivation.land || ''),
-      trees: String(userDetails.sub_area.trees || ''),
-      poultry: String(userDetails.sub_area.poultry || ''),
-      fishery: String(userDetails.sub_area.fishery || ''),
-      storage: String(userDetails.sub_area.storage || ''),
+      total_land: String(userDetails?.total_land || ''),
+      cultivation: String(userDetails?.sub_area.cultivation.land || ''),
+      trees: String(userDetails?.sub_area.trees || ''),
+      poultry: String(userDetails?.sub_area.poultry || ''),
+      fishery: String(userDetails?.sub_area.fishery || ''),
+      storage: String(userDetails?.sub_area.storage || ''),
     },
   });
 
@@ -64,6 +65,7 @@ const TotalLand = ({navigation}) => {
       return accumulator;
     }, 0);
     if (sumofAreas > parseInt(data?.total_land)) {
+      console.log("Your sub area acres are greater than total land area")
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -230,6 +232,11 @@ const TotalLand = ({navigation}) => {
           </View>
         </>
       </ScrollView>
+        <Toast
+          positionValue={30}
+          style={{ height: 'auto', minHeight: 70 }}
+          width={300}
+        />
     </ScrollView>
   );
 };

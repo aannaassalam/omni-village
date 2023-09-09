@@ -74,5 +74,6 @@ const makeStyles = fontScale =>
       borderWidth: 1,
       borderColor: '#eee',
       fontSize: 16 / fontScale,
+      color:'#000'
     },
   });

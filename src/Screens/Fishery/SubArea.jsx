@@ -1,20 +1,27 @@
 import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton'
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement'
-import BottomModal from '../../Components/BottomSheet/BottomModal'
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
+import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useFocusEffect } from '@react-navigation/native'
+import { getFishery } from '../../Redux/FisherySlice'
 
-const SubArea = ({navigation,route}) => {
-    const { totalLand, screenName,type } = route.params
+const SubArea = ({ navigation, route }) => {
+    const { totalLand, screenName, type, cropId, data } = route.params
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
+    const { fisheryCrop } = useSelector((state) => state.fisheryCrop)
+    const { fishery } = useSelector((state) => state.fishery)
     const [cropType, setCropType] = useState([]);
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
-    const [otherCrop, setOtherCrop] = useState('');
+    const [otherCrop, setOtherCrop] = useState({});
     const [focusOther, setFocusOther] = useState(false);
+    const dispatch = useDispatch()
     const handleRemoveClick = index => {
         const list = [...cropType];
         list.splice(index, 1);
@@ -24,7 +31,8 @@ const SubArea = ({navigation,route}) => {
         setCropType([
             ...cropType,
             {
-                cropName: dropdownVal == 'Others' ? otherCrop : dropdownVal,
+                name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
+                _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
                 progress: '',
             },
         ]);
@@ -33,104 +41,138 @@ const SubArea = ({navigation,route}) => {
         setDropdownVal('');
         setOtherCrop('');
     };
+    const addingHuntingCrop = () => {
+        if (dropdownVal.name === 'Others') {
+            dispatch(addFisherycrop({ name: otherCrop?.name }))
+            dispatch(getHuntingCrops())
+            setDropdownVal([])
+            setOtherCrop('')
+        } else {
+            addCrop()
+        }
+    }
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(getFisheryCrops())
+            dispatch(getFishery('pond'))
+        }, []))
     const DropdownSelectedValue = data => {
         setDropdownVal(data);
         if (data !== 'Others') {
             setFocusOther(false);
         }
     };
-  return (
-    <View style={styles.container}>
-          <CustomHeader
-              backIcon={true}
-              headerName={screenName}
-              goBack={() => navigation.goBack()}
-          />
-          <View style={{marginTop:'5%'}}>
-          {cropType?.map((element, i) => {
-              return (
-                  <TouchableOpacity
-                      style={styles.addAndDeleteButtonSection}
-                      onPress={() =>
-                          navigation.navigate('fishTypeInput', {
-                              cropType: element?.cropName,
-                              screenName: screenName
-                          })
-                      }>
-                      <AddAndDeleteCropButton
-                          add={false}
-                          cropName={element?.cropName}
-                          onPress={() => handleRemoveClick(i)}
-                      />
-                  </TouchableOpacity>
-              );
-          })}
-          {cropType[0] === undefined ? (
-              <View style={styles.addAndDeleteButtonSection}>
-                  <AddAndDeleteCropButton
-                      add={true}
-                      cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
-                      onPress={() => setCropModal(true)}
-                  />
-              </View>
-          ) : (
-              <View style={styles.addAndDeleteButtonSection}>
-                  <AddAndDeleteCropButton
-                      add={true}
-                      cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
-                      onPress={() => setCropModal(true)}
-                  />
-              </View>
-          )}
-          </View>
-          <BottomModal
-              modalVisible={cropModal}
-              setBottomModalVisible={setCropModal}
-              styleInner={{ height: focusOther ? '80%' : '35%' }}>
-              <View style={styles.BottomTopContainer}>
-                  <Text style={styles.headerText}>{dropdownVal === 'Others' ? 'Create Fish Type' :'Add Fish type'}</Text>
-                  <TouchableOpacity
-                      onPress={() => {
-                          setCropModal(!cropModal);
-                          setFocusOther(false);
-                          setDropdownVal('');
-                      }}>
-                      <Image
-                          source={require('../../../assets/close.png')}
-                          style={styles.closeIcon}
-                      />
-                  </TouchableOpacity>
-              </View>
-              <View style={styles.dropdownSection}>
-                  <CustomDropdown2 selectedValue={e => DropdownSelectedValue(e)} />
-                  {dropdownVal === 'Others' ? (
-                      <InputWithoutRightElement
-                          label={'Create Fish type'}
-                          placeholder={'Crop 01'}
-                          onChangeText={e => setOtherCrop(e)}
-                          value={otherCrop}
-                          onFocus={() => setFocusOther(true)}
-                      />
-                  ) : null}
-              </View>
-              <View style={styles.BottomSheetButton}>
-                  <TouchableOpacity
-                      style={styles.crossButton}
-                      onPress={() => setCropModal(!cropModal)}>
-                      <Image
-                          source={require('../../../assets/cross.png')}
-                          style={styles.addCropIcon}
-                      />
-                  </TouchableOpacity>
-                  <CustomButton
-                      btnText={'Create'}
-                      style={{ width: '80%' }}
-                      onPress={() => addCrop()}
-                  />
-              </View>
-          </BottomModal>
-    </View>
-  )
+    useEffect(() => {
+        if (data) {
+            setCropType(data)
+        } else {
+            setCropType([])
+        }
+    }, [data])
+    // console.log("data", cropType)
+    return (
+        <View style={styles.container}>
+            <CustomHeader
+                backIcon={true}
+                headerName={screenName}
+                goBack={() => navigation.goBack()}
+            />
+            <View style={{ marginTop: '5%' }}>
+                {cropType[0]!==undefined && 
+                cropType?.map((element, i) => {
+                    return (
+                        <TouchableOpacity
+                            style={styles.addAndDeleteButtonSection}
+                            onPress={() => {
+                                navigation.navigate('fishTypeInput', {
+                                    cropType: element?.name,
+                                    type: type,
+                                    screenName: screenName,
+                                    cropId: element?._id,
+                                    data: data ? data.find((i) => i?.fishery_crop?.name == element?.name || i?.fishery_crop?.name == element?.fishery_crop?.name) : null
+                                })
+                            }
+                            }>
+                            <AddAndDeleteCropButton
+                                add={false}
+                                cropName={data ? element?.fishery_crop?.name || element?.name : element?.name}
+                                onPress={() => handleRemoveClick(i)}
+                            />
+                        </TouchableOpacity>
+                    );
+                })}
+                {cropType[0] === undefined ? (
+                    <View style={styles.addAndDeleteButtonSection}>
+                        <AddAndDeleteCropButton
+                            add={true}
+                            cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
+                            onPress={() => setCropModal(true)}
+                        />
+                    </View>
+                ) : (
+                    <View style={styles.addAndDeleteButtonSection}>
+                        <AddAndDeleteCropButton
+                            add={true}
+                            cropName={`Add ${screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area`}
+                            onPress={() => setCropModal(true)}
+                        />
+                    </View>
+                )}
+            </View>
+            {cropModal &&
+                <AddBottomSheet>
+                    <View style={styles.BottomTopContainer}>
+                        <Text style={styles.headerText}>{dropdownVal === 'Others' ? 'Create Fish Type' : 'Add Fish type'}</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setCropModal(!cropModal);
+                                setFocusOther(false);
+                                setDropdownVal('');
+                            }}>
+                            <Image
+                                source={require('../../../assets/close.png')}
+                                style={styles.closeIcon}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.dropdownSection}>
+                        <CustomDropdown2
+                            selectedValue={e => {
+                                DropdownSelectedValue({ name: e, _id: e.id })
+                            }
+                            }
+                            data={[...fisheryCrop, { _id: 0, name: 'Others' }]}
+                            valu={dropdownVal?.name}
+                        />
+                        {dropdownVal.name === 'Others' ? (
+                            <InputWithoutRightElement
+                                label={'Crop Name'}
+                                placeholder={'Crop 01'}
+                                onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
+                                value={otherCrop?.name}
+                                onFocus={() => setFocusOther(true)}
+                            />
+                        ) : null}
+                    </View>
+                    <View style={styles.BottomSheetButton}>
+                        <TouchableOpacity
+                            style={styles.crossButton}
+                            onPress={() => setCropModal(!cropModal)}>
+                            <Image
+                                source={require('../../../assets/cross.png')}
+                                style={styles.addCropIcon}
+                            />
+                        </TouchableOpacity>
+                        <CustomButton
+                            btnText={'Create'}
+                            style={{ width: '80%' }}
+                            onPress={() => addCrop()}
+                        />
+                    </View>
+                </AddBottomSheet>
+            }
+        </View>
+    )
 }
 
 export default SubArea
@@ -175,6 +217,8 @@ const makeStyles = fontScale => StyleSheet.create({
     },
     dropdownSection: {
         width: '90%',
+        justifyContent: 'center',
+        alignSelf: 'center'
     },
     addCropIcon: {
         height: 50,

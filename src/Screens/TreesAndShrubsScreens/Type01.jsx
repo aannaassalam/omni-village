@@ -5,10 +5,11 @@ import {
   useWindowDimensions,
   Image,
   TouchableOpacity,
+  TouchableHighlight,
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
 import { Divider } from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -19,19 +20,31 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
+import { validation } from '../../Validation/Validation';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTree, editTree, getTree } from '../../Redux/TreesSlice';
+import Toast from 'react-native-toast-message';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { fertilisers, pesticides, soilHealth } from '../../MockData/Mockdata';
+import moment from 'moment';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 
 const Type01 = ({ navigation, route }) => {
-  const { cropType } = route.params;
+  const { cropType, edit, cropId, data } = route.params;
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [treeAge, setTreeAge] = useState(false)
   const [harvestProdAdd, setHarvestProdAdd] = useState(false)
-  const [focus,setFocus]=useState(false)
+  const [focus, setFocus] = useState(false)
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
-  const [productName,setProductName]=useState('')
+  const [productName, setProductName] = useState('')
+  const { currentTree } = useSelector((state) => state.treeShrub)
+  const dispatch = useDispatch()
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
@@ -54,42 +67,172 @@ const Type01 = ({ navigation, route }) => {
       checked: false
     },
   ])
-  const [harvestedProductList,setHarvestedProductList] = useState([
-    {
-      id:1,
-      productName:'Fur',
-      date:'August 15, 2023',
-      qty:'1 kg',
-      productDetails:[
-        {
-          name: 'Self Consumed',
-          value: '10 kg'
-        },
-        {
-          name: 'Fed To Livestock',
-          value: '50 kg'
-        },{
-          name: 'Sold To Neighbour',
-          value: '10 kg'
-        },{
-          name: 'Sold To Industry',
-          value: '10 kg'
-        },{
-          name: 'Wastage',
-          value: '10 kg'
-        },{
-          name: 'Retain',
-          value: '10 kg'
-        }
-      ]
+  const [harvestedProductList, setHarvestedProductList] = useState([])
+  const [productList, setProductlist] = useState([])
+  const [age, setAge] = useState('')
+  const schema = yup.object().shape({
+    important_information: yup.object().shape({
+      number_of_trees: yup.string().required(validation.error.number_of_trees),
+      avg_age_of_trees: yup.string().required(validation.error.avg_age_of_trees),
+      soil_health: yup.string().required(validation.error.soil_health),
+      decreasing_rate: yup
+        .string()
+        .when('soil_health', (soil_health, schema2) =>
+          soil_health === 'decreasing yield'
+            ? yup.string().required(validation.error.decreasing_rate)
+            : schema2,
+        ),
+      type_of_fertilizer_used: yup
+        .string()
+        .required(validation.error.type_of_fertilizer_used),
+      type_of_pesticide_used: yup
+        .string()
+        .required(validation.error.type_of_pesticide_used),
+      income_from_sale: yup
+        .string()
+        .required(validation.error.income_from_sale),
+      expenditure_on_inputs: yup
+        .string()
+        .required(validation.error.expenditure_on_inputs)
+    }),
+  });
+  useEffect(()=>{
+    if(data){
+      setHarvestedProductList(data?.products)
+    }else{
+      setHarvestedProductList([])
     }
-  ])
-
-  const addProduct = () =>{
-    setHarvestedProductList([...harvestedProductList,{productName:productName}])
+  },[data])
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      important_information: {
+        number_of_trees: String(data?.number_of_trees || 0),
+        avg_age_of_trees: String(data?.avg_age_of_trees || ''),
+        decreasing_rate: String(
+          data?.decreasing_rate || '',
+        ),
+        expenditure_on_inputs: String(
+          data?.expenditure_on_inputs || '',
+        ),
+        income_from_sale: String(
+          data?.income_from_sale || '',
+        ),
+        soil_health: data?.soil_health,
+        type_of_fertilizer_used:
+          data?.type_of_fertilizer_used,
+        type_of_pesticide_used:
+          data?.type_of_pesticide_used,
+      },
+    },
+  });
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      setSavepopup(false);
+    }
+  }, [errors]);
+  // console.log("data", data?.number_of_trees)
+  const onSubmit = () => {
+    if (data?._id) {
+      dispatch(
+        editTree({
+          data: watch('important_information'),
+          productDetails: harvestedProductList.map((itm) => {
+            return {
+              _id: itm?._id,
+              production_output: itm?.production_output,
+              self_consumed: itm?.self_consumed,
+              fed_to_livestock: itm?.fed_to_livestock,
+              sold_to_neighbours: itm?.sold_to_neighbours,
+              sold_for_industrial_use: itm?.sold_for_industrial_use,
+              wastage: itm?.wastage,
+              other: itm?.other,
+              other_value: itm?.other_value,
+              month_harvested: moment(itm?.month_harvested).format("YYYY-MM-DD") ,
+              processing_method: itm?.processing_method
+            }
+          }),
+          status: 1,
+          crop_id: cropId
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Trees updated successfully!',
+            }),
+          dispatch(getTree()),
+          // navigation.goBack(),
+        )
+        .catch(err => {
+          console.log('err', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => {setSavepopup(false), navigation.goBack()});
+    } else {
+      dispatch(
+        addTree({
+          data: watch('important_information'),
+          productDetails: harvestedProductList,
+          status: 1,
+          crop_id: cropId
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Trees added successfully!',
+            }),
+          dispatch(getTree()),
+          navigation.goBack(),
+        )
+        .catch(err => {
+          console.log('err at add', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => setSavepopup(false));
+    }
+  };
+  const replaceObjectById = (array, newObj) => {
+    const newArray = array.map(obj => (obj.name === newObj.name ? newObj : obj));
+    return newArray;
+  };
+  useEffect(() => {
+    if (edit) {
+      const updatedArray = replaceObjectById(harvestedProductList, edit);
+      setHarvestedProductList(updatedArray)
+      console.log("check", updatedArray)
+    }
+  }, [edit])
+  const addProduct = () => {
+    setHarvestedProductList([...harvestedProductList, { name: productName }])
     setProductName('')
   }
+  const removeList = (name) => {
+    let newList = harvestedProductList.filter(obj => obj.name !== name)
+    setHarvestedProductList(newList)
+  }
   const toggleItem = (value, index) => {
+    setAge(value)
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)
         return {
@@ -106,7 +249,9 @@ const Type01 = ({ navigation, route }) => {
       return checkbox
     })
     setAverageAge(newValue)
+    setTreeAge(false)
   }
+  // console.log("form", watch('important_information'))
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -138,9 +283,188 @@ const Type01 = ({ navigation, route }) => {
               )}
             </TouchableOpacity>
           </View>
-          {impInfo ? <ImportantInformationTress
-            treeAgePress={() => setTreeAge(true)}
-          /> : null}
+          {impInfo ?
+            <View style={styles.container}>
+              <Controller
+                control={control}
+                name="important_information.number_of_trees"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <InputWithoutBorder
+                      measureName={'kg'}
+                      productionName={'Number of trees'}
+                      value={value}
+                      onChangeText={onChange}
+                      notRightText={true}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.number_of_trees?.message ? (
+                <Text style={styles.error}>{errors?.important_information?.number_of_trees?.message}</Text>
+              ) : null}
+
+              <Controller
+                control={control}
+                name="important_information.avg_age_of_trees"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <TouchableHighlight onPress={() => setTreeAge(true)}>
+                      <InputWithoutBorder
+                        measureName={'kg'}
+                        productionName={'Average age of the tree'}
+                        value={value}
+                        onChangeText={onChange}
+                        notRightText={true}
+                        editable={false}
+                        placeholder={'Select Average age of tree'}
+                      />
+                    </TouchableHighlight>
+                  );
+                }}
+              />
+              {errors?.important_information?.tree_age?.message ? (
+                <Text style={styles.error}>{errors?.important_information?.tree_age?.message}</Text>
+              ) : null}
+
+              <Controller
+                control={control}
+                name="important_information.soil_health"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <CustomDropdown3
+                      data={soilHealth}
+                      value={value}
+                      defaultVal={{ key: 1, value: value }}
+                      selectedValue={onChange}
+                      infoName={'Soil Health'}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.soil_health?.message ? (
+                <Text style={styles.error}>
+                  {errors?.important_information?.soil_health?.message}
+                </Text>
+              ) : null}
+              {watch('important_information.soil_health') ===
+                'decreasing yield'&& (
+                  <View style={styles.innerInputView}>
+                    <Divider style={styles.input_divider} />
+                    <View style={{ width: '100%' }}>
+                      <Controller
+                        control={control}
+                        name="important_information.decreasing_rate"
+                        render={({ field }) => {
+                          const { onChange, value } = field;
+                          return (
+                            <InputWithoutBorder
+                              measureName={'%'}
+                              productionName={'how much from first planting'}
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          );
+                        }}
+                      />
+                      {errors?.important_information?.decreasing_rate?.message ? (
+                        <Text style={styles.error}>
+                          {errors?.important_information?.decreasing_rate?.message}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </View>
+                )}
+              <Controller
+                control={control}
+                name="important_information.type_of_fertilizer_used"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <CustomDropdown3
+                      data={fertilisers}
+                      selectedValue={onChange}
+                      value={value}
+                      defaultVal={{ key: 1, value: value }}
+                      infoName={'Type of fertiliser used'}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.type_of_fertilizer_used?.message ? (
+                <Text style={styles.error}>
+                  {
+                    errors?.important_information?.type_of_fertilizer_used
+                      ?.message
+                  }
+                </Text>
+              ) : null}
+              <Controller
+                control={control}
+                name="important_information.type_of_pesticide_used"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <CustomDropdown3
+                      data={pesticides}
+                      selectedValue={onChange}
+                      value={value}
+                      defaultVal={{ key: 1, value: value }}
+                      infoName={'Type of pesticides used'}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.type_of_pesticide_used?.message ? (
+                <Text style={styles.error}>
+                  {errors?.important_information?.type_of_pesticide_used?.message}
+                </Text>
+              ) : null}
+              <Controller
+                control={control}
+                name="important_information.income_from_sale"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <InputWithoutBorder
+                      measureName={'USD'}
+                      productionName={'Income from sale'}
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.income_from_sale?.message ? (
+                <Text style={styles.error}>
+                  {errors?.important_information?.income_from_sale?.message}
+                </Text>
+              ) : null}
+              <Controller
+                control={control}
+                name="important_information.expenditure_on_inputs"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <InputWithoutBorder
+                      measureName={'USD'}
+                      productionName={'Expenditure on inputs'}
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                  );
+                }}
+              />
+              {errors?.important_information?.expenditure_on_inputs?.message ? (
+                <Text style={styles.error}>
+                  {errors?.important_information?.expenditure_on_inputs?.message}
+                </Text>
+              ) : null}
+            </View>
+            : null}
           <View style={styles.subArea}>
             <Text style={styles.subAreaText}>Harvested Product</Text>
             <Divider
@@ -164,54 +488,59 @@ const Type01 = ({ navigation, route }) => {
             </TouchableOpacity>
           </View>
           <>
-          {harvestedProduct?
-          <>
-          {harvestedProductList[0]!==undefined ? 
-          <>
-          {harvestedProductList.map((item)=>{
-            return <ProductDescription 
-            productName={'Product Type'}
-            productNameValue={item?.productName}
-            date={'Harvested On'}
-            dateValue={'August 15,2023'}
-            qty={'Qty'}
-            qtyValue={'1'}
-            data={item?.productDetails}
-            edit={()=>navigation.navigate('editType',{cropType:item?.productName})}
-            />
-          })}
+            {harvestedProduct ?
+              <>
+                {harvestedProductList[0] !== undefined && harvestedProductList.length >= 0 ?
+                  <>
+                    {harvestedProductList.map((item) => {
+                      return <ProductDescription
+                        productName={'Product Type'}
+                        productNameValue={item?.name}
+                        date={'Harvested On'}
+                        dateValue={data !== null || data !== undefined ? moment(item?.month_harvested).format('YYYY-MM-DD') : item?.month_harvested}
+                        qty={'Qty'}
+                        qtyValue={item?.production_output}
+                        del={() => removeList(item?.name)}
+                        data={item ? item : []}
+                        edit={() => navigation.navigate('editType', { cropType: item?.name, edit: item, cropId: cropId, data: data })}
+                      />
+                    })}
+                  </>
+                  : null}
+              </>
+              :
+              null
+            }
           </>
-          : null}
-          </>
-          :
+          {data?
           null
-        }
-          </>
+          :
           <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
             <Text style={styles.add_button_text}>Add</Text>
             <AntDesign
               name="plus" size={15} color="#fff"
             />
           </TouchableOpacity>
+        }
         </View>
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
             btnText={'Submit'}
-            onPress={() => {setSavepopup(true)}}
+            onPress={() => {
+              setSavepopup(true) 
+            }}
           />
           <CustomButton
             style={styles.draftButton}
             btnText={'Save as draft'}
-            onPress={() => {setDraftpopup(true)}}
+            onPress={() => { setDraftpopup(true) }}
           />
         </View>
+      </ScrollView>
         {
           treeAge &&
-          <BottomModal
-            modalVisible={treeAge}
-            setBottomModalVisible={setTreeAge}
-            styleInner={{ height: '45%' }}
+          <AddBottomSheet
           >
             <View style={styles.BottomTopContainer}>
               <Text style={styles.headerText}>Average Age of the tree</Text>
@@ -228,21 +557,32 @@ const Type01 = ({ navigation, route }) => {
             <View style={styles.chck_container}>
               {averageAge.map((item, indx) => {
                 return (
-                  <Checkbox
-                    name={item?.age}
-                    checked={item?.checked}
-                    checking={(value) => toggleItem(value, indx)}
+                  <Controller
+                    control={control}
+                    name="important_information.avg_age_of_trees"
+                    render={({ field }) => {
+                      const { onChange, value } = field;
+                      return (
+                        // <CalendarPicker
+                        //   onDateChange={onChange}
+                        //   selectedStartDate={value}
+                        // />
+                        <Checkbox
+                          name={item?.age}
+                          checked={item?.checked}
+                          checking={() => { onChange(item?.age), toggleItem(item?.age, indx) }}
+                        />
+                      );
+                    }}
                   />
+
                 )
               })}
             </View>
-          </BottomModal>
+            </AddBottomSheet>
         }
         {harvestProdAdd &&
-          <BottomModal
-            modalVisible={harvestProdAdd}
-            setBottomModalVisible={setHarvestProdAdd}
-            styleInner={{ height: focus?'70%':'35%' }}
+          <AddBottomSheet
           >
             <View style={styles.BottomTopContainer}>
               <Text style={styles.headerText}>Add Harvested Product</Text>
@@ -262,21 +602,22 @@ const Type01 = ({ navigation, route }) => {
                 measureName={'kg'}
                 productionName={'Name Of harvested Product'}
                 value={productName}
+                keyboardType='default'
                 onChangeText={e => {
-                  if (e.endsWith("\n")){
+                  if (e.endsWith("\n")) {
                     setHarvestProdAdd(!harvestProdAdd)
                     setFocus(!focus)
                     addProduct()
-                  }else{
+                  } else {
                     setProductName(e)
                   }
                 }}
                 multiline={true}
                 notRightText={true}
-                onFocus={()=>setFocus(true)}
+                onFocus={() => setFocus(true)}
               />
             </View>
-          </BottomModal>
+          </AddBottomSheet>
         }
         {/* submit popup */}
         <PopupModal
@@ -299,7 +640,9 @@ const Type01 = ({ navigation, route }) => {
                 style={styles.submitButton}
                 btnText={'Submit'}
                 onPress={() => {
-                  setSavepopup(false), navigation.goBack();
+                  setSavepopup(false),
+                    handleSubmit(onSubmit())
+
                 }}
               />
               <CustomButton
@@ -342,7 +685,11 @@ const Type01 = ({ navigation, route }) => {
             </View>
           </View>
         </PopupModal>
-      </ScrollView>
+      <Toast
+        positionValue={30}
+        style={{ height: 'auto', minHeight: 70 }}
+        width={300}
+      />
     </View>
   );
 };

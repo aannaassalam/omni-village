@@ -10,7 +10,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {ActivityIndicator, Divider} from 'react-native-paper';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
-import BottomModal from '../../Components/BottomSheet/BottomModal';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
@@ -30,6 +29,7 @@ import {
 import Toast from 'react-native-toast-message';
 import {useFocusEffect} from '@react-navigation/native';
 import PopupModal from '../../Components/Popups/PopupModal';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -217,7 +217,8 @@ const Season1 = ({navigation, route}) => {
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       )}
-      <BottomModal
+      {cropModal && 
+      <AddBottomSheet
         modalVisible={cropModal}
         setBottomModalVisible={toggle => {
           setCropModal(toggle);
@@ -301,7 +302,8 @@ const Season1 = ({navigation, route}) => {
             onPress={addCrop}
           />
         </View>
-      </BottomModal>
+      </AddBottomSheet>
+      }
       <PopupModal
         modalVisible={deletePopup}
         setBottomModalVisible={toggle => {
@@ -420,6 +422,8 @@ const makeStyles = fontScale =>
     },
     dropdownSection: {
       width: '90%',
+      justifyContent: 'center',
+      alignSelf: 'center'
       // backgroundColor: 'red',
     },
     addCropIcon: {

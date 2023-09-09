@@ -1,40 +1,41 @@
-import { StyleSheet, Text, View, useWindowDimensions,TouchableOpacity,Image } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard'
 import CustomButton from '../../Components/CustomButton/CustomButton'
+import { useDispatch, useSelector } from 'react-redux'
+import { useFocusEffect } from '@react-navigation/native'
+import { getSellingChannelMethod } from '../../Redux/SellingChannelMethodSlice'
+import { addSellingChannel, editSellingChannel, getSellingChannel } from '../../Redux/SellingChannelSlice'
 
 const SellingChannel = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
+    const { sellingChannelMethod } = useSelector((state) => state.sellingChannelMethod)
+    const { sellingChannel } = useSelector((state) => state.sellingChannel)
     const styles = makeStyles(fontScale)
-    const [toggleCheckBox, setToggleCheckBox] = useState('')
-    const [averageAge, setAverageAge] = useState([
-        {
-            id: 1,
-            age: 'Local Market',
-            checked: true
-        },
-        {
-            id: 2,
-            age: 'Broker',
-            checked: false
-        },
-        {
-            id: 3,
-            age: 'Ecommerce',
-            checked: false
-        },
-        {
-            id: 4,
-            age: 'Export',
-            checked: false
-        },
-        {
-            id: 4,
-            age: 'None',
-            checked: false
-        },
-    ])
+    let idMatch = sellingChannel
+    const [toggleCheckBox, setToggleCheckBox] = useState(idMatch?.selling_channel_methods ? idMatch?.selling_channel_methods : '')
+    const dispatch = useDispatch()
+    const [averageAge, setAverageAge] = useState([])
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(getSellingChannelMethod())
+        }, []))
+    useEffect(() => {
+        setAverageAge(sellingChannelMethod)
+    }, [sellingChannelMethod])
+    const save = () => {
+        if (idMatch?.selling_channel_methods) {
+            let formData = {
+                selling_channel_id: sellingChannel?._id,
+                selling_channel_methods: toggleCheckBox,
+            }
+            dispatch(editSellingChannel(formData))
+        } else {
+            dispatch(addSellingChannel(toggleCheckBox))
+
+        }
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -46,29 +47,31 @@ const SellingChannel = ({ navigation }) => {
                 first={'Production'}
                 second={'Selling Channel'}
             />
-            {averageAge.map((item)=>{
-                return(
+            {averageAge.map((item) => {
+                return (
                     <View key={item.id} style={styles.mainContainer}>
-                    <Text style={[styles.text, {fontSize: 14 / fontScale}]}>
-                        {item?.age}
-                    </Text>
-                    <TouchableOpacity onPress={() => setToggleCheckBox(item?.age)}>
-                        {toggleCheckBox === item?.age ?
-                            <Image
-                                source={require('../../../assets/checked.png')}
-                                style={{ height: 30, width: 30 }} />
-                            :
-                            <Image
-                                source={require('../../../assets/unchecked.png')}
-                                style={{ height: 30, width: 30 }} />
-                        }
-                    </TouchableOpacity>
+                        <Text style={[styles.text, { fontSize: 14 / fontScale }]}>
+                            {item?.name}
+                        </Text>
+                        <TouchableOpacity onPress={() => setToggleCheckBox(item?._id)}>
+                            {/* {toggleCheckBox.includes(item?._id)? */}
+                            {toggleCheckBox == item?._id ?
+                                <Image
+                                    source={require('../../../assets/checked.png')}
+                                    style={{ height: 30, width: 30 }} />
+                                :
+                                <Image
+                                    source={require('../../../assets/unchecked.png')}
+                                    style={{ height: 30, width: 30 }} />
+                            }
+                        </TouchableOpacity>
                     </View>
                 )
             })}
             <View style={styles.buttonContainer}>
                 <CustomButton
                     btnText={'Save'}
+                    onPress={() => save()}
                 />
             </View>
         </View>
@@ -83,20 +86,20 @@ const makeStyles = fontScale => StyleSheet.create({
         backgroundColor: '#fff'
     },
     mainContainer: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 10,
-        borderRadius:10,
-        borderWidth:1,
-        borderColor:'grey',
-        width:'90%',
-        marginTop:10,
-        alignSelf:'center'
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: 'grey',
+        width: '90%',
+        marginTop: 10,
+        alignSelf: 'center'
     },
-    text:{
-        color:'#000',
-        fontFamily:'ubuntu_medium'
+    text: {
+        color: '#000',
+        fontFamily: 'ubuntu_medium'
     },
     buttonContainer: {
         width: '90%',

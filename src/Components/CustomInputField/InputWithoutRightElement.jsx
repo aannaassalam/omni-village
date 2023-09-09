@@ -29,6 +29,7 @@ const InputWithoutRightElement = ({
           value={value}
           style={styles.textInput}
           placeholder={placeholder}
+          placeholderTextColor={'#333'}
           onFocus={onFocus}
           keyboardType={keyboardType}
         />

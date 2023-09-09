@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion'
 import InputLikeButton from '../../Components/CustomButton/InputLikeButton'
@@ -8,17 +8,121 @@ import PopupModal from '../../Components/Popups/PopupModal'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CalendarPicker from 'react-native-calendar-picker';
 import { Divider } from 'react-native-paper'
-import CheckBox from '@react-native-community/checkbox';
+import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import Toast from 'react-native-toast-message'
 
 const EditType = ({ navigation, route }) => {
-  const { cropType } = route.params
+  const { cropType, edit, cropId, data } = route.params
   const { fontScale } = useWindowDimensions()
   const styles = makeStyles(fontScale);
+  const [message,setMessage]=useState('')
   const [harvestedPopup, setHarvestedPopup] = useState(false);
-  const [harvestedDate, setHarvestedDate] = useState(new Date());
-  const [toggleCheckBox, setToggleCheckBox] = useState('')
+  const [harvestedDate, setHarvestedDate] = useState(edit ? data?moment(edit?.month_harvested).format('YYYY-MM-DD'):new Date():new Date());
+  const [toggleCheckBox, setToggleCheckBox] = useState(edit?data?edit?.processing_method==true?'yes':'no':"":'')
+  const [output, setOutput] = useState(edit ?edit?.production_output  :0)
+  const [utilisationArray, setUtilisationArray] = useState([]);
+  const [others, setOthers] = useState(edit?edit?.other_value:'');
+  let findme = utilisationArray.find(i => i?.name == 'Others');
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
+  useEffect(() => {
+    if (edit) {
+      console.log("here",typeof edit?.production_output)
+      setUtilisationArray(
+        [
+          { name: 'Self consumed', value: edit?.self_consumed },
+          { name: 'Fed to Livestock', value: edit?.fed_to_livestock },
+          { name: 'Sold to Neighbours', value: edit?.sold_to_neighbours },
+          { name: 'Sold for Industrial Use', value: edit?.sold_for_industrial_use },
+          { name: 'Wastage', value: edit?.wastage },
+          { name: 'Others', value: edit?.other }
+        ]
+      )
+    } else {
+      setUtilisationArray(
+        [
+          { name: 'Self consumed', value: 0 },
+          { name: 'Fed to Livestock', value: 0 },
+          { name: 'Sold to Neighbours', value: 0 },
+          { name: 'Sold for Industrial Use', value: 0 },
+          { name: 'Wastage', value: 0 },
+          { name: 'Others', value: '' },
+        ]
+      )
+    }
+  }, [edit])
+  const submit = () => {
+    if(!data){
+      let formData = {
+        name: cropType,
+        production_output: output,
+        self_consumed: utilisationArray[0]?.value,
+        fed_to_livestock: utilisationArray[1]?.value,
+        sold_to_neighbours: utilisationArray[2]?.value,
+        sold_for_industrial_use: utilisationArray[3]?.value,
+        wastage: utilisationArray[4]?.value,
+        other: utilisationArray[5]?.value,
+        other_value: others,
+        month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
+        processing_method: toggleCheckBox === 'yes' ? true : false
+      }
+      const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
+      let amount = parseInt(totalAmount)+parseInt(others)
+      let out = parseInt(output)
+      if(output==""){
+        setMessage("Output cannot be empty")
+        Toast.show({
+          type: 'error',
+          text1: 'Output cannot be empty'
+        })
+      }else{
+        if (amount > out) {
+          setMessage("Total amount cannot be greater than output")
+          Toast.show({
+            type: 'error',
+            text1: 'Total amount cannot be greater than output'
+          })
+        } else {
+          navigation.navigate('type', { edit: formData , cropId:cropId , data:data})
+        }
+      }
+    }else{
+      // console.log("edit id", edit?._id)
+      let formData = {
+        name: cropType,
+        _id: edit?._id,
+        production_output: output,
+        self_consumed: utilisationArray[0]?.value,
+        fed_to_livestock: utilisationArray[1]?.value,
+        sold_to_neighbours: utilisationArray[2]?.value,
+        sold_for_industrial_use: utilisationArray[3]?.value,
+        wastage: utilisationArray[4]?.value,
+        other: utilisationArray[5]?.value,
+        other_value: others,
+        month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
+        processing_method: toggleCheckBox === 'yes' ? true : false
+      }
+      const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
+      let amount = parseInt(totalAmount)+parseInt(others)
+      let out = parseInt(output)
+      if (output == "") {
+        Toast.show({
+          type: 'error',
+          text1: 'Output cannot be empty'
+        })
+      } else {
+        if (amount > out) {
+          setMessage("Total amount cannot be greater than output")
+          Toast.show({
+            type: 'error',
+            text1: 'Total amount cannot be greater than output'
+          })
+        } else {
+          navigation.navigate('type', { edit: formData, cropId: cropId, data: data })
+        }
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -29,14 +133,70 @@ const EditType = ({ navigation, route }) => {
       />
       <ScrollView>
         <View style={[styles.utilisation_container, { marginTop: 10 }]}>
-          <UtilisationAccordion />
+          <View style={styles.container}>
+            <InputWithoutBorder
+              measureName={'kg'}
+              productionName={'Output'}
+              keyboardType='numeric'
+              value={output}
+              onChangeText={e => {setOutput(e)}}
+            />
+            <View style={styles.innerInputView}>
+              <Divider style={styles.divider2} />
+              <View style={{ width: '100%' }}>
+                {utilisationArray?.map((item, index) => {
+                  // console.log("typ", typeof item?.value)
+                  return (
+                    <>
+                      <InputWithoutBorder
+                        measureName={'kg'}
+                        productionName={item?.name}
+                        value={item?.value ? item?.value.toString():''}
+                        keyboardType={item?.name === 'Others' ? 'default' : 'numeric'}
+                        multiline={false}
+                        notRightText={item?.name === 'Others' ? true : false}
+                        onChangeText={e => {
+                          let targetedArea = utilisationArray.findIndex(
+                            lan => lan?.name == item?.name,
+                          );
+                          if (targetedArea !== -1) {
+                            const updatedDataArray = [...utilisationArray];
+                            if (targetedArea === 5) {
+                              updatedDataArray[targetedArea].value = e;
+                              setUtilisationArray(updatedDataArray);
+                            } else {
+                              updatedDataArray[targetedArea].value = parseInt(e);
+                              setUtilisationArray(updatedDataArray);
+                            }
+                          }
+                        }}
+                      />
+                      {index == 5 && findme?.value !== '' ? (
+                        <View style={styles.innerInputView}>
+                          <Divider style={styles.divider2} />
+                          <View style={{ width: '100%' }}>
+                            <InputWithoutBorder
+                              measureName={'kg'}
+                              productionName={findme?.value}
+                              value={others}
+                              onChangeText={e => setOthers(e)}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </>
+                  );
+                })}
+              </View>
+            </View>
+          </View>
         </View>
         {/* Harvest date */}
         <View style={[styles.utilisation_container, { width: '93%', alignSelf: 'center', marginTop: 2 }]}>
           <InputLikeButton
             text={'Month Harvested'}
             rightIcon={true}
-            calendarPress={() => setHarvestedPopup(true)}
+            calendarPress={() => { setHarvestedPopup(true)}}
             date={moment(harvestedDate).format('MMMM DD,YYYY')}
           />
           <Divider
@@ -75,7 +235,10 @@ const EditType = ({ navigation, route }) => {
           <CustomButton
             style={styles.submitButton}
             btnText={'Submit'}
-            onPress={() => { setSavepopup(true) }}
+            onPress={() => {
+              // setSavepopup(true) ,
+              submit()
+            }}
           />
           <CustomButton
             style={styles.draftButton}
@@ -90,7 +253,9 @@ const EditType = ({ navigation, route }) => {
         setBottomModalVisible={setHarvestedPopup}
         styleInner={styles.savePopup}>
         <View>
-          <CalendarPicker onDateChange={date => setHarvestedDate(date)} />
+          <CalendarPicker onDateChange={date => setHarvestedDate(date)} 
+          initialDate={moment(edit?.month_harvested).format('YYYY-MM-DD')}
+          />
           <CustomButton
             btnText={'Done'}
             onPress={() => setHarvestedPopup(false)}
@@ -162,6 +327,11 @@ const EditType = ({ navigation, route }) => {
           </View>
         </View>
       </PopupModal>
+      <Toast
+        positionValue={30}
+        style={{ height: 'auto', minHeight: 70 }}
+        width={300}
+      />
     </View>
   )
 }
@@ -191,6 +361,13 @@ const makeStyles = fontScale => StyleSheet.create({
     width: '98%',
     marginTop: '5%',
     color: 'grey',
+  },
+  divider2: {
+    alignSelf: 'flex-start',
+    height: '100%',
+    marginTop: 9,
+    width: '1%',
+    borderRadius: 10,
   },
   processing_container: {
     flexDirection: 'row',
@@ -249,5 +426,12 @@ const makeStyles = fontScale => StyleSheet.create({
   },
   noteImage: {
     padding: 10,
+  },
+  innerInputView: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    width: '95%',
+    marginBottom: '5%',
   },
 })

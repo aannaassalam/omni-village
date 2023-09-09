@@ -21,6 +21,10 @@ import Hunting from '../Screens/Hunting/Hunting';
 import HuntingType from '../Screens/Hunting/HuntingType';
 import Storage from '../Screens/Storage/Storage';
 import SellingChannel from '../Screens/Selling Channel/SellingChannel';
+import PoultryEdit from '../Screens/Poultry/PoultryEdit';
+import FisheryRiver from '../Screens/Fishery/FisheryRiver';
+import FisheryRiverInput from '../Screens/Fishery/FisheryRiverInput';
+import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 
 const Stack = createStackNavigator();
 
@@ -45,11 +49,16 @@ export default function Productionstack() {
       {/* poultry stack */}
       <Stack.Screen name="poultry" component={Poultry} />
       <Stack.Screen name="poultryType" component={PoultryType} />
+      <Stack.Screen name="poultryEdit" component={PoultryEdit} />
+
       {/* fishery  */}
       <Stack.Screen name="fisheryIndex" component={Index} />
       <Stack.Screen name="fishery" component={Fishery} />
       <Stack.Screen name="subArea" component={SubArea} />
       <Stack.Screen name="fishTypeInput" component={FishTypeInput} />
+      <Stack.Screen name="fisheryRiver" component={FisheryRiver} />
+      <Stack.Screen name="fisheryRiverInput" component={FisheryRiverInput} />
+
       {/* hunting */}
       <Stack.Screen name="hunting" component={Hunting} />
       <Stack.Screen name="huntingType" component={HuntingType} />

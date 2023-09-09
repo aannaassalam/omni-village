@@ -13,7 +13,6 @@ import {Divider} from 'react-native-paper';
 import {Box, Button} from '@react-native-material/core';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import BottomModal from '../../Components/BottomSheet/BottomModal';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import {BlurView} from '@react-native-community/blur';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
@@ -251,10 +250,8 @@ const CultivationDashboard = ({navigation, route}) => {
           }}
         /> */}
       </View>
-      <BottomModal
-        modalVisible={modify}
-        setModalVisible={setModify}
-        styleInner={{height: focus ? '83%' : '50%'}}>
+      {modify && 
+      <AddBottomSheet>
         <View style={styles.BottomTopContainer}>
           <Text style={styles.headerText}>Land Allocation</Text>
           <TouchableOpacity
@@ -361,7 +358,8 @@ const CultivationDashboard = ({navigation, route}) => {
             onPress={handleSubmit(onSave)}
           />
         </View>
-      </BottomModal>
+      </AddBottomSheet>
+      }
       <Toast
         positionValue={30}
         style={{height: 'auto', minHeight: 70}}

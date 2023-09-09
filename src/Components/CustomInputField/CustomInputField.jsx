@@ -20,13 +20,14 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
           }}
           label={
             <Text
-              style={{fontSize: 16 / fontScale, textTransform: 'capitalize'}}>
+              style={{fontSize: 16 / fontScale, textTransform: 'capitalize',}}>
               {label}
             </Text>
           }
           value={value}
           style={styles.textInput}
           placeholder={placeholder}
+          placeholderTextColor={'#000'}
           right={
             <TextInput.Affix
               text="acres"
@@ -56,5 +57,6 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
       fontFamily: 'ubuntu_medium',
       fontSize: 16 / fontScale,
+      color:'red'
     },
   });

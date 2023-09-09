@@ -1,4 +1,4 @@
-import {Box, Button, Text} from '@react-native-material/core';
+import { Box, Button, Text } from '@react-native-material/core';
 import React from 'react';
 import {
   SafeAreaView,
@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {useSelector} from 'react-redux';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { useSelector } from 'react-redux';
 
-export default function Home({navigation, route}) {
-  const {userToken, userDetails} = useSelector(s => s.auth);
+export default function Home({ navigation, route }) {
+  const { userToken, userDetails } = useSelector(s => s.auth);
 
   console.log(userDetails, 'userDetails');
   return (
@@ -45,7 +45,7 @@ export default function Home({navigation, route}) {
               <Image
                 style={styles.tinyLogo1}
                 source={require('../../../assets/edit2.png')}
-                // height={100}
+              // height={100}
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
@@ -94,7 +94,7 @@ export default function Home({navigation, route}) {
                   <Image
                     style={styles.tinyLogo1}
                     source={require('../../../assets/e2.png')}
-                    // height={100}
+                  // height={100}
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt}>
@@ -105,7 +105,7 @@ export default function Home({navigation, route}) {
                 <Image
                   style={styles.tinyIcon}
                   source={require('../../../assets/e4.png')}
-                  // height={100}
+                // height={100}
                 />
               </Box>
             </Box>
@@ -117,7 +117,7 @@ export default function Home({navigation, route}) {
                   <Image
                     style={styles.tinyLogo1}
                     source={require('../../../assets/e3.png')}
-                    // height={100}
+                  // height={100}
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt2}>
@@ -128,12 +128,12 @@ export default function Home({navigation, route}) {
                 <Image
                   style={styles.tinyIcon}
                   source={require('../../../assets/e5.png')}
-                  // height={100}
+                // height={100}
                 />
               </Box>
             </Box>
           </TouchableOpacity>
-
+          {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
           {/* <View style={StyleSheet.login_submit}>
             <CustomButton btnText={'Submit'} />
           </View> */}

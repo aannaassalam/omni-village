@@ -13,6 +13,7 @@ import {CheckToken} from '../Helper/CheckToken';
 import {storage} from '../Helper/Storage';
 import {useSelector} from 'react-redux';
 import Productionstack from './ProductionStack';
+import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,7 @@ export default function AuthStack({isLoggedIn}) {
       <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
+      <Stack.Screen name="countryCheck" component={CountryCheck} />
 
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
