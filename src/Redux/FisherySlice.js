@@ -32,7 +32,7 @@ export const addFishery = createAsyncThunk(
     console.log('fishery', {
       important_information: treeData?.important_information,
       production_information: treeData?.utilisation_information,
-      weight_measurement: 'kg',
+      weight_measurement: treeData?.weight_measurement,
       processing_method: treeData?.processing_method,
       status: treeData?.status,
       fishery_crop_id: treeData?.crop_id,
@@ -44,7 +44,7 @@ export const addFishery = createAsyncThunk(
       const res = await axiosInstance.post(endpoints.fishery.add_fishery, {
         important_information: treeData?.important_information,
         production_information: treeData?.utilisation_information,
-        weight_measurement: 'kg',
+        weight_measurement: treeData?.weight_measurement,
         processing_method: treeData?.processing_method,
         status: treeData?.status,
         fishery_crop_id: treeData?.crop_id,
@@ -72,7 +72,7 @@ export const editFishery = createAsyncThunk(
       const res = await axiosInstance.post(endpoints.fishery.edit_fishery, {
         important_information: treeData?.important_information,
         production_information: treeData?.utilisation_information,
-        weight_measurement: 'kg',
+        weight_measurement: treeData?.weight_measurement,
         processing_method: treeData?.processing_method,
         status: treeData?.status,
         fishery_id: treeData?.crop_id,

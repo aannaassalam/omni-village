@@ -12,6 +12,7 @@ import { addHuntingCrops, getHuntingCrops } from '../../Redux/HuntingCropSlice'
 import { deleteHunting, getHunting } from '../../Redux/HuntingSlice'
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
+import { getMeasurement } from '../../Redux/OthersSlice'
 
 const Hunting = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
@@ -70,6 +71,7 @@ const Hunting = ({ navigation }) => {
         useCallback(() => {
             dispatch(getHuntingCrops())
             dispatch(getHunting())
+            dispatch(getMeasurement())
         }, []))
     useEffect(() => {
         setCropType(hunting?.map((i) => i?.hunting_crop))

@@ -27,13 +27,16 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { addHunting, editHunting, getHunting } from '../../Redux/HuntingSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 const HuntingType = ({ navigation, route }) => {
     const { cropType, data, cropId } = route.params;
     const [impInfo, setImpInfo] = useState(true);
     const [harvestedProduct, setHarvestedProduct] = useState(true);
     const [productionInfo, setProductionInfo] = useState(true)
     const { fontScale } = useWindowDimensions();
+    const { measurement } = useSelector((state) => state.Others)
+    const [weight, setWeight] = useState('')
     const styles = makeStyles(fontScale);
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
@@ -86,8 +89,10 @@ const HuntingType = ({ navigation, route }) => {
         expenditure_on_inputs: yup.string().required(validation.error.expenditure_on_inputs),
         yeild: yup.string().required(validation.error.yeild),
         processing_method: yup.string().required(validation.error.processing_method),
+        weight_measurement: yup.string().required(validation.error.weight_measurement),
+
     });
-// console.log("cropid", cropId)
+    // console.log("cropid", measurement)
     const {
         handleSubmit,
         setValue,
@@ -113,6 +118,7 @@ const HuntingType = ({ navigation, route }) => {
             expenditure_on_inputs: String(data?.expenditure_on_inputs || 0),
             income_from_sale: String(data?.income_from_sale || 0), // TODO: add validation for this field
             yeild: String(data?.yeild || 0),
+            weight_measurement: String(data?.weight_measurement || ''),
             processing_method: Boolean(data?.processing_method || false),
         },
     });
@@ -135,6 +141,7 @@ const HuntingType = ({ navigation, route }) => {
                     income_from_sale: watch('income_from_sale'),
                     expenditure_on_inputs: watch('expenditure_on_inputs'),
                     yeild: watch('yeild'),
+                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
                     processing_method: watch('processing_method'),
                     status: 1,
                     crop_id: cropId,
@@ -167,6 +174,7 @@ const HuntingType = ({ navigation, route }) => {
                     income_from_sale: watch('income_from_sale'),
                     expenditure_on_inputs: watch('expenditure_on_inputs'),
                     yeild: watch('yeild'),
+                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
                     processing_method: watch('processing_method'),
                     status: 1,
                     crop_id: cropId
@@ -193,7 +201,7 @@ const HuntingType = ({ navigation, route }) => {
                 .finally(() => setSavepopup(false));
         }
     };
-
+    console.log("data", watch('weight_measurement'))
     // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
 
     return (
@@ -247,6 +255,23 @@ const HuntingType = ({ navigation, route }) => {
                         {errors?.important_information?.number_hunted.message ? (
                             <Text style={styles.error}>{errors?.important_information?.number_hunted.message}</Text>
                         ) : null}
+                        <Controller
+                            control={control}
+                            name='weight_measurement'
+                            render={({ field }) => {
+                                const { onChange, value } = field;
+                                return (
+                                    <CustomDropdown3
+                                        data={measurement}
+                                        value={value}
+                                        defaultVal={{ key: 1, value: 'kg' }}
+                                        selectedValue={onChange}
+                                        infoName={'Weight Measuremnt'}
+                                    />
+                                );
+                            }}
+                        />
+
                     </View> : null}
                     {/* production information */}
                     <View style={styles.subArea}>
@@ -280,7 +305,7 @@ const HuntingType = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                             productionName={'Meat'}
                                             value={value}
                                             onChangeText={onChange}
@@ -301,7 +326,7 @@ const HuntingType = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName={'Self Comsumed'}
                                                     value={value}
                                                     onChangeText={onChange}
@@ -319,7 +344,7 @@ const HuntingType = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold to Neighbours"
                                                     value={value}
                                                     multiline={false}
@@ -341,7 +366,7 @@ const HuntingType = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold for Industrial Use"
                                                     value={value}
                                                     multiline={false}
@@ -363,7 +388,7 @@ const HuntingType = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Wastage"
                                                     value={value}
                                                     multiline={false}
@@ -385,7 +410,7 @@ const HuntingType = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement'):'kg'}
                                                     productionName="Others"
                                                     value={value}
                                                     multiline={false}
@@ -406,7 +431,7 @@ const HuntingType = ({ navigation, route }) => {
                                                     const { onChange, value } = field;
                                                     return (
                                                         <InputWithoutBorder
-                                                            measureName={'kg'}
+                                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                             productionName={
                                                                 watch('utilisation_information.other')
                                                                     ? watch('utilisation_information.other')
@@ -431,131 +456,131 @@ const HuntingType = ({ navigation, route }) => {
                                 </View>
                             </View>
                         </View>
-                        : null} 
-                        <View style={{width:'95%', alignSelf:'center'}}>
+                        : null}
+                    <View style={{ width: '95%', alignSelf: 'center' }}>
 
-                    <Controller
-                        name='income_from_sale'
-                        control={control}
-                        render={({ field }) => {
-                            const { onChange, value } = field;
-                            return (
-                                <InputWithoutBorder
-                                    measureName={'USD'}
-                                    productionName={'Income from sale'}
-                                    value={value}
-                                    onChangeText={onChange}
-                                />
-                            );
-                        }}
-                    />
-                    {errors?.income_from_sale?.message ? (
-                        <Text style={styles.error}>
-                            {errors?.income_from_sale?.message}
-                        </Text>
-                    ) : null}
-                    <Controller
-                        name='expenditure_on_inputs'
-                        control={control}
-                        render={({ field }) => {
-                            const { onChange, value } = field;
-                            return (
-                                <InputWithoutBorder
-                                    measureName={'USD'}
-                                    productionName={'Expenditure on inputs'}
-                                    value={value}
-                                    onChangeText={onChange}
-                                />
-                            );
-                        }}
-                    />
-                    {errors?.expenditure_on_inputs?.message ? (
-                        <Text style={styles.error}>
-                            {errors?.expenditure_on_inputs?.message}
-                        </Text>
-                    ) : null}
-                    <Controller
-                        name='yeild'
-                        control={control}
-                        render={({ field }) => {
-                            const { onChange, value } = field;
-                            return (
-                                <InputWithoutBorder
-                                    measureName={'USD'}
-                                    productionName={'Yields'}
-                                    value={value}
-                                    onChangeText={onChange}
-                                    notRightText={true}
-                                    editable={false}
-                                />
-                            );
-                        }}
-                    />
-                    {errors?.yeild?.message ? (
-                        <Text style={styles.error}>
-                            {errors?.yeild?.message}
-                        </Text>
-                    ) : null}
-                    <Text style={styles.processing_text}>Required Processing method if any for the outputs</Text>
-                    <View style={styles.processing_container}>
                         <Controller
-                            name='processing_method'
+                            name='income_from_sale'
                             control={control}
                             render={({ field }) => {
                                 const { onChange, value } = field;
                                 return (
-                                    <TouchableOpacity onPress={() =>onChange(true)}>
-                                        {value === true ?
-                                            <Image
-                                                source={require('../../../assets/checked.png')}
-                                                style={{ height: 30, width: 30 }} />
-                                            :
-                                            <Image
-                                                source={require('../../../assets/unchecked.png')}
-                                                style={{ height: 30, width: 30 }} />
-                                        }
-                                    </TouchableOpacity>
+                                    <InputWithoutBorder
+                                        measureName={'USD'}
+                                        productionName={'Income from sale'}
+                                        value={value}
+                                        onChangeText={onChange}
+                                    />
                                 );
                             }}
                         />
-                        <Text style={styles.yes_text}>Yes</Text>
+                        {errors?.income_from_sale?.message ? (
+                            <Text style={styles.error}>
+                                {errors?.income_from_sale?.message}
+                            </Text>
+                        ) : null}
                         <Controller
-                            name='processing_method'
+                            name='expenditure_on_inputs'
                             control={control}
                             render={({ field }) => {
                                 const { onChange, value } = field;
                                 return (
-                                    <TouchableOpacity onPress={() => onChange(false)}>
-                                        {value === false?
-                                            <Image
-                                                source={require('../../../assets/checked.png')}
-                                                style={{ height: 30, width: 30 }} />
-                                            :
-                                            <Image
-                                                source={require('../../../assets/unchecked.png')}
-                                                style={{ height: 30, width: 30 }} />
-
-                                        }
-                                    </TouchableOpacity>
+                                    <InputWithoutBorder
+                                        measureName={'USD'}
+                                        productionName={'Expenditure on inputs'}
+                                        value={value}
+                                        onChangeText={onChange}
+                                    />
                                 );
                             }}
                         />
-                        <Text style={styles.yes_text}>No</Text>
+                        {errors?.expenditure_on_inputs?.message ? (
+                            <Text style={styles.error}>
+                                {errors?.expenditure_on_inputs?.message}
+                            </Text>
+                        ) : null}
+                        <Controller
+                            name='yeild'
+                            control={control}
+                            render={({ field }) => {
+                                const { onChange, value } = field;
+                                return (
+                                    <InputWithoutBorder
+                                        measureName={'USD'}
+                                        productionName={'Yields'}
+                                        value={value}
+                                        onChangeText={onChange}
+                                        notRightText={true}
+                                        editable={false}
+                                    />
+                                );
+                            }}
+                        />
+                        {errors?.yeild?.message ? (
+                            <Text style={styles.error}>
+                                {errors?.yeild?.message}
+                            </Text>
+                        ) : null}
+                        <Text style={styles.processing_text}>Required Processing method if any for the outputs</Text>
+                        <View style={styles.processing_container}>
+                            <Controller
+                                name='processing_method'
+                                control={control}
+                                render={({ field }) => {
+                                    const { onChange, value } = field;
+                                    return (
+                                        <TouchableOpacity onPress={() => onChange(true)}>
+                                            {value === true ?
+                                                <Image
+                                                    source={require('../../../assets/checked.png')}
+                                                    style={{ height: 30, width: 30 }} />
+                                                :
+                                                <Image
+                                                    source={require('../../../assets/unchecked.png')}
+                                                    style={{ height: 30, width: 30 }} />
+                                            }
+                                        </TouchableOpacity>
+                                    );
+                                }}
+                            />
+                            <Text style={styles.yes_text}>Yes</Text>
+                            <Controller
+                                name='processing_method'
+                                control={control}
+                                render={({ field }) => {
+                                    const { onChange, value } = field;
+                                    return (
+                                        <TouchableOpacity onPress={() => onChange(false)}>
+                                            {value === false ?
+                                                <Image
+                                                    source={require('../../../assets/checked.png')}
+                                                    style={{ height: 30, width: 30 }} />
+                                                :
+                                                <Image
+                                                    source={require('../../../assets/unchecked.png')}
+                                                    style={{ height: 30, width: 30 }} />
+
+                                            }
+                                        </TouchableOpacity>
+                                    );
+                                }}
+                            />
+                            <Text style={styles.yes_text}>No</Text>
+                        </View>
+                    </View>
+                    <View style={styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={styles.submitButton}
+                            btnText={'Submit'}
+                            onPress={() => { setSavepopup(true) }}
+                        />
+                        <CustomButton
+                            style={styles.draftButton}
+                            btnText={'Save as draft'}
+                            onPress={() => { setDraftpopup(true) }}
+                        />
                     </View>
                 </View>
-                <View style={styles.bottomPopupbutton}>
-                    <CustomButton
-                        style={styles.submitButton}
-                        btnText={'Submit'}
-                        onPress={() => { setSavepopup(true) }}
-                    />
-                    <CustomButton
-                        style={styles.draftButton}
-                        btnText={'Save as draft'}
-                        onPress={() => { setDraftpopup(true) }}
-                    />
-                </View>
-                        </View>
                 {/* submit popup */}
                 <PopupModal
                     modalVisible={savepopup}
@@ -577,8 +602,8 @@ const HuntingType = ({ navigation, route }) => {
                                 style={styles.submitButton}
                                 btnText={'Submit'}
                                 onPress={() => {
-                                    setSavepopup(false), 
-                                    onSubmit()
+                                    setSavepopup(false),
+                                        onSubmit()
                                 }}
                             />
                             <CustomButton

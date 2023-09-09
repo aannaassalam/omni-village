@@ -1,6 +1,7 @@
 export const validation = {
   success: {},
   error: {
+    weight_measurement:'Measurement Required',
     number: "Number Required",
     avg_age_of_live_stocks: "Average age of live stocks Required",
     avg_age_of_trees: "Average age of tree Required",

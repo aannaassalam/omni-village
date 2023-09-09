@@ -11,12 +11,14 @@ import { useFocusEffect } from '@react-navigation/native'
 import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
 import { deleteFishery, getFishery } from '../../Redux/FisherySlice'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
-import { getFishFeed } from '../../Redux/OthersSlice'
+import { getFishFeed, getMeasurement } from '../../Redux/OthersSlice'
+import { ActivityIndicator } from 'react-native-paper'
 
 const Fishery = ({ navigation, route }) => {
     const { totalLand, screenName } = route.params
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
+    const [loading,setLoading] = useState(false)
     const { fisheryCrop } = useSelector((state) => state.fisheryCrop)
     const { fishery } = useSelector((state) => state.fishery)
     const [cropType, setCropType] = useState([]);
@@ -61,8 +63,13 @@ const Fishery = ({ navigation, route }) => {
     };
     useFocusEffect(
         useCallback(() => {
+setLoading(true)
             dispatch(getFisheryCrops())
+            dispatch(getMeasurement())
             dispatch(getFishery('pond'))
+            .then((res)=>{
+                setLoading(false)
+            })
             dispatch(getFishFeed())
         }, []))
     useEffect(() => {
@@ -88,6 +95,12 @@ const Fishery = ({ navigation, route }) => {
                 allocatedFor={screenName}
                 usedLand={totalLand}
             />
+            {loading ? 
+        <View style={{marginTop:'40%'}}>
+            <ActivityIndicator size={'small'} color='black'/>
+            </View>    
+            :
+            <>
             {/* Crop adding */}
             {cropType?.map((element, i) => {
                 return (
@@ -133,6 +146,8 @@ const Fishery = ({ navigation, route }) => {
                     />
                 </View>
             )}
+            </>
+        }
             {cropModal &&
                 <AddBottomSheet>
 

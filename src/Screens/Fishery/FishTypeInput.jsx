@@ -31,12 +31,14 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import { addFishery, editFishery, getFishery } from '../../Redux/FisherySlice';
 import { Others } from '../../MockData/Mockdata';
 import { getFishFeed } from '../../Redux/OthersSlice';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 
 const FishTypeInput = ({ navigation, route }) => {
     const { cropType, screenName, data,cropId,type } = route.params;
     const [impInfo, setImpInfo] = useState(true);
     const [harvestedProduct, setHarvestedProduct] = useState(true);
     const { fishFeed } = useSelector((state) => state.Others)
+    const { measurement } = useSelector((state) => state.Others)
     const [productionInfo, setProductionInfo] = useState(true)
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
@@ -97,6 +99,7 @@ const FishTypeInput = ({ navigation, route }) => {
             yeild: yup.string().required(validation.error.yeild)
         }),
         processing_method: yup.string().required(validation.error.processing_method),
+        weight_measurement: yup.string().required(validation.error.weight_measurement)
     });
     const {
         handleSubmit,
@@ -131,7 +134,8 @@ const FishTypeInput = ({ navigation, route }) => {
                 ),
                 yeild: String(data?.yeilds || '')
             },
-            processing_method: Boolean(data?.processing_method || false)
+            processing_method: Boolean(data?.processing_method || false),
+            weight_measurement: String(data?.weight_measurement || '')
         },
     });
     useEffect(() => {
@@ -170,6 +174,7 @@ const FishTypeInput = ({ navigation, route }) => {
                     important_information: watch('important_information'),
                     utilisation_information: watch('utilisation_information'),
                     processing_method: watch('processing_method'),
+                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
                     status: 1,
                     crop_id: cropId,
                     fishery_type: 'pond',
@@ -201,6 +206,7 @@ const FishTypeInput = ({ navigation, route }) => {
                     important_information: watch('important_information'),
                     utilisation_information: watch('utilisation_information'),
                     processing_method: watch('processing_method'),
+                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
                     status: 1,
                     crop_id: cropId,
                     fishery_type: 'pond',
@@ -259,6 +265,7 @@ const FishTypeInput = ({ navigation, route }) => {
     }, [watch('important_information.number_of_fishes'), watch('utilisation_information.production_output')]);
     // console.log("watch import", watch('important_information'))
     // console.log("watch personal", watch('utilisation_information'))
+    console.log("watch ", watch('weight_measurement'))
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -315,14 +322,28 @@ const FishTypeInput = ({ navigation, route }) => {
                             {errors?.important_information?.number_of_fishes?.message ? (
                                 <Text style={styles.error}>{errors?.important_information?.number_of_fishes?.message}</Text>
                             ) : null}
-
+                            <Controller
+                                control={control}
+                                name='weight_measurement'
+                                render={({ field }) => {
+                                    const { onChange, value } = field;
+                                    return (
+                                        <CustomDropdown3
+                                            data={measurement}
+                                            value={value}
+                                            defaultVal={{ key: 1, value: value }}
+                                            selectedValue={onChange}
+                                            infoName={'Weight Measuremnt'}
+                                        />
+                                    );
+                                }}
+                            />
                             <Controller
                                 control={control}
                                 name='important_information.type_of_feed'
                                 render={({ field }) => {
                                     const { onChange, value } = field;
                                     return (
-                                        // <TouchableOpacity onPress={() => { }}>
                                             <CustomDropdown3
                                             data={[...fishFeed,{id:0,name:'Others'}]}
                                                 selectedValue={onChange}
@@ -330,19 +351,6 @@ const FishTypeInput = ({ navigation, route }) => {
                                                 defaultVal={{ key: 1, value: value }}
                                                 infoName={'Type of feed required apart from grassland grazing'}
                                             />
-                                        // </TouchableOpacity>
-                                        // <InputWithoutBorder
-                                        //     measureName={'kg'}
-                                        //     productionName={
-                                        //         'Type Of feed required'
-                                        //     }
-                                        //     value={value}
-                                        //     multiline={false}
-                                        //     notRightText={false}
-                                        //     editable={true}
-                                        //     keyboardType='default'
-                                        //     onChangeText={onChange}
-                                        // />
                                     );
                                 }}
                             />
@@ -420,7 +428,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                             productionName={'Total Feed'}
                                             value={value}
                                             onChangeText={onChange}
@@ -439,7 +447,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                             productionName={'Output'}
                                             value={value}
                                             onChangeText={onChange}
@@ -460,7 +468,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName={'Self Comsumed'}
                                                     value={value}
                                                     onChangeText={onChange}
@@ -478,7 +486,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold to Neighbours"
                                                     value={value}
                                                     multiline={false}
@@ -500,7 +508,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold for Industrial Use"
                                                     value={value}
                                                     multiline={false}
@@ -522,7 +530,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Wastage"
                                                     value={value}
                                                     multiline={false}
@@ -544,7 +552,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Others"
                                                     value={value}
                                                     multiline={false}
@@ -565,7 +573,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                                     const { onChange, value } = field;
                                                     return (
                                                         <InputWithoutBorder
-                                                            measureName={'kg'}
+                                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                             productionName={
                                                                 watch('utilisation_information.other')
                                                                     ? watch('utilisation_information.other')
