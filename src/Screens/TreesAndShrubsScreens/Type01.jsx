@@ -34,6 +34,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 const Type01 = ({ navigation, route }) => {
   const { cropType, edit, cropId, data } = route.params;
   const [impInfo, setImpInfo] = useState(true);
+  const { feed } = useSelector((state) => state.Others)
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -138,7 +139,7 @@ const Type01 = ({ navigation, route }) => {
       setSavepopup(false);
     }
   }, [errors]);
-  // console.log("data", data?.number_of_trees)
+  // console.log("data", feed)
   const onSubmit = () => {
     if (data?._id) {
       dispatch(

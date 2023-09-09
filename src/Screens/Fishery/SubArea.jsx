@@ -69,6 +69,7 @@ const SubArea = ({ navigation, route }) => {
             setCropType([])
         }
     }, [data])
+    console.log("data", data)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -77,7 +78,8 @@ const SubArea = ({ navigation, route }) => {
                 goBack={() => navigation.goBack()}
             />
             <View style={{ marginTop: '5%' }}>
-                {cropType?.map((element, i) => {
+                {cropType[0]!==undefined && 
+                cropType?.map((element, i) => {
                     return (
                         <TouchableOpacity
                             style={styles.addAndDeleteButtonSection}

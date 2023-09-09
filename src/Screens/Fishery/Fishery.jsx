@@ -11,6 +11,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
 import { deleteFishery, getFishery } from '../../Redux/FisherySlice'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
+import { getFishFeed } from '../../Redux/OthersSlice'
 
 const Fishery = ({ navigation, route }) => {
     const { totalLand, screenName } = route.params
@@ -62,6 +63,7 @@ const Fishery = ({ navigation, route }) => {
         useCallback(() => {
             dispatch(getFisheryCrops())
             dispatch(getFishery('pond'))
+            dispatch(getFishFeed())
         }, []))
     useEffect(() => {
         setCropType(Object.keys(fishery))
@@ -95,7 +97,7 @@ const Fishery = ({ navigation, route }) => {
                             navigation.navigate('subArea', {
                                 type: element,
                                 screenName: element,
-                                data: fishery !== "" ? fishery[element] : element
+                                data: fishery !== "" ? fishery[element] : null
                             })
                         }
                         }>

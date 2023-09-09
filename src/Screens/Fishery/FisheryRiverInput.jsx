@@ -25,7 +25,7 @@ import Toast from 'react-native-toast-message';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { validation } from '../../Validation/Validation';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import { addFishery, editFishery, getFishery } from '../../Redux/FisherySlice';
@@ -36,6 +36,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
     const [impInfo, setImpInfo] = useState(true);
     const [harvestedProduct, setHarvestedProduct] = useState(true);
     const [productionInfo, setProductionInfo] = useState(true)
+    const { fishFeed } = useSelector((state) => state.Others)
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const [income, setIncome] = useState('');
@@ -319,33 +320,66 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         // <TouchableOpacity onPress={() => { }}>
-                                        //     <CustomDropdown3
-                                        //         data={Others}
-                                        //         selectedValue={onChange}
-                                        //         value={value}
-                                        //         defaultVal={{ key: 1, value: value }}
-                                        //         infoName={'Type of feed required apart from grassland grazing'}
-                                        //     />
-                                        // </TouchableOpacity>
-                                        <InputWithoutBorder
-                                            measureName={'kg'}
-                                            productionName={
-                                                'Type Of feed required'
-                                            }
+                                        <CustomDropdown3
+                                            data={[...fishFeed, { id: 0, name: 'Others' }]}
+                                            selectedValue={onChange}
                                             value={value}
-                                            multiline={false}
-                                            notRightText={false}
-                                            editable={true}
-                                            keyboardType='default'
-                                            onChangeText={onChange}
+                                            defaultVal={{ key: 1, value: value }}
+                                            infoName={'Type of feed required apart from grassland grazing'}
                                         />
+                                        // </TouchableOpacity>
+                                        // <InputWithoutBorder
+                                        //     measureName={'kg'}
+                                        //     productionName={
+                                        //         'Type Of feed required'
+                                        //     }
+                                        //     value={value}
+                                        //     multiline={false}
+                                        //     notRightText={false}
+                                        //     editable={true}
+                                        //     keyboardType='default'
+                                        //     onChangeText={onChange}
+                                        // />
                                     );
                                 }}
                             />
-                            {errors?.important_information?.avg_age_of_live_stocks?.message ? (
-                                <Text style={styles.error}>{errors?.important_information?.avg_age_of_live_stocks?.message}</Text>
+                            {errors?.important_information?.type_of_feed?.message ? (
+                                <Text style={styles.error}>{errors?.important_information?.type_of_feed?.message}</Text>
                             ) : null}
-                            {/* */}
+                            {watch('important_information.type_of_feed') == 'Others' ?
+                                <View style={styles.innerInputView}>
+                                    <Divider style={styles.divider2} />
+                                    <View style={{ width: '100%' }}>
+                                        <Controller
+                                            name='important_information.other_type_of_feed'
+                                            control={control}
+                                            render={({ field }) => {
+                                                const { onChange, value } = field;
+                                                return (
+                                                    <InputWithoutBorder
+                                                        measureName={'kg'}
+                                                        productionName={
+                                                            'Create Type'
+                                                        }
+                                                        value={value}
+                                                        multiline={false}
+                                                        notRightText={false}
+                                                        editable={true}
+                                                        keyboardType='default'
+                                                        onChangeText={onChange}
+                                                    />
+                                                );
+                                            }}
+                                        />
+                                        {errors?.utilisation_information?.other_value?.message ? (
+                                            <Text style={styles.error}>
+                                                {errors?.utilisation_information?.other_value?.message}
+                                            </Text>
+                                        ) : null}
+                                    </View>
+                                </View>
+                                : null
+                            }
                         </View>
                         : null}
                     {/* production information */}

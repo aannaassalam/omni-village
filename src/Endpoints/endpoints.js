@@ -81,6 +81,8 @@ export const endpoints = {
     delete_selling_channel: '/selling_channel/delete_selling_channel',
   },
   measurement:{
-    get_measurement: '/weight_measurements/'
+    get_measurement: '/weight_measurements/',
+    fish_feed: '/fish_feeds/',
+    feed: '/feeds/'
   }
 };
