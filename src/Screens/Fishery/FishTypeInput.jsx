@@ -428,7 +428,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                             productionName={'Total Feed'}
                                             value={value}
                                             onChangeText={onChange}
@@ -447,7 +447,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                             productionName={'Output'}
                                             value={value}
                                             onChangeText={onChange}
@@ -468,7 +468,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                     productionName={'Self Comsumed'}
                                                     value={value}
                                                     onChangeText={onChange}
@@ -486,7 +486,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                     productionName="Sold to Neighbours"
                                                     value={value}
                                                     multiline={false}
@@ -508,7 +508,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                     productionName="Sold for Industrial Use"
                                                     value={value}
                                                     multiline={false}
@@ -530,7 +530,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                     productionName="Wastage"
                                                     value={value}
                                                     multiline={false}
@@ -552,7 +552,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                     productionName="Others"
                                                     value={value}
                                                     multiline={false}
@@ -573,7 +573,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                                     const { onChange, value } = field;
                                                     return (
                                                         <InputWithoutBorder
-                                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
+                                                            measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
                                                             productionName={
                                                                 watch('utilisation_information.other')
                                                                     ? watch('utilisation_information.other')

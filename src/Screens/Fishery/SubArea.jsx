@@ -32,7 +32,7 @@ const SubArea = ({ navigation, route }) => {
             ...cropType,
             {
                 name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-                id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+                _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
                 progress: '',
             },
         ]);
@@ -69,7 +69,7 @@ const SubArea = ({ navigation, route }) => {
             setCropType([])
         }
     }, [data])
-    console.log("data", data)
+    console.log("data", cropType)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -84,19 +84,18 @@ const SubArea = ({ navigation, route }) => {
                         <TouchableOpacity
                             style={styles.addAndDeleteButtonSection}
                             onPress={() => {
-
                                 navigation.navigate('fishTypeInput', {
                                     cropType: element?.name,
                                     type: type,
                                     screenName: screenName,
-                                    cropId: data ? data[0]?._id : element?.id,
-                                    data: data ? data[0] : null
+                                    cropId: element?._id,
+                                    data: data ? data.find((i) => i?.fishery_crop?.name == element?.name || element?.fishery_crop?.name) : null
                                 })
                             }
                             }>
                             <AddAndDeleteCropButton
                                 add={false}
-                                cropName={data ? element?.fishery_crop?.name : element?.name}
+                                cropName={data ? element?.fishery_crop?.name || element?.name : element?.name}
                                 onPress={() => handleRemoveClick(i)}
                             />
                         </TouchableOpacity>

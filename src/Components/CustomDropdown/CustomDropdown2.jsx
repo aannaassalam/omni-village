@@ -28,7 +28,7 @@ export default CustomDropdown2 = ({
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  console.log("value", valu, data)
+  // console.log("value", valu, data)
   return (
     // <SelectDropdown
     //   data={data?.length >=1 && data !== undefined ? data.map(dat => dat.name) : cropType}
