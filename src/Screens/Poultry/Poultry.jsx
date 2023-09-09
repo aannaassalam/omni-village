@@ -11,6 +11,7 @@ import { addPoultryCrops, getPoultryCrops } from '../../Redux/PoultryCropSlice'
 import { deletePoultry, getPoultry } from '../../Redux/PoultrySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
+import { getFeed } from '../../Redux/OthersSlice'
 
 const Poultry = ({navigation, route}) => {
   const {totalLand}=route.params
@@ -64,6 +65,7 @@ const Poultry = ({navigation, route}) => {
     useCallback(() => {
       dispatch(getPoultryCrops())
       dispatch(getPoultry())
+      dispatch(getFeed())
     }, []))
   useEffect(() => {
     setCropType(poultry?.map((i) => i?.poultry_crop))

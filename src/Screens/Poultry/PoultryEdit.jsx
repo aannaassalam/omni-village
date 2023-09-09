@@ -18,9 +18,9 @@ const PoultryEdit = ({ navigation, route }) => {
     const [harvestedPopup, setHarvestedPopup] = useState(false);
     const [harvestedDate, setHarvestedDate] = useState(edit ? data ? moment(edit?.month_harvested).format('YYYY-MM-DD') : new Date() : new Date());
     const [toggleCheckBox, setToggleCheckBox] = useState(edit ? data ? edit?.processing_method == true ? 'yes' : 'no' : "" : '')
-    const [output, setOutput] = useState(edit ? data ? edit?.production_output ? edit?.production_output.toString() : edit?.production_output : 0 : 0)
+    const [output, setOutput] = useState(edit ?edit?.production_output : 0)
     const [utilisationArray, setUtilisationArray] = useState([]);
-    const [others, setOthers] = useState(edit ? data ? edit?.other_value ? edit?.other_value.toString() : edit?.other_value : '' : '');
+    const [others, setOthers] = useState(edit ? edit?.other_value: '');
     let findme = utilisationArray.find(i => i?.name == 'Others');
     const [savepopup, setSavepopup] = useState(false);
     const [draftpopup, setDraftpopup] = useState(false);
@@ -50,6 +50,7 @@ const PoultryEdit = ({ navigation, route }) => {
             )
         }
     }, [edit])
+    console.log("edit", edit)
     const submit = () => {
         if (!data) {
             let formData = {
@@ -66,7 +67,7 @@ const PoultryEdit = ({ navigation, route }) => {
                 processing_method: toggleCheckBox === 'yes' ? true : false
             }
             const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
-            let amount = parseInt(totalAmount)
+            let amount = parseInt(totalAmount)+parseInt(others)
             let out = parseInt(output)
             if (output == "") {
                 Toast.show({
@@ -99,16 +100,16 @@ const PoultryEdit = ({ navigation, route }) => {
                 month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
                 processing_method: toggleCheckBox === 'yes' ? true : false
             }
-            const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
-            let amount = parseInt(totalAmount)
-            let out = parseInt(output)
+            const totalAmounts = utilisationArray.reduce((total, item) => total + item?.value, 0);
+            let amounts = parseInt(totalAmounts) + parseInt(others)
+            let outs = parseInt(output)
             if (output == "") {
                 Toast.show({
                     type: 'error',
                     text1: 'Output cannot be empty'
                 })
             } else {
-                if (amount > out) {
+                if (amounts > outs) {
                     Toast.show({
                         type: 'error',
                         text1: 'Total amount cannot be greater than output'
@@ -119,7 +120,7 @@ const PoultryEdit = ({ navigation, route }) => {
             }
         }
     }
-
+// console.log("others", edit)
     return (
         <View style={styles.container}>
             <CustomHeader

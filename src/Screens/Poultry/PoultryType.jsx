@@ -41,6 +41,8 @@ const PoultryType = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const {measurement} = useSelector((state)=>state.Others)
+    const {feed} = useSelector((state)=>state.Others)
+    const [message,setMessage]  = useState('')
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
     const [treeAge, setTreeAge] = useState(false)
@@ -110,6 +112,7 @@ const PoultryType = ({ navigation, route }) => {
             setHarvestedProductList([])
         }
     }, [data])
+    console.log("feed", feed)
     const {
         handleSubmit,
         setValue,
@@ -158,9 +161,10 @@ const PoultryType = ({ navigation, route }) => {
         let neighbours = parseInt(watch("utilisation_information.neighbours"))
         let purchased_from_market = parseInt(watch("utilisation_information.purchased_from_market"))
         let other_value = parseInt(watch("utilisation_information.other_value"))
-        if (watch('important_information.other_type_of_feed') == "" ||
+        if (watch('important_information.type_of_feed') == "" ||
           watch('expenditure_on_inputs') == ""  || watch('income_from_sale') == "" ||
             watch('important_information.avg_age_of_live_stocks') == 0) {
+                setMessage("Input all fields")
             Toast.show({
                 type: 'error',
                 text1: 'Input all fields'
@@ -168,6 +172,7 @@ const PoultryType = ({ navigation, route }) => {
             setSavepopup(false)
         } else {
             if (self_produced + neighbours + purchased_from_market + other_value > total_feed) {
+                setMessage("Total amount cannot be greater than output")
                 Toast.show({
                     type: 'error',
                     text1: 'Total amount cannot be greater than output'
@@ -351,13 +356,6 @@ const PoultryType = ({ navigation, route }) => {
                             {errors?.important_information?.number?.message ? (
                                 <Text style={styles.error}>{errors?.important_information?.number?.message}</Text>
                             ) : null}
-                            {/* <CustomDropdown3
-                                data={measurement}
-                                selectedValue={(e)=>setWeight(e)}
-                                value={weight}
-                                defaultVal={{ key: 1, value: weight }}
-                                infoName={'Weight'}
-                            /> */}
                             <Controller
                                 control={control}
                                 name='important_information.avg_age_of_live_stocks'
@@ -388,15 +386,13 @@ const PoultryType = ({ navigation, route }) => {
                                 render={({ field }) => {
                                     const { onChange, value } = field;
                                     return (
-                                        <TouchableOpacity onPress={() => { }}>
                                             <CustomDropdown3
-                                                data={Others}
+                                                data={[...feed, { id: 0, name: 'Others' }]}
                                                 selectedValue={onChange}
                                                 value={value==1?'others':value}
                                                 defaultVal={{key:1,value:value}}
                                                 infoName={'Type of feed required apart from grassland grazing'}
                                             />
-                                        </TouchableOpacity>
                                     );
                                 }}
                             />
@@ -404,7 +400,7 @@ const PoultryType = ({ navigation, route }) => {
                                 <Text style={styles.error}>{errors?.important_information?.avg_age_of_live_stocks?.message}</Text>
                             ) : null}
 
-                            {watch('important_information.type_of_feed') == 'Others' || watch('important_information.type_of_feed') == 1 ?
+                            {watch('important_information.type_of_feed') == 'Others' ?
                                 <View style={styles.innerInputView}>
                                     <Divider style={styles.divider2} />
                                     <View style={{ width: '100%' }}>
@@ -748,6 +744,7 @@ const PoultryType = ({ navigation, route }) => {
                         </TouchableOpacity>
                     }
                     </View>
+                    {message && <Text style={{ color: 'red', fontSize: 14, alignSelf: 'center', marginTop:'5%' }}>{message}</Text>}
                     <View style={styles.bottomPopupbutton}>
                         <CustomButton
                             style={styles.submitButton}
@@ -903,11 +900,11 @@ const PoultryType = ({ navigation, route }) => {
                         </View>
                     </View>
                 </PopupModal>
-            <Toast
+            {/* <Toast
                 positionValue={30}
                 style={{ height: 'auto', minHeight: 70 }}
                 width={300}
-            />
+            /> */}
         </View>
     )
 }

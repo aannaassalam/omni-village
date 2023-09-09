@@ -40,6 +40,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
     const { measurement } = useSelector((state) => state.Others)
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
+    const [message,setMessage]=useState('')
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
     const [yields, setYields] = useState('')
@@ -142,94 +143,97 @@ const FisheryRiverInput = ({ navigation, route }) => {
         }
     }, [errors]);
     const onSubmit = () => {
-        // let total_feed = parseInt(watch('utilisation_information.total_feed'))
-        // let self_produced = parseInt(watch("utilisation_information.self_produced"))
-        // let neighbours = parseInt(watch("utilisation_information.neighbours"))
-        // let purchased_from_market = parseInt(watch("utilisation_information.purchased_from_market"))
-        // let other_value = parseInt(watch("utilisation_information.other_value"))
-        // if (watch('important_information.other_type_of_feed') == "" ||
-        //     watch('expenditure_on_inputs') == "" || watch('income_from_sale') == "" ||
-        //     watch('important_information.avg_age_of_live_stocks') == 0) {
-        //     Toast.show({
-        //         type: 'error',
-        //         text1: 'Input all fields'
-        //     })
-        //     setSavepopup(false)
-        // } else {
-        //     if (self_produced + neighbours + purchased_from_market + other_value > total_feed) {
-        //         Toast.show({
-        //             type: 'error',
-        //             text1: 'Total amount cannot be greater than output'
-        //         })
-        //         setSavepopup(false)
-        //     } else {
-        if (data?._id) {
-            dispatch(
-                editFishery({
-                    important_information: watch('important_information'),
-                    utilisation_information: watch('utilisation_information'),
-                    processing_method: watch('processing_method'),
-                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
-                    status: 1,
-                    crop_id: cropId,
-                    fishery_type: 'river',
-                    pond_name: cropType,
-                }),
-            )
-                .unwrap()
-                .then(
-                    () =>
-                        Toast.show({
-                            text1: 'Success',
-                            text2: 'Fishery updated successfully!',
-                        }),
-                    dispatch(getFishery()),
-                    // navigation.goBack(),
-                )
-                .catch(err => {
-                    console.log('err', err);
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Error Occurred',
-                        text2: 'Something Went wrong, Please try again later!',
-                    });
-                })
-                .finally(() => { setSavepopup(false), navigation.goBack() });
+        let production_output = parseInt(watch('utilisation_information.production_output'))
+        let self_consumed = parseInt(watch("utilisation_information.self_consumed"))
+        let sold_to_neighbours = parseInt(watch("utilisation_information.sold_to_neighbours"))
+        let sold_for_industrial_use = parseInt(watch("utilisation_information.sold_for_industrial_use"))
+        let wastage = parseInt(watch("utilisation_information.wastage"))
+        let other_value = parseInt(watch("utilisation_information.other_value"))
+        if (watch('important_information.type_of_feed') == "" ||
+            watch('utilisation_information.expenditure_on_inputs') == "" || watch('utilisation_information.income_from_sale') == "") {
+            setMessage("Input all fields")
+            Toast.show({
+                type: 'error',
+                text1: 'Input all fields'
+            })
+            setSavepopup(false)
         } else {
-            dispatch(
-                addFishery({
-                    important_information: watch('important_information'),
-                    utilisation_information: watch('utilisation_information'),
-                    processing_method: watch('processing_method'),
-                    weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
-                    status: 1,
-                    crop_id: cropId,
-                    fishery_type: 'river',
-                    pond_name: cropType,
-                }),
-            )
-                .unwrap()
-                .then(
-                    () =>
-                        Toast.show({
-                            text1: 'Success',
-                            text2: 'Fishery added successfully!',
-                        }),
-                    dispatch(getFishery()),
-                    setSavepopup(false),
-                    navigation.goBack(),
-                )
-                .catch(err => {
-                    console.log('err at add', err);
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Error Occurred',
-                        text2: 'Something Went wrong, Please try again later!',
-                    });
+            if (self_consumed + sold_for_industrial_use + sold_to_neighbours+wastage + other_value > production_output) {
+                setMessage("Total amount cannot be greater than output")
+                Toast.show({
+                    type: 'error',
+                    text1: 'Total amount cannot be greater than output'
                 })
-                .finally(() => setSavepopup(false));
+                setSavepopup(false)
+            } else {
+                if (data?._id) {
+                    dispatch(
+                        editFishery({
+                            important_information: watch('important_information'),
+                            utilisation_information: watch('utilisation_information'),
+                            processing_method: watch('processing_method'),
+                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                            status: 1,
+                            crop_id: cropId,
+                            fishery_type: 'river',
+                            pond_name: cropType,
+                        }),
+                    )
+                        .unwrap()
+                        .then(
+                            () =>
+                                Toast.show({
+                                    text1: 'Success',
+                                    text2: 'Fishery updated successfully!',
+                                }),
+                            dispatch(getFishery('river')),
+                            // navigation.goBack(),
+                        )
+                        .catch(err => {
+                            console.log('err', err);
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Error Occurred',
+                                text2: 'Something Went wrong, Please try again later!',
+                            });
+                        })
+                        .finally(() => { setSavepopup(false), navigation.goBack() });
+                } else {
+                    dispatch(
+                        addFishery({
+                            important_information: watch('important_information'),
+                            utilisation_information: watch('utilisation_information'),
+                            processing_method: watch('processing_method'),
+                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                            status: 1,
+                            crop_id: cropId,
+                            fishery_type: 'river',
+                            pond_name: cropType,
+                        }),
+                    )
+                        .unwrap()
+                        .then(
+                            () =>
+                                Toast.show({
+                                    text1: 'Success',
+                                    text2: 'Fishery added successfully!',
+                                }),
+                            dispatch(getFishery('river')),
+                            setSavepopup(false),
+                            navigation.goBack(),
+                        )
+                        .catch(err => {
+                            console.log('err at add', err);
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Error Occurred',
+                                text2: 'Something Went wrong, Please try again later!',
+                            });
+                        })
+                        .finally(() => setSavepopup(false));
+                }
+            }
         }
-        // }
     }
     const toggleItem = (value, index) => {
         const newValue = averageAge.map((checkbox, i) => {
@@ -437,7 +441,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                             productionName={'Total Feed'}
                                             value={value}
                                             onChangeText={onChange}
@@ -456,7 +460,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                     const { onChange, value } = field;
                                     return (
                                         <InputWithoutBorder
-                                            measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                             productionName={'Output'}
                                             value={value}
                                             onChangeText={onChange}
@@ -477,7 +481,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName={'Self Comsumed'}
                                                     value={value}
                                                     onChangeText={onChange}
@@ -495,7 +499,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold to Neighbours"
                                                     value={value}
                                                     multiline={false}
@@ -517,7 +521,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Sold for Industrial Use"
                                                     value={value}
                                                     multiline={false}
@@ -539,7 +543,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Wastage"
                                                     value={value}
                                                     multiline={false}
@@ -561,7 +565,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                             const { onChange, value } = field;
                                             return (
                                                 <InputWithoutBorder
-                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') == 1 && 'kg' : 'kg'}
+                                                    measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                     productionName="Others"
                                                     value={value}
                                                     multiline={false}
@@ -582,7 +586,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                                     const { onChange, value } = field;
                                                     return (
                                                         <InputWithoutBorder
-                                                            measureName={watch('weight_measurement') ? watch('weight_measurement')==1 && 'kg' : 'kg'}
+                                                            measureName={watch('weight_measurement') ? watch('weight_measurement') : 'kg'}
                                                             productionName={
                                                                 watch('utilisation_information.other')
                                                                     ? watch('utilisation_information.other')
@@ -718,6 +722,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                         <Text style={styles.yes_text}>No</Text>
                     </View>
                 </View>
+                {message && <Text style={{ color: 'red', fontSize: 14, alignSelf: 'center', marginTop: '5%' }}>{message}</Text>}
                 <View style={styles.bottomPopupbutton}>
                     <CustomButton
                         style={styles.submitButton}

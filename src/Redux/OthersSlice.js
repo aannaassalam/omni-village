@@ -97,7 +97,7 @@ export const OthersSlice = createSlice({
       })
       .addCase(getFeed.fulfilled, (state, {payload}) => {
         if (payload.status === 200) {
-          state.fishFeed = payload.data;
+          state.feed = payload.data;
         }
         state.status = 'idle';
       })

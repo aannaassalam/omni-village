@@ -12,9 +12,10 @@ import { addHuntingCrops, getHuntingCrops } from '../../Redux/HuntingCropSlice'
 import { deleteHunting, getHunting } from '../../Redux/HuntingSlice'
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
-import { getFisheryCrops } from '../../Redux/FisheryCropSlice'
+import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
 import { deleteFishery, getFishery } from '../../Redux/FisherySlice'
 import { ActivityIndicator } from 'react-native-paper'
+import { getFeed, getFishFeed, getMeasurement } from '../../Redux/OthersSlice'
 
 const FisheryRiver = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
@@ -55,8 +56,8 @@ const FisheryRiver = ({ navigation }) => {
     };
     const addingHuntingCrop = () => {
         if (dropdownVal.name === 'Others') {
-            dispatch(addHuntingCrops({ name: otherCrop?.name }))
-            dispatch(getHuntingCrops())
+            dispatch(addFisherycrop({ name: otherCrop?.name }))
+            dispatch(getFisheryCrops())
             setDropdownVal([])
             setOtherCrop('')
         } else {
@@ -75,14 +76,14 @@ const FisheryRiver = ({ navigation }) => {
             setLoading(true)
             dispatch(getFisheryCrops())
             dispatch(getFishery('river'))
+            .then((res)=>{
+                console.log(res)
+                setCropType(res?.payload.data.map((i) => i?.fishery_crop))
+                setLoading(false)
+            })
+            dispatch(getFishFeed())
+            dispatch(getMeasurement())
         }, []))
-    useEffect(() => {
-        if (fishery) {
-            setCropType(fishery[0]!==undefined?fishery?.map((i) => i?.fishery_crop):[])
-            setLoading(false)
-        }
-    }, [fishery])
-    console.log("fishery", fishery, dropdownVal)
     return (
         <View style={styles.container}>
             <CustomHeader

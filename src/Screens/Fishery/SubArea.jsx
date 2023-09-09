@@ -69,7 +69,7 @@ const SubArea = ({ navigation, route }) => {
             setCropType([])
         }
     }, [data])
-    console.log("data", cropType)
+    // console.log("data", cropType)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -89,7 +89,7 @@ const SubArea = ({ navigation, route }) => {
                                     type: type,
                                     screenName: screenName,
                                     cropId: element?._id,
-                                    data: data ? data.find((i) => i?.fishery_crop?.name == element?.name || element?.fishery_crop?.name) : null
+                                    data: data ? data.find((i) => i?.fishery_crop?.name == element?.name || i?.fishery_crop?.name == element?.fishery_crop?.name) : null
                                 })
                             }
                             }>

@@ -15,12 +15,13 @@ const EditType = ({ navigation, route }) => {
   const { cropType, edit, cropId, data } = route.params
   const { fontScale } = useWindowDimensions()
   const styles = makeStyles(fontScale);
+  const [message,setMessage]=useState('')
   const [harvestedPopup, setHarvestedPopup] = useState(false);
   const [harvestedDate, setHarvestedDate] = useState(edit ? data?moment(edit?.month_harvested).format('YYYY-MM-DD'):new Date():new Date());
   const [toggleCheckBox, setToggleCheckBox] = useState(edit?data?edit?.processing_method==true?'yes':'no':"":'')
-  const [output, setOutput] = useState(edit ? data? edit?.production_output ? edit?.production_output.toString() : edit?.production_output:0 :0)
+  const [output, setOutput] = useState(edit ?edit?.production_output  :0)
   const [utilisationArray, setUtilisationArray] = useState([]);
-  const [others, setOthers] = useState(edit? data?edit?.other_value? edit?.other_value.toString():edit?.other_value :'': '');
+  const [others, setOthers] = useState(edit?edit?.other_value:'');
   let findme = utilisationArray.find(i => i?.name == 'Others');
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
@@ -66,15 +67,17 @@ const EditType = ({ navigation, route }) => {
         processing_method: toggleCheckBox === 'yes' ? true : false
       }
       const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
-      let amount = parseInt(totalAmount)
+      let amount = parseInt(totalAmount)+parseInt(others)
       let out = parseInt(output)
       if(output==""){
+        setMessage("Output cannot be empty")
         Toast.show({
           type: 'error',
           text1: 'Output cannot be empty'
         })
       }else{
         if (amount > out) {
+          setMessage("Total amount cannot be greater than output")
           Toast.show({
             type: 'error',
             text1: 'Total amount cannot be greater than output'
@@ -100,7 +103,7 @@ const EditType = ({ navigation, route }) => {
         processing_method: toggleCheckBox === 'yes' ? true : false
       }
       const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
-      let amount = parseInt(totalAmount)
+      let amount = parseInt(totalAmount)+parseInt(others)
       let out = parseInt(output)
       if (output == "") {
         Toast.show({
@@ -109,6 +112,7 @@ const EditType = ({ navigation, route }) => {
         })
       } else {
         if (amount > out) {
+          setMessage("Total amount cannot be greater than output")
           Toast.show({
             type: 'error',
             text1: 'Total amount cannot be greater than output'

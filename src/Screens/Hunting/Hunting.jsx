@@ -62,7 +62,7 @@ const Hunting = ({ navigation }) => {
     }
     const DropdownSelectedValue = data => {
         setDropdownVal(data);
-        console.log("data", data)
+        // console.log("data", dsata)
         if (data !== 'Others') {
             setFocusOther(false);
         }

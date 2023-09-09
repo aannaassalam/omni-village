@@ -30,7 +30,7 @@ export const getTree = createAsyncThunk(
 
 export const addTree = createAsyncThunk(
   'addtree',
-  async (treeData, {getState, rejectWithValue}) => {
+  async (treeData, {getState, rejectWithValue, dispatch}) => {
     // const {cultivationType, cropId, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(endpoints.treeShrubs.add_trees, {
@@ -40,6 +40,7 @@ export const addTree = createAsyncThunk(
         tree_crop_id: treeData?.crop_id,
       });
       console.log('resss at tree shrub slice', res?.data)
+      dispatch(getTree())
       return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'err2 at treeshrub add');

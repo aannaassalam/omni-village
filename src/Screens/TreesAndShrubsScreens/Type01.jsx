@@ -537,6 +537,7 @@ const Type01 = ({ navigation, route }) => {
             onPress={() => { setDraftpopup(true) }}
           />
         </View>
+      </ScrollView>
         {
           treeAge &&
           <AddBottomSheet
@@ -684,7 +685,6 @@ const Type01 = ({ navigation, route }) => {
             </View>
           </View>
         </PopupModal>
-      </ScrollView>
       <Toast
         positionValue={30}
         style={{ height: 'auto', minHeight: 70 }}

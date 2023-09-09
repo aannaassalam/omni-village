@@ -32,10 +32,10 @@ export const addStorageMethod = createAsyncThunk(
       const res = await axiosInstance.post(
         endpoints.storageMethod.add_storage_method,
         {
-          selling_channel_methods: arg,
+          name: arg.name,
         },
       );
-      dispatch(getHuntingCrops());
+      dispatch(getStorageMethod());
       return {status: res.status, data: res.data};
     } catch (err) {
       return rejectWithValue({

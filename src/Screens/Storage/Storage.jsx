@@ -65,6 +65,9 @@ const Storage = ({ navigation }) => {
     const addingCrop = (index, name, stockId) => {
         if (dropdownVal.name === 'Others') {
             dispatch(addStorageMethod({ name: otherCrop?.name }))
+            .then((res)=>{
+                console.log("ress", res)
+            })
             dispatch(getStorageMethod())
             setDropdownVal([])
             setOtherCrop('')
