@@ -47,6 +47,7 @@ const CropDescription = ({navigation, route}) => {
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   const [status, setStatus] = useState(-1);
+  const [globalError, setGlobalError] = useState('');
 
   const dispatch = useDispatch();
 
@@ -263,11 +264,7 @@ const CropDescription = ({navigation, route}) => {
       }
     } else {
       setSavepopup(false);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Sum of Utilisation must not be greather than Output',
-      });
+      setGlobalError('Sum of Utilisation must not be greather than Output');
     }
   };
 
@@ -505,6 +502,16 @@ const CropDescription = ({navigation, route}) => {
                   </View>
                 </View>
               </View>
+              <Text
+                style={{
+                  fontFamily: 'ubuntu_regular',
+                  fontSize: 14 / fontScale,
+                  marginTop: 5,
+                  color: '#ff000e',
+                  marginLeft: 5,
+                }}>
+                {globalError}
+              </Text>
             </View>
             {/* </>
             );

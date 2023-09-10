@@ -26,6 +26,8 @@ const LandAllocation = ({navigation, route}) => {
     {name: 'Cultivated thrice in a year', area: 0},
   ]);
 
+  const [globalError, setGlobalError] = useState('');
+
   const dispatch = useDispatch();
 
   yup.addMethod(yup.object, 'atLeastOneOf', function (list) {
@@ -64,12 +66,7 @@ const LandAllocation = ({navigation, route}) => {
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errors[''].message,
-        topOffset: 40,
-      });
+      setGlobalError(errors[''].message);
     }
   }, [errors]);
 
@@ -159,9 +156,7 @@ const LandAllocation = ({navigation, route}) => {
               />
             )}
           />
-          {/* {errors?.first_name?.message ? (
-                <Text style={styles.error}>{errors?.first_name?.message}</Text>
-              ) : null} */}
+          <Text style={styles.error}>{globalError}</Text>
         </View>
       </KeyboardAvoidingView>
       <View style={styles.save}>

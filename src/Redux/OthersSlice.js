@@ -68,7 +68,7 @@ export const getVillage = createAsyncThunk(
   async (village, {getState, rejectWithValue}) => {
     try {
       const res = await axiosInstance.get(
-        endpoints.measurement.village + `/${village}`,
+        endpoints.measurement.village + `${village}`,
       );
       // console.log(res.data, 'ftech fish');
       return {status: res.status, data: res.data};

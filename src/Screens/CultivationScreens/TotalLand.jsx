@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
-import Toast  from 'react-native-toast-message';
+import Toast from 'react-native-toast-message';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
@@ -34,6 +34,8 @@ const landSchema = yup
 
 const TotalLand = ({navigation}) => {
   const {userDetails} = useSelector(s => s.auth);
+
+  const [globalError, setGlobalError] = useState('');
 
   // console.log(userDetails.sub_area);
 
@@ -65,12 +67,12 @@ const TotalLand = ({navigation}) => {
       return accumulator;
     }, 0);
     if (sumofAreas > parseInt(data?.total_land)) {
-      console.log("Your sub area acres are greater than total land area")
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Your sub area acres are greater than total land area',
-      });
+      setGlobalError('Your sub area acres are greater than total land area');
+      // Toast.show({
+      //   type: 'error',
+      //   text1: 'Error',
+      //   text2: 'Your sub area acres are greater than total land area',
+      // });
     } else {
       dispatch(LandAllocation(data))
         .unwrap()
@@ -210,6 +212,16 @@ const TotalLand = ({navigation}) => {
               <Text style={styles.error}>{errors?.storage?.message}</Text>
             ) : null}
           </View>
+          <Text
+            style={{
+              fontFamily: 'ubuntu_regular',
+              fontSize: 14 / fontScale,
+              marginTop: 5,
+              color: '#ff000e',
+              marginLeft: 5,
+            }}>
+            {globalError}
+          </Text>
 
           {/* <InputWithoutBorder
                   productionName={item?.name}
@@ -232,11 +244,11 @@ const TotalLand = ({navigation}) => {
           </View>
         </>
       </ScrollView>
-        <Toast
-          positionValue={30}
-          style={{ height: 'auto', minHeight: 70 }}
-          width={300}
-        />
+      <Toast
+        positionValue={30}
+        style={{height: 'auto', minHeight: 70}}
+        width={300}
+      />
     </ScrollView>
   );
 };

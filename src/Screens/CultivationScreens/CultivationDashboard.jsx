@@ -33,6 +33,7 @@ const CultivationDashboard = ({navigation, route}) => {
   const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
+  const [globalError, setGobalError] = useState('');
 
   yup.addMethod(yup.object, 'atLeastOneOf', function (list) {
     return this.test({
@@ -98,12 +99,7 @@ const CultivationDashboard = ({navigation, route}) => {
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errors[''].message,
-        topOffset: 40,
-      });
+      setGobalError(errors[''].message);
     }
   }, [errors]);
 
@@ -148,11 +144,7 @@ const CultivationDashboard = ({navigation, route}) => {
                   navigation.navigate('season1', {seasonNmae: 'Season 1'});
                 });
             } else {
-              Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No Land Allocated for Cultivated once in a year',
-              });
+              setGobalError('No Land Allocated for Cultivated once in a year');
             }
           }}>
           <Box style={styles.home_box}>
@@ -180,11 +172,7 @@ const CultivationDashboard = ({navigation, route}) => {
                   navigation.navigate('cultivationTwice');
                 });
             } else {
-              Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No Land Allocated for Cultivated twice in a year',
-              });
+              setGobalError('No Land Allocated for Cultivated twice in a year');
             }
           }}>
           <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
@@ -219,11 +207,7 @@ const CultivationDashboard = ({navigation, route}) => {
                   navigation.navigate('cultivationThrice');
                 });
             } else {
-              Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'No Land Allocated for Cultivated once in a year',
-              });
+              setGobalError('No Land Allocated for Cultivated once in a year');
             }
           }}>
           <Box style={[styles.home_box, {borderColor: 'grey'}]}>
@@ -250,116 +234,126 @@ const CultivationDashboard = ({navigation, route}) => {
           }}
         /> */}
       </View>
-      {modify && 
-      <AddBottomSheet>
-        <View style={styles.BottomTopContainer}>
-          <Text style={styles.headerText}>Land Allocation</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setModify(!modify);
-              reset({
-                once: String(
-                  userDetails.sub_area.cultivation.distribution.once || 0,
-                ),
-                twice: String(
-                  userDetails.sub_area.cultivation.distribution.twice || 0,
-                ),
-                thrice: String(
-                  userDetails.sub_area.cultivation.distribution.thrice || 0,
-                ),
-              });
-              setFocus(false);
-            }}>
-            <Image
-              source={require('../../../assets/close.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.textInputArea}>
-          {/* {cultivation.map((item, indx) => {
+      {modify && (
+        <AddBottomSheet>
+          <View style={styles.BottomTopContainer}>
+            <Text style={styles.headerText}>Land Allocation</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setModify(!modify);
+                reset({
+                  once: String(
+                    userDetails.sub_area.cultivation.distribution.once || 0,
+                  ),
+                  twice: String(
+                    userDetails.sub_area.cultivation.distribution.twice || 0,
+                  ),
+                  thrice: String(
+                    userDetails.sub_area.cultivation.distribution.thrice || 0,
+                  ),
+                });
+                setFocus(false);
+              }}>
+              <Image
+                source={require('../../../assets/close.png')}
+                style={styles.closeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.textInputArea}>
+            {/* {cultivation.map((item, indx) => {
             return ( */}
-          <Controller
-            control={control}
-            name="once"
-            render={({field}) => {
-              const {onChange, value} = field;
-              return (
-                <InputWithoutBorder
-                  productionName="Cultivated once in a year"
-                  placeholder={'0'}
-                  value={value}
-                  onChangeText={onChange}
-                  onFocus={() => setFocus(true)}
-                />
-              );
-            }}
-          />
-          <Controller
-            control={control}
-            name="twice"
-            render={({field}) => {
-              const {onChange, value} = field;
-              return (
-                <InputWithoutBorder
-                  productionName="Cultivated twice in a year"
-                  placeholder={'0'}
-                  value={value}
-                  onChangeText={onChange}
-                  onFocus={() => setFocus(true)}
-                />
-              );
-            }}
-          />
-          <Controller
-            control={control}
-            name="thrice"
-            render={({field}) => {
-              const {onChange, value} = field;
-              return (
-                <InputWithoutBorder
-                  productionName="Cultivated once in a year"
-                  placeholder={'0'}
-                  value={value}
-                  onChangeText={onChange}
-                  onFocus={() => setFocus(true)}
-                />
-              );
-            }}
-          />
-          {/* //   );
-          // })} */}
-        </View>
-        <View style={styles.BottomSheetButton}>
-          <TouchableOpacity
-            style={styles.crossButton}
-            onPress={() => {
-              setModify(!modify);
-              reset({
-                once: String(
-                  userDetails.sub_area.cultivation.distribution.once || 0,
-                ),
-                twice: String(
-                  userDetails.sub_area.cultivation.distribution.twice || 0,
-                ),
-                thrice: String(
-                  userDetails.sub_area.cultivation.distribution.thrice || 0,
-                ),
-              });
-            }}>
-            <Image
-              source={require('../../../assets/cross.png')}
-              style={{width: 50, height: 50}}
+            <Controller
+              control={control}
+              name="once"
+              render={({field}) => {
+                const {onChange, value} = field;
+                return (
+                  <InputWithoutBorder
+                    productionName="Cultivated once in a year"
+                    placeholder={'0'}
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocus(true)}
+                  />
+                );
+              }}
             />
-          </TouchableOpacity>
-          <CustomButton
-            btnText={'Modify'}
-            style={{width: '80%'}}
-            onPress={handleSubmit(onSave)}
-          />
-        </View>
-      </AddBottomSheet>
-      }
+            <Controller
+              control={control}
+              name="twice"
+              render={({field}) => {
+                const {onChange, value} = field;
+                return (
+                  <InputWithoutBorder
+                    productionName="Cultivated twice in a year"
+                    placeholder={'0'}
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocus(true)}
+                  />
+                );
+              }}
+            />
+            <Controller
+              control={control}
+              name="thrice"
+              render={({field}) => {
+                const {onChange, value} = field;
+                return (
+                  <InputWithoutBorder
+                    productionName="Cultivated once in a year"
+                    placeholder={'0'}
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocus(true)}
+                  />
+                );
+              }}
+            />
+            {/* //   );
+          // })} */}
+            <Text
+              style={{
+                fontFamily: 'ubuntu_regular',
+                fontSize: 14 / fontScale,
+                marginTop: 5,
+                color: '#ff000e',
+                marginLeft: 5,
+              }}>
+              {globalError}
+            </Text>
+          </View>
+          <View style={styles.BottomSheetButton}>
+            <TouchableOpacity
+              style={styles.crossButton}
+              onPress={() => {
+                setModify(!modify);
+                reset({
+                  once: String(
+                    userDetails.sub_area.cultivation.distribution.once || 0,
+                  ),
+                  twice: String(
+                    userDetails.sub_area.cultivation.distribution.twice || 0,
+                  ),
+                  thrice: String(
+                    userDetails.sub_area.cultivation.distribution.thrice || 0,
+                  ),
+                });
+              }}>
+              <Image
+                source={require('../../../assets/cross.png')}
+                style={{width: 50, height: 50}}
+              />
+            </TouchableOpacity>
+            <CustomButton
+              btnText={'Modify'}
+              style={{width: '80%'}}
+              onPress={handleSubmit(onSave)}
+            />
+          </View>
+        </AddBottomSheet>
+      )}
       <Toast
         positionValue={30}
         style={{height: 'auto', minHeight: 70}}

@@ -94,6 +94,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform:'capitalize'
     },
     dropdown1DropdownStyle: {backgroundColor: '#fff', borderRadius: 10},
     dropdown1RowStyle: {
@@ -106,6 +107,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform:'capitalize'
     },
     icon_btn: {
       backgroundColor: 'rgb(168,209,180)',
