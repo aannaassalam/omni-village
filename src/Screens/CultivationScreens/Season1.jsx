@@ -45,6 +45,7 @@ const Season1 = ({navigation, route}) => {
   const [deletePopup, setDeletePopup] = useState(false);
   const [delete_id, setDelete_id] = useState('');
   const [deleteCrop, setDeleteCrop] = useState('');
+  const [globalError, setGlobalError] = useState('');
 
   const dispatch = useDispatch();
   const {seasonName = 'Season 1'} = route.params;
@@ -83,14 +84,10 @@ const Season1 = ({navigation, route}) => {
 
   const addCrop = () => {
     if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
-      setCropModal(false);
-      setFocusOther(false);
-      setOtherCrop('');
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Crop is already added!',
-      });
+      // setCropModal(false);
+      // setFocusOther(false);
+      // setOtherCrop('');
+      setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
         if (selectedCategory?.length > 0) {
@@ -106,11 +103,7 @@ const Season1 = ({navigation, route}) => {
             })
             .catch(err => console.log(err));
         } else {
-          Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Please select a Category!',
-          });
+          setGlobalError('Please select a Category!');
         }
       } else {
         setSelectCrops(prev => [...prev, selectedCrop]);
@@ -217,93 +210,103 @@ const Season1 = ({navigation, route}) => {
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       )}
-      {cropModal && 
-      <AddBottomSheet
-        modalVisible={cropModal}
-        setBottomModalVisible={toggle => {
-          setCropModal(toggle);
-          setSelectedCategory({name: ''});
-          setSelectedCrop({});
-          setOtherCrop('');
-        }}
-        styleInner={{height: focusOther ? '80%' : '35%'}}>
-        <View style={styles.BottomTopContainer}>
-          <Text style={styles.headerText}>Add Crop</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setCropModal(false);
-              setSelectedCategory({name: ''});
-              setSelectedCrop({});
-              setOtherCrop('');
-              setFocusOther(false);
-              setDropdownVal('');
-            }}>
-            <Image
-              source={require('../../../assets/close.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.dropdownSection}>
-          <View style={{marginBottom: 15}}>
+      {cropModal && (
+        <AddBottomSheet
+          modalVisible={cropModal}
+          setBottomModalVisible={toggle => {
+            setCropModal(toggle);
+            setSelectedCategory({name: ''});
+            setSelectedCrop({});
+            setOtherCrop('');
+          }}
+          styleInner={{height: focusOther ? '80%' : '35%'}}>
+          <View style={styles.BottomTopContainer}>
+            <Text style={styles.headerText}>Add Crop</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setCropModal(false);
+                setSelectedCategory({name: ''});
+                setSelectedCrop({});
+                setOtherCrop('');
+                setFocusOther(false);
+                setDropdownVal('');
+              }}>
+              <Image
+                source={require('../../../assets/close.png')}
+                style={styles.closeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.dropdownSection}>
+            <View style={{marginBottom: 15}}>
+              <CustomDropdown2
+                selectedValue={e => {
+                  setSelectedCategory(e);
+                  // setSelectCrops({name: ''});
+                  dispatch(
+                    getCrops(cropCategories.find(cp => cp.name === e)._id),
+                  );
+                }}
+                // value={selectedCategory.name}
+                placeholder="Select a category"
+                data={cropCategories}
+              />
+            </View>
             <CustomDropdown2
               selectedValue={e => {
-                setSelectedCategory(e);
-                // setSelectCrops({name: ''});
-                dispatch(
-                  getCrops(cropCategories.find(cp => cp.name === e)._id),
+                setSelectedCrop(
+                  crops.find(cp => cp.name === e) || {_id: 0, name: 'Others'},
                 );
+                setOtherCrop('');
+                // dispatch(setCropId(crops.find(cp => cp.name === e)._id));
+                // DropdownSelectedValue(e);
               }}
-              // value={selectedCategory.name}
-              placeholder="Select a category"
-              data={cropCategories}
+              // value={selectCrop.name}
+              placeholder="Select a crop"
+              data={[...crops, {_id: 0, name: 'Others'}]}
+            />
+            {selectedCrop?.name === 'Others' ? (
+              <InputWithoutRightElement
+                label={'Crop Name'}
+                placeholder={'Crop 01'}
+                onChangeText={e => setOtherCrop(e)}
+                value={otherCrop}
+                onFocus={() => setFocusOther(true)}
+              />
+            ) : null}
+            <Text
+              style={{
+                fontFamily: 'ubuntu_regular',
+                fontSize: 14 / fontScale,
+                marginTop: 5,
+                color: '#ff000e',
+                marginLeft: 5,
+              }}>
+              {globalError}
+            </Text>
+          </View>
+          <View style={styles.BottomSheetButton}>
+            <TouchableOpacity
+              style={styles.crossButton}
+              onPress={() => {
+                setCropModal(false);
+                setSelectedCategory({name: ''});
+                setSelectedCrop({});
+                setOtherCrop('');
+              }}>
+              <Image
+                source={require('../../../assets/cross.png')}
+                style={styles.addCropIcon}
+              />
+            </TouchableOpacity>
+            <CustomButton
+              btnText={'Create'}
+              style={{width: '80%'}}
+              onPress={addCrop}
             />
           </View>
-          <CustomDropdown2
-            selectedValue={e => {
-              setSelectedCrop(
-                crops.find(cp => cp.name === e) || {_id: 0, name: 'Others'},
-              );
-              setOtherCrop('');
-              // dispatch(setCropId(crops.find(cp => cp.name === e)._id));
-              // DropdownSelectedValue(e);
-            }}
-            // value={selectCrop.name}
-            placeholder="Select a crop"
-            data={[...crops, {_id: 0, name: 'Others'}]}
-          />
-          {selectedCrop?.name === 'Others' ? (
-            <InputWithoutRightElement
-              label={'Crop Name'}
-              placeholder={'Crop 01'}
-              onChangeText={e => setOtherCrop(e)}
-              value={otherCrop}
-              onFocus={() => setFocusOther(true)}
-            />
-          ) : null}
-        </View>
-        <View style={styles.BottomSheetButton}>
-          <TouchableOpacity
-            style={styles.crossButton}
-            onPress={() => {
-              setCropModal(false);
-              setSelectedCategory({name: ''});
-              setSelectedCrop({});
-              setOtherCrop('');
-            }}>
-            <Image
-              source={require('../../../assets/cross.png')}
-              style={styles.addCropIcon}
-            />
-          </TouchableOpacity>
-          <CustomButton
-            btnText={'Create'}
-            style={{width: '80%'}}
-            onPress={addCrop}
-          />
-        </View>
-      </AddBottomSheet>
-      }
+        </AddBottomSheet>
+      )}
       <PopupModal
         modalVisible={deletePopup}
         setBottomModalVisible={toggle => {
@@ -423,7 +426,7 @@ const makeStyles = fontScale =>
     dropdownSection: {
       width: '90%',
       justifyContent: 'center',
-      alignSelf: 'center'
+      alignSelf: 'center',
       // backgroundColor: 'red',
     },
     addCropIcon: {
