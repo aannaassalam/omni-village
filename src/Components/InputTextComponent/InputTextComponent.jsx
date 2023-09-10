@@ -27,6 +27,7 @@ export default function InputTextComponent({
       style={className ? styles.inputSmall : styles.input}
       onChangeText={onChangeText}
       value={value?.toString()}
+      placeholderTextColor={'#bbb'}
       placeholder={placeholder}
       keyboardType={others.keyboardType || 'default'}
       {...others}

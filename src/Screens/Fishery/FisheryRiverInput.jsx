@@ -158,7 +158,7 @@ const FisheryRiverInput = ({navigation, route}) => {
     }
   }, [errors]);
 
-  const onSubmit = () => {
+  const onSubmit = (data2) => {
     let production_output = parseInt(
       watch('utilisation_information.production_output'),
     );
@@ -980,7 +980,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 btnText={'Submit'}
                 onPress={() => {
                   // setSavepopup(false), navigation.goBack();
-                  onSubmit();
+                  handleSubmit(onSubmit);
                 }}
               />
               <CustomButton

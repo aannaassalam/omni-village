@@ -161,122 +161,81 @@ const FishTypeInput = ({navigation, route}) => {
   // useEffect(()=>{
   //     dispatch(getFishFeed())
   // },[])
-  const onSubmit = () => {
-    let production_output = parseInt(
-      watch('utilisation_information.production_output'),
-    );
-    let self_consumed = parseInt(
-      watch('utilisation_information.self_consumed'),
-    );
-    let sold_to_neighbours = parseInt(
-      watch('utilisation_information.sold_to_neighbours'),
-    );
-    let sold_for_industrial_use = parseInt(
-      watch('utilisation_information.sold_for_industrial_use'),
-    );
-    let wastage = parseInt(watch('utilisation_information.wastage'));
-    let other_value = parseInt(watch('utilisation_information.other_value'));
+  const onSubmit = data2 => {
+    console.log(data2);
+    // let production_output = parseInt(
+    //   data2.utilisation_information.production_output,
+    // );
+    // let self_consumed = parseInt(data2.utilisation_information.self_consumed);
+    // let sold_to_neighbours = parseInt(
+    //   watch('utilisation_information.sold_to_neighbours'),
+    // );
+    // let sold_for_industrial_use = parseInt(
+    //   data2.utilisation_information.sold_for_industrial_use,
+    // );
+    // let wastage = parseInt(data2.utilisation_information.wastage);
+    // let other_value = parseInt(data2.utilisation_information.other_value);
     if (
-      watch('important_information.type_of_feed') == '' ||
-      watch('utilisation_information.expenditure_on_inputs') == '' ||
-      watch('utilisation_information.income_from_sale') == ''
+      data2.important_information.type_of_feed === '' ||
+      data2.utilisation_information.expenditure_on_inputs === '' ||
+      data2.utilisation_information.income_from_sale === ''
     ) {
       setMessage('Input all fields');
-      //Toast.show({
-      // type: 'error',
-      //text1: 'Input all fields',
-      // });
-      setSavepopup(false);
+      Toast.show({
+        type: 'error',
+        text1: 'All input fields fields',
+      })
+        .catch(err => {
+          console.log('err', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => {
+          setSavepopup(false), navigation.goBack();
+        });
     } else {
-      if (
-        self_consumed +
-          sold_for_industrial_use +
-          sold_to_neighbours +
-          wastage +
-          other_value >
-        production_output
-      ) {
-        setMessage('Total output cannot be greater than production output');
-        // Toast.show({
-        //   type: 'error',
-        //   text1: 'Total amount cannot be greater than output',
-        // });
-        setSavepopup(false);
-      } else {
-        if (data?._id) {
-          dispatch(
-            editFishery({
-              important_information: watch('important_information'),
-              utilisation_information: watch('utilisation_information'),
-              processing_method: watch('processing_method'),
-              weight_measurement: watch('weight_measurement')
-                ? watch('weight_measurement')
-                : 'kg',
-              status: 1,
-              crop_id: cropId,
+      dispatch(
+        addFishery({
+          // important_information: watch('important_information'),
+          // utilisation_information: watch('utilisation_information'),
+          // processing_method: watch('processing_method'),
+          // weight_measurement: watch('weight_measurement')
+          //   ? watch('weight_measurement')
+          //   : 'kg',
+          ...data2,
+          status: 1,
+          crop_id: cropId,
+          fishery_type: 'pond',
+          pond_name: type,
+        }),
+      )
+        .unwrap()
+        .then(
+          () => {
+            Toast.show({
+              text1: 'Success',
+              text2: 'Fishery added successfully!',
             }),
-          )
-            .unwrap()
-            .then(() => {
-              Toast.show({
-                text1: 'Success',
-                text2: 'Fishery updated successfully!',
-              }),
-                dispatch(getFishery()),
-                navigation.goBack();
-            })
-            .catch(err => {
-              console.log('err', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
+              setSavepopup(false),
+              navigation.navigate('fishery', {
+                totalLand: null,
+                screenName: 'Harvested from Pond',
               });
-            })
-            .finally(() => {
-              setSavepopup(false), navigation.goBack();
-            });
-        } else {
-          dispatch(
-            addFishery({
-              important_information: watch('important_information'),
-              utilisation_information: watch('utilisation_information'),
-              processing_method: watch('processing_method'),
-              weight_measurement: watch('weight_measurement')
-                ? watch('weight_measurement')
-                : 'kg',
-              status: 1,
-              crop_id: cropId,
-              fishery_type: 'pond',
-              pond_name: type,
-            }),
-          )
-            .unwrap()
-            .then(
-              () => {
-                Toast.show({
-                  text1: 'Success',
-                  text2: 'Fishery added successfully!',
-                }),
-                  setSavepopup(false),
-                  navigation.navigate('fishery', {
-                    totalLand: null,
-                    screenName: 'Harvested from Pond',
-                  });
-              },
-              // dispatch(getFishery('pond')),
-            )
-            .catch(err => {
-              console.log('err at add', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
-              });
-            })
-            .finally(() => setSavepopup(false));
-        }
-      }
+          },
+          // dispatch(getFishery('pond')),
+        )
+        .catch(err => {
+          console.log('err at add', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => setSavepopup(false));
     }
   };
 
@@ -332,7 +291,7 @@ const FishTypeInput = ({navigation, route}) => {
         .then(() => {
           Toast.show({
             text1: 'Success',
-            text2: 'Fishery updated successfully!',
+            text2: 'Fishery drafted successfully!',
           }),
             dispatch(getFishery()),
             navigation.goBack();
@@ -346,7 +305,7 @@ const FishTypeInput = ({navigation, route}) => {
           });
         })
         .finally(() => {
-          setSavepopup(false), navigation.goBack();
+          setDraftpopup(false), navigation.goBack();
         });
     } else {
       dispatch(
@@ -370,7 +329,7 @@ const FishTypeInput = ({navigation, route}) => {
               text1: 'Success',
               text2: 'Fishery added successfully!',
             }),
-              setSavepopup(false),
+              setDraftpopup(false),
               navigation.navigate('fishery', {
                 totalLand: null,
                 screenName: 'Harvested from Pond',
@@ -386,9 +345,11 @@ const FishTypeInput = ({navigation, route}) => {
             text2: 'Something Went wrong, Please try again later!',
           });
         })
-        .finally(() => setSavepopup(false));
+        .finally(() => setDraftpopup(false));
     }
   };
+
+  console.log('err', errors);
 
   return (
     <View style={styles.container}>
@@ -967,16 +928,16 @@ const FishTypeInput = ({navigation, route}) => {
               <CustomButton
                 style={styles.submitButton}
                 btnText={'Submit'}
-                onPress={() => {
+                onPress={
                   // setSavepopup(false), navigation.goBack();
-                  onSubmit();
-                }}
+                  handleSubmit(onSubmit)
+                }
               />
               <CustomButton
                 style={styles.draftButton}
                 btnText={'Cancel'}
                 onPress={() => {
-                  setSavepopup(false), navigation.goBack();
+                  setSavepopup(false);
                 }}
               />
             </View>
@@ -1002,7 +963,7 @@ const FishTypeInput = ({navigation, route}) => {
               <CustomButton
                 style={styles.submitButton}
                 btnText={'Save'}
-                onPress={() => setDraftpopup(false)}
+                onPress={handleDraft}
               />
               <CustomButton
                 style={styles.draftButton}
@@ -1029,6 +990,11 @@ const makeStyles = fontScale =>
     textInputArea: {
       alignSelf: 'center',
       width: '95%',
+    },
+    error: {
+      color: 'red',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu',
     },
     subArea: {
       alignSelf: 'center',

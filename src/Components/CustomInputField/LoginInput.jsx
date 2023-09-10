@@ -26,11 +26,11 @@ const LoginInput = ({
                     outlineStyle={{
                         borderRadius: 10,
                     }}
-                    style={{backgroundColor:'#fff'}}
+                    style={{backgroundColor:'#fff',padding:5, paddingLeft:2,paddingRight:2}}
                     render={(inputProps) => (
                         <View style={{flexDirection:'row'}}>
-                        <Pressable style={{padding:5,alignSelf:'center'}} onPress={countryModal}>
-                            <Text style={{color:'#000', marginTop:15}}>{countryCode}</Text>
+                        <Pressable style={{padding:5,alignSelf:'center', borderRightWidth:3, borderRightColor: '#ccc'}} onPress={countryModal}>
+                            <Text style={{color:'#000', marginTop:0, paddingHorizontal:15}}>{countryCode}</Text>
                         </Pressable>
                         <TextInput 
                                 outlineColor="white"
@@ -39,10 +39,10 @@ const LoginInput = ({
                                 outlineStyle={{
                                     borderRadius: 10,
                                 }}
-                                label={<Text style={{ fontSize: 16 / fontScale }}>{label}</Text>}
+                                // label={<Text style={{ fontSize: 16 / fontScale }}>{label}</Text>}
                                 value={value}
-                                // mode="outlined"
-                                style={[styles.textInput,{ width:350}]}
+                                mode="outlined"
+                                style={[styles.textInput,{ width:300, height:37}]}
                                 placeholder={placeholder}
                                 placeholderTextColor={'#333'}
                                 onFocus={onFocus}
@@ -51,10 +51,9 @@ const LoginInput = ({
                         />
                         </View>
                     )}
-                    // mode="outlined"
-                    // label={<Text style={{ fontSize: 16 / fontScale }}>{label}</Text>}
+                    mode="outlined"
+                    label={<Text style={{ fontSize: 16 / fontScale }}>{label}</Text>}
                     // value={value}
-                    // style={styles.textInput}
                     // placeholder={placeholder}
                     // placeholderTextColor={'#333'}
                     // onFocus={onFocus}

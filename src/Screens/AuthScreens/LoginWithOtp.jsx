@@ -100,7 +100,7 @@ export default function LoginWithOtp({navigation}) {
             <Text style={styles.normal_text}>Haven’t received any?</Text>
             <Pressable
               onPress={() =>
-                timer === 0 ? dispatch(SendOTP(user.phone)) : null
+                timer === 0 ? dispatch(SendOTP({ phone: user.phone, country_code: `+${user?.country_code}`, })) : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
                 Resend

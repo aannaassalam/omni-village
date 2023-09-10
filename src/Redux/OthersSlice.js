@@ -9,7 +9,9 @@ const initialState = {
   status: 'idle',
   measurement: [],
   fishFeed:[],
-  feed: []
+  feed: [],
+  village:[],
+  landmeasurement:[]
 };
 
 
@@ -61,6 +63,42 @@ export const getFeed = createAsyncThunk(
   },
 );
 
+export const getVillage = createAsyncThunk(
+  'getvillage',
+  async (village, {getState, rejectWithValue}) => {
+    try {
+      const res = await axiosInstance.get(
+        endpoints.measurement.village + `${village}`,
+      );
+      // console.log(res.data, 'ftech fish');
+      return {status: res.status, data: res.data};
+    } catch (err) {
+      rejectWithValue({
+        status: err.response.status,
+        data: err.response.data,
+      });
+    }
+  },
+);
+
+export const getLandmeasurement = createAsyncThunk(
+  'getlandmeasurement',
+  async (village, {getState, rejectWithValue}) => {
+    try {
+      const res = await axiosInstance.get(
+        endpoints.measurement.landmeasurement,
+      );
+      // console.log(res.data, 'ftech fish');
+      return {status: res.status, data: res.data};
+    } catch (err) {
+      rejectWithValue({
+        status: err.response.status,
+        data: err.response.data,
+      });
+    }
+  },
+);
+
 export const OthersSlice = createSlice({
   name: 'othersslice',
   initialState,
@@ -92,7 +130,7 @@ export const OthersSlice = createSlice({
       .addCase(getFishFeed.rejected, (state, {payload}) => {
         state.status = 'idle';
       })
-       .addCase(getFeed.pending, (state, {payload}) => {
+      .addCase(getFeed.pending, (state, {payload}) => {
         state.status = 'pending';
       })
       .addCase(getFeed.fulfilled, (state, {payload}) => {
@@ -102,6 +140,30 @@ export const OthersSlice = createSlice({
         state.status = 'idle';
       })
       .addCase(getFeed.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+      .addCase(getVillage.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(getVillage.fulfilled, (state, {payload}) => {
+        if (payload.status === 200) {
+          state.feed = payload.data;
+        }
+        state.status = 'idle';
+      })
+      .addCase(getVillage.rejected, (state, {payload}) => {
+        state.status = 'idle';
+      })
+      .addCase(getLandmeasurement.pending, (state, {payload}) => {
+        state.status = 'pending';
+      })
+      .addCase(getLandmeasurement.fulfilled, (state, {payload}) => {
+        if (payload.status === 200) {
+          state.landmeasurement = payload.data;
+        }
+        state.status = 'idle';
+      })
+      .addCase(getLandmeasurement.rejected, (state, {payload}) => {
         state.status = 'idle';
       });
   },

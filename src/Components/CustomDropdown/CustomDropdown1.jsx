@@ -16,7 +16,7 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 
-export default CustomDropdown1 = ({placeholder, selectedValue}) => {
+export default CustomDropdown1 = ({placeholder, selectedValue,data}) => {
   const countries = [
     'Egypt',
     'Canada',
@@ -37,7 +37,7 @@ export default CustomDropdown1 = ({placeholder, selectedValue}) => {
 
   return (
     <SelectDropdown
-      data={countries}
+      data={data?data.map((i)=>i?.name):countries}
       onSelect={(selectedItem, index) => {
         selectedValue(selectedItem);
       }}
@@ -94,6 +94,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform:'capitalize'
     },
     dropdown1DropdownStyle: {backgroundColor: '#fff', borderRadius: 10},
     dropdown1RowStyle: {
@@ -106,6 +107,7 @@ const makeStyles = fontScale =>
       textAlign: 'left',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu_regular',
+      textTransform:'capitalize'
     },
     icon_btn: {
       backgroundColor: 'rgb(168,209,180)',

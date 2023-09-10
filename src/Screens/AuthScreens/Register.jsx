@@ -20,12 +20,28 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {Controller, useForm} from 'react-hook-form';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-
+import CountryPicker, {
+  Country,
+  CountryCode,
+} from 'react-native-country-picker-modal';
+import LoginInput from '../../Components/CustomInputField/LoginInput';
 export default function Register({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState({
+    callingCode: ["91"], 
+    cca2: "IN", 
+    currency: ["INR"],
+    name: "India", 
+    region: "Asia", 
+    subregion: "Southern Asia"
+  });
+  const [countryModal, setCountryModal] = useState(false);
 
+  const onSelectCountry = (country) => {
+    setSelectedCountry(country);
+  };
   const InputValueCallback = data => {
     setInputVal(data);
   };
@@ -48,9 +64,11 @@ export default function Register({navigation, route}) {
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-
   const FormSubmit = async data => {
-    dispatch(SendOTP({...data, type: 'register'}))
+    dispatch(SendOTP({ ...data, 
+      currency: selectedCountry?.currency[0], 
+      country_code: `+${selectedCountry?.callingCode[0]}`, 
+      country:selectedCountry?.name, type: 'register'}))
       .unwrap()
       .then(() => navigation.navigate('registerotp'))
       .catch(err => {
@@ -74,14 +92,27 @@ export default function Register({navigation, route}) {
               control={control}
               name="phone"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutRightElement
-                  label={'Phone Number'}
+                // <InputWithoutRightElement
+                //   label={'Phone Number'}
+                //   onChangeText={e => {
+                //     setApi_err('');
+                //     onChange(e);
+                //   }}
+                //   value={value}
+                //   keyboardType="number-pad"
+                // />
+                <LoginInput
+                  placeholder={'Phone Number'}
+                  // label={'Phone Number'}
+                  countryModal={() => setCountryModal(!countryModal)}
                   onChangeText={e => {
-                    setApi_err('');
+                    console.log("hereeeeeee", e)
                     onChange(e);
+                    setApi_err('');
                   }}
                   value={value}
                   keyboardType="number-pad"
+                  countryCode={selectedCountry !== null ? '+' + selectedCountry?.callingCode[0] : '+91'}
                 />
               )}
             />
@@ -127,6 +158,7 @@ export default function Register({navigation, route}) {
           />
         </View>
       </View> */}
+       
         <View style={styles.register_text}>
           <Text style={styles.register_text_frst}>
             Already have an account?
@@ -136,6 +168,52 @@ export default function Register({navigation, route}) {
           </Pressable>
         </View>
       </>
+      <CountryPicker
+        withCurrency
+        onClose={() => {
+          setCountryModal(false)
+        }}
+        containerButtonStyle={{
+          display: 'none'
+        }}
+        modalProps={{
+          visible: countryModal
+        }}
+        flatListProps={{
+          renderItem: ({ item }) => {
+            return (
+              <TouchableOpacity style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 10
+              }}
+                onPress={() => {
+                  onSelectCountry(item)
+                  setCountryModal(false)
+                }}
+              >
+                <Image
+                  source={{ uri: item?.flag }}
+                  resizeMode='contain'
+                  style={{
+                    width: 30,
+                    height: 35,
+                    marginRight: 10
+                  }}
+                />
+                <Text style={styles.text}>{' '}+{item?.callingCode}</Text>
+                <Text style={styles.text}>{' '}{item?.name}</Text>
+                <Text style={styles.text}>{' '}({item.currency[0]})</Text>
+              </TouchableOpacity>
+            )
+          }
+        }}
+        countryCodes={['IN', 'BT', 'MY']}
+        onSelect={onSelectCountry}
+        withCallingCode
+        withEmoji={false}
+        withFilter
+      />
     </LoginWrapper>
   );
 }
@@ -219,5 +297,10 @@ const makeStyles = fontScale =>
       fontSize: 14 / fontScale,
       marginLeft: 5,
       fontFamily: 'ubuntu_medium',
+    },
+    text: {
+      color: '#000',
+      marginHorizontal: 2,
+      fontSize: 16 / fontScale
     },
   });

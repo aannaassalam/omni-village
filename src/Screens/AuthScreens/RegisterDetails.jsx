@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -31,6 +31,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {EditUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
 import {Scale} from '../../Helper/utils';
+import { useFocusEffect } from '@react-navigation/native';
+import { getLandmeasurement, getVillage } from '../../Redux/OthersSlice';
+import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 
 // const FormData = global.FormData;
 
@@ -38,6 +41,8 @@ export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
+  const {village}=useSelector((state)=>state.Others)
+  const { landmeasurement } = useSelector((state) => state.Others)
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -64,6 +69,7 @@ export default function RegisterDetails({navigation, route}) {
       first_name: yup.string().required(validation?.error?.first_name),
       last_name: yup.string().required(validation?.error?.last_name),
       village_name: yup.string().required(validation?.error?.village_name),
+      land_measurement: yup.string().required(validation?.error?.land_measurement),
       phone: yup.string().required(validation?.error?.phone),
       number_of_members: yup
         .string()
@@ -150,7 +156,10 @@ export default function RegisterDetails({navigation, route}) {
       .then(res => navigation.replace('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
   };
-
+useEffect(()=>{
+  dispatch(getVillage(user?.country))
+  dispatch(getLandmeasurement())
+},[user])
   return (
     <LoginWrapper no_gap>
       <View style={styles.form_section}>
@@ -220,11 +229,28 @@ export default function RegisterDetails({navigation, route}) {
           <View style={styles.line_border} />
         </View>
         <Box style={styles.cmn_wrp}>
+          <View style={styles.login_input}>
+          <Controller
+            control={control}
+            name="country_name"
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              <InputTextComponent
+                placeholder={'Country Name'}
+                onChangeText={onChange}
+                value={user?.country}
+                editable={false}
+              />
+            )}
+          />
+          </View>
+        </Box>
+        <Box style={styles.cmn_wrp}>
           <Controller
             control={control}
             name="village_name"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
+              data={village}
                 placeholder={'Village Name'}
                 selectedValue={onChange}
               />
@@ -240,6 +266,30 @@ export default function RegisterDetails({navigation, route}) {
               marginTop: -10,
             }}>
             {errors?.village_name?.message}
+          </Text>
+        )}
+        <Box style={styles.cmn_wrp}>
+          <Controller
+            control={control}
+            name="land_measurement"
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              <CustomDropdown1
+                data={landmeasurement}
+                placeholder={'Land Measurement'}
+                selectedValue={onChange}
+              />
+            )}
+          />
+        </Box>
+        {errors?.land_measurement && (
+          <Text
+            style={{
+              ...styles.error,
+              width: '100%',
+              marginBottom: 15,
+              marginTop: -10,
+            }}>
+            {errors?.land_measurement?.message}
           </Text>
         )}
         <Box style={styles.cmn_wrp}>

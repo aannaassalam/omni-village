@@ -139,7 +139,7 @@ const Type01 = ({ navigation, route }) => {
     }
   }, [errors]);
   // console.log("data", data?.number_of_trees)
-  const onSubmit = () => {
+  const onSubmit = (data2) => {
     if (data?._id) {
       dispatch(
         editTree({
@@ -641,7 +641,7 @@ const Type01 = ({ navigation, route }) => {
                 btnText={'Submit'}
                 onPress={() => {
                   setSavepopup(false),
-                    handleSubmit(onSubmit())
+                    handleSubmit(onSubmit)
 
                 }}
               />
@@ -701,6 +701,11 @@ const makeStyles = fontScale =>
     container: {
       flex: 1,
       backgroundColor: '#fff',
+    },
+    error: {
+      color: 'red',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu'
     },
     textInputArea: {
       alignSelf: 'center',
