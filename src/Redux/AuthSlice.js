@@ -32,19 +32,23 @@ export const getUser = createAsyncThunk(
 
 export const SendOTP = createAsyncThunk(
   'sendotp',
-  async ({phone, type}, {rejectWithValue}) => {
+  async ({phone, type, country,currency,country_code}, {rejectWithValue}) => {
     try {
       // console.log(user,"userincoming")
       let res = await axiosInstance.post(endpoints?.auth?.otp, {
         phone,
-        country_code: '+91',
+        country_code,
+        currency,
+        country,
         type,
       });
       return {
         status: res.status,
         data: res.data.body,
         phone,
-        country_code: '+91',
+        country_code,
+        currency,
+        country,
       };
     } catch (err) {
       return rejectWithValue({
@@ -218,6 +222,9 @@ export const AuthSlice = createSlice({
             ...state.user,
             phone: payload?.phone,
             country_code: payload?.country_code,
+            currency: payload?.currency,
+            country: payload?.country,
+
           };
           state.otp = payload.data.split(' - ')[1];
           state.status = 'idle';

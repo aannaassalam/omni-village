@@ -787,7 +787,7 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                 onPress={() => {
                                     // setSavepopup(false), navigation.goBack();
                                     
-                                    handleSubmit(onSubmit())
+                                    handleSubmit(onSubmit)
                                 }}
                             />
                             <CustomButton

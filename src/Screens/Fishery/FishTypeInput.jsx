@@ -147,7 +147,7 @@ const FishTypeInput = ({ navigation, route }) => {
     // useEffect(()=>{
     //     dispatch(getFishFeed())
     // },[])
-    const onSubmit = () => {
+    const onSubmit = (data2) => {
         let production_output = parseInt(watch('utilisation_information.production_output'))
         let self_consumed = parseInt(watch("utilisation_information.self_consumed"))
         let sold_to_neighbours = parseInt(watch("utilisation_information.sold_to_neighbours"))
@@ -777,7 +777,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     // setSavepopup(false), navigation.goBack();
-                                    handleSubmit(onSubmit())
+                                    handleSubmit(onSubmit)
                                 }}
                             />
                             <CustomButton

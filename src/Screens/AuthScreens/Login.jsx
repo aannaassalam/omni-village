@@ -30,7 +30,14 @@ export default function Login({ navigation, route }) {
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
 
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState({
+    callingCode: ["91"],
+    cca2: "IN",
+    currency: ["INR"],
+    name: "India",
+    region: "Asia",
+    subregion: "Southern Asia"
+  });
   const [countryModal, setCountryModal] = useState(false);
 
   const onSelectCountry = (country) => {
@@ -57,7 +64,7 @@ export default function Login({ navigation, route }) {
   const styles = makeStyles(fontScale);
 
   const FormSubmit = data => {
-    dispatch(SendOTP({ ...data, type: 'login' }))
+    dispatch(SendOTP({ ...data, country_code: `+${selectedCountry?.callingCode[0]}`, type: 'login' }))
       .unwrap()
       .then(() => navigation.navigate('loginotp'))
       .catch(err => {

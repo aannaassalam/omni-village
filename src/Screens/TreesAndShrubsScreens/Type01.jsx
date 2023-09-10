@@ -139,7 +139,7 @@ const Type01 = ({ navigation, route }) => {
     }
   }, [errors]);
   // console.log("data", data?.number_of_trees)
-  const onSubmit = () => {
+  const onSubmit = (data2) => {
     if (data?._id) {
       dispatch(
         editTree({
@@ -641,7 +641,7 @@ const Type01 = ({ navigation, route }) => {
                 btnText={'Submit'}
                 onPress={() => {
                   setSavepopup(false),
-                    handleSubmit(onSubmit())
+                    handleSubmit(onSubmit)
 
                 }}
               />

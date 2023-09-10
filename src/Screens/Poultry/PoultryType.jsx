@@ -155,7 +155,7 @@ const PoultryType = ({ navigation, route }) => {
             setSavepopup(false);
         }
     }, [errors]);
-    const onSubmit = () => {
+    const onSubmit = (data2) => {
         let total_feed = parseInt(watch('utilisation_information.total_feed'))
         let self_produced = parseInt(watch("utilisation_information.self_produced"))
         let neighbours = parseInt(watch("utilisation_information.neighbours"))
@@ -857,7 +857,7 @@ const PoultryType = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     //   setSavepopup(false), navigation.goBack();
-                                    handleSubmit(onSubmit())
+                                    handleSubmit(onSubmit)
                                 }}
                             />
                             <CustomButton

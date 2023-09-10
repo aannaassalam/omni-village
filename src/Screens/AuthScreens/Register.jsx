@@ -29,7 +29,14 @@ export default function Register({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState({
+    callingCode: ["91"], 
+    cca2: "IN", 
+    currency: ["INR"],
+    name: "India", 
+    region: "Asia", 
+    subregion: "Southern Asia"
+  });
   const [countryModal, setCountryModal] = useState(false);
 
   const onSelectCountry = (country) => {
@@ -57,9 +64,11 @@ export default function Register({navigation, route}) {
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-
   const FormSubmit = async data => {
-    dispatch(SendOTP({...data, type: 'register'}))
+    dispatch(SendOTP({ ...data, 
+      currency: selectedCountry?.currency[0], 
+      country_code: `+${selectedCountry?.callingCode[0]}`, 
+      country:selectedCountry?.name, type: 'register'}))
       .unwrap()
       .then(() => navigation.navigate('registerotp'))
       .catch(err => {

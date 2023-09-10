@@ -133,7 +133,7 @@ const HuntingType = ({ navigation, route }) => {
         );
     }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
 
-    const onSubmit = () => {
+    const onSubmit = (data2) => {
         let meat = parseInt(watch('utilisation_information.meat'))
         let self_consumed = parseInt(watch("utilisation_information.self_consumed"))
         let sold_to_neighbours = parseInt(watch("utilisation_information.sold_to_neighbours"))
@@ -630,7 +630,7 @@ const HuntingType = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     setSavepopup(false),
-                                    handleSubmit(onSubmit())
+                                    handleSubmit(onSubmit)
                                 }}
                             />
                             <CustomButton

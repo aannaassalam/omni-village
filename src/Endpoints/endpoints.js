@@ -83,6 +83,8 @@ export const endpoints = {
   measurement:{
     get_measurement: '/weight_measurements/',
     fish_feed: '/fish_feeds/',
-    feed: '/feeds/'
+    feed: '/feeds/',
+    village: '/villages/',
+    landmeasurement: '/land_measurements/'
   }
 };
