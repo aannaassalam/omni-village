@@ -268,6 +268,76 @@ const CropDescription = ({navigation, route}) => {
     }
   };
 
+  const handleDraft = () => {
+    const data = watch();
+    if (currentCrop._id) {
+      dispatch(
+        editCultivation({
+          ...data,
+          status: 0,
+          utilization: {
+            ...data.utilization,
+            other_value:
+              data.utilization.other.length > 0
+                ? data.utilization.other_value
+                : '',
+          },
+          cultivation_id: currentCrop._id,
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Cultivation drafted successfully!',
+            }),
+          navigation.goBack(),
+        )
+        .catch(err => {
+          console.log('err', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => setSavepopup(false));
+    } else {
+      dispatch(
+        addCultivation({
+          ...data,
+          status: 0,
+          utilization: {
+            ...data.utilization,
+            other_value:
+              data.utilization.other.length > 0
+                ? data.utilization.other_value
+                : '',
+          },
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Cultivation drafted successfully!',
+            }),
+          navigation.goBack(),
+        )
+        .catch(err => {
+          console.log('err', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => setSavepopup(false));
+    }
+  };
+
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -861,7 +931,7 @@ const CropDescription = ({navigation, route}) => {
             <CustomButton
               style={styles.submitButton}
               btnText={'Save'}
-              onPress={() => handleSubmit(onSubmit)}
+              onPress={handleDraft}
             />
             <CustomButton
               style={styles.draftButton}
