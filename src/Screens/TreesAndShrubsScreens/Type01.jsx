@@ -702,6 +702,11 @@ const makeStyles = fontScale =>
       flex: 1,
       backgroundColor: '#fff',
     },
+    error: {
+      color: 'red',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu'
+    },
     textInputArea: {
       alignSelf: 'center',
       width: '95%',

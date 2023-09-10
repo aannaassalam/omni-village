@@ -786,7 +786,8 @@ const FisheryRiverInput = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     // setSavepopup(false), navigation.goBack();
-                                    onSubmit()
+                                    
+                                    handleSubmit(onSubmit())
                                 }}
                             />
                             <CustomButton
@@ -842,6 +843,11 @@ const makeStyles = fontScale =>
         container: {
             flex: 1,
             backgroundColor: '#fff',
+        },
+        error: {
+            color: 'red',
+            fontSize: 14 / fontScale,
+            fontFamily: 'ubuntu'
         },
         textInputArea: {
             alignSelf: 'center',

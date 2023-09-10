@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,20 +12,20 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {useDispatch} from 'react-redux';
-import {SendOTP} from '../../Redux/AuthSlice';
-import {TextInput} from 'react-native-gesture-handler';
-import {Scale} from '../../Helper/utils';
-import {yupResolver} from '@hookform/resolvers/yup';
+import { useDispatch } from 'react-redux';
+import { SendOTP } from '../../Redux/AuthSlice';
+import { TextInput } from 'react-native-gesture-handler';
+import { Scale } from '../../Helper/utils';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {Controller, useForm} from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
 import CountryPicker, {
   Country,
   CountryCode,
 } from 'react-native-country-picker-modal';
-export default function Login({navigation, route}) {
+export default function Login({ navigation, route }) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
@@ -48,16 +48,16 @@ export default function Login({navigation, route}) {
     handleSubmit,
     setValue,
     control,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
 
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   const FormSubmit = data => {
-    dispatch(SendOTP({...data, type: 'login'}))
+    dispatch(SendOTP({ ...data, type: 'login' }))
       .unwrap()
       .then(() => navigation.navigate('loginotp'))
       .catch(err => {
@@ -79,11 +79,11 @@ export default function Login({navigation, route}) {
             <Controller
               control={control}
               name="phone"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
                 <LoginInput
                   placeholder={'Phone Number'}
                   // label={'Phone Number'}
-                  countryModal={()=>setCountryModal(!countryModal)}
+                  countryModal={() => setCountryModal(!countryModal)}
                   onChangeText={e => {
                     console.log("hereeeeeee", e)
                     onChange(e);
@@ -91,7 +91,7 @@ export default function Login({navigation, route}) {
                   }}
                   value={value}
                   keyboardType="number-pad"
-                  countryCode={'+'+selectedCountry?.callingCode[0]}
+                  countryCode={selectedCountry !== null ? '+' + selectedCountry?.callingCode[0] : '+91'}
                 />
               )}
             />
@@ -131,6 +131,10 @@ export default function Login({navigation, route}) {
             />
           </View>
           <CountryPicker
+            withCountryNameButton={false}
+            containerButtonStyle={{
+              display:'none'
+            }}
             withCurrency
             onClose={() => {
               setCountryModal(false)

@@ -777,7 +777,7 @@ const FishTypeInput = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     // setSavepopup(false), navigation.goBack();
-                                    onSubmit()
+                                    handleSubmit(onSubmit())
                                 }}
                             />
                             <CustomButton
@@ -837,6 +837,11 @@ const makeStyles = fontScale =>
         textInputArea: {
             alignSelf: 'center',
             width: '95%',
+        },
+        error: {
+            color: 'red',
+            fontSize: 14 / fontScale,
+            fontFamily: 'ubuntu'
         },
         subArea: {
             alignSelf: 'center',

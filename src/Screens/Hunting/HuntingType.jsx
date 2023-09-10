@@ -630,7 +630,7 @@ const HuntingType = ({ navigation, route }) => {
                                 btnText={'Submit'}
                                 onPress={() => {
                                     setSavepopup(false),
-                                        onSubmit()
+                                    handleSubmit(onSubmit())
                                 }}
                             />
                             <CustomButton
@@ -691,6 +691,11 @@ const makeStyles = fontScale =>
         container: {
             flex: 1,
             backgroundColor: '#fff',
+        },
+        error:{
+            color:'red',
+            fontSize: 14 / fontScale,
+            fontFamily: 'ubuntu'
         },
         textInputArea: {
             alignSelf: 'center',
