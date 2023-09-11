@@ -1,6 +1,3 @@
-
-
-
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axiosInstance from '../Helper/Helper';
 import {endpoints} from '../Endpoints/endpoints';
@@ -8,18 +5,19 @@ import {endpoints} from '../Endpoints/endpoints';
 const initialState = {
   status: 'idle',
   measurement: [],
-  fishFeed:[],
+  fishFeed: [],
   feed: [],
-  village:[],
-  landmeasurement:[]
+  village: [],
+  landmeasurement: [],
 };
-
 
 export const getMeasurement = createAsyncThunk(
   'getmeasurement',
   async (_, {getState, rejectWithValue}) => {
     try {
-      const res = await axiosInstance.get(endpoints.measurement.get_measurement);
+      const res = await axiosInstance.get(
+        endpoints.measurement.get_measurement,
+      );
       // console.log(res.data, 'ftech tree');
       return {status: res.status, data: res.data};
     } catch (err) {
@@ -147,7 +145,7 @@ export const OthersSlice = createSlice({
       })
       .addCase(getVillage.fulfilled, (state, {payload}) => {
         if (payload.status === 200) {
-          state.feed = payload.data;
+          state.village = payload.data;
         }
         state.status = 'idle';
       })

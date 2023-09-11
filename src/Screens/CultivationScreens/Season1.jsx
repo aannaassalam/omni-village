@@ -30,6 +30,7 @@ import Toast from 'react-native-toast-message';
 import {useFocusEffect} from '@react-navigation/native';
 import PopupModal from '../../Components/Popups/PopupModal';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -138,6 +139,16 @@ const Season1 = ({navigation, route}) => {
         headerName={seasonName}
         goBack={() => navigation.goBack()}
       />
+      <CustomDashboard
+        first={'production'}
+        second={`cultivation ${
+          cultivationType === 1
+            ? 'once'
+            : cultivationType === 2
+            ? 'twice'
+            : 'thrice'
+        }`}
+      />
       {/* top container for land allocated and modify */}
       <View style={styles.top_container}>
         <View style={styles.top_container_inner}>
@@ -201,7 +212,7 @@ const Season1 = ({navigation, route}) => {
             <AddAndDeleteCropButton
               add={true}
               cropName={'Add Crop'}
-              onPress={() => null}
+              onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
         </>
@@ -243,11 +254,12 @@ const Season1 = ({navigation, route}) => {
                 selectedValue={e => {
                   setSelectedCategory(e);
                   // setSelectCrops({name: ''});
+                  console.log(e);
                   dispatch(
-                    getCrops(cropCategories.find(cp => cp.name === e)._id),
+                    getCrops(cropCategories.find(cp => cp.name === e.name)._id),
                   );
                 }}
-                // value={selectedCategory.name}
+                value={selectedCategory}
                 placeholder="Select a category"
                 data={cropCategories}
               />
@@ -255,13 +267,16 @@ const Season1 = ({navigation, route}) => {
             <CustomDropdown2
               selectedValue={e => {
                 setSelectedCrop(
-                  crops.find(cp => cp.name === e) || {_id: 0, name: 'Others'},
+                  crops.find(cp => cp.name === e.name) || {
+                    _id: 0,
+                    name: 'Others',
+                  },
                 );
                 setOtherCrop('');
                 // dispatch(setCropId(crops.find(cp => cp.name === e)._id));
                 // DropdownSelectedValue(e);
               }}
-              // value={selectCrop.name}
+              value={selectedCrop}
               placeholder="Select a crop"
               data={[...crops, {_id: 0, name: 'Others'}]}
             />

@@ -154,23 +154,15 @@ const FisheryRiver = ({navigation}) => {
               </TouchableOpacity>
             );
           })}
-          {cropType[0] === undefined ? (
-            <View style={styles.addAndDeleteButtonSection}>
-              <AddAndDeleteCropButton
-                add={true}
-                cropName={`Add River Fish`}
-                onPress={() => setCropModal(true)}
-              />
-            </View>
-          ) : (
-            <View style={styles.addAndDeleteButtonSection}>
-              <AddAndDeleteCropButton
-                add={true}
-                cropName={`Add River Fish`}
-                onPress={() => setCropModal(true)}
-              />
-            </View>
-          )}
+          <TouchableOpacity
+            style={styles.addAndDeleteButtonSection}
+            onPress={() => setCropModal(true)}>
+            <AddAndDeleteCropButton
+              add={true}
+              cropName="Add River Fish"
+              onPress={() => setCropModal(true)}
+            />
+          </TouchableOpacity>
         </>
       )}
       {cropModal && (

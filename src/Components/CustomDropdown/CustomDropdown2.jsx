@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -11,22 +11,22 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-const { width } = Dimensions.get('window');
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { SelectList } from 'react-native-dropdown-select-list'
+import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import {SelectList} from 'react-native-dropdown-select-list';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 
 export default CustomDropdown2 = ({
-  placeholder,
+  placeholder = 'search',
   selectedValue,
   data,
-  valu,
+  value,
   style,
 }) => {
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
-  const { fontScale } = useWindowDimensions();
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   // console.log("value", valu, data)
   return (
@@ -89,60 +89,69 @@ export default CustomDropdown2 = ({
     //     // backgroundColor:"pink"
     //   }}
     // />
-      <SearchableDropdown
+    <SearchableDropdown
       listMode="SCROLLVIEW"
-        onTextChange={(text) => console.log(text)}
-        onItemSelect={(item) => {
-          console.log("item")
-          // const items = this.state.selectedItems;
-          // items.push(item)
-          // this.setState({ selectedItems: items });
-          // alert("item", item)
-          selectedValue(item)
-        }}
-        containerStyle={{ padding: 5 }}
-        itemStyle={{
-          padding: 10,
-          marginTop: 2,
-          borderColor: '#bbb',
-          borderWidth: 1,
-          borderRadius: 5,
-        }}
-        textInputStyle={{
-          //inserted text style
+      onTextChange={text => console.log(text)}
+      onItemSelect={item => {
+        console.log('item');
+        // const items = this.state.selectedItems;
+        // items.push(item)
+        // this.setState({ selectedItems: items });
+        // alert("item", item)
+        selectedValue(item);
+      }}
+      containerStyle={{padding: 5}}
+      itemStyle={{
+        padding: 10,
+        marginTop: 2,
+        borderColor: '#bbb',
+        borderWidth: 1,
+        borderRadius: 5,
+        textTransform: 'capitalize',
+      }}
+      textInputStyle={{
+        //inserted text style
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        backgroundColor: '#FAF7F6',
+        color: '#000',
+        textTransform: 'capitalize',
+      }}
+      itemTextStyle={{color: '#000', textTransform: 'capitalize'}}
+      itemsContainerStyle={{maxHeight: 140}}
+      // items={data}
+      items={
+        data?.length >= 1 && data !== undefined
+          ? data.map((j, index) => {
+              return {id: j?._id, name: j?.name};
+            })
+          : cropType.map((i, index) => {
+              return {key: index, value: i};
+            })
+      }
+      defaultIndex={
+        value ? data.findIndex(item => item.name === value.name) : 0
+      }
+      resetValue={false}
+      placeholder={placeholder}
+      textInputProps={{
+        placeholder: value ? value?.name : placeholder,
+        placeholderTextColor: '#000',
+        underlineColorAndroid: 'transparent',
+        style: {
           padding: 12,
           borderWidth: 1,
           borderColor: '#ccc',
-          backgroundColor: '#FAF7F6',
-          color:'#000'
-        }}
-        itemTextStyle={{ color: '#000' }}
-        itemsContainerStyle={{ maxHeight: 140 }}
-        // items={data}
-        items={data?.length >= 1 && data !== undefined ? data.map((j, index) => { return { id: j?._id, name: j?.name } }) : cropType.map((i, index) => { return { key: index, value: i } })}
-        defaultIndex={valu ? data.findIndex(item => item.name === valu) : 0}
-        resetValue={false}
-        placeholder="hello serach "
-        textInputProps={
-          {
-            placeholder: valu?valu?.name:'Search',
-            placeholderTextColor:"#000",
-            underlineColorAndroid: "transparent",
-            style: {
-              padding: 12,
-              borderWidth: 1,
-              borderColor: '#ccc',
-              borderRadius: 5,
-              color:'#000'
-            },
-            // onTextChange: text => alert(text)
-          }
-        }
-      listProps={{
-        nestedScrollEnabled: true
+          borderRadius: 5,
+          color: '#000',
+        },
+        // onTextChange: text => alert(text)
       }}
-        
-      />
+      listProps={{
+        nestedScrollEnabled: true,
+      }}
+    />
   );
 };
 
@@ -168,7 +177,7 @@ const makeStyles = fontScale =>
       fontFamily: 'ubuntu_regular',
       textTransform: 'capitalize',
     },
-    dropdown1DropdownStyle: { backgroundColor: '#fff', borderRadius: 10 },
+    dropdown1DropdownStyle: {backgroundColor: '#fff', borderRadius: 10},
     dropdown1RowStyle: {
       // backgroundColor: '#fff',
       // borderBottomColor: '#268C43',
@@ -187,7 +196,7 @@ const makeStyles = fontScale =>
       padding: 5,
     },
     boxStyle: {
-      borderColor: "#000",
+      borderColor: '#000',
       borderWidth: 1,
-    }
+    },
   });

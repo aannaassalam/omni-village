@@ -53,6 +53,7 @@ const makeStyles = fontScale =>
       textAlign: 'center',
       fontSize: 18 / fontScale,
       fontFamily: 'ubuntu_medium',
+      textTransform: 'capitalize',
     },
     tinyIcon: {
       position: 'absolute',

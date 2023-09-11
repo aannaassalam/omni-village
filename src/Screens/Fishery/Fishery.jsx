@@ -73,6 +73,12 @@ const Fishery = ({navigation, route}) => {
       dispatch(getFishery('pond')).then(res => {
         setLoading(false);
       });
+      dispatch(getFishery('river')).then(res => {
+        setLoading(false);
+      });
+      dispatch(getFishery('pond')).then(res => {
+        setLoading(false);
+      });
       dispatch(getFishFeed());
     }, []),
   );
@@ -133,27 +139,17 @@ const Fishery = ({navigation, route}) => {
               </TouchableOpacity>
             );
           })}
-          {cropType[0] === undefined ? (
-            <View style={styles.addAndDeleteButtonSection}>
-              <AddAndDeleteCropButton
-                add={true}
-                cropName={`Add ${
-                  screenName.includes('Pond') ? 'Pond' : 'Sea'
-                } Sub Area`}
-                onPress={() => setCropModal(true)}
-              />
-            </View>
-          ) : (
-            <View style={styles.addAndDeleteButtonSection}>
-              <AddAndDeleteCropButton
-                add={true}
-                cropName={`Add ${
-                  screenName.includes('Pond') ? 'Pond' : 'Sea'
-                } Sub Area`}
-                onPress={() => setCropModal(true)}
-              />
-            </View>
-          )}
+          <TouchableOpacity
+            style={styles.addAndDeleteButtonSection}
+            onPress={() => setCropModal(true)}>
+            <AddAndDeleteCropButton
+              add={true}
+              cropName={`Add ${
+                screenName.includes('Pond') ? 'Pond' : 'Sea'
+              } Sub Area`}
+              onPress={() => setCropModal(true)}
+            />
+          </TouchableOpacity>
         </>
       )}
       {cropModal && (

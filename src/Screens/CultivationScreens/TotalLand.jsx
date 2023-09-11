@@ -218,7 +218,7 @@ const TotalLand = ({navigation}) => {
               fontSize: 14 / fontScale,
               marginTop: 5,
               color: '#ff000e',
-              marginLeft: 5,
+              marginLeft: 20,
             }}>
             {globalError}
           </Text>

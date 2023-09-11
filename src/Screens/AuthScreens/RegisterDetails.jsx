@@ -31,8 +31,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {EditUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
 import {Scale} from '../../Helper/utils';
-import { useFocusEffect } from '@react-navigation/native';
-import { getLandmeasurement, getVillage } from '../../Redux/OthersSlice';
+import {useFocusEffect} from '@react-navigation/native';
+import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 
 // const FormData = global.FormData;
@@ -41,8 +41,8 @@ export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
-  const {village}=useSelector((state)=>state.Others)
-  const { landmeasurement } = useSelector((state) => state.Others)
+  const {village} = useSelector(state => state.Others);
+  const {landmeasurement} = useSelector(state => state.Others);
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -69,7 +69,9 @@ export default function RegisterDetails({navigation, route}) {
       first_name: yup.string().required(validation?.error?.first_name),
       last_name: yup.string().required(validation?.error?.last_name),
       village_name: yup.string().required(validation?.error?.village_name),
-      land_measurement: yup.string().required(validation?.error?.land_measurement),
+      land_measurement: yup
+        .string()
+        .required(validation?.error?.land_measurement),
       phone: yup.string().required(validation?.error?.phone),
       number_of_members: yup
         .string()
@@ -151,15 +153,27 @@ export default function RegisterDetails({navigation, route}) {
       setFile_err('Please select a document!');
       return;
     }
-    dispatch(EditUser({data, file: fileResponse[0]}))
+    dispatch(
+      EditUser({
+        data,
+        land_measurement_symbol: landmeasurement.find(
+          lm => lm.name === data.land_measurement,
+        ).symbol,
+        file: fileResponse[0],
+      }),
+    )
       .unwrap()
       .then(res => navigation.replace('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
   };
-useEffect(()=>{
-  dispatch(getVillage(user?.country))
-  dispatch(getLandmeasurement())
-},[user])
+
+  console.log(village);
+
+  useEffect(() => {
+    dispatch(getVillage(user?.country));
+    dispatch(getLandmeasurement());
+  }, [user.country]);
+
   return (
     <LoginWrapper no_gap>
       <View style={styles.form_section}>
@@ -230,18 +244,18 @@ useEffect(()=>{
         </View>
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
-          <Controller
-            control={control}
-            name="country_name"
-            render={({ field: { onChange, onBlur, value, name, ref } }) => (
-              <InputTextComponent
-                placeholder={'Country Name'}
-                onChangeText={onChange}
-                value={user?.country}
-                editable={false}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="country_name"
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
+                <InputTextComponent
+                  placeholder={'Country Name'}
+                  onChangeText={onChange}
+                  value={user?.country}
+                  editable={false}
+                />
+              )}
+            />
           </View>
         </Box>
         <Box style={styles.cmn_wrp}>
@@ -250,9 +264,10 @@ useEffect(()=>{
             name="village_name"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
-              data={village}
+                data={village}
                 placeholder={'Village Name'}
                 selectedValue={onChange}
+                search
               />
             )}
           />
@@ -272,7 +287,7 @@ useEffect(()=>{
           <Controller
             control={control}
             name="land_measurement"
-            render={({ field: { onChange, onBlur, value, name, ref } }) => (
+            render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
                 data={landmeasurement}
                 placeholder={'Land Measurement'}
@@ -361,10 +376,14 @@ useEffect(()=>{
                           render={({
                             field: {onChange, onBlur, value, name, ref},
                           }) => (
-                            <InputTextComponent
+                            <CustomDropdown1
+                              data={[
+                                {name: 'Male'},
+                                {name: 'Female'},
+                                {name: 'Other'},
+                              ]}
                               placeholder={'Member Gender'}
-                              onChangeText={onChange}
-                              value={value}
+                              selectedValue={onChange}
                             />
                           )}
                         />

@@ -1,4 +1,4 @@
-import { Box, Button, Text } from '@react-native-material/core';
+import {Box, Button, Text} from '@react-native-material/core';
 import React from 'react';
 import {
   SafeAreaView,
@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import { useSelector } from 'react-redux';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import {useSelector} from 'react-redux';
 
-export default function Home({ navigation, route }) {
-  const { userToken, userDetails } = useSelector(s => s.auth);
+export default function Home({navigation, route}) {
+  const {userToken, userDetails} = useSelector(s => s.auth);
 
   console.log(userDetails, 'userDetails');
   return (
@@ -27,7 +27,8 @@ export default function Home({ navigation, route }) {
           <Box style={styles.user}>
             <Box style={styles.user_name}>
               <Text variant="h2" style={styles.user_name_txt}>
-                JD
+                {userDetails.first_name?.charAt(0)}
+                {userDetails.last_name?.charAt(0)}
               </Text>
             </Box>
             <AnimatedCircularProgress
@@ -41,42 +42,54 @@ export default function Home({ navigation, route }) {
             />
 
             <TouchableOpacity style={styles.usr_btn}>
-              <Text style={styles.usr_btn_txt}>Doe</Text>
+              <Text style={styles.usr_btn_txt}>{userDetails.first_name}</Text>
               <Image
                 style={styles.tinyLogo1}
                 source={require('../../../assets/edit2.png')}
-              // height={100}
+                // height={100}
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
-              0+ 000 111 1212
+              {userDetails.country_code} {userDetails.phone}
             </Text>
 
             <Box style={styles.user_land}>
-              <Box style={styles.usr_land_lft}>
-                <Box style={styles.usr_land_lft_txt}>
-                  <Text variant="body1" style={styles.usr_txt}>
-                    Land allocated
-                  </Text>
-                  <Text variant="body1" style={styles.land_txt}>
-                    50 acres
-                  </Text>
-                </Box>
+              {/* <Box style={styles.usr_land_lft}> */}
+              <Box style={styles.usr_land}>
+                <Text variant="body1" style={styles.usr_txt}>
+                  Land allocated
+                </Text>
+                <Text variant="body1" style={styles.land_txt}>
+                  {userDetails.total_land}{' '}
+                  {userDetails.land_measurement_symbol ||
+                    userDetails.land_measurement}
+                </Text>
               </Box>
+              {/* </Box> */}
               <Box
-                h={30}
-                w={4}
+                // h={30}
+                w={3}
                 style={{
-                  backgroundColor: 'rgba(38, 50, 56, 0.09)',
-                  marginRight: 40,
+                  backgroundColor: '#dddddd99',
+                  // marginRight: 40,
                 }}
               />
-              <Box style={styles.usr_land_rgt}>
+              <Box style={[styles.usr_land, {paddingLeft: 17}]}>
                 <Text variant="body1" style={styles.usr_txt}>
                   Used land
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
-                  20 acres
+                  {Object.keys(userDetails.sub_area).reduce(
+                    (prev, new_value) => {
+                      if (userDetails.sub_area[new_value].land) {
+                        return prev + userDetails.sub_area[new_value].land || 0;
+                      }
+                      return prev + userDetails.sub_area[new_value] || 0;
+                    },
+                    0,
+                  )}{' '}
+                  {userDetails.land_measurement_symbol ||
+                    userDetails.land_measurement}
                 </Text>
               </Box>
             </Box>
@@ -94,7 +107,7 @@ export default function Home({ navigation, route }) {
                   <Image
                     style={styles.tinyLogo1}
                     source={require('../../../assets/e2.png')}
-                  // height={100}
+                    // height={100}
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt}>
@@ -105,7 +118,7 @@ export default function Home({ navigation, route }) {
                 <Image
                   style={styles.tinyIcon}
                   source={require('../../../assets/e4.png')}
-                // height={100}
+                  // height={100}
                 />
               </Box>
             </Box>
@@ -117,7 +130,7 @@ export default function Home({ navigation, route }) {
                   <Image
                     style={styles.tinyLogo1}
                     source={require('../../../assets/e3.png')}
-                  // height={100}
+                    // height={100}
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt2}>
@@ -128,7 +141,7 @@ export default function Home({ navigation, route }) {
                 <Image
                   style={styles.tinyIcon}
                   source={require('../../../assets/e5.png')}
-                // height={100}
+                  // height={100}
                 />
               </Box>
             </Box>
@@ -147,7 +160,7 @@ const styles = StyleSheet.create({
     marginTop: -95,
   },
   user: {
-    borderColor: '#ECECEC',
+    borderColor: '#ddd',
     borderWidth: 1,
     marginBottom: 16,
     alignItems: 'center',
@@ -194,9 +207,9 @@ const styles = StyleSheet.create({
   },
   user_land: {
     flexDirection: 'row',
-    borderColor: '#ECECEC',
+    borderColor: '#ddd',
     borderWidth: 1,
-    padding: 4,
+    padding: 8,
     borderRadius: 8,
     marginTop: 20,
     width: '100%',
@@ -204,14 +217,18 @@ const styles = StyleSheet.create({
   usr_txt: {
     fontSize: 12,
     color: '#263238',
+    marginBottom: 5,
+    fontFamily: 'ubuntu_regular',
   },
   land_txt: {
     color: '#268C43',
     fontSize: 12,
+    fontFamily: 'ubuntu_medium',
   },
   land_txt2: {
     color: '#E5C05E',
     fontSize: 12,
+    fontFamily: 'ubuntu_medium',
   },
 
   home_box: {
@@ -230,6 +247,10 @@ const styles = StyleSheet.create({
   home_box_lft_upr: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  usr_land: {
+    flex: 1,
+    padding: 10,
   },
   hme_box_txt: {
     color: '#268C43',

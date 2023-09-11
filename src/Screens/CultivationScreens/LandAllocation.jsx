@@ -58,9 +58,9 @@ const LandAllocation = ({navigation, route}) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      once: '0',
-      twice: '0',
-      thrice: '0',
+      once: '',
+      twice: '',
+      thrice: '',
     },
   });
 
@@ -189,5 +189,12 @@ const makeStyles = fontScale =>
       position: 'absolute',
       bottom: 10,
       alignSelf: 'center',
+    },
+    error: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
     },
   });

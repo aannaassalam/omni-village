@@ -147,16 +147,35 @@ const CultivationDashboard = ({navigation, route}) => {
               setGobalError('No Land Allocated for Cultivated once in a year');
             }
           }}>
-          <Box style={styles.home_box}>
+          <Box
+            style={[
+              styles.home_box,
+              userDetails.sub_area.cultivation.distribution.once === 0 ||
+              userDetails.sub_area.cultivation.distribution.once === ''
+                ? {borderColor: 'grey'}
+                : {},
+            ]}>
             <Box style={styles.home_box_lft_upr}>
-              <Text variant="h3" style={styles.hme_box_txt}>
-                Cultivation Once in a year
+              <Text
+                variant="h3"
+                style={
+                  userDetails.sub_area.cultivation.distribution.once === 0 ||
+                  userDetails.sub_area.cultivation.distribution.once === ''
+                    ? styles.hme_box_txt2
+                    : styles.hme_box_txt
+                }>
+                Cultivation once in a year
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
               <Image
                 style={styles.tinyIcon}
-                source={require('../../../assets/e4.png')}
+                source={
+                  userDetails.sub_area.cultivation.distribution.once === 0 ||
+                  userDetails.sub_area.cultivation.distribution.once === ''
+                    ? require('../../../assets/e5.png')
+                    : require('../../../assets/e4.png')
+                }
                 // height={100}
               />
             </Box>
@@ -175,23 +194,42 @@ const CultivationDashboard = ({navigation, route}) => {
               setGobalError('No Land Allocated for Cultivated twice in a year');
             }
           }}>
-          <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
-            <Box style={styles.exclamationMark}>
+          <Box
+            style={[
+              styles.home_box,
+              userDetails.sub_area.cultivation.distribution.twice === 0 ||
+              userDetails.sub_area.cultivation.distribution.twice === ''
+                ? {borderColor: 'grey'}
+                : {},
+            ]}>
+            {/* <Box style={styles.exclamationMark}>
               <Image
                 style={styles.tinyIcon2}
                 source={require('../../../assets/infocircle.png')}
                 // height={100}
               />
-            </Box>
+            </Box> */}
             <Box style={styles.home_box_lft_upr}>
-              <Text variant="h3" style={styles.hme_box_txt2}>
+              <Text
+                variant="h3"
+                style={
+                  userDetails.sub_area.cultivation.distribution.twice === 0 ||
+                  userDetails.sub_area.cultivation.distribution.twice === ''
+                    ? styles.hme_box_txt2
+                    : styles.hme_box_txt
+                }>
                 Cultivation twice in a year
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
               <Image
                 style={styles.tinyIcon}
-                source={require('../../../assets/e6.png')}
+                source={
+                  userDetails.sub_area.cultivation.distribution.twice === 0 ||
+                  userDetails.sub_area.cultivation.distribution.twice === ''
+                    ? require('../../../assets/e5.png')
+                    : require('../../../assets/e4.png')
+                }
                 // height={100}
               />
             </Box>
@@ -210,16 +248,35 @@ const CultivationDashboard = ({navigation, route}) => {
               setGobalError('No Land Allocated for Cultivated once in a year');
             }
           }}>
-          <Box style={[styles.home_box, {borderColor: 'grey'}]}>
+          <Box
+            style={[
+              styles.home_box,
+              userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+              userDetails.sub_area.cultivation.distribution.thrice === ''
+                ? {borderColor: 'grey'}
+                : {},
+            ]}>
             <Box style={styles.home_box_lft_upr}>
-              <Text variant="h3" style={styles.hme_box_txt2}>
+              <Text
+                variant="h3"
+                style={
+                  userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+                  userDetails.sub_area.cultivation.distribution.thrice === ''
+                    ? styles.hme_box_txt2
+                    : styles.hme_box_txt
+                }>
                 Cultivation thrice in a year
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
               <Image
                 style={styles.tinyIcon}
-                source={require('../../../assets/e5.png')}
+                source={
+                  userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+                  userDetails.sub_area.cultivation.distribution.thrice === ''
+                    ? require('../../../assets/e5.png')
+                    : require('../../../assets/e4.png')
+                }
                 // height={100}
               />
             </Box>

@@ -200,7 +200,7 @@ const CropDescription = ({navigation, route}) => {
         dispatch(
           editCultivation({
             ...data,
-            status: status,
+            status: 1,
             utilization: {
               ...data.utilization,
               other_value:
@@ -233,7 +233,7 @@ const CropDescription = ({navigation, route}) => {
         dispatch(
           addCultivation({
             ...data,
-            status: status,
+            status: 1,
             utilization: {
               ...data.utilization,
               other_value:
@@ -905,7 +905,6 @@ const CropDescription = ({navigation, route}) => {
               btnText={'Cancel'}
               onPress={() => {
                 setStatus(-1);
-                setSavepopup(false);
               }}
             />
           </View>
