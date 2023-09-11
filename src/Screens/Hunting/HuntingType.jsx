@@ -105,20 +105,20 @@ const HuntingType = ({ navigation, route }) => {
         resolver: yupResolver(schema),
         defaultValues: {
             important_information: {
-                number_hunted: String(data?.number_hunted || 0),
+                number_hunted: String(data?.number_hunted || ""),
             },
             utilisation_information: {
-                meat: String(data?.meat || 0),
-                self_consumed: String(data?.self_consumed || 0),
-                sold_in_consumer_market: String(data?.sold_in_consumer_market || 0),
-                sold_to_neighbours: String(data?.sold_in_consumer_market || 0),
-                wastage: String(data?.wastage || 0),
+                meat: String(data?.meat || ""),
+                self_consumed: String(data?.self_consumed || ""),
+                sold_in_consumer_market: String(data?.sold_in_consumer_market || ""),
+                sold_to_neighbours: String(data?.sold_in_consumer_market || ""),
+                wastage: String(data?.wastage || ""),
                 other: String(data?.other || ''),
-                other_value: String(data?.other_value || 0)
+                other_value: String(data?.other_value || "")
             },
-            expenditure_on_inputs: String(data?.expenditure_on_inputs || 0),
-            income_from_sale: String(data?.income_from_sale || 0), // TODO: add validation for this field
-            yeild: String(data?.yeild || 0),
+            expenditure_on_inputs: String(data?.expenditure_on_inputs || ""),
+            income_from_sale: String(data?.income_from_sale || ""), // TODO: add validation for this field
+            yeild: String(data?.yeild || ""),
             weight_measurement: String(data?.weight_measurement || ''),
             processing_method: Boolean(data?.processing_method || false),
         },
@@ -229,6 +229,91 @@ const HuntingType = ({ navigation, route }) => {
     };
     // console.log("data", watch('weight_measurement'))
     // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
+
+    const handleDraft = () => {
+        let meat = parseInt(watch('utilisation_information.meat'))
+        let self_consumed = parseInt(watch("utilisation_information.self_consumed"))
+        let sold_to_neighbours = parseInt(watch("utilisation_information.sold_to_neighbours"))
+        let sold_in_consumer_market = parseInt(watch("utilisation_information.sold_in_consumer_market"))
+        let wastage = parseInt(watch("utilisation_information.wastage"))
+        let other_value = parseInt(watch("utilisation_information.other_value"))
+        if (self_consumed + sold_in_consumer_market + sold_to_neighbours + wastage + other_value > meat) {
+                setMessage("Total amount cannot be greater than total output")
+                // Toast.show({
+                //     type: 'error',
+                //     text1: 'Total amount cannot be greater than output'
+                // })
+                setDraftpopup(false)
+            } else {
+                if (data?._id) {
+                    dispatch(
+                        editHunting({
+                            number_hunted: watch('important_information.number_hunted'),
+                            utilisation_information: watch('utilisation_information'),
+                            income_from_sale: watch('income_from_sale'),
+                            expenditure_on_inputs: watch('expenditure_on_inputs'),
+                            yeild: watch('yeild'),
+                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                            processing_method: watch('processing_method'),
+                            status: 0,
+                            crop_id: cropId,
+                        }),
+                    )
+                        .unwrap()
+                        .then(
+                            () =>
+                                Toast.show({
+                                    text1: 'Success',
+                                    text2: 'Trees drafted successfully!',
+                                }),
+                            dispatch(getHunting()),
+                            navigation.goBack(),
+                        )
+                        .catch(err => {
+                            console.log('err', err);
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Error Occurred',
+                                text2: 'Something Went wrong, Please try again later!',
+                            });
+                        })
+                        .finally(() => setDraftpopup(false));
+                } else {
+                    dispatch(
+                        addHunting({
+                            number_hunted: watch('important_information.number_hunted'),
+                            utilisation_information: watch('utilisation_information'),
+                            income_from_sale: watch('income_from_sale'),
+                            expenditure_on_inputs: watch('expenditure_on_inputs'),
+                            yeild: watch('yeild'),
+                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                            processing_method: watch('processing_method'),
+                            status: 0,
+                            crop_id: cropId
+                        }),
+                    )
+                        .unwrap()
+                        .then(
+                            () =>
+                                Toast.show({
+                                    text1: 'Success',
+                                    text2: 'Trees drafted successfully!',
+                                }),
+                            dispatch(getHunting()),
+                            navigation.goBack(),
+                        )
+                        .catch(err => {
+                            console.log('err at add', err);
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Error Occurred',
+                                text2: 'Something Went wrong, Please try again later!',
+                            });
+                        })
+                        .finally(() => setDraftpopup(false));
+                }
+            }
+    }
 
     return (
         <View style={styles.container}>
@@ -629,15 +714,15 @@ const HuntingType = ({ navigation, route }) => {
                                 style={styles.submitButton}
                                 btnText={'Submit'}
                                 onPress={() => {
-                                    setSavepopup(false),
                                     handleSubmit(onSubmit)
+                                    setSavepopup(false)
                                 }}
                             />
                             <CustomButton
                                 style={styles.draftButton}
                                 btnText={'Cancel'}
                                 onPress={() => {
-                                    setSavepopup(false), navigation.goBack();
+                                    setSavepopup(false);
                                 }}
                             />
                         </View>
@@ -663,7 +748,7 @@ const HuntingType = ({ navigation, route }) => {
                             <CustomButton
                                 style={styles.submitButton}
                                 btnText={'Save'}
-                                onPress={() => setDraftpopup(false)}
+                                onPress={handleDraft}
                             />
                             <CustomButton
                                 style={styles.draftButton}
