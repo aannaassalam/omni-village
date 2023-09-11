@@ -331,7 +331,8 @@ const FisheryRiverInput = ({navigation, route}) => {
               text2: 'Fishery drafted successfully!',
             }),
           dispatch(getFishery('river')),
-          // navigation.goBack(),
+          setDraftpopup(false),
+          navigation.goBack(),
         )
         .catch(err => {
           console.log('err', err);
@@ -454,7 +455,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                     <CustomDropdown3
                       data={measurement}
                       value={value}
-                      defaultVal={{key: 1, value: value}}
+                      defaultVal={{key: value, value: value}}
                       selectedValue={onChange}
                       infoName={'Weight Measuremnt'}
                     />
@@ -472,7 +473,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       data={[...fishFeed, {id: 0, name: 'Others'}]}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{key: 1, value: value}}
+                      defaultVal={{key: value, value: value}}
                       infoName={
                         'Type of feed required apart from grassland grazing'
                       }
@@ -1004,6 +1005,11 @@ const makeStyles = fontScale =>
     container: {
       flex: 1,
       backgroundColor: '#fff',
+    },
+    error: {
+      color: 'red',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu',
     },
     textInputArea: {
       alignSelf: 'center',

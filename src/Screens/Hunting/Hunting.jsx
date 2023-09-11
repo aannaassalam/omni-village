@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
@@ -13,45 +13,56 @@ import { deleteHunting, getHunting } from '../../Redux/HuntingSlice'
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
 import { getMeasurement } from '../../Redux/OthersSlice'
+import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4'
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4'
 
 const Hunting = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
     const { huntingCrops } = useSelector((state) => state.huntingCrop)
-    const {hunting} = useSelector((state)=>state.hunting)
+    const { hunting } = useSelector((state) => state.hunting)
     const [cropType, setCropType] = useState([]);
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
     const [otherCrop, setOtherCrop] = useState('');
     const [focusOther, setFocusOther] = useState(false);
     const dispatch = useDispatch()
-    const handleRemoveClick = (id,index )=> {
+    const handleRemoveClick = (id, index) => {
         const list = [...cropType];
         list.splice(index, 1);
         setCropType(list);
         dispatch(deleteHunting(id))
-        .unwrap()
-        .then((res)=>{
-            console.log(`delted hunting ${id}`, res)
-        })
-        .catch((err)=>console.log("error delete hunting", err))
+            .unwrap()
+            .then((res) => {
+                console.log(`delted hunting ${id}`, res)
+            })
+            .catch((err) => console.log("error delete hunting", err))
     };
-    const addCrop = () => {
-        setCropType([
-            ...cropType,
-            {
-                name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-                id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
-                progress: '',
-            },
-        ]);
-        setCropModal(!cropModal);
-        setFocusOther(false);
-        setDropdownVal('');
-        setOtherCrop('');
+    const addCrop = async() => {
+        let ids = cropType.map((i) => i?.id||i?._id)
+        if(ids.includes(dropdownVal?.name?.value)){
+            Alert.alert("Crop Already exists")
+            setCropModal(!cropModal);
+            setFocusOther(false);
+            setDropdownVal('');
+            setOtherCrop('');
+        }else{
+            setCropType([
+                ...cropType,
+                {
+                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
+                    id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
+                    progress: '',
+                },
+            ]);
+            setCropModal(!cropModal);
+            setFocusOther(false);
+            setDropdownVal('');
+            setOtherCrop('');
+        }
     };
     const addingHuntingCrop = () => {
-        if (dropdownVal.name === 'Others') {
+        if (dropdownVal.name?.label === 'Others') {
             dispatch(addHuntingCrops({ name: otherCrop?.name }))
             dispatch(getHuntingCrops())
             setDropdownVal([])
@@ -62,7 +73,7 @@ const Hunting = ({ navigation }) => {
     }
     const DropdownSelectedValue = data => {
         setDropdownVal(data);
-        // console.log("data", dsata)
+        console.log("data", data)
         if (data !== 'Others') {
             setFocusOther(false);
         }
@@ -97,16 +108,16 @@ const Hunting = ({ navigation }) => {
                         onPress={() =>
                             navigation.navigate('huntingType', {
                                 cropType: element?.name,
-                                cropId: hunting[0] !== undefined && hunting.find((j) => j?.hunting_crop?.name ==element?.name) ? hunting.find((i) => i?.hunting_crop?.name==element?.name)._id:element?.id,
+                                cropId: hunting[0] !== undefined && hunting.find((j) => j?.hunting_crop?.name == element?.name) ? hunting.find((i) => i?.hunting_crop?.name == element?.name)._id : element?.id,
                                 data: hunting.find((i) => i?.hunting_crop_id == element?._id)
                             })
-                //             huntingid:64f2ead3b994c1b6aa39e802
-                // huntingcropid: 64f2ccd2b994c1b6aa39e76f
+                            //             huntingid:64f2ead3b994c1b6aa39e802
+                            // huntingcropid: 64f2ccd2b994c1b6aa39e76f
                         }>
                         <AddAndDeleteCropButton
                             add={false}
                             cropName={element?.name}
-                            onPress={() => handleRemoveClick(hunting[0] !== undefined && hunting.find((j) => j?.hunting_crop?.name == element?.name) ? hunting.find((i) => i?.hunting_crop?.name == element?.name)._id : element?.id,i)}
+                            onPress={() => handleRemoveClick(hunting[0] !== undefined && hunting.find((j) => j?.hunting_crop?.name == element?.name) ? hunting.find((i) => i?.hunting_crop?.name == element?.name)._id : element?.id, i)}
                         />
                     </TouchableOpacity>
                 );
@@ -128,54 +139,59 @@ const Hunting = ({ navigation }) => {
                     />
                 </View>
             )}
-            {cropModal && 
-            <AddBottomSheet>
-                <View style={styles.BottomTopContainer}>
-                    <Text style={styles.headerText}>Select Type</Text>
-                    <TouchableOpacity
-                        onPress={() => {
-                            setCropModal(!cropModal);
-                            setFocusOther(false);
-                            setDropdownVal('');
-                        }}>
-                        <Image
-                            source={require('../../../assets/close.png')}
-                            style={styles.closeIcon}
+            {cropModal &&
+                <AddBottomSheet>
+                    <View style={styles.BottomTopContainer}>
+                        <Text style={styles.headerText}>Select Type</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setCropModal(!cropModal);
+                                setFocusOther(false);
+                                setDropdownVal('');
+                            }}>
+                            <Image
+                                source={require('../../../assets/close.png')}
+                                style={styles.closeIcon}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.dropdownSection}>
+                        {/* <CustomDropdown2
+                            selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
+                            data={[...huntingCrops, { _id: 0, name: 'Others' }]}
+                            valu={dropdownVal?.name}
+                        /> */}
+                        <CustomDropdown4 
+                            selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
+                            data={[...huntingCrops, { _id: 0, name: 'Others' }]}
+                            valu={dropdownVal?.name}
                         />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.dropdownSection}>
-                    <CustomDropdown2 
-                    selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })} 
-                        data={[...huntingCrops, { _id: 0, name: 'Others' }]}
-                        valu={dropdownVal?.name}
-                    />
-                    {dropdownVal.name === 'Others' ? (
-                        <InputWithoutRightElement
-                            label={'Crop Name'}
-                            placeholder={'Crop 01'}
-                            onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
-                            value={otherCrop?.name}
-                            onFocus={() => setFocusOther(true)}
+                        {dropdownVal.name?.label === 'Others' ? (
+                            <InputWithoutRightElement
+                                label={'Crop Name'}
+                                placeholder={'Crop 01'}
+                                onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
+                                value={otherCrop?.name}
+                                onFocus={() => setFocusOther(true)}
+                            />
+                        ) : null}
+                    </View>
+                    <View style={styles.BottomSheetButton}>
+                        <TouchableOpacity
+                            style={styles.crossButton}
+                            onPress={() => setCropModal(!cropModal)}>
+                            <Image
+                                source={require('../../../assets/cross.png')}
+                                style={styles.addCropIcon}
+                            />
+                        </TouchableOpacity>
+                        <CustomButton
+                            btnText={'Create'}
+                            style={{ width: '80%' }}
+                            onPress={() => addingHuntingCrop()}
                         />
-                    ) : null}
-                </View>
-                <View style={styles.BottomSheetButton}>
-                    <TouchableOpacity
-                        style={styles.crossButton}
-                        onPress={() => setCropModal(!cropModal)}>
-                        <Image
-                            source={require('../../../assets/cross.png')}
-                            style={styles.addCropIcon}
-                        />
-                    </TouchableOpacity>
-                    <CustomButton
-                        btnText={'Create'}
-                        style={{ width: '80%' }}
-                        onPress={() => addingHuntingCrop()}
-                    />
-                </View>
-            </AddBottomSheet>
+                    </View>
+                </AddBottomSheet>
             }
         </View>
     )

@@ -114,7 +114,7 @@ const Type01 = ({ navigation, route }) => {
     resolver: yupResolver(schema),
     defaultValues: {
       important_information: {
-        number_of_trees: String(data?.number_of_trees || 0),
+        number_of_trees: String(data?.number_of_trees || ''),
         avg_age_of_trees: String(data?.avg_age_of_trees || ''),
         decreasing_rate: String(
           data?.decreasing_rate || '',
@@ -125,11 +125,11 @@ const Type01 = ({ navigation, route }) => {
         income_from_sale: String(
           data?.income_from_sale || '',
         ),
-        soil_health: data?.soil_health,
+        soil_health: String(data?.soil_health||''),
         type_of_fertilizer_used:
-          data?.type_of_fertilizer_used,
+          String(data?.type_of_fertilizer_used||''),
         type_of_pesticide_used:
-          data?.type_of_pesticide_used,
+          String(data?.type_of_pesticide_used||''),
       },
     },
   });
@@ -212,6 +212,82 @@ const Type01 = ({ navigation, route }) => {
         .finally(() => setSavepopup(false));
     }
   };
+
+  const handleDraft = () =>{
+    if (data?._id) {
+      dispatch(
+        editTree({
+          data: watch('important_information'),
+          productDetails: harvestedProductList.map((itm) => {
+            return {
+              _id: itm?._id,
+              production_output: itm?.production_output,
+              self_consumed: itm?.self_consumed,
+              fed_to_livestock: itm?.fed_to_livestock,
+              sold_to_neighbours: itm?.sold_to_neighbours,
+              sold_for_industrial_use: itm?.sold_for_industrial_use,
+              wastage: itm?.wastage,
+              other: itm?.other,
+              other_value: itm?.other_value,
+              month_harvested: moment(itm?.month_harvested).format("YYYY-MM-DD"),
+              processing_method: itm?.processing_method
+            }
+          }),
+          status: 0,
+          crop_id: cropId
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Trees updated successfully!',
+            }),
+          dispatch(getTree()),
+          navigation.goBack(),
+          setDraftpopup(false)
+        )
+        .catch(err => {
+          console.log('err', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => { setDraftpopup(false), navigation.goBack() });
+    } else {
+      dispatch(
+        addTree({
+          data: watch('important_information'),
+          productDetails: harvestedProductList,
+          status: 0,
+          crop_id: cropId
+        }),
+      )
+        .unwrap()
+        .then(
+          () =>
+            Toast.show({
+              text1: 'Success',
+              text2: 'Trees added successfully!',
+            }),
+          dispatch(getTree()),
+          navigation.goBack(),
+          setDraftpopup(false)
+        )
+        .catch(err => {
+          console.log('err at add', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Error Occurred',
+            text2: 'Something Went wrong, Please try again later!',
+          });
+        })
+        .finally(() => setDraftpopup(false));
+    }
+  }
   const replaceObjectById = (array, newObj) => {
     const newArray = array.map(obj => (obj.name === newObj.name ? newObj : obj));
     return newArray;
@@ -338,7 +414,7 @@ const Type01 = ({ navigation, route }) => {
                     <CustomDropdown3
                       data={soilHealth}
                       value={value}
-                      defaultVal={{ key: 1, value: value }}
+                      defaultVal={{ key: value, value: value }}
                       selectedValue={onChange}
                       infoName={'Soil Health'}
                     />
@@ -388,7 +464,7 @@ const Type01 = ({ navigation, route }) => {
                       data={fertilisers}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{ key: 1, value: value }}
+                      defaultVal={{ key: value, value: value }}
                       infoName={'Type of fertiliser used'}
                     />
                   );
@@ -412,7 +488,7 @@ const Type01 = ({ navigation, route }) => {
                       data={pesticides}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{ key: 1, value: value }}
+                      defaultVal={{ key: value, value: value }}
                       infoName={'Type of pesticides used'}
                     />
                   );
@@ -675,7 +751,7 @@ const Type01 = ({ navigation, route }) => {
               <CustomButton
                 style={styles.submitButton}
                 btnText={'Save'}
-                onPress={() => setDraftpopup(false)}
+                onPress={handleDraft}
               />
               <CustomButton
                 style={styles.draftButton}

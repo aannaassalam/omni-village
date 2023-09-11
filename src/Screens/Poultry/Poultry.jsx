@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,useWindowDimensions,TouchableOpacity,Image } from 'react-native'
+import { StyleSheet, Text, View,useWindowDimensions,TouchableOpacity,Image, Alert } from 'react-native'
 import React,{useCallback, useEffect, useState} from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
@@ -12,6 +12,9 @@ import { deletePoultry, getPoultry } from '../../Redux/PoultrySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
 import { getFeed } from '../../Redux/OthersSlice'
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3'
+import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4'
 
 const Poultry = ({navigation, route}) => {
   const {totalLand}=route.params
@@ -32,21 +35,29 @@ const Poultry = ({navigation, route}) => {
     dispatch(deletePoultry(id))
   };
   const addCrop = () => {
-    setCropType([
-      ...cropType,
-      {
-        name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
-        progress: '',
-      },
-    ]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map((i) => i?.id || i?._id)
+    if(ids?.includes(dropdownVal?.name?.value)){
+      Alert.alert("Crop Already exists")
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+    }else{
+      setCropType([
+        ...cropType,
+        {
+          name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
+          progress: '',
+        },
+      ]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }
   };
   const addingTreesCrop = () => {
-    if (dropdownVal.name === 'Others') {
+    if (dropdownVal.name?.label === 'Others') {
       dispatch(addPoultryCrops({ name: otherCrop?.name }))
       dispatch(getPoultryCrops())
       setDropdownVal([])
@@ -146,13 +157,13 @@ const Poultry = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <CustomDropdown2 selectedValue={e => {
+            <CustomDropdown4 selectedValue={e => {
               DropdownSelectedValue({ name: e, _id: e._id })
             }}
               data={[...poultryCrops, { _id: 0, name: 'Others' }]} 
               valu={dropdownVal?.name}
               />
-            {dropdownVal.name === 'Others' ? (
+            {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
                 label={'Crop Name'}
                 placeholder={'Crop 01'}

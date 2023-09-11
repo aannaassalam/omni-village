@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -21,6 +22,7 @@ import { getCrops } from '../../Redux/CropSlice';
 import { deleteTree, getTree, setCurrentTree } from '../../Redux/TreesSlice';
 import { useFocusEffect } from '@react-navigation/native';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
 const TreesShrubsScreen = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions();
@@ -39,30 +41,36 @@ const TreesShrubsScreen = ({ navigation, route }) => {
     const list = [...cropType];
     list.splice(index, 1);
     setCropType(list);
-    console.log("iddddddd", id)
     dispatch(deleteTree(id))
     .unwrap()
     .then((res)=>{
-      console.log("resssssss delete", res)
     })
     .catch((err)=>console.log("error", err))
   };
   const addCrop = () => {
-    setCropType([
-      ...cropType,
-      {
-        name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal?.name?.id,
-        progress: '',
-      },
-    ]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map((i) => i?.id || i?._id)
+    if(ids.includes(dropdownVal?.name?.value)){
+      Alert.alert("Crop Already exists")
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+    }else{
+      setCropType([
+        ...cropType,
+        {
+          name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal?.name?.value,
+          progress: '',
+        },
+      ]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }
   };
   const addingTreesCrop = () => {
-    if (dropdownVal.name === 'Others') {
+    if (dropdownVal.name?.label === 'Others') {
       dispatch(addTreeCrops({ name: otherCrop?.name }))
       dispatch(getTreeCrops())
       setDropdownVal([])
@@ -71,7 +79,7 @@ const TreesShrubsScreen = ({ navigation, route }) => {
       addCrop()
     }
   }
-  console.log("dropdown", dropdownVal)
+  // console.log("dropdown", dropdownVal)
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
     if (data !== 'Others') {
@@ -162,12 +170,12 @@ const TreesShrubsScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.dropdownSection}>
-          <CustomDropdown2 selectedValue={(e) => { 
+          <CustomDropdown4 selectedValue={(e) => { 
             DropdownSelectedValue({ name: e, _id: e._id }) }} 
             data={[...treeCrops, { _id: 0, name: 'Others' }]} 
             valu={dropdownVal?.name}
             />
-          {dropdownVal.name === 'Others' ? (
+          {dropdownVal.name?.label === 'Others' ? (
             <InputWithoutRightElement
               label={'Crop Name'}
               placeholder={'Crop 01'}

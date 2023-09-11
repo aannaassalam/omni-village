@@ -5,6 +5,7 @@ import {
   useWindowDimensions,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -23,6 +24,7 @@ import {addFisherycrop, getFisheryCrops} from '../../Redux/FisheryCropSlice';
 import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import {ActivityIndicator} from 'react-native-paper';
 import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
 const FisheryRiver = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -48,24 +50,34 @@ const FisheryRiver = ({navigation}) => {
       .catch(err => console.log('error delete hunting', err));
   };
   const addCrop = () => {
-    setCropType([
-      ...cropType,
-      {
-        name:
-          dropdownVal.name == 'Others'
-            ? otherCrop.name
-            : dropdownVal.name?.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
-        progress: '',
-      },
-    ]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map((i) => i.id || i?._id)
+    if(ids.includes(dropdownVal?.name?.value)){
+      Alert.alert("Crop Already exists")
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }else{
+      setCropType([
+        ...cropType,
+        {
+          name:
+            dropdownVal.name == 'Others'
+              ? otherCrop.name
+              : dropdownVal.name?.label,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
+          progress: '',
+        },
+      ]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+
+    }
   };
   const addingHuntingCrop = () => {
-    if (dropdownVal.name === 'Others') {
+    if (dropdownVal.name?.label === 'Others') {
       dispatch(addFisherycrop({name: otherCrop?.name}));
       dispatch(getFisheryCrops());
       setDropdownVal([]);
@@ -182,7 +194,7 @@ const FisheryRiver = ({navigation}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <CustomDropdown2
+            <CustomDropdown4
               selectedValue={e =>
                 DropdownSelectedValue({
                   name: e,
@@ -192,7 +204,7 @@ const FisheryRiver = ({navigation}) => {
               data={[...fisheryCrop, {_id: 0, name: 'Others'}]}
               valu={dropdownVal?.name}
             />
-            {dropdownVal.name === 'Others' ? (
+            {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
                 label={'Crop Name'}
                 placeholder={'Crop 01'}
