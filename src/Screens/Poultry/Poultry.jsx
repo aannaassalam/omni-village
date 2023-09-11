@@ -12,6 +12,8 @@ import { deletePoultry, getPoultry } from '../../Redux/PoultrySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
 import { getFeed } from '../../Redux/OthersSlice'
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3'
+import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
 
 const Poultry = ({navigation, route}) => {
   const {totalLand}=route.params
@@ -46,7 +48,7 @@ const Poultry = ({navigation, route}) => {
     setOtherCrop('');
   };
   const addingTreesCrop = () => {
-    if (dropdownVal.name === 'Others') {
+    if (dropdownVal.name?.name === 'Others') {
       dispatch(addPoultryCrops({ name: otherCrop?.name }))
       dispatch(getPoultryCrops())
       setDropdownVal([])
@@ -152,7 +154,7 @@ const Poultry = ({navigation, route}) => {
               data={[...poultryCrops, { _id: 0, name: 'Others' }]} 
               valu={dropdownVal?.name}
               />
-            {dropdownVal.name === 'Others' ? (
+            {dropdownVal.name?.name === 'Others' ? (
               <InputWithoutRightElement
                 label={'Crop Name'}
                 placeholder={'Crop 01'}

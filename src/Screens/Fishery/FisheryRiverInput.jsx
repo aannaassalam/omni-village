@@ -121,25 +121,25 @@ const FisheryRiverInput = ({navigation, route}) => {
     defaultValues: {
       important_information: {
         number_of_fishes: String(
-          data?.important_information?.number_of_fishes || 0,
+          data?.important_information?.number_of_fishes || '',
         ),
         type_of_feed: String(data?.important_information?.type_of_feed || ''),
       },
       utilisation_information: {
-        total_feed: String(data?.production_information?.total_feed || 0),
+        total_feed: String(data?.production_information?.total_feed || ''),
         production_output: String(
-          data?.production_information?.production_output || 0,
+          data?.production_information?.production_output || '',
         ),
-        self_consumed: String(data?.production_information?.self_consumed || 0),
+        self_consumed: String(data?.production_information?.self_consumed || ''),
         sold_for_industrial_use: String(
-          data?.production_information?.sold_for_industrial_use || 0,
+          data?.production_information?.sold_for_industrial_use || '',
         ),
         sold_to_neighbours: String(
-          data?.production_information?.sold_to_neighbours || 0,
+          data?.production_information?.sold_to_neighbours || '',
         ),
-        wastage: String(data?.production_information?.wastage || 0),
+        wastage: String(data?.production_information?.wastage || ''),
         other: String(data?.production_information?.other || ''),
-        other_value: String(data?.production_information?.other_value || 0),
+        other_value: String(data?.production_information?.other_value || ''),
         expenditure_on_inputs: String(
           data?.production_information?.expenditure_on_inputs || '',
         ),
@@ -149,7 +149,7 @@ const FisheryRiverInput = ({navigation, route}) => {
         yeild: String(data?.yeilds || ''),
       },
       processing_method: Boolean(data?.processing_method || false),
-      weight_measurement: String(data?.weight_measurement || ''),
+      weight_measurement: String(data?.weight_measurement || 'kg'),
     },
   });
   useEffect(() => {
@@ -333,7 +333,8 @@ const FisheryRiverInput = ({navigation, route}) => {
               text2: 'Fishery drafted successfully!',
             }),
           dispatch(getFishery('river')),
-          // navigation.goBack(),
+          setDraftpopup(false),
+          navigation.goBack(),
         )
         .catch(err => {
           console.log('err', err);
@@ -344,7 +345,7 @@ const FisheryRiverInput = ({navigation, route}) => {
           });
         })
         .finally(() => {
-          setSavepopup(false), navigation.goBack();
+          setDraftpopup(false), navigation.goBack();
         });
     } else {
       dispatch(
@@ -369,7 +370,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               text2: 'Fishery drafted successfully!',
             }),
           dispatch(getFishery('river')),
-          setSavepopup(false),
+          setDraftpopup(false),
           navigation.goBack(),
         )
         .catch(err => {
@@ -380,7 +381,7 @@ const FisheryRiverInput = ({navigation, route}) => {
             text2: 'Something Went wrong, Please try again later!',
           });
         })
-        .finally(() => setSavepopup(false));
+        .finally(() => setDraftpopup(false));
     }
   };
 
@@ -454,7 +455,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                     <CustomDropdown3
                       data={measurement}
                       value={value}
-                      defaultVal={{key: 1, value: value}}
+                      defaultVal={{key: value, value: value}}
                       selectedValue={onChange}
                       infoName={'Weight Measuremnt'}
                     />
@@ -472,7 +473,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       data={[...fishFeed, {id: 0, name: 'Others'}]}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{key: 1, value: value}}
+                      defaultVal={{key: value, value: value}}
                       infoName={
                         'Type of feed required apart from grassland grazing'
                       }
@@ -1013,7 +1014,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               <CustomButton
                 style={styles.submitButton}
                 btnText={'Save'}
-                onPress={() => setDraftpopup(false)}
+                onPress={handleDraft}
               />
               <CustomButton
                 style={styles.draftButton}
@@ -1036,6 +1037,11 @@ const makeStyles = fontScale =>
     container: {
       flex: 1,
       backgroundColor: '#fff',
+    },
+    error: {
+      color: 'red',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu',
     },
     textInputArea: {
       alignSelf: 'center',

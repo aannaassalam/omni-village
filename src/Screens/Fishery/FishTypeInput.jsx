@@ -122,25 +122,25 @@ const FishTypeInput = ({navigation, route}) => {
     defaultValues: {
       important_information: {
         number_of_fishes: String(
-          data?.important_information?.number_of_fishes || 0,
+          data?.important_information?.number_of_fishes || '',
         ),
         type_of_feed: String(data?.important_information?.type_of_feed || ''),
       },
       utilisation_information: {
-        total_feed: String(data?.production_information?.total_feed || 0),
+        total_feed: String(data?.production_information?.total_feed || ''),
         production_output: String(
-          data?.production_information?.production_output || 0,
+          data?.production_information?.production_output || '',
         ),
-        self_consumed: String(data?.production_information?.self_consumed || 0),
+        self_consumed: String(data?.production_information?.self_consumed || ''),
         sold_for_industrial_use: String(
-          data?.production_information?.sold_for_industrial_use || 0,
+          data?.production_information?.sold_for_industrial_use || '',
         ),
         sold_to_neighbours: String(
-          data?.production_information?.sold_to_neighbours || 0,
+          data?.production_information?.sold_to_neighbours || '',
         ),
-        wastage: String(data?.production_information?.wastage || 0),
+        wastage: String(data?.production_information?.wastage || ''),
         other: String(data?.production_information?.other || ''),
-        other_value: String(data?.production_information?.other_value || 0),
+        other_value: String(data?.production_information?.other_value || ''),
         expenditure_on_inputs: String(
           data?.production_information?.expenditure_on_inputs || '',
         ),
@@ -150,7 +150,7 @@ const FishTypeInput = ({navigation, route}) => {
         yeild: String(data?.yeilds || ''),
       },
       processing_method: Boolean(data?.processing_method || false),
-      weight_measurement: String(data?.weight_measurement || ''),
+      weight_measurement: String(data?.weight_measurement || 'kg'),
     },
   });
   useEffect(() => {
@@ -158,23 +158,9 @@ const FishTypeInput = ({navigation, route}) => {
       setSavepopup(false);
     }
   }, [errors]);
-  // useEffect(()=>{
-  //     dispatch(getFishFeed())
-  // },[])
+  
   const onSubmit = data2 => {
     console.log(data2);
-    // let production_output = parseInt(
-    //   data2.utilisation_information.production_output,
-    // );
-    // let self_consumed = parseInt(data2.utilisation_information.self_consumed);
-    // let sold_to_neighbours = parseInt(
-    //   watch('utilisation_information.sold_to_neighbours'),
-    // );
-    // let sold_for_industrial_use = parseInt(
-    //   data2.utilisation_information.sold_for_industrial_use,
-    // );
-    // let wastage = parseInt(data2.utilisation_information.wastage);
-    // let other_value = parseInt(data2.utilisation_information.other_value);
     if (
       data2.important_information.type_of_feed === '' ||
       data2.utilisation_information.expenditure_on_inputs === '' ||
@@ -199,12 +185,6 @@ const FishTypeInput = ({navigation, route}) => {
     } else {
       dispatch(
         addFishery({
-          // important_information: watch('important_information'),
-          // utilisation_information: watch('utilisation_information'),
-          // processing_method: watch('processing_method'),
-          // weight_measurement: watch('weight_measurement')
-          //   ? watch('weight_measurement')
-          //   : 'kg',
           ...data2,
           status: 1,
           crop_id: cropId,
@@ -225,7 +205,6 @@ const FishTypeInput = ({navigation, route}) => {
                 screenName: 'Harvested from Pond',
               });
           },
-          // dispatch(getFishery('pond')),
         )
         .catch(err => {
           console.log('err at add', err);
@@ -349,13 +328,13 @@ const FishTypeInput = ({navigation, route}) => {
     }
   };
 
-  console.log('err', errors);
+  // console.log('data', data);
 
   return (
     <View style={styles.container}>
       <CustomHeader
         goBack={() => navigation.goBack()}
-        headerName={cropType}
+        headerName={data?.fishery_crop?.name?data?.fishery_crop?.name:cropType}
         backIcon={true}
       />
       <ScrollView>
@@ -418,6 +397,7 @@ const FishTypeInput = ({navigation, route}) => {
                     <CustomDropdown3
                       data={measurement}
                       value={value}
+                      defaultVal={{ key: value, value: value }}
                       // defaultVal={{ key: 1, value: value }}
                       selectedValue={onChange}
                       infoName={'Weight Measuremnt'}
@@ -435,7 +415,7 @@ const FishTypeInput = ({navigation, route}) => {
                       data={[...fishFeed, {id: 0, name: 'Others'}]}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{key: 1, value: value}}
+                      defaultVal={{key: value, value: value}}
                       infoName={
                         'Type of feed required apart from grassland grazing'
                       }

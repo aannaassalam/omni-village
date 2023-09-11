@@ -105,20 +105,20 @@ const HuntingType = ({ navigation, route }) => {
         resolver: yupResolver(schema),
         defaultValues: {
             important_information: {
-                number_hunted: String(data?.number_hunted || 0),
+                number_hunted: String(data?.number_hunted || ''),
             },
             utilisation_information: {
-                meat: String(data?.meat || 0),
-                self_consumed: String(data?.self_consumed || 0),
-                sold_in_consumer_market: String(data?.sold_in_consumer_market || 0),
-                sold_to_neighbours: String(data?.sold_in_consumer_market || 0),
-                wastage: String(data?.wastage || 0),
+                meat: String(data?.meat || ''),
+                self_consumed: String(data?.self_consumed || ''),
+                sold_in_consumer_market: String(data?.sold_in_consumer_market || ''),
+                sold_to_neighbours: String(data?.sold_in_consumer_market || ''),
+                wastage: String(data?.wastage || ''),
                 other: String(data?.other || ''),
-                other_value: String(data?.other_value || 0)
+                other_value: String(data?.other_value || '')
             },
-            expenditure_on_inputs: String(data?.expenditure_on_inputs || 0),
-            income_from_sale: String(data?.income_from_sale || 0), // TODO: add validation for this field
-            yeild: String(data?.yeild || 0),
+            expenditure_on_inputs: String(data?.expenditure_on_inputs || ''),
+            income_from_sale: String(data?.income_from_sale || ''), // TODO: add validation for this field
+            yeild: String(data?.yeild || ''),
             weight_measurement: String(data?.weight_measurement || ''),
             processing_method: Boolean(data?.processing_method || false),
         },
@@ -229,7 +229,77 @@ const HuntingType = ({ navigation, route }) => {
     };
     // console.log("data", watch('weight_measurement'))
     // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
-
+const handleDraft = () =>{
+    if (data?._id) {
+        dispatch(
+            editHunting({
+                number_hunted: watch('important_information.number_hunted'),
+                utilisation_information: watch('utilisation_information'),
+                income_from_sale: watch('income_from_sale'),
+                expenditure_on_inputs: watch('expenditure_on_inputs'),
+                yeild: watch('yeild'),
+                weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                processing_method: watch('processing_method'),
+                status: 0,
+                crop_id: cropId,
+            }),
+        )
+            .unwrap()
+            .then(
+                () =>
+                    Toast.show({
+                        text1: 'Success',
+                        text2: 'Trees updated successfully!',
+                    }),
+                dispatch(getHunting()),
+                setDraftpopup(false),
+                navigation.goBack(),
+            )
+            .catch(err => {
+                console.log('err', err);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error Occurred',
+                    text2: 'Something Went wrong, Please try again later!',
+                });
+            })
+            .finally(() => setDraftpopup(false));
+    } else {
+        dispatch(
+            addHunting({
+                number_hunted: watch('important_information.number_hunted'),
+                utilisation_information: watch('utilisation_information'),
+                income_from_sale: watch('income_from_sale'),
+                expenditure_on_inputs: watch('expenditure_on_inputs'),
+                yeild: watch('yeild'),
+                weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
+                processing_method: watch('processing_method'),
+                status: 0,
+                crop_id: cropId
+            }),
+        )
+            .unwrap()
+            .then(
+                () =>
+                    Toast.show({
+                        text1: 'Success',
+                        text2: 'Trees added successfully!',
+                    }),
+                dispatch(getHunting()),
+                navigation.goBack(),
+                setDraftpopup(false)
+            )
+            .catch(err => {
+                console.log('err at add', err);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error Occurred',
+                    text2: 'Something Went wrong, Please try again later!',
+                });
+            })
+            .finally(() => setDraftpopup(false));
+    }
+}
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -663,7 +733,7 @@ const HuntingType = ({ navigation, route }) => {
                             <CustomButton
                                 style={styles.submitButton}
                                 btnText={'Save'}
-                                onPress={() => setDraftpopup(false)}
+                                onPress={handleDraft}
                             />
                             <CustomButton
                                 style={styles.draftButton}

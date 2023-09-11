@@ -71,7 +71,7 @@ const TreesShrubsScreen = ({ navigation, route }) => {
       addCrop()
     }
   }
-  console.log("dropdown", dropdownVal)
+  // console.log("dropdown", dropdownVal)
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
     if (data !== 'Others') {

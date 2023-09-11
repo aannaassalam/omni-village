@@ -112,7 +112,6 @@ const PoultryType = ({ navigation, route }) => {
             setHarvestedProductList([])
         }
     }, [data])
-    console.log("feed", feed)
     const {
         handleSubmit,
         setValue,
@@ -124,8 +123,8 @@ const PoultryType = ({ navigation, route }) => {
         resolver: yupResolver(schema),
         defaultValues: {
             important_information: {
-                number: String(data?.number || 0),
-                avg_age_of_live_stocks: Number(data?.avg_age_of_live_stocks || 0),
+                number: String(data?.number || ''),
+                avg_age_of_live_stocks: Number(data?.avg_age_of_live_stocks || ''),
                 type_of_feed: String(
                     data?.type_of_feed || '',
                 ),
@@ -134,12 +133,12 @@ const PoultryType = ({ navigation, route }) => {
                 ),
             },
             utilisation_information: {
-                total_feed: String(data?.personal_information?.total_feed || 0),
-                self_produced: String(data?.personal_information?.self_produced || 0),
-                neighbours: String(data?.personal_information?.neighbours || 0),
-                purchased_from_market: String(data?.personal_information?.purchased_from_market || 0),
+                total_feed: String(data?.personal_information?.total_feed || ''),
+                self_produced: String(data?.personal_information?.self_produced || ''),
+                neighbours: String(data?.personal_information?.neighbours || ''),
+                purchased_from_market: String(data?.personal_information?.purchased_from_market || ''),
                 other: String(data?.personal_information?.other || ''),
-                other_value: String(data?.personal_information?.other_value || 0)
+                other_value: String(data?.personal_information?.other_value || '')
             },
             expenditure_on_inputs: String(
                 data?.expenditure_on_inputs || '',
@@ -261,6 +260,90 @@ const PoultryType = ({ navigation, route }) => {
             }
         }
     };
+
+    const handleDraft = () =>{
+        if (data?._id) {
+            dispatch(
+                editPoultry({
+                    important_information: watch('important_information'),
+                    utilisation_information: watch('utilisation_information'),
+                    income_from_sale: watch('income_from_sale'),
+                    expenditure_on_inputs: watch('expenditure_on_inputs'),
+                    steroids: watch('steroids'),
+                    crop_id: cropId,
+                    productDetails: harvestedProductList.map((itm) => {
+                        return {
+                            _id: itm?._id,
+                            production_output: itm?.production_output,
+                            self_consumed: itm?.self_consumed,
+                            fed_to_livestock: itm?.fed_to_livestock,
+                            sold_to_neighbours: itm?.sold_to_neighbours,
+                            sold_for_industrial_use: itm?.sold_for_industrial_use,
+                            wastage: itm?.wastage,
+                            other: itm?.other,
+                            other_value: itm?.other_value,
+                            month_harvested: moment(itm?.month_harvested).format("YYYY-MM-DD"),
+                            processing_method: itm?.processing_method
+                        }
+                    }),
+                    status: 0,
+                }),
+            )
+                .unwrap()
+                .then(
+                    () =>
+                        Toast.show({
+                            text1: 'Success',
+                            text2: 'Poultry updated successfully!',
+                        }),
+                    dispatch(getPoultry()),
+                    setDraftpopup(false),
+                    navigation.goBack(),
+                )
+                .catch(err => {
+                    console.log('err', err);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error Occurred',
+                        text2: 'Something Went wrong, Please try again later!',
+                    });
+                })
+                .finally(() => { setDraftpopup(false), navigation.goBack() });
+        } else {
+            dispatch(
+                addPoultry({
+                    important_information: watch('important_information'),
+                    utilisation_information: watch('utilisation_information'),
+                    income_from_sale: watch('income_from_sale'),
+                    expenditure_on_inputs: watch('expenditure_on_inputs'),
+                    steroids: watch('steroids'),
+                    productDetails: harvestedProductList,
+                    status: 0,
+                    crop_id: cropId
+                }),
+            )
+                .unwrap()
+                .then(
+                    () =>
+                        Toast.show({
+                            text1: 'Success',
+                            text2: 'Poultry added successfully!',
+                        }),
+                    dispatch(getPoultry()),
+                    setDraftpopup(false),
+                    navigation.goBack(),
+                )
+                .catch(err => {
+                    console.log('err at add', err);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error Occurred',
+                        text2: 'Something Went wrong, Please try again later!',
+                    });
+                })
+                .finally(() => setDraftpopup(false));
+        }
+    }
     const replaceObjectById = (array, newObj) => {
         const newArray = array.map(obj => (obj.name === newObj.name ? newObj : obj));
         return newArray;
@@ -390,7 +473,7 @@ const PoultryType = ({ navigation, route }) => {
                                                 data={[...feed, { id: 0, name: 'Others' }]}
                                                 selectedValue={onChange}
                                                 value={value==1?'others':value}
-                                                defaultVal={{key:1,value:value}}
+                                                defaultVal={{key:value,value:value}}
                                                 infoName={'Type of feed required apart from grassland grazing'}
                                             />
                                     );
@@ -890,7 +973,7 @@ const PoultryType = ({ navigation, route }) => {
                             <CustomButton
                                 style={styles.submitButton}
                                 btnText={'Save'}
-                                onPress={() => setDraftpopup(false)}
+                                onPress={handleDraft}
                             />
                             <CustomButton
                                 style={styles.draftButton}
