@@ -43,6 +43,7 @@ export const addHunting = createAsyncThunk(
         hunting_crop_id: treeData?.crop_id,
       });
       console.log('resss at add hunitng slice', res?.data);
+      dispatch(getHunting());
       return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'err2 at hunting add');

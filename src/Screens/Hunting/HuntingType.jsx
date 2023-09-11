@@ -119,7 +119,7 @@ const HuntingType = ({ navigation, route }) => {
             expenditure_on_inputs: String(data?.expenditure_on_inputs || ""),
             income_from_sale: String(data?.income_from_sale || ""), // TODO: add validation for this field
             yeild: String(data?.yeild || ""),
-            weight_measurement: String(data?.weight_measurement || ''),
+            weight_measurement: String(data?.weight_measurement || 'kg'),
             processing_method: Boolean(data?.processing_method || false),
         },
     });
@@ -363,7 +363,7 @@ const HuntingType = ({ navigation, route }) => {
                                     <CustomDropdown3
                                         data={measurement}
                                         value={value}
-                                        defaultVal={{ key: 1, value: 'kg' }}
+                                        defaultVal={{ key: value, value: value }}
                                         selectedValue={onChange}
                                         infoName={'Weight Measuremnt'}
                                     />

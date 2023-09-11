@@ -1,62 +1,112 @@
-/* eslint-disable no-undef */
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    View,
-    Text,
-    SafeAreaView,
-    StatusBar,
-    Dimensions,
-    StyleSheet,
-    ScrollView,
-    useWindowDimensions,
-} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-const { width } = Dimensions.get('window');
-import SelectDropdown from 'react-native-select-dropdown';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { SelectList } from 'react-native-dropdown-select-list'
-import SearchableDropdown from 'react-native-searchable-dropdown';
-import DropDownPicker from 'react-native-dropdown-picker';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
-export default CustomDropdown2 = ({
+const data2 = [
+    { label: 'Item 1', value: '1' },
+    { label: 'Item 2', value: '2' },
+    { label: 'Item 3', value: '3' },
+    { label: 'Item 4', value: '4' },
+    { label: 'Item 5', value: '5' },
+    { label: 'Item 6', value: '6' },
+    { label: 'Item 7', value: '7' },
+    { label: 'Item 8', value: '8' },
+];
+
+const CustomDropdown4 = ({
     placeholder,
     selectedValue,
     data,
     valu,
     style,
 }) => {
-    const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
-    const { fontScale } = useWindowDimensions();
-    const styles = makeStyles(fontScale);
-    const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-        { label: 'Apple', value: 'apple' },
-        { label: 'Banana', value: 'banana' }
-    ]);
-    console.log("value", valu)
-    // console.log("data", data)
+    const [isFocus, setIsFocus] = useState(false);
+
+    const renderLabel = () => {
+        if (value || isFocus) {
+            return (
+                <Text style={[styles.label, isFocus && { color: 'blue' }]}>
+                    Dropdown label
+                </Text>
+            );
+        }
+        return null;
+    };
+
     return (
-        <DropDownPicker
-            listMode='SCROLLVIEW'
-            maxHeight={400}
-            autoScroll={true}
-            open={open}
-            value={valu}
-            items={data ? data?.map((i) => { return { label: i?.name, value: i?._id } }) : items}
-            setOpen={setOpen}
-            setValue={(item)=>selectedValue(item)}
-            // setItems={selectedValue}
-        />
+        <View style={styles.container}>
+            {/* {renderLabel()} */}
+            <Dropdown
+                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={data?data.map((i)=>{return{label:i?.name,value:i?._id}}): data2}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                itemTextStyle={styles.selectedTextStyle}
+                placeholder={!isFocus ? 'Select item' : '...'}
+                searchPlaceholder="Search..."
+                value={valu}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={item => {
+                    setValue(item.value);
+                    selectedValue(item)
+                    setIsFocus(false);
+                }}
+            />
+        </View>
     );
 };
 
-const makeStyles = fontScale =>
-    StyleSheet.create({
-        dropdown: {
-            borderColor: 'blue',
-            borderRadius: 6,
-            // zIndex: 0,
-        },
-    });
+export default CustomDropdown4;
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'white',
+        padding: 16,
+    },
+    dropdown: {
+        height: 50,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+        color:'#000'
+    },
+    placeholderStyle: {
+        fontSize: 16,
+        color: '#000'
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+        color: '#000'
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+        color:'#000'
+    },
+});

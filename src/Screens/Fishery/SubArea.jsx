@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
@@ -9,6 +9,9 @@ import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useFocusEffect } from '@react-navigation/native'
 import { getFishery } from '../../Redux/FisherySlice'
+import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4'
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4'
+import { getHuntingCrops } from '../../Redux/HuntingCropSlice'
 
 const SubArea = ({ navigation, route }) => {
     const { totalLand, screenName, type, cropId, data } = route.params
@@ -28,8 +31,8 @@ const SubArea = ({ navigation, route }) => {
         setCropType(list);
     };
     const addCrop = () => {
-        let ids = cropType.map((i) => i?.id || i?._id)
-        if(ids.includes(dropdownVal?.name?.id)){
+        let ids = cropType.map((i) => i?.fishery_crop?._id||i?._id)
+        if (ids.includes(dropdownVal?.name?.value)){
             Alert.alert("Crop Already exists")
             setCropModal(!cropModal);
             setFocusOther(false);
@@ -38,8 +41,8 @@ const SubArea = ({ navigation, route }) => {
             setCropType([
                 ...cropType,
                 {
-                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-                    _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
+                    _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
                     progress: '',
                 },
             ]);
@@ -50,7 +53,7 @@ const SubArea = ({ navigation, route }) => {
         }
     };
     const addingHuntingCrop = () => {
-        if (dropdownVal.name === 'Others') {
+        if (dropdownVal.name?.label === 'Others') {
             dispatch(addFisherycrop({ name: otherCrop?.name }))
             dispatch(getHuntingCrops())
             setDropdownVal([])
@@ -144,7 +147,7 @@ const SubArea = ({ navigation, route }) => {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.dropdownSection}>
-                        <CustomDropdown2
+                        <CustomDropdown4
                             selectedValue={e => {
                                 DropdownSelectedValue({ name: e, _id: e.id })
                             }
@@ -152,7 +155,7 @@ const SubArea = ({ navigation, route }) => {
                             data={[...fisheryCrop, { _id: 0, name: 'Others' }]}
                             valu={dropdownVal?.name}
                         />
-                        {dropdownVal.name === 'Others' ? (
+                        {dropdownVal.name?.label === 'Others' ? (
                             <InputWithoutRightElement
                                 label={'Crop Name'}
                                 placeholder={'Crop 01'}
@@ -174,7 +177,7 @@ const SubArea = ({ navigation, route }) => {
                         <CustomButton
                             btnText={'Create'}
                             style={{ width: '80%' }}
-                            onPress={() => addCrop()}
+                            onPress={() => addingHuntingCrop()}
                         />
                     </View>
                 </AddBottomSheet>

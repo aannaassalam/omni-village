@@ -24,6 +24,7 @@ import {addFisherycrop, getFisheryCrops} from '../../Redux/FisheryCropSlice';
 import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import {ActivityIndicator} from 'react-native-paper';
 import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
 const FisheryRiver = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,7 @@ const FisheryRiver = ({navigation}) => {
   };
   const addCrop = () => {
     let ids = cropType.map((i) => i.id || i?._id)
-    if(ids.includes(dropdownVal?.name?.id)){
+    if(ids.includes(dropdownVal?.name?.value)){
       Alert.alert("Crop Already exists")
       setCropModal(!cropModal);
       setFocusOther(false);
@@ -63,8 +64,8 @@ const FisheryRiver = ({navigation}) => {
           name:
             dropdownVal.name == 'Others'
               ? otherCrop.name
-              : dropdownVal.name?.name,
-          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+              : dropdownVal.name?.label,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
           progress: '',
         },
       ]);
@@ -76,7 +77,7 @@ const FisheryRiver = ({navigation}) => {
     }
   };
   const addingHuntingCrop = () => {
-    if (dropdownVal.name === 'Others') {
+    if (dropdownVal.name?.label === 'Others') {
       dispatch(addFisherycrop({name: otherCrop?.name}));
       dispatch(getFisheryCrops());
       setDropdownVal([]);
@@ -201,7 +202,7 @@ const FisheryRiver = ({navigation}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <CustomDropdown2
+            <CustomDropdown4
               selectedValue={e =>
                 DropdownSelectedValue({
                   name: e,
@@ -211,7 +212,7 @@ const FisheryRiver = ({navigation}) => {
               data={[...fisheryCrop, {_id: 0, name: 'Others'}]}
               valu={dropdownVal?.name}
             />
-            {dropdownVal.name === 'Others' ? (
+            {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
                 label={'Crop Name'}
                 placeholder={'Crop 01'}

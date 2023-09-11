@@ -13,6 +13,8 @@ import { deleteHunting, getHunting } from '../../Redux/HuntingSlice'
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2'
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet'
 import { getMeasurement } from '../../Redux/OthersSlice'
+import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4'
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4'
 
 const Hunting = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
@@ -38,7 +40,7 @@ const Hunting = ({ navigation }) => {
     };
     const addCrop = async() => {
         let ids = cropType.map((i) => i?.id||i?._id)
-        if(ids.includes(dropdownVal?.name?.id)){
+        if(ids.includes(dropdownVal?.name?.value)){
             Alert.alert("Crop Already exists")
             setCropModal(!cropModal);
             setFocusOther(false);
@@ -48,8 +50,8 @@ const Hunting = ({ navigation }) => {
             setCropType([
                 ...cropType,
                 {
-                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-                    id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
+                    id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
                     progress: '',
                 },
             ]);
@@ -60,7 +62,7 @@ const Hunting = ({ navigation }) => {
         }
     };
     const addingHuntingCrop = () => {
-        if (dropdownVal.name === 'Others') {
+        if (dropdownVal.name?.label === 'Others') {
             dispatch(addHuntingCrops({ name: otherCrop?.name }))
             dispatch(getHuntingCrops())
             setDropdownVal([])
@@ -71,7 +73,7 @@ const Hunting = ({ navigation }) => {
     }
     const DropdownSelectedValue = data => {
         setDropdownVal(data);
-        // console.log("data", dsata)
+        console.log("data", data)
         if (data !== 'Others') {
             setFocusOther(false);
         }
@@ -154,12 +156,17 @@ const Hunting = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.dropdownSection}>
-                        <CustomDropdown2
+                        {/* <CustomDropdown2
+                            selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
+                            data={[...huntingCrops, { _id: 0, name: 'Others' }]}
+                            valu={dropdownVal?.name}
+                        /> */}
+                        <CustomDropdown4 
                             selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
                             data={[...huntingCrops, { _id: 0, name: 'Others' }]}
                             valu={dropdownVal?.name}
                         />
-                        {dropdownVal.name === 'Others' ? (
+                        {dropdownVal.name?.label === 'Others' ? (
                             <InputWithoutRightElement
                                 label={'Crop Name'}
                                 placeholder={'Crop 01'}
