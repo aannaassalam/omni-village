@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   useWindowDimensions,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -48,18 +49,26 @@ const TreesShrubsScreen = ({ navigation, route }) => {
     .catch((err)=>console.log("error", err))
   };
   const addCrop = () => {
-    setCropType([
-      ...cropType,
-      {
-        name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal?.name?.id,
-        progress: '',
-      },
-    ]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map((i) => i?.id || i?._id)
+    if(ids.includes(dropdownVal?.name?.id)){
+      Alert.alert("Crop Already exists")
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+    }else{
+      setCropType([
+        ...cropType,
+        {
+          name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal?.name?.id,
+          progress: '',
+        },
+      ]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name === 'Others') {

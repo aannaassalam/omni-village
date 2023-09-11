@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,useWindowDimensions,TouchableOpacity,Image } from 'react-native'
+import { StyleSheet, Text, View,useWindowDimensions,TouchableOpacity,Image, Alert } from 'react-native'
 import React,{useCallback, useEffect, useState} from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomButton from '../../Components/CustomButton/CustomButton'
@@ -34,18 +34,26 @@ const Poultry = ({navigation, route}) => {
     dispatch(deletePoultry(id))
   };
   const addCrop = () => {
-    setCropType([
-      ...cropType,
-      {
-        name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
-        progress: '',
-      },
-    ]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map((i) => i?.id || i?._id)
+    if(ids?.includes(dropdownVal?.name?.id)){
+      Alert.alert("Crop Already exists")
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+    }else{
+      setCropType([
+        ...cropType,
+        {
+          name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
+          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+          progress: '',
+        },
+      ]);
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name?.name === 'Others') {

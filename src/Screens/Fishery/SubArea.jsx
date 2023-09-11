@@ -28,18 +28,26 @@ const SubArea = ({ navigation, route }) => {
         setCropType(list);
     };
     const addCrop = () => {
-        setCropType([
-            ...cropType,
-            {
-                name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
-                _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
-                progress: '',
-            },
-        ]);
-        setCropModal(!cropModal);
-        setFocusOther(false);
-        setDropdownVal('');
-        setOtherCrop('');
+        let ids = cropType.map((i) => i?.id || i?._id)
+        if(ids.includes(dropdownVal?.name?.id)){
+            Alert.alert("Crop Already exists")
+            setCropModal(!cropModal);
+            setFocusOther(false);
+            setDropdownVal('');
+        }else{
+            setCropType([
+                ...cropType,
+                {
+                    name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.name,
+                    _id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.id,
+                    progress: '',
+                },
+            ]);
+            setCropModal(!cropModal);
+            setFocusOther(false);
+            setDropdownVal('');
+            setOtherCrop('');
+        }
     };
     const addingHuntingCrop = () => {
         if (dropdownVal.name === 'Others') {
