@@ -134,12 +134,12 @@ const HuntingType = ({ navigation, route }) => {
     }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
 
     const onSubmit = (data2) => {
-        let meat = parseInt(watch('utilisation_information.meat'))
-        let self_consumed = parseInt(watch("utilisation_information.self_consumed"))
-        let sold_to_neighbours = parseInt(watch("utilisation_information.sold_to_neighbours"))
-        let sold_in_consumer_market = parseInt(watch("utilisation_information.sold_in_consumer_market"))
-        let wastage = parseInt(watch("utilisation_information.wastage"))
-        let other_value = parseInt(watch("utilisation_information.other_value"))
+        let meat = parseInt(data2.utilisation_information.meat)
+        let self_consumed = parseInt(data2.utilisation_information.self_consumed)
+        let sold_to_neighbours = parseInt(data2.utilisation_information.sold_to_neighbours)
+        let sold_in_consumer_market = parseInt(data2.utilisation_information.sold_in_consumer_market)
+        let wastage = parseInt(data2.utilisation_information.wastage)
+        let other_value = parseInt(data2.utilisation_information.other_value)
         if (watch('important_information.number_hunted') == 0 ||
             watch('expenditure_on_inputs') == "" || watch('utilisation_information.income_from_sale') == "") {
             setMessage("Input all fields")
@@ -160,13 +160,7 @@ const HuntingType = ({ navigation, route }) => {
                 if (data?._id) {
                     dispatch(
                         editHunting({
-                            number_hunted: watch('important_information.number_hunted'),
-                            utilisation_information: watch('utilisation_information'),
-                            income_from_sale: watch('income_from_sale'),
-                            expenditure_on_inputs: watch('expenditure_on_inputs'),
-                            yeild: watch('yeild'),
-                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
-                            processing_method: watch('processing_method'),
+                            ...data2,
                             status: 1,
                             crop_id: cropId,
                         }),
@@ -193,13 +187,7 @@ const HuntingType = ({ navigation, route }) => {
                 } else {
                     dispatch(
                         addHunting({
-                            number_hunted: watch('important_information.number_hunted'),
-                            utilisation_information: watch('utilisation_information'),
-                            income_from_sale: watch('income_from_sale'),
-                            expenditure_on_inputs: watch('expenditure_on_inputs'),
-                            yeild: watch('yeild'),
-                            weight_measurement: watch('weight_measurement') ? watch('weight_measurement') : 'kg',
-                            processing_method: watch('processing_method'),
+                            ...data2,
                             status: 1,
                             crop_id: cropId
                         }),
