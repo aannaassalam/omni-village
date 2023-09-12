@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import {Divider} from 'react-native-paper';
+import {useSelector} from 'react-redux';
 // import {TextInput} from 'react-native-paper';
 
 const InputWithoutBorder = ({
@@ -22,6 +23,8 @@ const InputWithoutBorder = ({
   editable = true,
   keyboardType = 'number-pad',
 }) => {
+  const {user} = useSelector(state => state.auth);
+
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
@@ -57,7 +60,11 @@ const InputWithoutBorder = ({
               <>
                 <Divider horizontalInset={false} style={styles.divider} />
                 <Text style={styles.acresText}>
-                  {!measureName ? 'acres' : measureName}
+                  {measureName
+                    ? measureName
+                    : user.land_measurement_symbol
+                    ? user.land_measurement_symbol
+                    : user.land_measurement}
                 </Text>
               </>
             )}
@@ -83,8 +90,8 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
     },
     inputText: {
-      color: '#000',
-      fontSize: 16 / fontScale,
+      color: '#333',
+      fontSize: 14 / fontScale,
       fontWeight: '500',
       // backgroundColor: 'red',
     },

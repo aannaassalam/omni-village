@@ -69,6 +69,7 @@ export default function RegisterDetails({navigation, route}) {
       first_name: yup.string().required(validation?.error?.first_name),
       last_name: yup.string().required(validation?.error?.last_name),
       village_name: yup.string().required(validation?.error?.village_name),
+      country_name: yup.string(),
       land_measurement: yup
         .string()
         .required(validation?.error?.land_measurement),
@@ -103,6 +104,7 @@ export default function RegisterDetails({navigation, route}) {
     resolver: yupResolver(schema),
     defaultValues: {
       phone: user?.phone || '',
+      country_name: user?.country,
       // number_of_members: '',
     },
   });
@@ -155,10 +157,12 @@ export default function RegisterDetails({navigation, route}) {
     }
     dispatch(
       EditUser({
-        data,
-        land_measurement_symbol: landmeasurement.find(
-          lm => lm.name === data.land_measurement,
-        ).symbol,
+        data: {
+          ...data,
+          land_measurement_symbol: landmeasurement.find(
+            lm => lm.name === data.land_measurement,
+          ).symbol,
+        },
         file: fileResponse[0],
       }),
     )
@@ -166,8 +170,6 @@ export default function RegisterDetails({navigation, route}) {
       .then(res => navigation.replace('registersuccess'))
       .catch(err => console.log(err, 'err from register details'));
   };
-
-  console.log(village);
 
   useEffect(() => {
     dispatch(getVillage(user?.country));
@@ -485,7 +487,7 @@ export default function RegisterDetails({navigation, route}) {
         </Box>
         {file_err.length > 0 && <Text style={styles.error}>{file_err}</Text>}
         {fileResponse.map((file, index) => (
-          <Box style={styles.file_box2}>
+          <Box style={styles.file_box2} key={file.name}>
             <Box style={styles.file_box_lft}>
               <Image
                 style={styles.tinyLogo}
@@ -499,7 +501,13 @@ export default function RegisterDetails({navigation, route}) {
                 {file?.name}
               </Text>
               <Pressable onPress={() => setFileResponse([])}>
-                <Text style={{...styles.error, marginTop: 0, marginRight: 5}}>
+                <Text
+                  style={{
+                    ...styles.error,
+                    marginTop: 0,
+                    marginRight: 5,
+                    marginLeft: 10,
+                  }}>
                   Remove
                 </Text>
               </Pressable>
@@ -576,6 +584,8 @@ const makeStyles = fontScale =>
       marginLeft: 7,
       fontFamily: 'ubuntu_regular',
       marginRight: 'auto',
+      flex: 1,
+      flexWrap: 'wrap',
     },
     cmn_wrp: {
       flexDirection: 'row',

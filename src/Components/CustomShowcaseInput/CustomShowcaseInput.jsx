@@ -8,6 +8,7 @@ import {
 import React from 'react';
 import {Divider} from 'react-native-paper';
 import * as Progress from 'react-native-progress';
+import {useSelector} from 'react-redux';
 
 const CustomShowcaseInput = ({
   productionName,
@@ -17,6 +18,9 @@ const CustomShowcaseInput = ({
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  const {user} = useSelector(state => state.auth);
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -32,7 +36,14 @@ const CustomShowcaseInput = ({
             ? 'trees, grass & shrubs'
             : productionName}
         </Text>
-        <Text style={styles.productionArea}>{productionArea}</Text>
+        {productionArea ? (
+          <Text style={styles.productionArea}>
+            {productionArea}{' '}
+            {user.land_measurement_symbol
+              ? user.land_measurement_symbol
+              : user.land_measurement}
+          </Text>
+        ) : null}
       </View>
       {progressBar ? (
         <>

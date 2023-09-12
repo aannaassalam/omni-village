@@ -137,27 +137,15 @@ const SubArea = ({navigation, route}) => {
               </TouchableOpacity>
             );
           })}
-        {cropType[0] === undefined ? (
-          <View style={styles.addAndDeleteButtonSection}>
-            <AddAndDeleteCropButton
-              add={true}
-              cropName={`Add ${
-                screenName.includes('Pond') ? 'Pond' : 'Sea'
-              } Sub Area`}
-              onPress={() => setCropModal(true)}
-            />
-          </View>
-        ) : (
-          <View style={styles.addAndDeleteButtonSection}>
-            <AddAndDeleteCropButton
-              add={true}
-              cropName={`Add ${
-                screenName.includes('Pond') ? 'Pond' : 'Sea'
-              } Sub Area`}
-              onPress={() => setCropModal(true)}
-            />
-          </View>
-        )}
+        <TouchableOpacity
+          onPress={() => setCropModal(true)}
+          style={styles.addAndDeleteButtonSection}>
+          <AddAndDeleteCropButton
+            add={true}
+            cropName={'Add Fish'}
+            onPress={() => setCropModal(true)}
+          />
+        </TouchableOpacity>
       </View>
       {cropModal && (
         <AddBottomSheet>

@@ -150,23 +150,15 @@ const Hunting = ({navigation}) => {
           </TouchableOpacity>
         );
       })}
-      {cropType[0] === undefined ? (
-        <View style={styles.addAndDeleteButtonSection}>
-          <AddAndDeleteCropButton
-            add={true}
-            cropName={`Select Type`}
-            onPress={() => setCropModal(true)}
-          />
-        </View>
-      ) : (
-        <View style={styles.addAndDeleteButtonSection}>
-          <AddAndDeleteCropButton
-            add={true}
-            cropName={`Add Hunting Livestock`}
-            onPress={() => setCropModal(true)}
-          />
-        </View>
-      )}
+      <TouchableOpacity
+        onPress={() => setCropModal(true)}
+        style={styles.addAndDeleteButtonSection}>
+        <AddAndDeleteCropButton
+          add={true}
+          cropName={`Select Type`}
+          onPress={() => setCropModal(true)}
+        />
+      </TouchableOpacity>
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>

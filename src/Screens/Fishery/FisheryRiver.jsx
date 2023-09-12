@@ -124,7 +124,7 @@ const FisheryRiver = ({navigation, route}) => {
       />
       {loading ? (
         <View style={{marginTop: '70%'}}>
-          <ActivityIndicator color={'#000'} size={'small'} />
+          <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       ) : (
         <>

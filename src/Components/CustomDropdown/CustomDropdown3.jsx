@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -11,11 +11,11 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-const { width } = Dimensions.get('window');
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { SelectList } from 'react-native-dropdown-select-list'
+import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import {SelectList} from 'react-native-dropdown-select-list';
 
 export default CustomDropdown3 = ({
   placeholder,
@@ -26,7 +26,7 @@ export default CustomDropdown3 = ({
   style,
   value,
 }) => {
-  const { fontScale } = useWindowDimensions();
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
   return (
@@ -70,15 +70,25 @@ export default CustomDropdown3 = ({
         /> */}
         <SelectList
           setSelected={selectedValue}
-          data={data?.length >= 1 && data !== undefined ? data.map((j, index) => { return { key: index, value: j?.name } }) : cropType.map((i, index) => { return { key: index, value: i } })}
+          data={
+            data?.length >= 1 && data !== undefined
+              ? data.map((j, index) => {
+                  return {key: index, value: j?.name};
+                })
+              : cropType.map((i, index) => {
+                  return {key: index, value: i};
+                })
+          }
           save="value"
           dropdownTextStyles={{
-            color: '#000'
+            color: '#000',
+            fontSize: 14 / fontScale,
           }}
-          placeholder='Select Option'
-          searchPlaceholder='Search here'
+          placeholder="Select Option"
+          searchPlaceholder="Search here"
           inputStyles={{
             color: '#000',
+            fontSize: 14 / fontScale,
           }}
           search
           boxStyles={[styles.boxStyle, style]}
@@ -87,13 +97,12 @@ export default CustomDropdown3 = ({
             // backgroundColor:'yellow',
             borderColor: '#fff',
             borderWidth: 1,
-            elevation:5,
-            backgroundColor:"#fff",
-            width:'90%',
-            alignSelf:'center'
+            elevation: 5,
+            backgroundColor: '#fff',
+            width: '90%',
+            alignSelf: 'center',
           }}
           defaultOption={defaultVal}
-
         />
       </View>
     </View>
@@ -121,7 +130,7 @@ const makeStyles = fontScale =>
       paddingHorizontal: 10,
       marginLeft: 5,
       color: '#268C43',
-      fontSize: 14,
+      fontSize: 12 / fontScale,
       fontFamily: 'ubuntu_medium',
     },
     dropdownsRow: {
@@ -169,10 +178,11 @@ const makeStyles = fontScale =>
       padding: 5,
     },
     boxStyle: {
-      borderColor: "#fff",
+      borderColor: '#fff',
       borderWidth: 1,
     },
     dropdownstyle: {
       // backgroundColor: 'red'
-    }
+      // fontSize: 12 / fontScale,
+    },
   });

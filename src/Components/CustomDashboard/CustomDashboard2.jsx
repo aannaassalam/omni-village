@@ -22,11 +22,16 @@ const CustomDashboard2 = ({allocatedFor, usedLand}) => {
           <Text style={styles.value_text}>{allocatedFor}</Text>
         </View>
         <Divider style={styles.divider} />
-        <View style={styles.top_container_inner}>
+        <View style={[styles.top_container_inner, {flexDirection: 'row'}]}>
           <Text
             style={[
               styles.value_text,
-              {color: '#fff', flex: 1, flexWrap: 'wrap'},
+              {
+                color: '#fff',
+                flex: 1,
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              },
             ]}>
             {usedLand}{' '}
             {user.land_measurement_symbol !== '-'
@@ -53,11 +58,14 @@ const makeStyles = fontScale =>
       paddingHorizontal: 10,
       margin: 5,
       flexDirection: 'row',
+      // alignItems: 'center',
     },
     top_container_inner: {
       padding: 5,
       alignSelf: 'center',
       flex: 0.4,
+      // verticalAlign: 'middle',
+      // justifyContent: 'center',
     },
     land_allocated_text: {
       fontSize: 12 / fontScale,
@@ -69,6 +77,7 @@ const makeStyles = fontScale =>
       fontSize: 13 / fontScale,
       color: '#fff',
       fontFamily: 'ubuntu_medium',
+      // marginVertical: 'auto',
     },
     divider: {
       height: '70%',

@@ -117,7 +117,7 @@ const Storage = ({navigation}) => {
       }),
     );
   }, [storage]);
-  console.log("storage method", storage)
+  console.log('storage method', storage);
   const onContinue = () => {
     dispatch(editStorage(storageList)).unwrap();
   };
@@ -131,7 +131,7 @@ const Storage = ({navigation}) => {
       <ScrollView>
         {loading ? (
           <View style={{padding: 50, marginTop: '80%'}}>
-            <ActivityIndicator size={'small'} color="black" animating={true} />
+            <ActivityIndicator animating size="large" color="#268C43" />
           </View>
         ) : (
           <>

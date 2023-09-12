@@ -30,6 +30,7 @@ import * as yup from 'yup';
 import {fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
 import moment from 'moment';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 
 const Type01 = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -37,7 +38,7 @@ const Type01 = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-const { userDetails } = useSelector(state => state.auth);
+  const {userDetails} = useSelector(state => state.auth);
   const [treeAge, setTreeAge] = useState(false);
   const [harvestProdAdd, setHarvestProdAdd] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -50,7 +51,7 @@ const { userDetails } = useSelector(state => state.auth);
     {
       id: 1,
       age: 'Less than a year',
-      checked: true,
+      checked: false,
     },
     {
       id: 2,
@@ -134,9 +135,8 @@ const { userDetails } = useSelector(state => state.auth);
     }
   }, [errors]);
   // console.log("data", data?.number_of_trees)
-  console.log(errors)
   const onSubmit = data2 => {
-    console.log("hitting here")
+    console.log('hitting here');
     if (data?._id) {
       dispatch(
         editTree({
@@ -171,7 +171,7 @@ const { userDetails } = useSelector(state => state.auth);
             }),
           dispatch(getTree()),
           navigation.goBack(),
-          setSavepopup(false)
+          setSavepopup(false),
           // navigation.goBack(),
         )
         .catch(err => {
@@ -195,17 +195,16 @@ const { userDetails } = useSelector(state => state.auth);
         }),
       )
         .unwrap()
-        .then(
-          (res) =>
-           { Toast.show({
-              text1: 'Success',
-              text2: 'Trees added successfully!',
-            }),
-          dispatch(getTree()),
-          navigation.goBack(),
-          setSavepopup(false)
-          console.log("here", res)}
-        )
+        .then(res => {
+          Toast.show({
+            text1: 'Success',
+            text2: 'Trees added successfully!',
+          }),
+            dispatch(getTree()),
+            navigation.goBack(),
+            setSavepopup(false);
+          console.log('here', res);
+        })
         .catch(err => {
           console.log('err at add', err);
           Toast.show({
@@ -226,7 +225,7 @@ const { userDetails } = useSelector(state => state.auth);
           productDetails: harvestedProductList.map(itm => {
             return {
               _id: itm?._id,
-              name: itm?.name||'',
+              name: itm?.name || '',
               production_output: itm?.production_output,
               self_consumed: itm?.self_consumed,
               fed_to_livestock: itm?.fed_to_livestock,
@@ -278,7 +277,7 @@ const { userDetails } = useSelector(state => state.auth);
       )
         .unwrap()
         .then(
-          (res) =>
+          res =>
             Toast.show({
               text1: 'Success',
               text2: 'Trees added successfully!',
@@ -329,7 +328,7 @@ const { userDetails } = useSelector(state => state.auth);
       if (i === index) {
         const item = {
           ...checkbox,
-          checked: !checkbox.checked,
+          checked: true,
         };
         return item;
       }
@@ -414,9 +413,9 @@ const { userDetails } = useSelector(state => state.auth);
                   );
                 }}
               />
-              {errors?.important_information?.tree_age?.message ? (
+              {errors?.important_information?.avg_age_of_trees?.message ? (
                 <Text style={styles.error}>
-                  {errors?.important_information?.tree_age?.message}
+                  {errors?.important_information?.avg_age_of_trees?.message}
                 </Text>
               ) : null}
 
@@ -628,11 +627,11 @@ const { userDetails } = useSelector(state => state.auth);
               </>
             ) : null}
           </>
-          <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
+          <TouchableOpacity
+            style={styles.add_button}
+            onPress={() => setHarvestProdAdd(true)}>
             <Text style={styles.add_button_text}>Add</Text>
-            <AntDesign
-              name="plus" size={15} color="#fff"
-            />
+            <AntDesign name="plus" size={15} color="#fff" />
           </TouchableOpacity>
         </View>
         <View style={styles.bottomPopupbutton}>
@@ -716,20 +715,20 @@ const { userDetails } = useSelector(state => state.auth);
               value={productName}
               keyboardType="default"
               onChangeText={e => {
-                  setProductName(e);
+                setProductName(e);
               }}
               multiline={true}
               notRightText={true}
               onFocus={() => setFocus(true)}
             />
           </View>
-          <View style={{ marginTop: '15%', width: '90%', alignSelf: 'center' }}>
+          <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
             <CustomButton
               btnText={'Submit'}
               onPress={() => {
-                setHarvestProdAdd(!harvestProdAdd)
-                setFocus(!focus)
-                addProduct()
+                setHarvestProdAdd(!harvestProdAdd);
+                setFocus(!focus);
+                addProduct();
               }}
             />
           </View>
@@ -818,7 +817,7 @@ const makeStyles = fontScale =>
       color: 'red',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu',
-      marginLeft: 15
+      marginLeft: 15,
     },
     textInputArea: {
       alignSelf: 'center',

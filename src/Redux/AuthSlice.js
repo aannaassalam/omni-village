@@ -98,16 +98,20 @@ export const EditUser = createAsyncThunk(
   'edituser',
   async ({data, file}, {rejectWithValue}) => {
     try {
+      console.log('data', data);
       const formData = new FormData();
       Object.keys(data).forEach(key => {
-        formData.append(key, data[key]);
+        console.log(key);
         if (key === 'members') {
+          console.log(JSON.stringify(data[key]), 'json');
           formData.append('members', JSON.stringify(data[key]));
           // data[key].forEach((item, idx) => {
           //   formData.append(`members[${idx}]`, JSON.stringify(item));
           //   // formData.append(`members[${idx}].age`, item.age);
           //   // formData.append(`members[${idx}].gender`, item.gender);
           // });
+        } else {
+          formData.append(key, data[key]);
         }
       });
       formData.append('address_proof', {
@@ -116,6 +120,9 @@ export const EditUser = createAsyncThunk(
         filename: file.name,
         name: 'address_proof',
       });
+      // for (var item of formData) {
+      console.log(formData);
+      // }
       let res = await axiosInstance.post(endpoints?.auth?.editUser, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

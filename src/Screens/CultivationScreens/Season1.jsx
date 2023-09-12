@@ -173,7 +173,9 @@ const Season1 = ({navigation, route}) => {
                   : 'thrice'
               ]
             }{' '}
-            acres
+            {userDetails.land_measurement_symbol
+              ? userDetails.land_measurement_symbol
+              : userDetails.land_measurement}
           </Text>
         </View>
         {/* <Divider style={styles.divider} />

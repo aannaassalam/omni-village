@@ -1,10 +1,13 @@
 import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
 import {TextInput} from 'react-native-paper';
+import {useSelector} from 'react-redux';
 
 const CustomInputField = ({label, value, onChangeText, placeholder}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  const {user} = useSelector(state => state.auth);
 
   return (
     <View style={styles.textInputContainer}>
@@ -20,7 +23,7 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
           }}
           label={
             <Text
-              style={{fontSize: 16 / fontScale, textTransform: 'capitalize',}}>
+              style={{fontSize: 16 / fontScale, textTransform: 'capitalize'}}>
               {label}
             </Text>
           }
@@ -30,7 +33,11 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
           placeholderTextColor={'#000'}
           right={
             <TextInput.Affix
-              text="acres"
+              text={
+                user.land_measurement_symbol
+                  ? user.land_measurement_symbol
+                  : user.land_measurement
+              }
               textStyle={{color: '#000', fontFamily: 'ubuntu_medium'}}
             />
           }
@@ -57,6 +64,6 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
       fontFamily: 'ubuntu_medium',
       fontSize: 16 / fontScale,
-      color:'red'
+      color: 'red',
     },
   });

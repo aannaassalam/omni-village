@@ -14,14 +14,14 @@ import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShow
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import { getTree } from '../../Redux/TreesSlice';
+import {getTree} from '../../Redux/TreesSlice';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
   const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const {user} = useSelector(s => s.auth);
 
   const goToNext = name => {
@@ -37,18 +37,18 @@ const Production = ({navigation, route}) => {
       }
     } else if (name === 'trees') {
       navigation.navigate('treesShrubGrassland');
-    } else if (name == "poultry") {
-      navigation.navigate('poultry', { totalLand: '50' })
+    } else if (name == 'poultry') {
+      navigation.navigate('poultry', {totalLand: '50'});
     } else if (name === 'fishery') {
-      navigation.navigate('fisheryIndex', { totalLand: '80' })
-    } else if (name == "hunting") {
-      navigation.navigate('hunting')
-    } else if (name == "storage") {
-      navigation.navigate('storage')
-    } else if (name == "sellingChannel") {
-      navigation.navigate('sellingChannel')
+      navigation.navigate('fisheryIndex', {totalLand: '80'});
+    } else if (name == 'hunting') {
+      navigation.navigate('hunting');
+    } else if (name == 'storage') {
+      navigation.navigate('storage');
+    } else if (name == 'sellingChannel') {
+      navigation.navigate('sellingChannel');
+    }
   };
-}
 
   const usedLand = useMemo(() => {
     const data = Object.keys(userDetails?.sub_area).reduce((acc, key) => {
@@ -71,13 +71,21 @@ const Production = ({navigation, route}) => {
       <View style={styles.top_container}>
         <View style={styles.top_container_inner}>
           <Text style={styles.land_allocated_text}>Land allocated</Text>
-          <Text style={styles.value_text}>{userDetails?.total_land} acres</Text>
+          <Text style={styles.value_text}>
+            {userDetails?.total_land}{' '}
+            {userDetails.land_measurement_symbol
+              ? userDetails.land_measurement_symbol
+              : userDetails.land_measurement}
+          </Text>
         </View>
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text style={styles.land_allocated_text}>Used Land</Text>
           <Text style={[styles.value_text, {color: '#E5C05E'}]}>
-            {usedLand} acres
+            {usedLand}{' '}
+            {userDetails.land_measurement_symbol
+              ? userDetails.land_measurement_symbol
+              : userDetails.land_measurement}
           </Text>
         </View>
         <Divider style={styles.divider} />
@@ -97,21 +105,25 @@ const Production = ({navigation, route}) => {
               <CustomShowcaseInput
                 key={item}
                 productionName={item}
-                productionArea={`${
+                productionArea={
                   item === 'cultivation'
                     ? userDetails?.sub_area[item].land
                     : userDetails?.sub_area[item]
-                } acres`}
+                }
                 progressBar={false}
                 onPress={() => goToNext(item)}
               />
             );
           })}
-          <CustomShowcaseInput productionName={'Hunting'} productionArea={''} onPress={()=>goToNext('hunting')} />
+          <CustomShowcaseInput
+            productionName={'Hunting'}
+            productionArea={''}
+            onPress={() => goToNext('hunting')}
+          />
           <CustomShowcaseInput
             productionName={'Selling Channel'}
             productionArea={''}
-            onPress={()=>goToNext('sellingChannel')}
+            onPress={() => goToNext('sellingChannel')}
           />
         </>
       </ScrollView>

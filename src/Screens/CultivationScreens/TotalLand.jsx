@@ -6,7 +6,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import Toast from 'react-native-toast-message';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -19,6 +19,7 @@ import {Controller, useForm} from 'react-hook-form';
 import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
 import {LandAllocation} from '../../Redux/AuthSlice';
+import {useFocusEffect} from '@react-navigation/native';
 
 const landSchema = yup
   .object()
@@ -38,6 +39,11 @@ const TotalLand = ({navigation}) => {
   const [globalError, setGlobalError] = useState('');
 
   // console.log(userDetails.sub_area);
+  useFocusEffect(
+    useCallback(() => {
+      setGlobalError('');
+    }, []),
+  );
 
   const {
     handleSubmit,

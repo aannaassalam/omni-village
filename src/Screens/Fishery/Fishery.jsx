@@ -106,7 +106,7 @@ const Fishery = ({navigation, route}) => {
       {/* <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} /> */}
       {loading ? (
         <View style={{marginTop: '40%'}}>
-          <ActivityIndicator size={'small'} color="black" />
+          <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       ) : (
         <>
