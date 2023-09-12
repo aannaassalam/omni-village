@@ -43,6 +43,7 @@ const PoultryType = ({ navigation, route }) => {
     const {measurement} = useSelector((state)=>state.Others)
     const {feed} = useSelector((state)=>state.Others)
     const [message,setMessage]  = useState('')
+    const { userDetails } = useSelector(state => state.auth);
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
     const [treeAge, setTreeAge] = useState(false)
@@ -112,6 +113,7 @@ const PoultryType = ({ navigation, route }) => {
             setHarvestedProductList([])
         }
     }, [data])
+    // console.log("poultry data", data)
     const {
         handleSubmit,
         setValue,
@@ -274,6 +276,7 @@ const PoultryType = ({ navigation, route }) => {
                     productDetails: harvestedProductList.map((itm) => {
                         return {
                             _id: itm?._id,
+                             name: itm?.name || '',
                             production_output: itm?.production_output,
                             self_consumed: itm?.self_consumed,
                             fed_to_livestock: itm?.fed_to_livestock,
@@ -386,7 +389,7 @@ const PoultryType = ({ navigation, route }) => {
     useEffect(()=>{
         dispatch(getMeasurement())
     },[])
-    console.log("weight",weight)
+    console.log("weight",harvestedProductList)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -690,7 +693,7 @@ const PoultryType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Income from sale'}
                                         value={value}
                                         onChangeText={onChange}
@@ -710,7 +713,7 @@ const PoultryType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Expenditure on inputs'}
                                         value={value}
                                         onChangeText={onChange}
@@ -817,15 +820,12 @@ const PoultryType = ({ navigation, route }) => {
                                 null
                             }
                         </>
-                        {data?
-                        null:
                         <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
                             <Text style={styles.add_button_text}>Add</Text>
                             <AntDesign
                                 name="plus" size={15} color="#fff"
                             />
                         </TouchableOpacity>
-                    }
                     </View>
                     {message && <Text style={{ color: 'red', fontSize: 14, alignSelf: 'center', marginTop:'5%' }}>{message}</Text>}
                     <View style={styles.bottomPopupbutton}>
@@ -903,17 +903,21 @@ const PoultryType = ({ navigation, route }) => {
                                 value={productName}
                                 keyboardType='default'
                                 onChangeText={e => {
-                                    if (e.endsWith("\n")) {
-                                        setHarvestProdAdd(!harvestProdAdd)
-                                        setFocus(!focus)
-                                        addProduct()
-                                    } else {
                                         setProductName(e)
-                                    }
                                 }}
-                                multiline={true}
+                                multiline={false}
                                 notRightText={true}
                                 onFocus={() => setFocus(true)}
+                            />
+                        </View>
+                        <View style={{marginTop:'15%', width:'90%', alignSelf:'center'}}>
+                            <CustomButton
+                            btnText={'Submit'}
+                            onPress={()=>{
+                                setHarvestProdAdd(!harvestProdAdd)
+                                setFocus(!focus)
+                                addProduct()
+                            }}
                             />
                         </View>
                     </AddBottomSheet>
@@ -938,10 +942,8 @@ const PoultryType = ({ navigation, route }) => {
                             <CustomButton
                                 style={styles.submitButton}
                                 btnText={'Submit'}
-                                onPress={() => {
-                                    //   setSavepopup(false), navigation.goBack();
-                                    handleSubmit(onSubmit)
-                                }}
+                                onPress={
+                                    handleSubmit(onSubmit)}
                             />
                             <CustomButton
                                 style={styles.draftButton}
@@ -1008,7 +1010,8 @@ const makeStyles = fontScale =>
         error: {
             color: 'red',
             fontSize: 14 / fontScale,
-            fontFamily: 'ubuntu'
+            fontFamily: 'ubuntu',
+            marginLeft: 15
         },
         subArea: {
             alignSelf: 'center',

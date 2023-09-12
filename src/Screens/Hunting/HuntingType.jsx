@@ -29,124 +29,110 @@ import * as yup from 'yup';
 import {addHunting, editHunting, getHunting} from '../../Redux/HuntingSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-const HuntingType = ({navigation, route}) => {
-  const {cropType, data, cropId} = route.params;
-  const [impInfo, setImpInfo] = useState(true);
-  const [harvestedProduct, setHarvestedProduct] = useState(true);
-  const [productionInfo, setProductionInfo] = useState(true);
-  const {fontScale} = useWindowDimensions();
-  const {measurement} = useSelector(state => state.Others);
-  const [weight, setWeight] = useState('');
-  const styles = makeStyles(fontScale);
-  const [income, setIncome] = useState('');
-  const [expenditure, setExpenditure] = useState('');
-  const [treeAge, setTreeAge] = useState(false);
-  const [harvestProdAdd, setHarvestProdAdd] = useState(false);
-  const [focus, setFocus] = useState(false);
-  const [savepopup, setSavepopup] = useState(false);
-  const [message, setMessage] = useState('');
-  const [draftpopup, setDraftpopup] = useState(false);
-  const [productName, setProductName] = useState('');
-  const [yields, setYields] = useState('');
-  const dispatch = useDispatch();
-  const [others, setOthers] = useState('');
-  const [toggleCheckBox, setToggleCheckBox] = useState('');
-  const addProduct = () => {
-    setHarvestedProductList([
-      ...harvestedProductList,
-      {productName: productName},
-    ]);
-    setProductName('');
-  };
-  const toggleItem = (value, index) => {
-    const newValue = averageAge.map((checkbox, i) => {
-      if (i !== index)
-        return {
-          ...checkbox,
-          checked: false,
-        };
-      if (i === index) {
-        const item = {
-          ...checkbox,
-          checked: !checkbox.checked,
-        };
-        return item;
-      }
-      return checkbox;
+const HuntingType = ({ navigation, route }) => {
+    const { cropType, data, cropId } = route.params;
+    const [impInfo, setImpInfo] = useState(true);
+    const [harvestedProduct, setHarvestedProduct] = useState(true);
+    const [productionInfo, setProductionInfo] = useState(true)
+    const { fontScale } = useWindowDimensions();
+    const { measurement } = useSelector((state) => state.Others)
+    const [weight, setWeight] = useState('')
+    const { userDetails } = useSelector(state => state.auth);
+    const styles = makeStyles(fontScale);
+    const [income, setIncome] = useState('');
+    const [expenditure, setExpenditure] = useState('');
+    const [treeAge, setTreeAge] = useState(false)
+    const [harvestProdAdd, setHarvestProdAdd] = useState(false)
+    const [focus, setFocus] = useState(false)
+    const [savepopup, setSavepopup] = useState(false);
+    const [message,setMessage] = useState('')
+    const [draftpopup, setDraftpopup] = useState(false);
+    const [productName, setProductName] = useState('')
+    const [yields, setYields] = useState('')
+    const dispatch = useDispatch()
+    const [others, setOthers] = useState('');
+    const [toggleCheckBox, setToggleCheckBox] = useState('')
+    const addProduct = () => {
+        setHarvestedProductList([...harvestedProductList, { productName: productName }])
+        setProductName('')
+    }
+    const toggleItem = (value, index) => {
+        const newValue = averageAge.map((checkbox, i) => {
+            if (i !== index)
+                return {
+                    ...checkbox,
+                    checked: false,
+                }
+            if (i === index) {
+                const item = {
+                    ...checkbox,
+                    checked: !checkbox.checked,
+                }
+                return item
+            }
+            return checkbox
+        })
+        setAverageAge(newValue)
+    }
+    const schema = yup.object().shape({
+        important_information: yup.object().shape({
+            number_hunted: yup.string().required(validation.error.number_hunted),
+        }),
+        utilisation_information: yup.object().shape({
+            meat: yup.string().required(validation.error.meat),
+            self_consumed: yup.string().required(validation.error.self_consumed),
+            sold_to_neighbours: yup.string().required(validation.error.sold_to_neighbours),
+            sold_in_consumer_market: yup.string().required(validation.error.sold_for_industrial_use),
+            wastage: yup.string().required(validation.error.wastage),
+            other: yup.string().required(validation.error.other),
+            other_value: yup.string().required(validation.error.other_value),
+        }),
+        income_from_sale: yup.string().required(validation.error.income_from_sale),
+        expenditure_on_inputs: yup.string().required(validation.error.expenditure_on_inputs),
+        yeild: yup.string().required(validation.error.yeild),
+        processing_method: yup.string().required(validation.error.processing_method),
+        weight_measurement: yup.string().required(validation.error.weight_measurement),
+
     });
-    setAverageAge(newValue);
-  };
-  const schema = yup.object().shape({
-    important_information: yup.object().shape({
-      number_hunted: yup.string().required(validation.error.number_hunted),
-    }),
-    utilisation_information: yup.object().shape({
-      meat: yup.string().required(validation.error.meat),
-      self_consumed: yup.string().required(validation.error.self_consumed),
-      sold_to_neighbours: yup
-        .string()
-        .required(validation.error.sold_to_neighbours),
-      sold_in_consumer_market: yup
-        .string()
-        .required(validation.error.sold_for_industrial_use),
-      wastage: yup.string().required(validation.error.wastage),
-      other: yup.string().required(validation.error.other),
-      other_value: yup.string().required(validation.error.other_value),
-    }),
-    income_from_sale: yup.string().required(validation.error.income_from_sale),
-    expenditure_on_inputs: yup
-      .string()
-      .required(validation.error.expenditure_on_inputs),
-    yeild: yup.string().required(validation.error.yeild),
-    processing_method: yup
-      .string()
-      .required(validation.error.processing_method),
-    weight_measurement: yup
-      .string()
-      .required(validation.error.weight_measurement),
-  });
-  // console.log("cropid", measurement)
-  const {
-    handleSubmit,
-    setValue,
-    getValues,
-    watch,
-    control,
-    formState: {errors},
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      important_information: {
-        number_hunted: String(data?.number_hunted || ''),
-      },
-      utilisation_information: {
-        meat: String(data?.meat || ''),
-        self_consumed: String(data?.self_consumed || ''),
-        sold_in_consumer_market: String(data?.sold_in_consumer_market || ''),
-        sold_to_neighbours: String(data?.sold_in_consumer_market || ''),
-        wastage: String(data?.wastage || ''),
-        other: String(data?.other || ''),
-        other_value: String(data?.other_value || ''),
-      },
-      expenditure_on_inputs: String(data?.expenditure_on_inputs || ''),
-      income_from_sale: String(data?.income_from_sale || ''), // TODO: add validation for this field
-      yeild: String(data?.yeild || ''),
-      weight_measurement: String(data?.weight_measurement || 'kg'),
-      processing_method: Boolean(data?.processing_method || false),
-    },
-  });
-  useEffect(() => {
-    setValue(
-      'yeild',
-      String(
-        parseInt(getValues('utilisation_information.meat'), 10) /
-          parseInt(getValues('important_information.number_hunted'), 10) || '0',
-      ),
-    );
-  }, [
-    watch('important_information.number_hunted'),
-    watch('utilisation_information.meat'),
-  ]);
+    // console.log("cropid", userDetails?.currency)
+    const {
+        handleSubmit,
+        setValue,
+        getValues,
+        watch,
+        control,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            important_information: {
+                number_hunted: String(data?.number_hunted || ""),
+            },
+            utilisation_information: {
+                meat: String(data?.meat || ""),
+                self_consumed: String(data?.self_consumed || ""),
+                sold_in_consumer_market: String(data?.sold_in_consumer_market || ""),
+                sold_to_neighbours: String(data?.sold_in_consumer_market || ""),
+                wastage: String(data?.wastage || ""),
+                other: String(data?.other || ''),
+                other_value: String(data?.other_value || "")
+            },
+            expenditure_on_inputs: String(data?.expenditure_on_inputs || ""),
+            income_from_sale: String(data?.income_from_sale || ""), // TODO: add validation for this field
+            yeild: String(data?.yeild || ""),
+            weight_measurement: String(data?.weight_measurement || 'kilogram'),
+            processing_method: Boolean(data?.processing_method || false),
+        },
+    });
+    useEffect(() => {
+        setValue(
+            'yeild',
+            String(
+                parseInt(getValues('utilisation_information.meat'), 10) /
+                parseInt(getValues('important_information.number_hunted'), 10) || '0',
+            ),
+        );
+    }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
 
   const onSubmit = data2 => {
     let meat = parseInt(data2.utilisation_information.meat);
@@ -812,10 +798,10 @@ const HuntingType = ({navigation, route}) => {
               <CustomButton
                 style={styles.submitButton}
                 btnText={'Submit'}
-                onPress={() => {
-                  handleSubmit(onSubmit);
-                  setSavepopup(false);
-                }}
+                onPress={
+                  handleSubmit(onSubmit)
+                  // setSavepopup(false);
+                }
               />
               <CustomButton
                 style={styles.draftButton}
@@ -880,6 +866,7 @@ const makeStyles = fontScale =>
       color: 'red',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu',
+      marinLeft:15
     },
     textInputArea: {
       alignSelf: 'center',

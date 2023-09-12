@@ -14,19 +14,21 @@ import Toast from 'react-native-toast-message'
 const PoultryEdit = ({ navigation, route }) => {
     const { cropType, edit, cropId, data } = route.params
     const { fontScale } = useWindowDimensions()
+    const [message, setMessage] = useState('')
     const styles = makeStyles(fontScale);
     const [harvestedPopup, setHarvestedPopup] = useState(false);
     const [harvestedDate, setHarvestedDate] = useState(edit ? data ? moment(edit?.month_harvested).format('YYYY-MM-DD') : new Date() : new Date());
     const [toggleCheckBox, setToggleCheckBox] = useState(edit ? data ? edit?.processing_method == true ? 'yes' : 'no' : "" : '')
-    const [output, setOutput] = useState(edit ?edit?.production_output : 0)
+    const [output, setOutput] = useState(0)
     const [utilisationArray, setUtilisationArray] = useState([]);
-    const [others, setOthers] = useState(edit ? edit?.other_value: '');
+    const [others, setOthers] = useState(0);
     let findme = utilisationArray.find(i => i?.name == 'Others');
     const [savepopup, setSavepopup] = useState(false);
     const [draftpopup, setDraftpopup] = useState(false);
     useEffect(() => {
         if (edit) {
-            console.log("here", typeof edit?.production_output)
+            setOthers(edit?.other_value)
+            setOutput(edit?.production_output)
             setUtilisationArray(
                 [
                     { name: 'Self consumed', value: edit?.self_consumed },
@@ -50,7 +52,7 @@ const PoultryEdit = ({ navigation, route }) => {
             )
         }
     }, [edit])
-    console.log("edit", edit)
+    // console.log("edit", edit)
     const submit = () => {
         if (!data) {
             let formData = {
@@ -67,22 +69,33 @@ const PoultryEdit = ({ navigation, route }) => {
                 processing_method: toggleCheckBox === 'yes' ? true : false
             }
             const totalAmount = utilisationArray.reduce((total, item) => total + item?.value, 0);
-            let amount = parseInt(totalAmount)+parseInt(others)
+            let amount = parseInt(totalAmount) + parseInt(others)
             let out = parseInt(output)
-            if (output == "") {
+            if (output == "" || output == undefined) {
+                setMessage("Output cannot be empty")
                 Toast.show({
                     type: 'error',
                     text1: 'Output cannot be empty'
                 })
-            } else {
-                if (amount > out) {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Total amount cannot be greater than output'
-                    })
-                } else {
-                    navigation.navigate('poultryType', { edit: formData, cropId: cropId, data: data })
-                }
+            } else if (amount > out) {
+                setMessage("Total amount cannot be greater than output")
+                Toast.show({
+                    type: 'error',
+                    text1: 'Total amount cannot be greater than output'
+                })
+            }
+            else if (utilisationArray[0]?.value == 0 || utilisationArray[0]?.value == undefined
+                || utilisationArray[1]?.value == 0 || utilisationArray[1]?.value == undefined
+                || utilisationArray[2]?.value == 0|| utilisationArray[2]?.value == undefined
+                || utilisationArray[3]?.value == 0 || utilisationArray[3]?.value == undefined
+                || utilisationArray[4]?.value == 0 || utilisationArray[4]?.value == undefined
+                || utilisationArray[5]?.value == 0 || utilisationArray[5]?.value == undefined
+                || others == undefined || others == ""
+            ) {
+                setMessage("Input Fields Correctly")
+            }
+            else {
+                navigation.navigate('poultryType', { edit: formData, cropId: cropId, data: data })
             }
         } else {
             // console.log("edit id", edit?._id)
@@ -103,24 +116,35 @@ const PoultryEdit = ({ navigation, route }) => {
             const totalAmounts = utilisationArray.reduce((total, item) => total + item?.value, 0);
             let amounts = parseInt(totalAmounts) + parseInt(others)
             let outs = parseInt(output)
-            if (output == "") {
+            if (output == "" || output == undefined) {
+                setMessage("Output cannot be empty")
                 Toast.show({
                     type: 'error',
                     text1: 'Output cannot be empty'
                 })
-            } else {
-                if (amounts > outs) {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Total amount cannot be greater than output'
-                    })
-                } else {
-                    navigation.navigate('poultryType', { edit: formData, cropId: cropId, data: data })
-                }
+            } else if (amounts > outs) {
+                setMessage("Total amount cannot be greater than output")
+                Toast.show({
+                    type: 'error',
+                    text1: 'Total amount cannot be greater than output'
+                })
+            }
+            else if (utilisationArray[0]?.value == 0 || utilisationArray[0]?.value == undefined
+                || utilisationArray[1]?.value == 0 || utilisationArray[1]?.value == undefined
+                || utilisationArray[2]?.value==0 || utilisationArray[2]?.value == undefined
+                || utilisationArray[3]?.value == 0 || utilisationArray[3]?.value == undefined
+                || utilisationArray[4]?.value == 0 || utilisationArray[4]?.value == undefined
+                || utilisationArray[5]?.value == 0 || utilisationArray[5]?.value == undefined
+                || others == undefined || others == ""
+            ) {
+                setMessage("Input all Fields Correctly")
+            }
+            else {
+                navigation.navigate('poultryType', { edit: formData, cropId: cropId, data: data })
             }
         }
     }
-// console.log("others", edit)
+    // console.log("others", edit)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -135,7 +159,7 @@ const PoultryEdit = ({ navigation, route }) => {
                             measureName={'kg'}
                             productionName={'Output'}
                             keyboardType='numeric'
-                            value={output}
+                            value={output==undefined?output:output.toString()}
                             onChangeText={e => { setOutput(e) }}
                         />
                         <View style={styles.innerInputView}>
@@ -175,7 +199,7 @@ const PoultryEdit = ({ navigation, route }) => {
                                                         <InputWithoutBorder
                                                             measureName={'kg'}
                                                             productionName={findme?.value}
-                                                            value={others}
+                                                            value={others==undefined?others:others.toString()}
                                                             onChangeText={e => setOthers(e)}
                                                         />
                                                     </View>
@@ -228,6 +252,7 @@ const PoultryEdit = ({ navigation, route }) => {
                         <Text style={styles.yes_text}>No</Text>
                     </View>
                 </View>
+                {message && <Text style={{ color: 'red', fontSize: 16, alignSelf:'center' }}>{message}</Text>}
                 <View style={styles.bottomPopupbutton}>
                     <CustomButton
                         style={styles.submitButton}
@@ -237,11 +262,11 @@ const PoultryEdit = ({ navigation, route }) => {
                             submit()
                         }}
                     />
-                    <CustomButton
+                    {/* <CustomButton
                         style={styles.draftButton}
                         btnText={'Save as draft'}
                         onPress={() => { setDraftpopup(true) }}
-                    />
+                    /> */}
                 </View>
             </ScrollView>
             {/* harvest popup */}
@@ -393,7 +418,7 @@ const makeStyles = fontScale => StyleSheet.create({
         marginTop: '5%',
     },
     submitButton: {
-        width: '45%',
+        width: '93%',
         margin: 10,
     },
     draftButton: {

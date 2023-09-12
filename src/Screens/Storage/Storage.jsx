@@ -117,6 +117,7 @@ const Storage = ({navigation}) => {
       }),
     );
   }, [storage]);
+  console.log("storage method", storage)
   const onContinue = () => {
     dispatch(editStorage(storageList)).unwrap();
   };

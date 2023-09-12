@@ -816,9 +816,9 @@ const FisheryRiverInput = ({navigation, route}) => {
               );
             }}
           />
-          {errors?.utilisation_information?.yield?.message ? (
+          {errors?.utilisation_information?.yeild?.message ? (
             <Text style={styles.error}>
-              {errors?.utilisation_information?.yield?.message}
+              {errors?.utilisation_information?.yeild?.message}
             </Text>
           ) : null}
           <Text style={styles.processing_text}>
@@ -1010,6 +1010,7 @@ const makeStyles = fontScale =>
       color: 'red',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu',
+      marginLeft:15
     },
     textInputArea: {
       alignSelf: 'center',
