@@ -1,5 +1,5 @@
 import {Box, Button, Text} from '@react-native-material/core';
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,18 +7,37 @@ import {
   View,
   Image,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {useFocusEffect} from '@react-navigation/native';
+import {getUser, logout} from '../../Redux/AuthSlice';
+import {storage} from '../../Helper/Storage';
 
 export default function Home({navigation, route}) {
-  const {userToken, userDetails} = useSelector(s => s.auth);
+  const {userToken, user} = useSelector(s => s.auth);
+  const dispatch = useDispatch();
 
-  console.log(userDetails, 'userDetails');
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getUser());
+    }, []),
+  );
+
+  useEffect(() => {
+    if (!user) {
+      navigation.replace('startup');
+    }
+  }, [user]);
+
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <ScrollView contentContainerStyle={{flex: 1}}>
         <Box style={styles.container}>
           {/* <Box>
             <Text variant="h2">Hello from {route?.name}</Text>
@@ -27,8 +46,8 @@ export default function Home({navigation, route}) {
           <Box style={styles.user}>
             <Box style={styles.user_name}>
               <Text variant="h2" style={styles.user_name_txt}>
-                {userDetails.first_name?.charAt(0)}
-                {userDetails.last_name?.charAt(0)}
+                {user?.first_name?.charAt(0)}
+                {user?.last_name?.charAt(0)}
               </Text>
             </Box>
             <AnimatedCircularProgress
@@ -42,7 +61,7 @@ export default function Home({navigation, route}) {
             />
 
             <TouchableOpacity style={styles.usr_btn}>
-              <Text style={styles.usr_btn_txt}>{userDetails.first_name}</Text>
+              <Text style={styles.usr_btn_txt}>{user.first_name}</Text>
               <Image
                 style={styles.tinyLogo1}
                 source={require('../../../assets/edit2.png')}
@@ -50,7 +69,7 @@ export default function Home({navigation, route}) {
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
-              {userDetails.country_code} {userDetails.phone}
+              {user.country_code} {user.phone}
             </Text>
 
             <Box style={styles.user_land}>
@@ -60,9 +79,10 @@ export default function Home({navigation, route}) {
                   Land allocated
                 </Text>
                 <Text variant="body1" style={styles.land_txt}>
-                  {userDetails.total_land}{' '}
-                  {userDetails.land_measurement_symbol ||
-                    userDetails.land_measurement}
+                  {user.total_land}{' '}
+                  {user.land_measurement_symbol !== '-'
+                    ? user.land_measurement_symbol
+                    : user.land_measurement}
                 </Text>
               </Box>
               {/* </Box> */}
@@ -79,17 +99,17 @@ export default function Home({navigation, route}) {
                   Used land
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
-                  {Object.keys(userDetails.sub_area).reduce(
-                    (prev, new_value) => {
-                      if (userDetails.sub_area[new_value].land) {
-                        return prev + userDetails.sub_area[new_value].land || 0;
+                  {user.sub_area &&
+                    Object.keys(user?.sub_area).reduce((prev, new_value) => {
+                      console.log(user.sub_area[new_value]);
+                      if (typeof user.sub_area[new_value] === 'object') {
+                        return prev + user.sub_area[new_value].land || 0;
                       }
-                      return prev + userDetails.sub_area[new_value] || 0;
-                    },
-                    0,
-                  )}{' '}
-                  {userDetails.land_measurement_symbol ||
-                    userDetails.land_measurement}
+                      return prev + user.sub_area[new_value] || 0;
+                    }, 0)}{' '}
+                  {user.land_measurement_symbol !== '-'
+                    ? user.land_measurement_symbol
+                    : user.land_measurement}
                 </Text>
               </Box>
             </Box>
@@ -97,8 +117,7 @@ export default function Home({navigation, route}) {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('ProductionStack', {
-                screen:
-                  userDetails?.total_land > 0 ? 'production' : 'totalLand',
+                screen: user?.total_land > 0 ? 'production' : 'totalLand',
               })
             }>
             <Box style={styles.home_box}>
@@ -147,152 +166,159 @@ export default function Home({navigation, route}) {
             </Box>
           </TouchableOpacity>
           {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
-          {/* <View style={StyleSheet.login_submit}>
-            <CustomButton btnText={'Submit'} />
-          </View> */}
+          <View style={{marginTop: 'auto', marginBottom: 20}}>
+            <CustomButton
+              btnText={'Logout'}
+              onPress={() => {
+                dispatch(logout());
+              }}
+            />
+          </View>
         </Box>
       </ScrollView>
     </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  circular: {
-    marginTop: -95,
-  },
-  user: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    marginBottom: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 70,
-    padding: 15,
-    borderRadius: 8,
-  },
-  usr_btn_txt: {
-    color: '#268C43',
-    fontWeight: 700,
-    fontSize: 13,
-    marginRight: 1,
-    marginLeft: 4,
-  },
-  phone: {
-    color: '#263238',
-    fontSize: 13,
-  },
-  user_name: {
-    backgroundColor: '#EB7735',
-    height: 85,
-    width: 85,
-    borderRadius: 85,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 'auto',
-    marginTop: -60,
-  },
-  usr_btn: {
-    backgroundColor: 'rgba(38, 140, 67, .2)',
-    borderRadius: 200,
-    width: 75,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginVertical: 10,
-    padding: 5,
-  },
-  user_name_txt: {
-    color: '#fff',
-    fontSize: 36,
-    fontWeight: 700,
-  },
-  user_land: {
-    flexDirection: 'row',
-    borderColor: '#ddd',
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 20,
-    width: '100%',
-  },
-  usr_txt: {
-    fontSize: 12,
-    color: '#263238',
-    marginBottom: 5,
-    fontFamily: 'ubuntu_regular',
-  },
-  land_txt: {
-    color: '#268C43',
-    fontSize: 12,
-    fontFamily: 'ubuntu_medium',
-  },
-  land_txt2: {
-    color: '#E5C05E',
-    fontSize: 12,
-    fontFamily: 'ubuntu_medium',
-  },
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    circular: {
+      marginTop: -95,
+    },
+    user: {
+      borderColor: '#ddd',
+      borderWidth: 1,
+      marginBottom: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 70,
+      padding: 15,
+      borderRadius: 8,
+    },
+    usr_btn_txt: {
+      color: '#268C43',
+      fontWeight: 700,
+      fontSize: 13 / fontScale,
+      marginRight: 1,
+      marginLeft: 4,
+    },
+    phone: {
+      color: '#263238',
+      fontSize: 13 / fontScale,
+    },
+    user_name: {
+      backgroundColor: '#EB7735',
+      height: 85,
+      width: 85,
+      borderRadius: 85,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 'auto',
+      marginTop: -60,
+    },
+    usr_btn: {
+      backgroundColor: 'rgba(38, 140, 67, .2)',
+      borderRadius: 200,
+      width: 75,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      marginVertical: 10,
+      padding: 5,
+    },
+    user_name_txt: {
+      color: '#fff',
+      fontSize: 36 / fontScale,
+      fontWeight: 700,
+    },
+    user_land: {
+      flexDirection: 'row',
+      borderColor: '#ddd',
+      borderWidth: 1,
+      padding: 8,
+      borderRadius: 8,
+      marginTop: 20,
+      width: '100%',
+    },
+    usr_txt: {
+      fontSize: 12 / fontScale,
+      color: '#263238',
+      marginBottom: 5,
+      fontFamily: 'ubuntu_regular',
+    },
+    land_txt: {
+      color: '#268C43',
+      fontSize: 12 / fontScale,
+      fontFamily: 'ubuntu_medium',
+    },
+    land_txt2: {
+      color: '#E5C05E',
+      fontSize: 12 / fontScale,
+      fontFamily: 'ubuntu_medium',
+    },
 
-  home_box: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#268C43',
-    paddingVertical: 8,
-    paddingLeft: 8,
-    paddingRight: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 16,
-  },
-  home_box_lft_upr: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  usr_land: {
-    flex: 1,
-    padding: 10,
-  },
-  hme_box_txt: {
-    color: '#268C43',
-    fontSize: 16,
-    fontWeight: 500,
-    marginLeft: 20,
-  },
-  hme_box_txt2: {
-    color: '#263238',
-    fontSize: 16,
-    fontWeight: 500,
-    marginLeft: 20,
-  },
-  // tinyLogo1:{
-  //   // alignItems: 'center',
-  //   // justifyContent: 'center',
-  //   // flexDirection:"row",
-  //   width:"auto"
-  // },
-  hme_box_lft: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    borderRadius: 5,
-    backgroundColor: '#22863F',
-    // backgroundColor: '#22863e58',
+    home_box: {
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#268C43',
+      paddingVertical: 8,
+      paddingLeft: 8,
+      paddingRight: 20,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginBottom: 16,
+    },
+    home_box_lft_upr: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    usr_land: {
+      flex: 1,
+      padding: 10,
+    },
+    hme_box_txt: {
+      color: '#268C43',
+      fontSize: 16 / fontScale,
+      fontWeight: 500,
+      marginLeft: 20,
+    },
+    hme_box_txt2: {
+      color: '#263238',
+      fontSize: 16 / fontScale,
+      fontWeight: 500,
+      marginLeft: 20,
+    },
+    // tinyLogo1:{
+    //   // alignItems: 'center',
+    //   // justifyContent: 'center',
+    //   // flexDirection:"row",
+    //   width:"auto"
+    // },
+    hme_box_lft: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      borderRadius: 5,
+      backgroundColor: '#22863F',
+      // backgroundColor: '#22863e58',
 
-    height: 80,
-    width: 80,
-  },
-  hme_box_lft2: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    borderRadius: 5,
-    backgroundColor: '#263238',
+      height: 80,
+      width: 80,
+    },
+    hme_box_lft2: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      borderRadius: 5,
+      backgroundColor: '#263238',
 
-    height: 80,
-    width: 80,
-  },
+      height: 80,
+      width: 80,
+    },
 
-  container: {
-    paddingHorizontal: 20,
-  },
-});
+    container: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+  });

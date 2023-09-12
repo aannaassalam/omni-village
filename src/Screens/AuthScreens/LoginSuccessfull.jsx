@@ -9,10 +9,16 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckToken} from '../../Helper/CheckToken';
+import {StackActions, NavigationAction} from '@react-navigation/native';
 
 export default function LoginSuccessfull({navigation}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  // const resetAction = StackActions.reset({
+  //   index: 0,
+  //   actions: [NavigationAction('navigate', {routeName: 'hone'})],
+  // });
 
   useEffect(() => {
     const timeout = setTimeout(() => {

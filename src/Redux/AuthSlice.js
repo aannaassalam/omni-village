@@ -5,6 +5,7 @@ import {AsyncStorage} from 'react-native';
 import {MMKV} from 'react-native-mmkv';
 import {storage} from '../Helper/Storage';
 import FormData from 'form-data';
+import {create} from 'react-test-renderer';
 
 const initialState = {
   status: 'idle',
@@ -32,7 +33,7 @@ export const getUser = createAsyncThunk(
 
 export const SendOTP = createAsyncThunk(
   'sendotp',
-  async ({phone, type, country,currency,country_code}, {rejectWithValue}) => {
+  async ({phone, type, country, currency, country_code}, {rejectWithValue}) => {
     try {
       // console.log(user,"userincoming")
       let res = await axiosInstance.post(endpoints?.auth?.otp, {
@@ -170,6 +171,11 @@ export const LandAllocation = createAsyncThunk(
   },
 );
 
+export const logout = createAsyncThunk('logout', () => {
+  storage.clearAll();
+  return true;
+});
+
 export const AuthSlice = createSlice({
   name: 'userAuth',
   initialState,
@@ -224,7 +230,6 @@ export const AuthSlice = createSlice({
             country_code: payload?.country_code,
             currency: payload?.currency,
             country: payload?.country,
-
           };
           state.otp = payload.data.split(' - ')[1];
           state.status = 'idle';
@@ -270,7 +275,7 @@ export const AuthSlice = createSlice({
 
       // Land Allocation
 
-      .addCase(LandAllocation.pending, (action, state) => {
+      .addCase(LandAllocation.pending, state => {
         state.status = 'pending';
       })
       .addCase(LandAllocation.fulfilled, (state, {payload}) => {
@@ -279,7 +284,19 @@ export const AuthSlice = createSlice({
           state.status = 'idle';
         }
       })
-      .addCase(LandAllocation.rejected, (action, state) => {
+      .addCase(LandAllocation.rejected, state => {
+        state.status = 'idle';
+      })
+      .addCase(logout.pending, state => {
+        state.status = 'pending';
+      })
+      .addCase(logout.fulfilled, state => {
+        state.user = {};
+        state.userDetails = {};
+        state.userToken = '';
+        state.status = 'idle';
+      })
+      .addCase(logout.rejected, state => {
         state.status = 'idle';
       });
   },

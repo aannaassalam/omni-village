@@ -1,21 +1,31 @@
-import { StyleSheet, Text, View,useWindowDimensions,Image,TouchableOpacity } from 'react-native'
-import React, { useCallback } from 'react'
-import CustomHeader from '../../Components/CustomHeader/CustomHeader'
-import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard'
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useCallback} from 'react';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import {Box, Button} from '@react-native-material/core';
-import { useFocusEffect } from '@react-navigation/native';
-import { getFisheryCrops } from '../../Redux/FisheryCropSlice';
-import { useDispatch } from 'react-redux';
+import {useFocusEffect} from '@react-navigation/native';
+import {getFisheryCrops} from '../../Redux/FisheryCropSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 
-const Index = ({navigation,route}) => {
-    const {totalLand} = route.params
-    const {fontScale} = useWindowDimensions()
-    const dispatch = useDispatch()
-    const styles = makeStyles(fontScale)
+const Index = ({navigation, route}) => {
+  // const { totalLand } = route.params;
+  const {user} = useSelector(state => state.auth);
+  const {fontScale} = useWindowDimensions();
+  const dispatch = useDispatch();
+  const styles = makeStyles(fontScale);
   useFocusEffect(
     useCallback(() => {
-      dispatch(getFisheryCrops())
-    }, []))
+      dispatch(getFisheryCrops());
+    }, []),
+  );
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -24,52 +34,64 @@ const Index = ({navigation,route}) => {
         goBack={() => navigation.goBack()}
       />
       <CustomDashboard first={'Production'} second={'Fishery'} />
+      <CustomDashboard2
+        allocatedFor="Fishery"
+        usedLand={user.sub_area.fishery}
+      />
       <View style={styles.optionsContainer}>
-      {/* Harvested From Pond */}
-      <TouchableOpacity onPress={() => navigation.navigate('fishery',{totalLand:totalLand, screenName:'Harvested From Pond'})}>
-        <Box style={styles.home_box}>
-          <Box style={styles.home_box_lft_upr}>
-            <Text variant="h3" style={styles.hme_box_txt}>
-              Harvested From Pond
-            </Text>
+        {/* Harvested From Pond */}
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('fishery', {screenName: 'Harvested From Pond'})
+          }>
+          <Box style={styles.home_box}>
+            <Box style={styles.home_box_lft_upr}>
+              <Text variant="h3" style={styles.hme_box_txt}>
+                Harvested From Pond
+              </Text>
+            </Box>
+            <Box style={styles.hme_box_rgt}>
+              <Image
+                style={styles.tinyIcon}
+                source={require('../../../assets/e4.png')}
+                // height={100}
+              />
+            </Box>
           </Box>
-          <Box style={styles.hme_box_rgt}>
-            <Image
-              style={styles.tinyIcon}
-              source={require('../../../assets/e4.png')}
-              // height={100}
-            />
+        </TouchableOpacity>
+        {/*  Harvested From River */}
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('fisheryRiver', {
+              screenName: 'Harvested From River',
+            })
+          }>
+          <Box style={[styles.home_box]}>
+            {/* <Box style={styles.exclamationMark}>
+              <Image
+                style={styles.tinyIcon2}
+                source={require('../../../assets/infocircle.png')}
+              />
+            </Box> */}
+            <Box style={styles.home_box_lft_upr}>
+              <Text variant="h3" style={styles.hme_box_txt}>
+                Harvested From River
+              </Text>
+            </Box>
+            <Box style={styles.hme_box_rgt}>
+              <Image
+                style={styles.tinyIcon}
+                source={require('../../../assets/e4.png')}
+              />
+            </Box>
           </Box>
-        </Box>
-      </TouchableOpacity>
-      {/*  Harvested From River */}
-        <TouchableOpacity onPress={() => navigation.navigate('fisheryRiver', { totalLand: totalLand, screenName: 'Harvested From Sea' })}>
-        <Box style={[styles.home_box, {borderColor: '#E5C05E'}]}>
-          <Box style={styles.exclamationMark}>
-            <Image
-              style={styles.tinyIcon2}
-              source={require('../../../assets/infocircle.png')}
-            />
-          </Box>
-          <Box style={styles.home_box_lft_upr}>
-            <Text variant="h3" style={styles.hme_box_txt2}>
-              Harvested From River
-            </Text>
-          </Box>
-          <Box style={styles.hme_box_rgt}>
-            <Image
-              style={styles.tinyIcon}
-              source={require('../../../assets/e6.png')}
-            />
-          </Box>
-        </Box>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 
-export default Index
+export default Index;
 
 const makeStyles = fontScale =>
   StyleSheet.create({

@@ -31,6 +31,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import PopupModal from '../../Components/Popups/PopupModal';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -68,6 +69,9 @@ const Season1 = ({navigation, route}) => {
       );
       return () => {
         setSelectCrops([]);
+        setSelectedCrop({});
+        setSelectedCategory({name: ''});
+        setGlobalError('');
       };
     }, [cultivations]),
   );
@@ -91,9 +95,13 @@ const Season1 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        if (selectedCategory?.length > 0) {
-          const cat = cropCategories.find(c => c.name === selectedCategory);
-          dispatch(saveCrop({name: otherCrop, categoryId: cat._id}))
+        if (selectedCategory.label?.length > 0) {
+          const cat = cropCategories.find(
+            c => c._id === selectedCategory.value,
+          );
+          dispatch(
+            saveCrop({name: otherCrop, categoryId: selectedCategory.value}),
+          )
             .unwrap()
             .then(res => {
               setSelectCrops(prev => [...prev, res.data]);
@@ -211,7 +219,7 @@ const Season1 = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName={'Add Crop'}
+              cropName={'Add Corp'}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -250,7 +258,7 @@ const Season1 = ({navigation, route}) => {
           </View>
           <View style={styles.dropdownSection}>
             <View style={{marginBottom: 15}}>
-              <CustomDropdown2
+              {/* <CustomDropdown2
                 selectedValue={e => {
                   setSelectedCategory(e);
                   // setSelectCrops({name: ''});
@@ -262,9 +270,24 @@ const Season1 = ({navigation, route}) => {
                 value={selectedCategory}
                 placeholder="Select a category"
                 data={cropCategories}
+              /> */}
+              <CustomDropdown4
+                selectedValue={e => {
+                  setSelectedCategory(e);
+                  // setSelectCrops({name: ''});
+                  console.log(e);
+                  dispatch(
+                    getCrops(
+                      cropCategories.find(cp => cp.name === e.label)._id,
+                    ),
+                  );
+                }}
+                data={cropCategories}
+                placeholder="Select a category"
+                valu={selectedCategory}
               />
             </View>
-            <CustomDropdown2
+            {/* <CustomDropdown2
               selectedValue={e => {
                 setSelectedCrop(
                   crops.find(cp => cp.name === e.name) || {
@@ -279,6 +302,20 @@ const Season1 = ({navigation, route}) => {
               value={selectedCrop}
               placeholder="Select a crop"
               data={[...crops, {_id: 0, name: 'Others'}]}
+            /> */}
+            <CustomDropdown4
+              selectedValue={e => {
+                setSelectedCrop(
+                  crops.find(cp => cp.name === e.label) || {
+                    _id: 0,
+                    name: 'Others',
+                  },
+                );
+                setOtherCrop('');
+              }}
+              data={[...crops, {_id: 0, name: 'Others'}]}
+              placeholder="Select a crop"
+              valu={{label: selectedCrop.name, value: selectedCrop._id}}
             />
             {selectedCrop?.name === 'Others' ? (
               <InputWithoutRightElement

@@ -81,7 +81,7 @@ const makeStyles = fontScale =>
     },
     productionName: {
       fontSize: 16 / fontScale,
-      color: '#000',
+      color: '#333',
       fontFamily: 'ubuntu_medium',
       textTransform: 'capitalize',
     },

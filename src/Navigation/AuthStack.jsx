@@ -31,7 +31,7 @@ export default function AuthStack({isLoggedIn}) {
     }
   }, [token]);
 
-  const renderScreen = () => {
+  const renderScreen = useCallback(() => {
     if (user?.first_name === '-') {
       return 'registerdetails';
     } else if (token === undefined || token === null) {
@@ -40,7 +40,7 @@ export default function AuthStack({isLoggedIn}) {
       // return 'registerdetails';
       return 'home';
     }
-  };
+  }, [token, user]);
 
   return (
     <Stack.Navigator

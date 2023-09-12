@@ -48,7 +48,7 @@ const makeStyles = fontScale =>
     },
     addButtonText: {
       color: '#000',
-      fontSize: 16 / fontScale,
+      fontSize: 14 / fontScale,
       fontWeight: '500',
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',

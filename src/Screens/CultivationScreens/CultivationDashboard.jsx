@@ -103,6 +103,8 @@ const CultivationDashboard = ({navigation, route}) => {
     }
   }, [errors]);
 
+  console.log(userDetails.sub_area.cultivation.distribution);
+
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader
@@ -114,17 +116,22 @@ const CultivationDashboard = ({navigation, route}) => {
       {/* land allocated and modify section */}
       <View style={styles.secondTopContainer}>
         <View style={styles.secondTopContainerInner}>
-          <Text style={[styles.acresText]}>Land allocated for</Text>
+          <Text style={[styles.acresText, {flex: 0}]}>Land allocated for</Text>
           <Text
             style={[
               styles.acresText,
-              {color: '#000', alignSelf: 'flex-start', marginTop: 5},
+              {color: '#000', alignSelf: 'flex-start', marginTop: 5, flex: 0},
             ]}>
             Cultivation
           </Text>
         </View>
         <Divider style={styles.divider} />
-        <Text style={styles.acresText}>10 acres</Text>
+        <Text style={styles.acresText}>
+          {userDetails.sub_area.cultivation.land}{' '}
+          {userDetails.land_measurement_symbol !== '-'
+            ? userDetails.land_measurement_symbol
+            : userDetails.land_measurement}
+        </Text>
         <CustomButton
           btnText={'Modify'}
           style={styles.modifyButton}
@@ -150,7 +157,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Box
             style={[
               styles.home_box,
-              userDetails.sub_area.cultivation.distribution.once === 0 ||
+              !userDetails.sub_area.cultivation.distribution.once ||
               userDetails.sub_area.cultivation.distribution.once === ''
                 ? {borderColor: 'grey'}
                 : {},
@@ -159,7 +166,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Text
                 variant="h3"
                 style={
-                  userDetails.sub_area.cultivation.distribution.once === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.once ||
                   userDetails.sub_area.cultivation.distribution.once === ''
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
@@ -171,7 +178,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Image
                 style={styles.tinyIcon}
                 source={
-                  userDetails.sub_area.cultivation.distribution.once === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.once ||
                   userDetails.sub_area.cultivation.distribution.once === ''
                     ? require('../../../assets/e5.png')
                     : require('../../../assets/e4.png')
@@ -197,7 +204,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Box
             style={[
               styles.home_box,
-              userDetails.sub_area.cultivation.distribution.twice === 0 ||
+              !userDetails.sub_area.cultivation.distribution.twice ||
               userDetails.sub_area.cultivation.distribution.twice === ''
                 ? {borderColor: 'grey'}
                 : {},
@@ -213,7 +220,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Text
                 variant="h3"
                 style={
-                  userDetails.sub_area.cultivation.distribution.twice === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.twice ||
                   userDetails.sub_area.cultivation.distribution.twice === ''
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
@@ -225,7 +232,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Image
                 style={styles.tinyIcon}
                 source={
-                  userDetails.sub_area.cultivation.distribution.twice === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.twice ||
                   userDetails.sub_area.cultivation.distribution.twice === ''
                     ? require('../../../assets/e5.png')
                     : require('../../../assets/e4.png')
@@ -251,7 +258,7 @@ const CultivationDashboard = ({navigation, route}) => {
           <Box
             style={[
               styles.home_box,
-              userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+              !userDetails.sub_area.cultivation.distribution.thrice ||
               userDetails.sub_area.cultivation.distribution.thrice === ''
                 ? {borderColor: 'grey'}
                 : {},
@@ -260,7 +267,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Text
                 variant="h3"
                 style={
-                  userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.thrice ||
                   userDetails.sub_area.cultivation.distribution.thrice === ''
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
@@ -272,7 +279,7 @@ const CultivationDashboard = ({navigation, route}) => {
               <Image
                 style={styles.tinyIcon}
                 source={
-                  userDetails.sub_area.cultivation.distribution.thrice === 0 ||
+                  !userDetails.sub_area.cultivation.distribution.thrice ||
                   userDetails.sub_area.cultivation.distribution.thrice === ''
                     ? require('../../../assets/e5.png')
                     : require('../../../assets/e4.png')
@@ -458,10 +465,13 @@ const makeStyles = fontScale =>
       width: '90%',
       borderRadius: 10,
       padding: 5,
+      paddingHorizontal: 10,
       justifyContent: 'space-around',
     },
     secondTopContainerInner: {
       padding: 10,
+      paddingLeft: 3,
+      // paddingVertical: 7,
     },
     divider: {
       alignSelf: 'center',
@@ -469,12 +479,15 @@ const makeStyles = fontScale =>
       width: '1%',
       marginTop: 5,
       color: 'grey',
+      marginRight: 10,
     },
     acresText: {
       alignSelf: 'center',
       fontFamily: 'ubuntu_medium',
       color: 'green',
       fontSize: 14 / fontScale,
+      flex: 1,
+      flexWrap: 'wrap',
     },
     modifyButton: {
       height: 35,

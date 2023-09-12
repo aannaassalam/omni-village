@@ -48,7 +48,7 @@ const makeStyles = fontScale =>
     },
     headerText: {
       alignSelf: 'center',
-      color: '#000',
+      color: '#333',
       fontWeight: '600',
       textAlign: 'center',
       fontSize: 18 / fontScale,
