@@ -592,16 +592,12 @@ const Type01 = ({ navigation, route }) => {
               null
             }
           </>
-          {data?
-          null
-          :
           <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
             <Text style={styles.add_button_text}>Add</Text>
             <AntDesign
               name="plus" size={15} color="#fff"
             />
           </TouchableOpacity>
-        }
         </View>
         <View style={styles.bottomPopupbutton}>
           <CustomButton

@@ -818,15 +818,12 @@ const PoultryType = ({ navigation, route }) => {
                                 null
                             }
                         </>
-                        {data?
-                        null:
                         <TouchableOpacity style={styles.add_button} onPress={() => setHarvestProdAdd(true)}>
                             <Text style={styles.add_button_text}>Add</Text>
                             <AntDesign
                                 name="plus" size={15} color="#fff"
                             />
                         </TouchableOpacity>
-                    }
                     </View>
                     {message && <Text style={{ color: 'red', fontSize: 14, alignSelf: 'center', marginTop:'5%' }}>{message}</Text>}
                     <View style={styles.bottomPopupbutton}>
