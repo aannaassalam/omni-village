@@ -39,6 +39,7 @@ const FishTypeInput = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fishFeed} = useSelector(state => state.Others);
   const {measurement} = useSelector(state => state.Others);
+  const { userDetails } = useSelector(state => state.auth);
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -150,7 +151,7 @@ const FishTypeInput = ({navigation, route}) => {
         yeild: String(data?.yeilds || ''),
       },
       processing_method: Boolean(data?.processing_method || false),
-      weight_measurement: String(data?.weight_measurement || 'kg'),
+      weight_measurement: String(data?.weight_measurement || 'kilogram'),
     },
   });
   useEffect(() => {
@@ -439,7 +440,9 @@ const FishTypeInput = ({navigation, route}) => {
                         const {onChange, value} = field;
                         return (
                           <InputWithoutBorder
-                            measureName={'kg'}
+                            measureName={watch('weight_measurement')
+                              ? watch('weight_measurement')
+                              : 'kg'}
                             productionName={'Create Type'}
                             value={value}
                             multiline={false}
@@ -533,9 +536,9 @@ const FishTypeInput = ({navigation, route}) => {
                   );
                 }}
               />
-              {errors?.utilisation_information?.output.message ? (
+              {errors?.utilisation_information?.output?.message ? (
                 <Text style={styles.error}>
-                  {errors?.utilisation_information?.output.message}
+                  {errors?.utilisation_information?.output?.message}
                 </Text>
               ) : null}
               <View style={styles.innerInputView}>
@@ -560,9 +563,9 @@ const FishTypeInput = ({navigation, route}) => {
                       );
                     }}
                   />
-                  {errors?.utilisation_information?.self_consumed.message ? (
+                  {errors?.utilisation_information?.self_consumed?.message ? (
                     <Text style={styles.error}>
-                      {errors?.utilisation_information?.self_consumed.message}
+                      {errors?.utilisation_information?.self_consumed?.message}
                     </Text>
                   ) : null}
                   <Controller
@@ -726,7 +729,7 @@ const FishTypeInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={'USD'}
+                  measureName={userDetails?.currency}
                   productionName={'Income from sale'}
                   value={value}
                   onChangeText={onChange}
@@ -746,7 +749,7 @@ const FishTypeInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={'USD'}
+                  measureName={userDetails?.currency}
                   productionName={'Expenditure on inputs'}
                   value={value}
                   onChangeText={onChange}
@@ -777,9 +780,9 @@ const FishTypeInput = ({navigation, route}) => {
               );
             }}
           />
-          {errors?.utilisation_information?.yield?.message ? (
+          {errors?.utilisation_information?.yeild?.message ? (
             <Text style={styles.error}>
-              {errors?.utilisation_information?.yield?.message}
+              {errors?.utilisation_information?.yeild?.message}
             </Text>
           ) : null}
           <Text style={styles.processing_text}>
@@ -975,6 +978,7 @@ const makeStyles = fontScale =>
       color: 'red',
       fontSize: 14 / fontScale,
       fontFamily: 'ubuntu',
+      marginLeft: 15
     },
     subArea: {
       alignSelf: 'center',

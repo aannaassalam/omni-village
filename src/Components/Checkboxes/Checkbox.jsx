@@ -5,7 +5,7 @@ const Checkbox = ({ name, checked, checking }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
   return (
-    <View style={styles.checkboxContainer}>
+    <TouchableOpacity style={styles.checkboxContainer} onPress={checking}>
       <View style={{flexDirection: 'row'}}>
       <Text style={styles.textName}>{name}</Text>
       <TouchableOpacity onPress={checking}>
@@ -22,7 +22,7 @@ const Checkbox = ({ name, checked, checking }) => {
     }
         </TouchableOpacity>
         </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 

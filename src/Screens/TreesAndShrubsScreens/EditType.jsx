@@ -252,15 +252,40 @@ const EditType = ({ navigation, route }) => {
         modalVisible={harvestedPopup}
         setBottomModalVisible={setHarvestedPopup}
         styleInner={styles.savePopup}>
-        <View>
-          <CalendarPicker onDateChange={date => setHarvestedDate(date)} 
+        <View style={{
+          padding:10, paddingHorizontal:20
+        }}>
+          <CalendarPicker 
+            previousTitle='Prevoius'
+            previousTitleStyle={{
+              color: '#268C43',
+              fontFamily: 'ubuntu'
+            }}
+            nextTitle='Next'
+            nextTitleStyle={{
+              color: '#268C43',
+              fontFamily: 'ubuntu'
+            }}
+            headerWrapperStyle={{
+              width:400
+            }}
+            showDayStragglers={true}
+            startFromMonday
+            dayLabelsWrapper={{
+              paddingHorizontal:-15,
+            }}
+          onDateChange={date => setHarvestedDate(date)} 
           initialDate={moment(edit?.month_harvested).format('YYYY-MM-DD')}
           />
+          <View style={{
+            marginTop:'10%'
+          }}>
           <CustomButton
             btnText={'Done'}
             onPress={() => setHarvestedPopup(false)}
             style={styles.popupButton}
           />
+          </View>
         </View>
       </PopupModal>
       {/* submit popup */}

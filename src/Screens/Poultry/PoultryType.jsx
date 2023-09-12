@@ -43,6 +43,7 @@ const PoultryType = ({ navigation, route }) => {
     const {measurement} = useSelector((state)=>state.Others)
     const {feed} = useSelector((state)=>state.Others)
     const [message,setMessage]  = useState('')
+    const { userDetails } = useSelector(state => state.auth);
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
     const [treeAge, setTreeAge] = useState(false)
@@ -690,7 +691,7 @@ const PoultryType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Income from sale'}
                                         value={value}
                                         onChangeText={onChange}
@@ -710,7 +711,7 @@ const PoultryType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Expenditure on inputs'}
                                         value={value}
                                         onChangeText={onChange}
@@ -1008,7 +1009,8 @@ const makeStyles = fontScale =>
         error: {
             color: 'red',
             fontSize: 14 / fontScale,
-            fontFamily: 'ubuntu'
+            fontFamily: 'ubuntu',
+            marginLeft: 15
         },
         subArea: {
             alignSelf: 'center',

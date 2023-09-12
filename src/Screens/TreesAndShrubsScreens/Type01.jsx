@@ -37,6 +37,7 @@ const Type01 = ({ navigation, route }) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { userDetails } = useSelector(state => state.auth);
   const [treeAge, setTreeAge] = useState(false)
   const [harvestProdAdd, setHarvestProdAdd] = useState(false)
   const [focus, setFocus] = useState(false)
@@ -140,6 +141,7 @@ const Type01 = ({ navigation, route }) => {
   }, [errors]);
   // console.log("data", data?.number_of_trees)
   const onSubmit = (data2) => {
+    // console.log('data2', data2)
     if (data?._id) {
       dispatch(
         editTree({
@@ -193,13 +195,14 @@ const Type01 = ({ navigation, route }) => {
       )
         .unwrap()
         .then(
-          () =>
-            Toast.show({
+          (res) =>
+           { Toast.show({
               text1: 'Success',
               text2: 'Trees added successfully!',
             }),
           dispatch(getTree()),
           navigation.goBack(),
+          console.log("here", res)}
         )
         .catch(err => {
           console.log('err at add', err);
@@ -268,14 +271,15 @@ const Type01 = ({ navigation, route }) => {
       )
         .unwrap()
         .then(
-          () =>
+          (res) =>
             Toast.show({
               text1: 'Success',
               text2: 'Trees added successfully!',
             }),
           dispatch(getTree()),
           navigation.goBack(),
-          setDraftpopup(false)
+          setDraftpopup(false),
+          console.log("ressss", res)
         )
         .catch(err => {
           console.log('err at add', err);
@@ -506,7 +510,7 @@ const Type01 = ({ navigation, route }) => {
                   const { onChange, value } = field;
                   return (
                     <InputWithoutBorder
-                      measureName={'USD'}
+                      measureName={userDetails?.currency}
                       productionName={'Income from sale'}
                       value={value}
                       onChangeText={onChange}
@@ -526,7 +530,7 @@ const Type01 = ({ navigation, route }) => {
                   const { onChange, value } = field;
                   return (
                     <InputWithoutBorder
-                      measureName={'USD'}
+                      measureName={userDetails?.currency}
                       productionName={'Expenditure on inputs'}
                       value={value}
                       onChangeText={onChange}
@@ -680,18 +684,31 @@ const Type01 = ({ navigation, route }) => {
                 value={productName}
                 keyboardType='default'
                 onChangeText={e => {
-                  if (e.endsWith("\n")) {
-                    setHarvestProdAdd(!harvestProdAdd)
-                    setFocus(!focus)
-                    addProduct()
-                  } else {
-                    setProductName(e)
-                  }
+                  // if (e.endsWith("\n")) {
+                  //   setHarvestProdAdd(!harvestProdAdd)
+                  //   setFocus(!focus)
+                  //   addProduct()
+                  // } else {
+                  //   setProductName(e)
+                  // }
+                  setProductName(e)
                 }}
                 multiline={true}
                 notRightText={true}
                 onFocus={() => setFocus(true)}
               />
+              <View style={{
+                marginTop:'15%'
+              }}>
+              <CustomButton
+              btnText={'Submit'}
+              onPress={()=>{
+                setHarvestProdAdd(!harvestProdAdd)
+                  setFocus(!focus)
+                  addProduct()
+              }}
+              />
+              </View>
             </View>
           </AddBottomSheet>
         }
@@ -781,7 +798,8 @@ const makeStyles = fontScale =>
     error: {
       color: 'red',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu'
+      fontFamily: 'ubuntu',
+      marginLeft: 15
     },
     textInputArea: {
       alignSelf: 'center',

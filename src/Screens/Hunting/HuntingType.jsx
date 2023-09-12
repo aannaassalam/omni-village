@@ -37,6 +37,7 @@ const HuntingType = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const { measurement } = useSelector((state) => state.Others)
     const [weight, setWeight] = useState('')
+    const { userDetails } = useSelector(state => state.auth);
     const styles = makeStyles(fontScale);
     const [income, setIncome] = useState('');
     const [expenditure, setExpenditure] = useState('');
@@ -93,7 +94,7 @@ const HuntingType = ({ navigation, route }) => {
         weight_measurement: yup.string().required(validation.error.weight_measurement),
 
     });
-    // console.log("cropid", measurement)
+    // console.log("cropid", userDetails?.currency)
     const {
         handleSubmit,
         setValue,
@@ -119,7 +120,7 @@ const HuntingType = ({ navigation, route }) => {
             expenditure_on_inputs: String(data?.expenditure_on_inputs || ""),
             income_from_sale: String(data?.income_from_sale || ""), // TODO: add validation for this field
             yeild: String(data?.yeild || ""),
-            weight_measurement: String(data?.weight_measurement || 'kg'),
+            weight_measurement: String(data?.weight_measurement || 'kilogram'),
             processing_method: Boolean(data?.processing_method || false),
         },
     });
@@ -362,7 +363,7 @@ const HuntingType = ({ navigation, route }) => {
                                 return (
                                     <CustomDropdown3
                                         data={measurement}
-                                        value={value}
+                                        valu={value}
                                         defaultVal={{ key: value, value: value }}
                                         selectedValue={onChange}
                                         infoName={'Weight Measuremnt'}
@@ -565,7 +566,7 @@ const HuntingType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Income from sale'}
                                         value={value}
                                         onChangeText={onChange}
@@ -585,7 +586,7 @@ const HuntingType = ({ navigation, route }) => {
                                 const { onChange, value } = field;
                                 return (
                                     <InputWithoutBorder
-                                        measureName={'USD'}
+                                        measureName={userDetails?.currency}
                                         productionName={'Expenditure on inputs'}
                                         value={value}
                                         onChangeText={onChange}
@@ -768,7 +769,8 @@ const makeStyles = fontScale =>
         error:{
             color:'red',
             fontSize: 14 / fontScale,
-            fontFamily: 'ubuntu'
+            fontFamily: 'ubuntu',
+            marginLeft: 15
         },
         textInputArea: {
             alignSelf: 'center',

@@ -140,7 +140,7 @@ const TreesShrubsScreen = ({ navigation, route }) => {
         <View style={styles.addAndDeleteButtonSection}>
           <AddAndDeleteCropButton
             add={true}
-            cropName={'Add Crop'}
+            cropName={'Add Trees/Shrub'}
             onPress={() => setCropModal(true)}
           />
         </View>
@@ -148,7 +148,7 @@ const TreesShrubsScreen = ({ navigation, route }) => {
         <View style={styles.addAndDeleteButtonSection}>
           <AddAndDeleteCropButton
             add={true}
-            cropName={'Add Crop'}
+              cropName={'Add Trees/Shrub'}
             onPress={() => setCropModal(true)}
           />
         </View>
