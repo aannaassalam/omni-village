@@ -16,9 +16,11 @@ const CustomDashboard = ({first, second, third}) => {
         <>
           <Image
             source={require('../../../assets/right_black_arrow.png')}
-            style={styles.arrow}
+            style={[styles.arrow, {marginTop: 10}]}
           />
-          <Text style={[styles.topText, {color: '#000'}]}>{third}</Text>
+          <Text style={[styles.topText, {color: '#000', marginTop: 5}]}>
+            {third}
+          </Text>
         </>
       ) : null}
     </View>
@@ -38,6 +40,8 @@ const makeStyles = fontScale =>
       backgroundColor: '#D9D9D9',
       width: '90%',
       borderRadius: 5,
+      alignItems: 'center',
+      flexWrap: 'wrap',
     },
     topText: {
       fontSize: 14 / fontScale,
@@ -46,6 +50,8 @@ const makeStyles = fontScale =>
       // width: '25%',
       marginLeft: 5,
       textTransform: 'capitalize',
+      // flex: 0.35,
+      flexWrap: 'wrap',
     },
     arrow: {
       alignSelf: 'center',

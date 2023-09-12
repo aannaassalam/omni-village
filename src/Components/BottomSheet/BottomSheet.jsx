@@ -1,6 +1,12 @@
-import BottomSheet,{BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import * as React from 'react';
-import {StyleSheet, View, Text, useWindowDimensions, ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  useWindowDimensions,
+  ScrollView,
+} from 'react-native';
 
 const AddBottomSheet = ({children}) => {
   // Creates a reference to the DOM element that we can interact with
@@ -21,18 +27,22 @@ const AddBottomSheet = ({children}) => {
       ref={bottomSheetRef}
       index={0} // Hide the bottom sheet when we first load our component
       snapPoints={snapPoints}
-      keyboardBehavior='extend'
-      backdropComponent={props => (<BottomSheetBackdrop {...props}
-        opacity={0.5}
-        pressBehavior={'collapse'}
-        enableTouchThrough={false}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]} 
-        />)}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      backdropComponent={props => (
+        <BottomSheetBackdrop
+          {...props}
+          opacity={0.5}
+          pressBehavior={'collapse'}
+          enableTouchThrough={false}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
+        />
+      )}
       style={{elevation: 10, borderRadius: 10}}
       onChange={handleSheetChanges}>
-      <View style={{justifyContent:'center'}}>{children}</View>
+      <View style={{justifyContent: 'center'}}>{children}</View>
     </BottomSheet>
   );
 };

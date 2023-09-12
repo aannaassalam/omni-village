@@ -26,8 +26,9 @@ import {ActivityIndicator} from 'react-native-paper';
 import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
-const FisheryRiver = ({navigation}) => {
+const FisheryRiver = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
+  const {screenName} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {fisheryCrop} = useSelector(state => state.fisheryCrop);
@@ -50,14 +51,14 @@ const FisheryRiver = ({navigation}) => {
       .catch(err => console.log('error delete hunting', err));
   };
   const addCrop = () => {
-    let ids = cropType.map((i) => i.id || i?._id)
-    if(ids.includes(dropdownVal?.name?.value)){
-      Alert.alert("Crop Already exists")
+    let ids = cropType.map(i => i.id || i?._id);
+    if (ids.includes(dropdownVal?.name?.value)) {
+      Alert.alert('Crop Already exists');
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
       setOtherCrop('');
-    }else{
+    } else {
       setCropType([
         ...cropType,
         {
@@ -65,7 +66,10 @@ const FisheryRiver = ({navigation}) => {
             dropdownVal.name == 'Others'
               ? otherCrop.name
               : dropdownVal.name?.label,
-          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal.name?.value,
+          id:
+            dropdownVal.name == 'Others'
+              ? otherCrop._id
+              : dropdownVal.name?.value,
           progress: '',
         },
       ]);
@@ -73,7 +77,6 @@ const FisheryRiver = ({navigation}) => {
       setFocusOther(false);
       setDropdownVal('');
       setOtherCrop('');
-
     }
   };
   const addingHuntingCrop = () => {
@@ -114,7 +117,11 @@ const FisheryRiver = ({navigation}) => {
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
-      <CustomDashboard first={'Production'} second={'Fishery'} />
+      <CustomDashboard
+        first={'Production'}
+        second={'Fishery'}
+        third={screenName}
+      />
       {loading ? (
         <View style={{marginTop: '70%'}}>
           <ActivityIndicator color={'#000'} size={'small'} />
@@ -171,7 +178,7 @@ const FisheryRiver = ({navigation}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName="Add River Fish"
+              cropName="Add Fish"
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -180,7 +187,7 @@ const FisheryRiver = ({navigation}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Select Type</Text>
+            <Text style={styles.headerText}>Add Fish</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -206,8 +213,8 @@ const FisheryRiver = ({navigation}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Crop Name'}
-                placeholder={'Crop 01'}
+                label={'Fish Name'}
+                placeholder={'Eg: Salmon'}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}

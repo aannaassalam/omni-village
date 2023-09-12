@@ -7,31 +7,31 @@ import {
   useWindowDimensions,
   Alert,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import { useDispatch, useSelector } from 'react-redux';
-import { addTreeCrops, getTreeCrops } from '../../Redux/TreeCropSlice';
-import { getCrops } from '../../Redux/CropSlice';
-import { deleteTree, getTree, setCurrentTree } from '../../Redux/TreesSlice';
-import { useFocusEffect } from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {addTreeCrops, getTreeCrops} from '../../Redux/TreeCropSlice';
+import {getCrops} from '../../Redux/CropSlice';
+import {deleteTree, getTree, setCurrentTree} from '../../Redux/TreesSlice';
+import {useFocusEffect} from '@react-navigation/native';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
-const TreesShrubsScreen = ({ navigation, route }) => {
-  const { fontScale } = useWindowDimensions();
+const TreesShrubsScreen = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const dispatch = useDispatch()
-  const { userDetails } = useSelector(s => s.auth);
-  const { treeCrops } = useSelector((state) => state.treeCrop)
-  const { trees } = useSelector((state) => state?.treeShrub)
-  const totalLand = userDetails.total_land;
+  const dispatch = useDispatch();
+  const {userDetails} = useSelector(s => s.auth);
+  const {treeCrops} = useSelector(state => state.treeCrop);
+  const {trees} = useSelector(state => state?.treeShrub);
+  const totalLand = userDetails.sub_area.trees;
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState({});
@@ -42,24 +42,29 @@ const TreesShrubsScreen = ({ navigation, route }) => {
     list.splice(index, 1);
     setCropType(list);
     dispatch(deleteTree(id))
-    .unwrap()
-    .then((res)=>{
-    })
-    .catch((err)=>console.log("error", err))
+      .unwrap()
+      .then(res => {})
+      .catch(err => console.log('error', err));
   };
   const addCrop = () => {
-    let ids = cropType.map((i) => i?.id || i?._id)
-    if(ids.includes(dropdownVal?.name?.value)){
-      Alert.alert("Crop Already exists")
+    let ids = cropType.map(i => i?.id || i?._id);
+    if (ids.includes(dropdownVal?.name?.value)) {
+      Alert.alert('Crop Already exists');
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
-    }else{
+    } else {
       setCropType([
         ...cropType,
         {
-          name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name?.label,
-          id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal?.name?.value,
+          name:
+            dropdownVal.name == 'Others'
+              ? otherCrop.name
+              : dropdownVal.name?.label,
+          id:
+            dropdownVal.name == 'Others'
+              ? otherCrop._id
+              : dropdownVal?.name?.value,
           progress: '',
         },
       ]);
@@ -71,14 +76,14 @@ const TreesShrubsScreen = ({ navigation, route }) => {
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addTreeCrops({ name: otherCrop?.name }))
-      dispatch(getTreeCrops())
-      setDropdownVal([])
-      setOtherCrop('')
+      dispatch(addTreeCrops({name: otherCrop?.name}));
+      dispatch(getTreeCrops());
+      setDropdownVal([]);
+      setOtherCrop('');
     } else {
-      addCrop()
+      addCrop();
     }
-  }
+  };
   // console.log("dropdown", dropdownVal)
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
@@ -88,12 +93,13 @@ const TreesShrubsScreen = ({ navigation, route }) => {
   };
   useFocusEffect(
     useCallback(() => {
-      dispatch(getTreeCrops())
-      dispatch(getTree())
-    }, []))
+      dispatch(getTreeCrops());
+      dispatch(getTree());
+    }, []),
+  );
   useEffect(() => {
-    setCropType(trees?.map((i) => i?.tree_crop))
-  }, [trees])
+    setCropType(trees?.map(i => i?.tree_crop));
+  }, [trees]);
   // console.log("cropty", trees)
   return (
     <SafeAreaView style={styles.container}>
@@ -106,7 +112,7 @@ const TreesShrubsScreen = ({ navigation, route }) => {
       {/*Top Dashboard  */}
       <CustomDashboard
         first={'production'}
-        second={'Trees,Shrubs & Grasslands'}
+        second={'Trees, Shrubs & Grasslands'}
       />
       {/* Next Dashboard */}
       <CustomDashboard2
@@ -119,91 +125,102 @@ const TreesShrubsScreen = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.addAndDeleteButtonSection}
             onPress={() => {
-              dispatch(setCurrentTree(trees.find((i) => i?.tree_crop_id == element?._id))),
+              dispatch(
+                setCurrentTree(
+                  trees.find(i => i?.tree_crop_id == element?._id),
+                ),
+              ),
                 navigation.navigate('type', {
                   cropType: element?.name,
-                  cropId: trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id,
-                  data: trees.find((i) => i?.tree_crop_id == element?._id)
-                })
+                  cropId:
+                    trees[0] !== undefined &&
+                    trees.find(j => j?.tree_crop?.name == element?.name)
+                      ? trees.find(i => i?.tree_crop?.name == element?.name)._id
+                      : element?.id,
+                  data: trees.find(i => i?.tree_crop_id == element?._id),
+                });
               // dispatch(deleteTree(trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id))
               // console.log("iddddd crop", element?._id)
             }}>
             <AddAndDeleteCropButton
               add={false}
               cropName={element?.name}
-              onPress={() => handleRemoveClick(trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id, i)}
+              onPress={() =>
+                handleRemoveClick(
+                  trees[0] !== undefined &&
+                    trees.find(j => j?.tree_crop?.name == element?.name)
+                    ? trees.find(i => i?.tree_crop?.name == element?.name)._id
+                    : element?.id,
+                  i,
+                )
+              }
             />
           </TouchableOpacity>
         );
       })}
-      {cropType[0] === undefined ? (
-        <View style={styles.addAndDeleteButtonSection}>
-          <AddAndDeleteCropButton
-            add={true}
-            cropName={'Add Crop'}
-            onPress={() => setCropModal(true)}
-          />
-        </View>
-      ) : (
-        <View style={styles.addAndDeleteButtonSection}>
-          <AddAndDeleteCropButton
-            add={true}
-            cropName={'Add Crop'}
-            onPress={() => setCropModal(true)}
-          />
-        </View>
+      <TouchableOpacity
+        style={styles.addAndDeleteButtonSection}
+        onPress={() => setCropModal(true)}>
+        <AddAndDeleteCropButton
+          add={true}
+          cropName={'Add Trees/Shrubs'}
+          onPress={() => setCropModal(true)}
+        />
+      </TouchableOpacity>
+      {cropModal && (
+        <AddBottomSheet>
+          <View style={styles.BottomTopContainer}>
+            <Text style={styles.headerText}>Add Tree/Shrub</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setCropModal(!cropModal);
+                setFocusOther(false);
+                setDropdownVal('');
+              }}>
+              <Image
+                source={require('../../../assets/close.png')}
+                style={styles.closeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.dropdownSection}>
+            <CustomDropdown4
+              selectedValue={e => {
+                console.log('e', e);
+                DropdownSelectedValue({name: e, _id: e.value});
+              }}
+              data={[...treeCrops, {_id: 0, name: 'Others'}]}
+              valu={dropdownVal?.name}
+            />
+            {dropdownVal.name?.label === 'Others' ? (
+              <InputWithoutRightElement
+                label={'Tree/Shrub Name'}
+                placeholder={'Eg: Banyaan tree'}
+                onChangeText={e => setOtherCrop({name: e, _id: 0})}
+                value={otherCrop?.name}
+                onFocus={() => setFocusOther(true)}
+              />
+            ) : null}
+          </View>
+          <View style={styles.BottomSheetButton}>
+            <TouchableOpacity
+              style={styles.crossButton}
+              onPress={() => setCropModal(!cropModal)}>
+              <Image
+                source={require('../../../assets/cross.png')}
+                style={styles.addCropIcon}
+              />
+            </TouchableOpacity>
+            <CustomButton
+              btnText={'Create'}
+              style={{width: '80%'}}
+              onPress={() => {
+                addingTreesCrop();
+              }}
+            />
+          </View>
+        </AddBottomSheet>
       )}
-      {cropModal && 
-      <AddBottomSheet>
-        <View style={styles.BottomTopContainer}>
-          <Text style={styles.headerText}>Add Crop</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setCropModal(!cropModal);
-              setFocusOther(false);
-              setDropdownVal('');
-            }}>
-            <Image
-              source={require('../../../assets/close.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.dropdownSection}>
-          <CustomDropdown4 selectedValue={(e) => { 
-            DropdownSelectedValue({ name: e, _id: e._id }) }} 
-            data={[...treeCrops, { _id: 0, name: 'Others' }]} 
-            valu={dropdownVal?.name}
-            />
-          {dropdownVal.name?.label === 'Others' ? (
-            <InputWithoutRightElement
-              label={'Crop Name'}
-              placeholder={'Crop 01'}
-              onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
-              value={otherCrop?.name}
-              onFocus={() => setFocusOther(true)}
-            />
-          ) : null}
-        </View>
-        <View style={styles.BottomSheetButton}>
-          <TouchableOpacity
-            style={styles.crossButton}
-            onPress={() => setCropModal(!cropModal)}>
-            <Image
-              source={require('../../../assets/cross.png')}
-              style={styles.addCropIcon}
-            />
-          </TouchableOpacity>
-          <CustomButton
-            btnText={'Create'}
-            style={{ width: '80%' }}
-            onPress={() => {
-              addingTreesCrop()
-            }}
-          />
-        </View>
-      </AddBottomSheet>
-      }
     </SafeAreaView>
   );
 };
@@ -252,7 +269,7 @@ const makeStyles = fontScale =>
     dropdownSection: {
       width: '90%',
       justifyContent: 'center',
-      alignSelf: 'center'
+      alignSelf: 'center',
     },
     addCropIcon: {
       height: 50,

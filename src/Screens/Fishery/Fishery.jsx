@@ -23,7 +23,9 @@ import {getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import {ActivityIndicator} from 'react-native-paper';
 
 const Fishery = ({navigation, route}) => {
-  const {totalLand, screenName} = route.params;
+  const {user} = useSelector(state => state.auth);
+  const totalLand = user.sub_area.fishery;
+  const {screenName} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [loading, setLoading] = useState(false);
@@ -101,7 +103,7 @@ const Fishery = ({navigation, route}) => {
         third={screenName}
       />
       {/* Next Dashboard */}
-      <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} />
+      {/* <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} /> */}
       {loading ? (
         <View style={{marginTop: '40%'}}>
           <ActivityIndicator size={'small'} color="black" />
@@ -144,9 +146,7 @@ const Fishery = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName={`Add ${
-                screenName.includes('Pond') ? 'Pond' : 'Sea'
-              } Sub Area`}
+              cropName={'Add Pond Name'}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -155,9 +155,7 @@ const Fishery = ({navigation, route}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>
-              Add {screenName.includes('Pond') ? 'Pond' : 'Sea'} Sub Area
-            </Text>
+            <Text style={styles.headerText}>Add Pond Name</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -172,8 +170,8 @@ const Fishery = ({navigation, route}) => {
           </View>
           <View style={styles.dropdownSection}>
             <InputWithoutRightElement
-              label={'Crop Name'}
-              placeholder={'Crop 01'}
+              label={'Pond Name'}
+              placeholder={'Eg: Pond 1'}
               onChangeText={e => setOtherCrop(e)}
               value={otherCrop}
               onFocus={() => setFocusOther(true)}

@@ -7,21 +7,31 @@ import {
 } from 'react-native';
 import React from 'react';
 import {Divider} from 'react-native-paper';
+import {useSelector} from 'react-redux';
 
 const CustomDashboard2 = ({allocatedFor, usedLand}) => {
+  const {user} = useSelector(state => state.auth);
+
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
     <View style={styles.container}>
       <View style={styles.top_container}>
-        <View style={styles.top_container_inner}>
+        <View style={[styles.top_container_inner, {flex: 1}]}>
           <Text style={styles.land_allocated_text}>Land allocated for</Text>
           <Text style={styles.value_text}>{allocatedFor}</Text>
         </View>
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
-          <Text style={[styles.value_text, {color: '#fff'}]}>
-            {usedLand} acres
+          <Text
+            style={[
+              styles.value_text,
+              {color: '#fff', flex: 1, flexWrap: 'wrap'},
+            ]}>
+            {usedLand}{' '}
+            {user.land_measurement_symbol !== '-'
+              ? user.land_measurement_symbol
+              : user.land_measurement}
           </Text>
         </View>
       </View>
@@ -47,14 +57,16 @@ const makeStyles = fontScale =>
     top_container_inner: {
       padding: 5,
       alignSelf: 'center',
+      flex: 0.4,
     },
     land_allocated_text: {
-      fontSize: 14 / fontScale,
+      fontSize: 12 / fontScale,
       color: '#C1D8C7',
       fontFamily: 'ubuntu_medium',
+      marginBottom: 3,
     },
     value_text: {
-      fontSize: 14 / fontScale,
+      fontSize: 13 / fontScale,
       color: '#fff',
       fontFamily: 'ubuntu_medium',
     },
@@ -64,5 +76,6 @@ const makeStyles = fontScale =>
       borderRadius: 10,
       alignSelf: 'center',
       color: '#FFFFFF17',
+      marginHorizontal: 10,
     },
   });
