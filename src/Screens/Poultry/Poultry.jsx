@@ -7,32 +7,34 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import {useFocusEffect} from '@react-navigation/native';
-import {addPoultryCrops, getPoultryCrops} from '../../Redux/PoultryCropSlice';
-import {deletePoultry, getPoultry} from '../../Redux/PoultrySlice';
-import {useDispatch, useSelector} from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import { addPoultryCrops, getPoultryCrops } from '../../Redux/PoultryCropSlice';
+import { deletePoultry, getPoultry } from '../../Redux/PoultrySlice';
+import { useDispatch, useSelector } from 'react-redux';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import {getFeed} from '../../Redux/OthersSlice';
+import { getFeed } from '../../Redux/OthersSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { ActivityIndicator } from 'react-native-paper';
 
-const Poultry = ({navigation, route}) => {
-  const {user} = useSelector(state => state.auth);
+const Poultry = ({ navigation, route }) => {
+  const { user } = useSelector(state => state.auth);
   const totalLand = user.sub_area.poultry;
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false)
   const [cropType, setCropType] = useState([]);
-  const {poultryCrops} = useSelector(state => state?.poultryCrop);
-  const {poultry} = useSelector(state => state?.poultry);
+  const { poultryCrops } = useSelector(state => state?.poultryCrop);
+  const { poultry } = useSelector(state => state?.poultry);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
@@ -73,7 +75,7 @@ const Poultry = ({navigation, route}) => {
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addPoultryCrops({name: otherCrop?.name}));
+      dispatch(addPoultryCrops({ name: otherCrop?.name }));
       dispatch(getPoultryCrops());
       setDropdownVal([]);
       setOtherCrop('');
@@ -89,8 +91,12 @@ const Poultry = ({navigation, route}) => {
   };
   useFocusEffect(
     useCallback(() => {
+      setLoading(true)
       dispatch(getPoultryCrops());
-      dispatch(getPoultry());
+      dispatch(getPoultry()).then((res) => {
+        setLoading(false)
+        console.log("res", res)
+      })
       dispatch(getFeed());
     }, []),
   );
@@ -112,106 +118,117 @@ const Poultry = ({navigation, route}) => {
         allocatedFor={'Livestock, feed & produce'}
         usedLand={totalLand}
       />
-      {/* Crop adding */}
-      {cropType?.map((element, i) => {
-        return (
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            onPress={() => {
-              let poultry_crop_id = poultry.find(
-                j => j?.poultry_crop?.name == element?.name,
-              );
-              // poultry[0] !== undefined? poultry.find((i) => i?.poultry_crop?.name == element?.name) : element?.id)
-              navigation.navigate('poultryType', {
-                cropType: element?.name,
-                cropId:
-                  poultry[0] !== undefined &&
-                  poultry.find(j => j?.poultry_crop?.name == element?.name)
-                    ? poultry.find(i => i?.poultry_crop?.name == element?.name)
-                        ._id
-                    : element?.id,
-                data: poultry.find(i => i?.poultry_crop_id == element?._id),
-              });
-            }}>
-            <AddAndDeleteCropButton
-              add={false}
-              cropName={element?.name}
-              onPress={() =>
-                handleRemoveClick(
-                  poultry[0] !== undefined &&
-                    poultry.find(j => j?.poultry_crop?.name == element?.name)
-                    ? poultry.find(i => i?.poultry_crop?.name == element?.name)
-                        ._id
-                    : element?.id,
-                  i,
-                )
-              }
-            />
-          </TouchableOpacity>
-        );
-      })}
-      <TouchableOpacity
-        style={styles.addAndDeleteButtonSection}
-        onPress={() => setCropModal(true)}>
-        <View style={styles.addAndDeleteButtonSection}>
-          <AddAndDeleteCropButton
-            add={true}
-            cropName={'Add Livestock'}
-            onPress={() => setCropModal(true)}
+      {loading ?
+        <View style={{ marginTop: '60%' }}>
+          <ActivityIndicator
+            size={'small'}
+            color='black'
           />
         </View>
-      </TouchableOpacity>
-      {cropModal && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Livestock</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setCropModal(!cropModal);
-                setFocusOther(false);
-                setDropdownVal('');
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
+        :
+        <>
+          {/* Crop adding */}
+          {cropType?.map((element, i) => {
+            return (
+              <TouchableOpacity
+                style={styles.addAndDeleteButtonSection}
+                onPress={() => {
+                  let poultry_crop_id = poultry.find(
+                    j => j?.poultry_crop?.name == element?.name,
+                  );
+                  // poultry[0] !== undefined? poultry.find((i) => i?.poultry_crop?.name == element?.name) : element?.id)
+                  navigation.navigate('poultryType', {
+                    cropType: element?.name,
+                    cropId:
+                      poultry[0] !== undefined &&
+                        poultry.find(j => j?.poultry_crop?.name == element?.name)
+                        ? poultry.find(i => i?.poultry_crop?.name == element?.name)
+                          ._id
+                        : element?.id,
+                    data: poultry.find(i => i?.poultry_crop_id == element?._id),
+                  });
+                }}>
+                <AddAndDeleteCropButton
+                  add={false}
+                  cropName={element?.name}
+                  onPress={() =>
+                    handleRemoveClick(
+                      poultry[0] !== undefined &&
+                        poultry.find(j => j?.poultry_crop?.name == element?.name)
+                        ? poultry.find(i => i?.poultry_crop?.name == element?.name)
+                          ._id
+                        : element?.id,
+                      i,
+                    )
+                  }
+                />
+              </TouchableOpacity>
+            );
+          })}
+          <TouchableOpacity
+            style={styles.addAndDeleteButtonSection}
+            onPress={() => setCropModal(true)}>
+            <View style={styles.addAndDeleteButtonSection}>
+              <AddAndDeleteCropButton
+                add={true}
+                cropName={'Add Livestock'}
+                onPress={() => setCropModal(true)}
               />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.dropdownSection}>
-            <CustomDropdown4
-              selectedValue={e => {
-                DropdownSelectedValue({name: e, _id: e._id});
-              }}
-              data={[...poultryCrops, {_id: 0, name: 'Others'}]}
-              valu={dropdownVal?.name}
-            />
-            {dropdownVal.name?.label === 'Others' ? (
-              <InputWithoutRightElement
-                label={'Livestock Name'}
-                placeholder={'Eg: Hen'}
-                onChangeText={e => setOtherCrop({name: e, _id: 0})}
-                value={otherCrop}
-                onFocus={() => setFocusOther(true)}
-              />
-            ) : null}
-          </View>
-          <View style={styles.BottomSheetButton}>
-            <TouchableOpacity
-              style={styles.crossButton}
-              onPress={() => setCropModal(!cropModal)}>
-              <Image
-                source={require('../../../assets/cross.png')}
-                style={styles.addCropIcon}
-              />
-            </TouchableOpacity>
-            <CustomButton
-              btnText={'Create'}
-              style={{width: '80%'}}
-              onPress={() => addingTreesCrop()}
-            />
-          </View>
-        </AddBottomSheet>
-      )}
+            </View>
+          </TouchableOpacity>
+          {cropModal && (
+            <AddBottomSheet>
+              <View style={styles.BottomTopContainer}>
+                <Text style={styles.headerText}>Add Livestock</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCropModal(!cropModal);
+                    setFocusOther(false);
+                    setDropdownVal('');
+                  }}>
+                  <Image
+                    source={require('../../../assets/close.png')}
+                    style={styles.closeIcon}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.dropdownSection}>
+                <CustomDropdown4
+                  selectedValue={e => {
+                    DropdownSelectedValue({ name: e, _id: e._id });
+                  }}
+                  data={[...poultryCrops, { _id: 0, name: 'Others' }]}
+                  valu={dropdownVal?.name}
+                />
+                {dropdownVal.name?.label === 'Others' ? (
+                  <InputWithoutRightElement
+                    label={'Livestock Name'}
+                    placeholder={'Eg: Hen'}
+                    onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
+                    value={otherCrop}
+                    onFocus={() => setFocusOther(true)}
+                  />
+                ) : null}
+              </View>
+              <View style={styles.BottomSheetButton}>
+                <TouchableOpacity
+                  style={styles.crossButton}
+                  onPress={() => setCropModal(!cropModal)}>
+                  <Image
+                    source={require('../../../assets/cross.png')}
+                    style={styles.addCropIcon}
+                  />
+                </TouchableOpacity>
+                <CustomButton
+                  btnText={'Create'}
+                  style={{ width: '80%' }}
+                  onPress={() => addingTreesCrop()}
+                />
+              </View>
+            </AddBottomSheet>
+          )}
+        </>
+      }
     </View>
   );
 };

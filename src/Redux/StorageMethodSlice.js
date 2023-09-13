@@ -33,6 +33,7 @@ export const addStorageMethod = createAsyncThunk(
         endpoints.storageMethod.add_storage_method,
         {
           name: arg.name,
+          type: arg.type
         },
       );
       dispatch(getStorageMethod());
