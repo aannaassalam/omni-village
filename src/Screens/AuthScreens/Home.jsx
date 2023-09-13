@@ -60,7 +60,11 @@ export default function Home({navigation, route}) {
               style={styles.circular}
             />
 
-            <TouchableOpacity style={styles.usr_btn}>
+            <TouchableOpacity
+              style={styles.usr_btn}
+              onPress={() =>
+                navigation.navigate('registerdetails', {edit: true})
+              }>
               <Text style={styles.usr_btn_txt}>{user.first_name}</Text>
               <Image
                 style={styles.tinyLogo1}

@@ -20,6 +20,7 @@ export default CustomDropdown1 = ({
   placeholder,
   selectedValue,
   data,
+  value,
   search,
 }) => {
   const countries = [
@@ -49,7 +50,7 @@ export default CustomDropdown1 = ({
       buttonTextAfterSelection={(selectedItem, index) => {
         // text represented after item is selected
         // if data array is an array of objects then return selectedItem.property to render after item is selected
-        return selectedItem;
+        return value || selectedItem;
       }}
       rowTextForSelection={(item, index) => {
         // text represented for each item in dropdown
@@ -76,7 +77,7 @@ export default CustomDropdown1 = ({
       dropdownStyle={styles.dropdown1DropdownStyle}
       rowStyle={styles.dropdown1RowStyle}
       rowTextStyle={styles.dropdown1RowTxtStyle}
-      defaultButtonText={placeholder}
+      defaultButtonText={value || placeholder}
       dropdownOverlayColor="rgba(0,0,0,.1)"
     />
   );

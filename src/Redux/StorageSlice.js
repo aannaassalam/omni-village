@@ -8,13 +8,12 @@ const initialState = {
   currentStorage: {},
 };
 
-
 export const getStorage = createAsyncThunk(
   'getStorage',
   async (_, {getState, rejectWithValue}) => {
     try {
       const res = await axiosInstance.get(endpoints.storage.fetch_storage);
-      // console.log(res.data, 'ftech tree');
+      // console.log(res.data, 'ftech storage');
       return {status: res.status, data: res.data};
     } catch (err) {
       rejectWithValue({
@@ -34,7 +33,7 @@ export const addStorage = createAsyncThunk(
         storages: storageData,
       });
       console.log('resss at add storage slice', res?.data);
-      dispatch(getStorage())
+      dispatch(getStorage());
       return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'err2 at hunting add');
@@ -52,7 +51,7 @@ export const editStorage = createAsyncThunk(
     // const {cultivationType, cropId, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(endpoints.storage.edit_storage, {
-        storages:storageData,
+        storages: storageData,
       });
       console.log('resss at hunting edit slice', res?.data);
       dispatch(getStorage());

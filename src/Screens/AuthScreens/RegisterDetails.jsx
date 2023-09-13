@@ -28,7 +28,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
-import {EditUser} from '../../Redux/AuthSlice';
+import {EditUser, getUser} from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
 import {Scale} from '../../Helper/utils';
 import {useFocusEffect} from '@react-navigation/native';
@@ -105,10 +105,22 @@ export default function RegisterDetails({navigation, route}) {
     defaultValues: {
       phone: user?.phone || '',
       country_name: user?.country,
+      address: route.params.edit ? user?.address : '',
+      first_name: route.params.edit ? user?.first_name : '',
+      land_measurement: route.params.edit ? user?.land_measurement : '',
+      last_name: route.params.edit ? user?.last_name : '',
+      members: route.params.edit ? user?.members : '',
+      number_of_members: route.params.edit ? user?.number_of_members : '',
+      social_security_number: route.params.edit
+        ? user?.social_security_number
+        : '',
+      village_name: route.params.edit ? user?.village_name : '',
       // number_of_members: '',
     },
   });
-  const [numMembers, setNumMembers] = useState(0);
+  const [numMembers, setNumMembers] = useState(
+    route.params.edit ? user?.number_of_members : 0,
+  );
   const [familyMembers, setFamilyMembers] = useState([]);
   const [inputVal, setInputVal] = useState('');
 
@@ -151,10 +163,12 @@ export default function RegisterDetails({navigation, route}) {
   const dispatch = useDispatch();
 
   const FormSubmit = data => {
-    if (fileResponse.length === 0) {
+    if (fileResponse.length === 0 && !route.params.edit) {
+      console.log('in');
       setFile_err('Please select a document!');
       return;
     }
+    console.log('out', data);
     dispatch(
       EditUser({
         data: {
@@ -163,18 +177,24 @@ export default function RegisterDetails({navigation, route}) {
             lm => lm.name === data.land_measurement,
           ).symbol,
         },
-        file: fileResponse[0],
+        file: fileResponse[0] || {},
       }),
     )
       .unwrap()
-      .then(res => navigation.replace('registersuccess'))
+      .then(res =>
+        route.params.edit
+          ? navigation.goBack()
+          : navigation.replace('registersuccess'),
+      )
       .catch(err => console.log(err, 'err from register details'));
   };
 
-  useEffect(() => {
-    dispatch(getVillage(user?.country));
-    dispatch(getLandmeasurement());
-  }, [user.country]);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getVillage(user?.country));
+      dispatch(getLandmeasurement());
+    }, [user.country]),
+  );
 
   return (
     <LoginWrapper no_gap>
@@ -267,6 +287,7 @@ export default function RegisterDetails({navigation, route}) {
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
                 data={village}
+                value={value}
                 placeholder={'Village Name'}
                 selectedValue={onChange}
                 search
@@ -292,6 +313,7 @@ export default function RegisterDetails({navigation, route}) {
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <CustomDropdown1
                 data={landmeasurement}
+                value={value}
                 placeholder={'Land Measurement'}
                 selectedValue={onChange}
               />
@@ -465,55 +487,61 @@ export default function RegisterDetails({navigation, route}) {
             // height={100}
           /> */}
         </Box>
-        <Box style={styles.file_box}>
-          <Box style={styles.file_box_lft}>
-            <Image
-              style={styles.tinyLogo}
-              source={require('../../../assets/file_img.png')}
-              // height={100}
-            />
-            <Text varint="body1" style={styles.upload_txt}>
-              Upload address proof
-            </Text>
-          </Box>
-          <Box style={styles.file_box_rgt}>
-            {/* <Button title="Browse" style={styles.btn} onPress={handleDocumentSelection} /> */}
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={handleDocumentSelection}>
-              <Text style={styles.cmn_btn_text}>Browse</Text>
-            </TouchableOpacity>
-          </Box>
-        </Box>
-        {file_err.length > 0 && <Text style={styles.error}>{file_err}</Text>}
-        {fileResponse.map((file, index) => (
-          <Box style={styles.file_box2} key={file.name}>
-            <Box style={styles.file_box_lft}>
-              <Image
-                style={styles.tinyLogo}
-                source={require('../../../assets/file_img.png')}
-                // height={100}
-              />
-              <Text
-                varint="body1"
-                style={styles.upload_txt}
-                key={index.toString()}>
-                {file?.name}
-              </Text>
-              <Pressable onPress={() => setFileResponse([])}>
-                <Text
-                  style={{
-                    ...styles.error,
-                    marginTop: 0,
-                    marginRight: 5,
-                    marginLeft: 10,
-                  }}>
-                  Remove
+        {!route.params.edit && (
+          <>
+            <Box style={styles.file_box}>
+              <Box style={styles.file_box_lft}>
+                <Image
+                  style={styles.tinyLogo}
+                  source={require('../../../assets/file_img.png')}
+                  // height={100}
+                />
+                <Text varint="body1" style={styles.upload_txt}>
+                  Upload address proof
                 </Text>
-              </Pressable>
+              </Box>
+              <Box style={styles.file_box_rgt}>
+                {/* <Button title="Browse" style={styles.btn} onPress={handleDocumentSelection} /> */}
+                <TouchableOpacity
+                  style={styles.btn}
+                  onPress={handleDocumentSelection}>
+                  <Text style={styles.cmn_btn_text}>Browse</Text>
+                </TouchableOpacity>
+              </Box>
             </Box>
-          </Box>
-        ))}
+            {file_err.length > 0 && (
+              <Text style={styles.error}>{file_err}</Text>
+            )}
+            {fileResponse.map((file, index) => (
+              <Box style={styles.file_box2} key={file.name}>
+                <Box style={styles.file_box_lft}>
+                  <Image
+                    style={styles.tinyLogo}
+                    source={require('../../../assets/file_img.png')}
+                    // height={100}
+                  />
+                  <Text
+                    varint="body1"
+                    style={styles.upload_txt}
+                    key={index.toString()}>
+                    {file?.name}
+                  </Text>
+                  <Pressable onPress={() => setFileResponse([])}>
+                    <Text
+                      style={{
+                        ...styles.error,
+                        marginTop: 0,
+                        marginRight: 5,
+                        marginLeft: 10,
+                      }}>
+                      Remove
+                    </Text>
+                  </Pressable>
+                </Box>
+              </Box>
+            ))}
+          </>
+        )}
         <View style={styles.login_submit}>
           <CustomButton btnText={'Submit'} onPress={handleSubmit(FormSubmit)} />
         </View>

@@ -26,6 +26,7 @@ import {
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {addStorage, editStorage, getStorage} from '../../Redux/StorageSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 
 const Storage = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -41,6 +42,8 @@ const Storage = ({navigation}) => {
   const [focusOther, setFocusOther] = useState(false);
   const [cropType, setCropType] = useState('');
   const [loading, setLoading] = useState(false);
+  const [globalError, setGlobalError] = useState('');
+
   const updateItemById = (indx, newName, stockId) => {
     const objectIndex = storageList.findIndex((item, index) => index === indx);
     if (objectIndex === -1) {
@@ -51,15 +54,18 @@ const Storage = ({navigation}) => {
     newData[objectIndex].storage_method_id = stockId;
     setStorageList(newData);
   };
-  const updateValueById = (indx, value) => {
-    const objectIndex = storageList.findIndex((item, index) => index === indx);
-    if (objectIndex === -1) {
-      return;
-    }
-    const newData = [...storageList];
-    newData[objectIndex].stock_quantity = value;
-    setStorageList(newData);
+
+  const updateValueById = (item, value) => {
+    var local_storage_list = storageList;
+    local_storage_list.map(ls => {
+      if (ls.stock_name === item) {
+        ls.stock_quantity = value;
+      }
+      return ls;
+    });
+    setStorageList([...local_storage_list]);
   };
+
   const addCrop = (index, name, stockId) => {
     setCropType([
       ...cropType,
@@ -75,10 +81,22 @@ const Storage = ({navigation}) => {
     setDropdownVal('');
     setOtherCrop('');
   };
+
   const addingCrop = (index, name, stockId) => {
-    if (dropdownVal.name === 'Others') {
-      dispatch(addStorageMethod({name: otherCrop?.name})).then(res => {
-        console.log('ress', res);
+    if (dropdownVal.name?.label === 'Others') {
+      dispatch(
+        addStorageMethod({
+          name: otherCrop?.name,
+          type: storageItem?.stock_name.includes('vegetables' || 'grain')
+            ? 'grain'
+            : storageItem?.stock_name.includes('meat')
+            ? 'meat'
+            : storageItem?.stock_name.includes('poultry')
+            ? 'poultry'
+            : '',
+        }),
+      ).then(res => {
+        // console.log('ress', res);
       });
       dispatch(getStorageMethod());
       setDropdownVal([]);
@@ -87,14 +105,15 @@ const Storage = ({navigation}) => {
       addCrop(index, name, stockId);
     }
   };
+
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
-    console.log('data', data);
     if (data !== 'Others') {
       setFocusOther(false);
     }
   };
   const dispatch = useDispatch();
+
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
@@ -104,23 +123,62 @@ const Storage = ({navigation}) => {
       });
     }, []),
   );
-  useEffect(() => {
-    setStorageList(
-      storage.map(i => {
-        return {
-          storage_id: i?._id,
-          stock_name: i?.stock_name,
-          stock_quantity: i?.stock_quantity,
-          storage_method_name: i?.storage_method?.name,
-          storage_method_id: i?.storage_method_id,
-        };
-      }),
-    );
-  }, [storage]);
-  console.log('storage method', storage);
+
+  useFocusEffect(
+    useCallback(() => {
+      const processed_data = [];
+      Object.keys(storageMethod)
+        .sort()
+        .forEach(local_storage => {
+          const current_user_storage = storage.find(
+            st => st?.stock_name === local_storage,
+          );
+          processed_data.push({
+            storage_id: current_user_storage?._id,
+            stock_name: local_storage,
+            storage_dropdown: storageMethod[local_storage],
+            stock_quantity: current_user_storage?.stock_quantity || '',
+            storage_name: current_user_storage?.storage_method?.name,
+            storage_method_id: current_user_storage?.storage_method?._id,
+          });
+        });
+      setStorageList(processed_data);
+    }, [storage, storageMethod]),
+  );
+
   const onContinue = () => {
-    dispatch(editStorage(storageList)).unwrap();
+    const total_quant = storageList.reduce((prev, current) => {
+      return prev + parseInt(current.stock_quantity);
+    }, 0);
+    if (total_quant <= user.sub_area.storage) {
+      if (!storage.length) {
+        dispatch(
+          addStorage(
+            storageList.map(st =>
+              st.stock_quantity === '' ? {...st, stock_quantity: 0} : st,
+            ),
+          ),
+        )
+          .then(() => navigation.goBack())
+          .catch(err => console.log(err));
+      } else {
+        dispatch(
+          editStorage(
+            storageList.map(st =>
+              st.stock_quantity === '' ? {...st, stock_quantity: 0} : st,
+            ),
+          ),
+        )
+          .then(() => navigation.goBack())
+          .catch(err => console.log(err));
+      }
+    } else {
+      setGlobalError(
+        'Storage biforcation cannot be greater than Storage land allocated',
+      );
+    }
   };
+
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -150,101 +208,106 @@ const Storage = ({navigation}) => {
             </View>
             <View style={styles.storageInput}>
               {storageList.map((item, index) => {
+                console.log(item?.stock_quantity, 'quan');
                 return (
                   <InputWithStorage
-                    productionName={item?.stock_name}
-                    onChangeText={e => updateValueById(index, e)}
+                    productionName={`For ${item?.stock_name}`}
+                    onChangeText={e => updateValueById(item?.stock_name, e)}
                     val={item?.stock_quantity.toString()}
                     keyboardType="numeric"
-                    storageMethod={
-                      item?.storage_method_name.charAt(0).toUpperCase() +
-                      item?.storage_method_name.slice(1)
-                    }
+                    storageMethod={item?.storage_name || 'Add Storage'}
                     storagePress={() => {
                       setStorageItem({...item, index: index});
                       setCropModal(true);
                     }}
+                    key={item?.stock_name}
                   />
                 );
               })}
             </View>
+            <Text style={styles.error}>{globalError}</Text>
             <View style={styles.buttonContainer}>
-              <CustomButton btnText={'Continue'} onPress={() => onContinue()} />
+              <CustomButton btnText={'Continue'} onPress={onContinue} />
             </View>
           </>
         )}
-        {cropModal && (
-          <AddBottomSheet
-            modalVisible={cropModal}
-            setBottomModalVisible={setCropModal}
-            styleInner={{height: focusOther ? '80%' : '35%'}}>
-            <View style={styles.BottomTopContainer}>
-              <Text style={styles.headerText}>Add Storage Method</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setCropModal(!cropModal);
-                  setFocusOther(false);
-                  setDropdownVal('');
-                }}>
-                <Image
-                  source={require('../../../assets/close.png')}
-                  style={styles.closeIcon}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.dropdownSection}>
-              <CustomDropdown3
-                style={{
-                  height: 50,
-                  marginTop: -10,
-                }}
-                selectedValue={e => {
-                  DropdownSelectedValue({
-                    name: e,
-                    _id: storageMethod.find(cp => cp.name === e)?._id,
-                  });
-                }}
-                data={[...storageMethod, {_id: 0, name: 'Others'}]}
-                valu={dropdownVal?.name?.name}
-              />
-              {dropdownVal.name === 'Others' ? (
-                <InputWithoutRightElement
-                  label={'Storage Name'}
-                  placeholder={'Eg: Racks'}
-                  onChangeText={e => setOtherCrop({name: e, _id: 0})}
-                  value={otherCrop?.name}
-                  onFocus={() => setFocusOther(true)}
-                />
-              ) : null}
-            </View>
-            <View style={styles.BottomSheetButton}>
-              <TouchableOpacity
-                style={styles.crossButton}
-                onPress={() => setCropModal(!cropModal)}>
-                <Image
-                  source={require('../../../assets/cross.png')}
-                  style={styles.addCropIcon}
-                />
-              </TouchableOpacity>
-              <CustomButton
-                btnText={'Create'}
-                style={{width: '80%'}}
-                onPress={() =>
-                  addingCrop(
-                    storageItem?.index,
-                    dropdownVal.name == 'Others'
-                      ? otherCrop.name
-                      : dropdownVal.name,
-                    dropdownVal.name == 'Others'
-                      ? otherCrop._id
-                      : dropdownVal._id,
-                  )
-                }
-              />
-            </View>
-          </AddBottomSheet>
-        )}
       </ScrollView>
+      {cropModal && (
+        <AddBottomSheet>
+          <View style={styles.BottomTopContainer}>
+            <Text style={styles.headerText}>Add Storage Method</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setCropModal(!cropModal);
+                setFocusOther(false);
+                setDropdownVal('');
+              }}>
+              <Image
+                source={require('../../../assets/close.png')}
+                style={styles.closeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.dropdownSection}>
+            <CustomDropdown4
+              style={{
+                height: 50,
+                marginTop: -10,
+              }}
+              selectedValue={e => {
+                DropdownSelectedValue({
+                  name: e,
+                  _id: storageItem?.stock_name.includes('grain' || 'Grain')
+                    ? storageMethod?.grain.find(cp => cp.name === e)?._id
+                    : storageItem?.stock_name.includes('poultry' || 'Poultry')
+                    ? storageMethod?.poultry.find(cp => cp.name === e)?._id
+                    : storageItem?.stock_name.includes('hunting' || 'Hunting')
+                    ? storageMethod?.meat.find(cp => cp.name === e)?._id
+                    : storageMethod?.grain.find(cp => cp.name === e)?._id,
+                });
+              }}
+              data={storageMethod[storageItem.stock_name]}
+              valu={dropdownVal?.name?.value}
+            />
+            {dropdownVal.name?.label === 'Others' ? (
+              <InputWithoutRightElement
+                label={'Storage Name'}
+                placeholder={'Eg: Racks'}
+                onChangeText={e => setOtherCrop({name: e, _id: 0})}
+                value={otherCrop?.name}
+                onFocus={() => setFocusOther(true)}
+              />
+            ) : null}
+          </View>
+          <View style={styles.BottomSheetButton}>
+            <TouchableOpacity
+              style={styles.crossButton}
+              onPress={() => setCropModal(!cropModal)}>
+              <Image
+                source={require('../../../assets/cross.png')}
+                style={styles.addCropIcon}
+              />
+            </TouchableOpacity>
+            <CustomButton
+              btnText={'Create'}
+              style={{width: '80%'}}
+              onPress={() => {
+                var local_storage_list = storageList;
+                local_storage_list.map(ls => {
+                  if (ls.stock_name === storageItem.stock_name) {
+                    ls.storage_name = dropdownVal.name.label;
+                    ls.storage_method_id = dropdownVal.name.value;
+                  }
+                  return ls;
+                });
+                console.log(local_storage_list, 'local');
+                setStorageList(local_storage_list);
+                setCropModal(false);
+              }}
+            />
+          </View>
+        </AddBottomSheet>
+      )}
     </View>
   );
 };
@@ -290,6 +353,7 @@ const makeStyles = fontScale =>
       justifyContent: 'flex-end',
       alignContent: 'flex-end',
       alignSelf: 'center',
+      // marginTop: 'auto',
     },
     BottomTopContainer: {
       justifyContent: 'space-between',
@@ -325,9 +389,18 @@ const makeStyles = fontScale =>
       width: '90%',
       justifyContent: 'center',
       alignSelf: 'center',
+      backgroundColor: 'pink',
     },
     addCropIcon: {
       height: 50,
       width: 50,
+    },
+    error: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      // marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
+      marginBottom: 20,
     },
   });

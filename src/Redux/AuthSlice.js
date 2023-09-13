@@ -98,12 +98,9 @@ export const EditUser = createAsyncThunk(
   'edituser',
   async ({data, file}, {rejectWithValue}) => {
     try {
-      console.log('data', data);
       const formData = new FormData();
       Object.keys(data).forEach(key => {
-        console.log(key);
         if (key === 'members') {
-          console.log(JSON.stringify(data[key]), 'json');
           formData.append('members', JSON.stringify(data[key]));
           // data[key].forEach((item, idx) => {
           //   formData.append(`members[${idx}]`, JSON.stringify(item));
@@ -115,9 +112,9 @@ export const EditUser = createAsyncThunk(
         }
       });
       formData.append('address_proof', {
-        uri: file.uri,
-        type: file.type,
-        filename: file.name,
+        uri: file?.uri || '',
+        type: file?.type || '',
+        filename: file?.name || '',
         name: 'address_proof',
       });
       // for (var item of formData) {
@@ -131,8 +128,10 @@ export const EditUser = createAsyncThunk(
           return formData;
         },
       });
-      return {status: res.status, data: res.data};
+      console.log(res, 'res');
+      // return {status: res.status, data: res.data};
     } catch (err) {
+      console.log(err, 'errpr');
       return rejectWithValue({
         data: err.response.data,
         status: err.response.status,
