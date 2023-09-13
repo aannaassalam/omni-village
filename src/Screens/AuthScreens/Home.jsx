@@ -171,6 +171,7 @@ export default function Home({navigation, route}) {
               btnText={'Logout'}
               onPress={() => {
                 dispatch(logout());
+                navigation.replace('startup');
               }}
             />
           </View>
@@ -218,12 +219,13 @@ const makeStyles = fontScale =>
     usr_btn: {
       backgroundColor: 'rgba(38, 140, 67, .2)',
       borderRadius: 200,
-      width: 75,
+      // width: 75,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
       marginVertical: 10,
       padding: 5,
+      paddingHorizontal: 10,
     },
     user_name_txt: {
       color: '#fff',
