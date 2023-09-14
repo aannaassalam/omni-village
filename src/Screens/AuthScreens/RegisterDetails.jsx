@@ -39,6 +39,7 @@ import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
+  const isEdit = route?.params?.edit || false
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
   const {village} = useSelector(state => state.Others);
@@ -105,21 +106,21 @@ export default function RegisterDetails({navigation, route}) {
     defaultValues: {
       phone: user?.phone || '',
       country_name: user?.country,
-      address: route.params.edit ? user?.address : '',
-      first_name: route.params.edit ? user?.first_name : '',
-      land_measurement: route.params.edit ? user?.land_measurement : '',
-      last_name: route.params.edit ? user?.last_name : '',
-      members: route.params.edit ? user?.members : '',
-      number_of_members: route.params.edit ? user?.number_of_members : '',
-      social_security_number: route.params.edit
+      address: isEdit ? user?.address : '',
+      first_name: isEdit ? user?.first_name : '',
+      land_measurement: isEdit ? user?.land_measurement : '',
+      last_name: isEdit ? user?.last_name : '',
+      members: isEdit ? user?.members : '',
+      number_of_members: isEdit ? user?.number_of_members : '',
+      social_security_number: isEdit
         ? user?.social_security_number
         : '',
-      village_name: route.params.edit ? user?.village_name : '',
+      village_name: isEdit ? user?.village_name : '',
       // number_of_members: '',
     },
   });
   const [numMembers, setNumMembers] = useState(
-    route.params.edit ? user?.number_of_members : 0,
+    isEdit ? user?.number_of_members : 0,
   );
   const [familyMembers, setFamilyMembers] = useState([]);
   const [inputVal, setInputVal] = useState('');
@@ -163,7 +164,7 @@ export default function RegisterDetails({navigation, route}) {
   const dispatch = useDispatch();
 
   const FormSubmit = data => {
-    if (fileResponse.length === 0 && !route.params.edit) {
+    if (fileResponse.length === 0 && !isEdit) {
       console.log('in');
       setFile_err('Please select a document!');
       return;
@@ -182,7 +183,7 @@ export default function RegisterDetails({navigation, route}) {
     )
       .unwrap()
       .then(res =>
-        route.params.edit
+        isEdit
           ? navigation.goBack()
           : navigation.replace('registersuccess'),
       )
@@ -487,7 +488,7 @@ export default function RegisterDetails({navigation, route}) {
             // height={100}
           /> */}
         </Box>
-        {!route.params.edit && (
+        {!isEdit && (
           <>
             <Box style={styles.file_box}>
               <Box style={styles.file_box_lft}>

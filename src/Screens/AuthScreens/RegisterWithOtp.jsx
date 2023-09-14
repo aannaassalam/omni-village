@@ -47,7 +47,7 @@ export default function RegisterWithOtp({navigation}) {
     if (otp.current.length === 4) {
       dispatch(RegisterUser({...user, otp: otp.current}))
         .unwrap()
-        .then(() => navigation.replace('registerdetails'))
+        .then(() => navigation.replace('registerdetails',{edit:false}))
         .catch(error => {
           if (error.status === 401) {
             setErr(error.data.message);
