@@ -577,7 +577,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               />
               {errors?.utilisation_information?.total_feed ? (
                 <Text style={styles.error}>
-                  {errors?.utilisation_information?.total_feed.message}
+                  {errors?.utilisation_information?.total_feed?.message}
                 </Text>
               ) : null}
 
@@ -598,7 +598,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               />
               {errors?.utilisation_information?.production_output ? (
                 <Text style={styles.error}>
-                  {errors?.utilisation_information?.production_output.message}
+                  {errors?.utilisation_information?.production_output?.message}
                 </Text>
               ) : null}
               <View style={styles.innerInputView}>
@@ -619,9 +619,9 @@ const FisheryRiverInput = ({navigation, route}) => {
                       );
                     }}
                   />
-                  {errors?.utilisation_information?.self_consumed.message ? (
+                  {errors?.utilisation_information?.self_consumed?.message ? (
                     <Text style={styles.error}>
-                      {errors?.utilisation_information?.self_consumed.message}
+                      {errors?.utilisation_information?.self_consumed?.message}
                     </Text>
                   ) : null}
                   <Controller
@@ -1007,10 +1007,12 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
     },
     error: {
-      color: 'red',
+      fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu',
-      marginLeft:15
+      // marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
+      marginBottom: 20,
     },
     textInputArea: {
       alignSelf: 'center',

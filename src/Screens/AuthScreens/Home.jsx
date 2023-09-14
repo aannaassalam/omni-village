@@ -1,5 +1,5 @@
 import {Box, Button, Text} from '@react-native-material/core';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,11 +15,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
 import {getUser, logout} from '../../Redux/AuthSlice';
 import {storage} from '../../Helper/Storage';
+import StringsOfLanguages from '../../string';
 
 export default function Home({navigation, route}) {
   const {userToken, user} = useSelector(s => s.auth);
   const dispatch = useDispatch();
-
+const [lang,setLang]=useState('en')
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
@@ -35,6 +36,9 @@ export default function Home({navigation, route}) {
     }
   }, [user]);
 
+  useEffect(()=>{
+    StringsOfLanguages.setLanguage(lang)
+  }, [lang, StringsOfLanguages])
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
@@ -80,7 +84,8 @@ export default function Home({navigation, route}) {
               {/* <Box style={styles.usr_land_lft}> */}
               <Box style={styles.usr_land}>
                 <Text variant="body1" style={styles.usr_txt}>
-                  Land allocated
+                  {/* Land allocated */}
+                  {StringsOfLanguages.land_allocated}
                 </Text>
                 <Text variant="body1" style={styles.land_txt}>
                   {user.total_land}{' '}
@@ -100,7 +105,8 @@ export default function Home({navigation, route}) {
               />
               <Box style={[styles.usr_land, {paddingLeft: 17}]}>
                 <Text variant="body1" style={styles.usr_txt}>
-                  Used land
+                  {/* Used land */}
+                  {StringsOfLanguages.used_land}
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
                   {user.sub_area &&
@@ -168,6 +174,12 @@ export default function Home({navigation, route}) {
                 />
               </Box>
             </Box>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setLang('en')}>
+            <Text>Italian</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setLang('it')}>
+            <Text>English</Text>
           </TouchableOpacity>
           {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
           <View style={{marginTop: 'auto', marginBottom: 20}}>
