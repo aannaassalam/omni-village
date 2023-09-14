@@ -511,7 +511,7 @@ const FishTypeInput = ({navigation, route}) => {
                   );
                 }}
               />
-              {errors?.utilisation_information?.total_feed.message ? (
+              {errors?.utilisation_information?.total_feed?.message ? (
                 <Text style={styles.error}>
                   {errors?.utilisation_information?.total_feed.message}
                 </Text>
@@ -975,10 +975,12 @@ const makeStyles = fontScale =>
       width: '95%',
     },
     error: {
-      color: 'red',
+      fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu',
-      marginLeft: 15
+      // marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
+      marginBottom: 20,
     },
     subArea: {
       alignSelf: 'center',
