@@ -426,7 +426,6 @@ const PoultryType = ({ navigation, route }) => {
   useEffect(() => {
     dispatch(getMeasurement());
   }, []);
-  console.log('weight', harvestedProductList);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -571,7 +570,7 @@ const PoultryType = ({ navigation, route }) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Production Information</Text>
+            <Text style={styles.subAreaText}>Feed Information</Text>
             <Divider
               bold={true}
               style={[styles.divider, { width: '45%' }]}
@@ -758,7 +757,7 @@ const PoultryType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Income from sale'}
+                    productionName={'Income from sale of Output'}
                     value={value}
                     onChangeText={onChange}
                   />

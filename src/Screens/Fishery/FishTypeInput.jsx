@@ -408,6 +408,30 @@ const FishTypeInput = ({navigation, route}) => {
               />
               <Controller
                 control={control}
+                name="utilisation_information.total_feed"
+                render={({ field }) => {
+                  const { onChange, value } = field;
+                  return (
+                    <InputWithoutBorder
+                      measureName={
+                        watch('weight_measurement')
+                          ? watch('weight_measurement')
+                          : 'kg'
+                      }
+                      productionName={'Total Feed'}
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                  );
+                }}
+              />
+              {errors?.utilisation_information?.total_feed?.message ? (
+                <Text style={styles.error}>
+                  {errors?.utilisation_information?.total_feed.message}
+                </Text>
+              ) : null}
+              <Controller
+                control={control}
                 name="important_information.type_of_feed"
                 render={({field}) => {
                   const {onChange, value} = field;
@@ -492,7 +516,7 @@ const FishTypeInput = ({navigation, route}) => {
             // fish={true}
             // />
             <View style={styles.perContainer}>
-              <Controller
+              {/* <Controller
                 control={control}
                 name="utilisation_information.total_feed"
                 render={({field}) => {
@@ -515,7 +539,7 @@ const FishTypeInput = ({navigation, route}) => {
                 <Text style={styles.error}>
                   {errors?.utilisation_information?.total_feed.message}
                 </Text>
-              ) : null}
+              ) : null} */}
 
               <Controller
                 control={control}
@@ -730,7 +754,7 @@ const FishTypeInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={userDetails?.currency}
-                  productionName={'Income from sale'}
+                  productionName={'Income from sale of Output'}
                   value={value}
                   onChangeText={onChange}
                 />

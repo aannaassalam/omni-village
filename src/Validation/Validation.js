@@ -46,7 +46,7 @@ export const validation = {
     decreasing_rate: 'Decreasing rate is required',
     type_of_fertilizer_used: 'Type of fertilizer is required',
     type_of_pesticide_used: 'Type of pesticide is required',
-    income_from_sale: 'Income from sale is required',
+    income_from_sale: 'Income from sale of Output is required',
     yeild: 'Yeild is required',
     processing_method: 'Processing Method Required',
     expenditure_on_inputs: 'Expenditure is required',

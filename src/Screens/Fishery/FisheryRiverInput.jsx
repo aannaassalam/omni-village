@@ -560,7 +560,7 @@ const FisheryRiverInput = ({navigation, route}) => {
             // fish={true}
             // />
             <View style={styles.perContainer}>
-              <Controller
+              {/* <Controller
                 control={control}
                 name="utilisation_information.total_feed"
                 render={({field}) => {
@@ -579,7 +579,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 <Text style={styles.error}>
                   {errors?.utilisation_information?.total_feed?.message}
                 </Text>
-              ) : null}
+              ) : null} */}
 
               <Controller
                 control={control}
@@ -766,7 +766,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={userDetails?.currency}
-                  productionName={'Income from sale'}
+                  productionName={'Income from sale of Output'}
                   value={value}
                   onChangeText={onChange}
                 />

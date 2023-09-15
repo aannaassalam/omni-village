@@ -175,12 +175,12 @@ const [lang,setLang]=useState('en')
               </Box>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setLang('en')}>
+          {/* <TouchableOpacity onPress={() => setLang('en')}>
             <Text>Italian</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setLang('it')}>
             <Text>English</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
           <View style={{marginTop: 'auto', marginBottom: 20}}>
             <CustomButton

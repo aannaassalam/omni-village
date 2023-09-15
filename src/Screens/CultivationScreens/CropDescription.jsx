@@ -713,7 +713,7 @@ const CropDescription = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={'USD'}
-                    productionName={'Income from sale'}
+                    productionName={'Income from sale of Output'}
                     value={value}
                     onChangeText={onChange}
                   />

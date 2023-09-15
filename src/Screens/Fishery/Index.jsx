@@ -75,7 +75,7 @@ const Index = ({navigation, route}) => {
             </Box> */}
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt}>
-                Harvested From River
+                Harvested From River/Lake/Ocean
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>

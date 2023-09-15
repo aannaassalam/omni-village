@@ -542,7 +542,7 @@ const Type01 = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={userDetails?.currency}
-                      productionName={'Income from sale'}
+                      productionName={'Income from sale of Output'}
                       value={value}
                       onChangeText={onChange}
                     />
