@@ -148,7 +148,7 @@ const Storage = ({navigation}) => {
 
   const onContinue = () => {
     const total_quant = storageList.reduce((prev, current) => {
-      return prev + parseInt(current.stock_quantity);
+      return prev + parseInt(current.stock_quantity || "0");
     }, 0);
     if (total_quant <= user.sub_area.storage) {
       if (!storage.length) {
