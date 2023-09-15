@@ -68,16 +68,16 @@ const EditType = ({navigation, route}) => {
   const submit = () => {
     if (!data) {
       let formData = {
-        name: cropType,
-        production_output: output,
-        self_consumed: utilisationArray[0]?.value,
-        fed_to_livestock: utilisationArray[1]?.value,
-        sold_to_neighbours: utilisationArray[2]?.value,
-        sold_for_industrial_use: utilisationArray[3]?.value,
-        wastage: utilisationArray[4]?.value,
-        other: utilisationArray[5]?.value,
-        other_value: others,
-        month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
+        name: cropType || '',
+        production_output: output || '',
+        self_consumed: utilisationArray[0]?.value || '',
+        fed_to_livestock: utilisationArray[1]?.value || '',
+        sold_to_neighbours: utilisationArray[2]?.value || '',
+        sold_for_industrial_use: utilisationArray[3]?.value || '',
+        wastage: utilisationArray[4]?.value || '',
+        other: utilisationArray[5]?.value || '',
+        other_value: others || '',
+        month_harvested: moment(harvestedDate).format('YYYY-MM-DD') || '',
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
       const totalAmount = utilisationArray.reduce(
@@ -314,7 +314,7 @@ const EditType = ({navigation, route}) => {
           </View>
         </View>
         {message && (
-          <Text style={{color: 'red', fontSize: 16, alignSelf: 'center'}}>
+          <Text style={styles.error}>
             {message}
           </Text>
         )}
@@ -550,4 +550,12 @@ const makeStyles = fontScale =>
       width: '95%',
       marginBottom: '5%',
     },
+    error:{
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      // marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
+      marginBottom: 20,
+    }
   });

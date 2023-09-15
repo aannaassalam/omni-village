@@ -757,12 +757,7 @@ const HuntingType = ({ navigation, route }) => {
           </View>
           {message && (
             <Text
-              style={{
-                color: 'red',
-                fontSize: 14,
-                alignSelf: 'center',
-                marginTop: '5%',
-              }}>
+              style={styles.error}>
               {message}
             </Text>
           )}

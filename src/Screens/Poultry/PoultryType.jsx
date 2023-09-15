@@ -8,9 +8,9 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
-import {Divider} from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import ProductDescription from '../../Components/CustomDashboard/ProductDescription';
 import Checkbox from '../../Components/Checkboxes/Checkbox';
@@ -20,10 +20,10 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import ImportantInformationPoultry from '../../Components/Accordion/ImportantInformationPoultry';
 import ProductionInformation from '../../Components/Accordion/ProductionInformation';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   Others,
@@ -32,23 +32,23 @@ import {
   soilHealth,
 } from '../../MockData/Mockdata';
 import moment from 'moment';
-import {validation} from '../../Validation/Validation';
-import {addPoultry, editPoultry, getPoultry} from '../../Redux/PoultrySlice';
+import { validation } from '../../Validation/Validation';
+import { addPoultry, editPoultry, getPoultry } from '../../Redux/PoultrySlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import {getMeasurement} from '../../Redux/OthersSlice';
+import { getMeasurement } from '../../Redux/OthersSlice';
 
-const PoultryType = ({navigation, route}) => {
-  const {cropType, edit, cropId, data} = route.params;
+const PoultryType = ({ navigation, route }) => {
+  const { cropType, edit, cropId, data } = route.params;
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const [productionInfo, setProductionInfo] = useState(true);
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {measurement} = useSelector(state => state.Others);
-  const {feed} = useSelector(state => state.Others);
+  const { measurement } = useSelector(state => state.Others);
+  const { feed } = useSelector(state => state.Others);
   const [message, setMessage] = useState('');
-  const {userDetails} = useSelector(state => state.auth);
+  const { userDetails } = useSelector(state => state.auth);
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
   const [treeAge, setTreeAge] = useState(false);
@@ -129,7 +129,7 @@ const PoultryType = ({navigation, route}) => {
     getValues,
     watch,
     control,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -160,6 +160,7 @@ const PoultryType = ({navigation, route}) => {
     }
   }, [errors]);
   const onSubmit = data2 => {
+    console.log("here")
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
     let self_produced = parseInt(
       watch('utilisation_information.self_produced'),
@@ -205,6 +206,7 @@ const PoultryType = ({navigation, route}) => {
               productDetails: harvestedProductList.map(itm => {
                 return {
                   _id: itm?._id,
+                  name: itm?.name || '',
                   production_output: itm?.production_output,
                   self_consumed: itm?.self_consumed,
                   fed_to_livestock: itm?.fed_to_livestock,
@@ -382,7 +384,19 @@ const PoultryType = ({navigation, route}) => {
     }
   }, [edit]);
   const addProduct = () => {
-    setHarvestedProductList([...harvestedProductList, {name: productName}]);
+    setHarvestedProductList([...harvestedProductList, {
+      name: productName,
+      production_output: '0',
+      self_consumed: '0',
+      fed_to_livestock: '0',
+      sold_to_neighbours: '0',
+      sold_for_industrial_use: '0',
+      wastage: '0',
+      other: 'Retain',
+      other_value: '0',
+      month_harvested: moment().format('YYYY-MM-DD') || '',
+      processing_method: false,
+    }]);
     setProductName('');
   };
   const removeList = name => {
@@ -427,7 +441,7 @@ const PoultryType = ({navigation, route}) => {
             <Text style={styles.subAreaText}>Important Information</Text>
             <Divider
               bold={true}
-              style={[styles.divider, {width: '45%'}]}
+              style={[styles.divider, { width: '45%' }]}
               horizontalInset={true}
             />
             <TouchableOpacity onPress={() => setImpInfo(!impInfo)}>
@@ -449,8 +463,8 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 control={control}
                 name="important_information.number"
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     <InputWithoutBorder
                       measureName={weight ? weight : 'kg'}
@@ -470,8 +484,8 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 control={control}
                 name="important_information.avg_age_of_live_stocks"
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     // <TouchableOpacity onPress={() => { setTreeAge(true) }}>
                     <InputWithoutBorder
@@ -496,14 +510,14 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 control={control}
                 name="important_information.type_of_feed"
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     <CustomDropdown3
-                      data={[...feed, {id: 0, name: 'Others'}]}
+                      data={[...feed, { id: 0, name: 'Others' }]}
                       selectedValue={onChange}
                       value={value == 1 ? 'others' : value}
-                      defaultVal={{key: value, value: value}}
+                      defaultVal={{ key: value, value: value }}
                       infoName={
                         'Type of feed required apart from grassland grazing'
                       }
@@ -524,12 +538,12 @@ const PoultryType = ({navigation, route}) => {
               {watch('important_information.type_of_feed') == 'Others' ? (
                 <View style={styles.innerInputView}>
                   <Divider style={styles.divider2} />
-                  <View style={{width: '100%'}}>
+                  <View style={{ width: '100%' }}>
                     <Controller
                       name="important_information.other_type_of_feed"
                       control={control}
-                      render={({field}) => {
-                        const {onChange, value} = field;
+                      render={({ field }) => {
+                        const { onChange, value } = field;
                         return (
                           <InputWithoutBorder
                             measureName={weight ? weight : 'kg'}
@@ -560,7 +574,7 @@ const PoultryType = ({navigation, route}) => {
             <Text style={styles.subAreaText}>Production Information</Text>
             <Divider
               bold={true}
-              style={[styles.divider, {width: '45%'}]}
+              style={[styles.divider, { width: '45%' }]}
               horizontalInset={true}
             />
             <TouchableOpacity
@@ -583,8 +597,8 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 control={control}
                 name="utilisation_information.total_feed"
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     <InputWithoutBorder
                       measureName={weight ? weight : 'kg'}
@@ -595,19 +609,19 @@ const PoultryType = ({navigation, route}) => {
                   );
                 }}
               />
-              {errors?.utilisation_information?.total_feed.message ? (
+              {errors?.utilisation_information?.total_feed?.message ? (
                 <Text style={styles.error}>
-                  {errors?.utilisation_information?.total_feed.message}
+                  {errors?.utilisation_information?.total_feed?.message}
                 </Text>
               ) : null}
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
-                <View style={{width: '100%'}}>
+                <View style={{ width: '100%' }}>
                   <Controller
                     control={control}
                     name="utilisation_information.self_produced"
-                    render={({field}) => {
-                      const {onChange, value} = field;
+                    render={({ field }) => {
+                      const { onChange, value } = field;
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
@@ -618,16 +632,16 @@ const PoultryType = ({navigation, route}) => {
                       );
                     }}
                   />
-                  {errors?.utilisation_information?.self_produced.message ? (
+                  {errors?.utilisation_information?.self_produced?.message ? (
                     <Text style={styles.error}>
-                      {errors?.utilisation_information?.self_produced.message}
+                      {errors?.utilisation_information?.self_produced?.message}
                     </Text>
                   ) : null}
                   <Controller
                     name="utilisation_information.neighbours"
                     control={control}
-                    render={({field}) => {
-                      const {onChange, value} = field;
+                    render={({ field }) => {
+                      const { onChange, value } = field;
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
@@ -648,8 +662,8 @@ const PoultryType = ({navigation, route}) => {
                   <Controller
                     name="utilisation_information.purchased_from_market"
                     control={control}
-                    render={({field}) => {
-                      const {onChange, value} = field;
+                    render={({ field }) => {
+                      const { onChange, value } = field;
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
@@ -674,8 +688,8 @@ const PoultryType = ({navigation, route}) => {
                   <Controller
                     name="utilisation_information.other"
                     control={control}
-                    render={({field}) => {
-                      const {onChange, value} = field;
+                    render={({ field }) => {
+                      const { onChange, value } = field;
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
@@ -691,12 +705,12 @@ const PoultryType = ({navigation, route}) => {
                   />
                   <View style={styles.innerInputView}>
                     <Divider style={styles.divider2} />
-                    <View style={{width: '100%'}}>
+                    <View style={{ width: '100%' }}>
                       <Controller
                         name="utilisation_information.other_value"
                         control={control}
-                        render={({field}) => {
-                          const {onChange, value} = field;
+                        render={({ field }) => {
+                          const { onChange, value } = field;
                           return (
                             <InputWithoutBorder
                               measureName={weight ? weight : 'kg'}
@@ -717,6 +731,8 @@ const PoultryType = ({navigation, route}) => {
                           );
                         }}
                       />
+                     {watch('utilisation_information.other').length>0 &&
+                     <>
                       {errors?.utilisation_information?.other_value?.message ? (
                         <Text style={styles.error}>
                           {
@@ -725,18 +741,20 @@ const PoultryType = ({navigation, route}) => {
                           }
                         </Text>
                       ) : null}
+                     </>
+                     }
                     </View>
                   </View>
                 </View>
               </View>
             </View>
           ) : null}
-          <View style={{width: '97%', alignSelf: 'center'}}>
+          <View style={{ width: '97%', alignSelf: 'center' }}>
             <Controller
               name="income_from_sale"
               control={control}
-              render={({field}) => {
-                const {onChange, value} = field;
+              render={({ field }) => {
+                const { onChange, value } = field;
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
@@ -755,8 +773,8 @@ const PoultryType = ({navigation, route}) => {
             <Controller
               name="expenditure_on_inputs"
               control={control}
-              render={({field}) => {
-                const {onChange, value} = field;
+              render={({ field }) => {
+                const { onChange, value } = field;
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
@@ -779,19 +797,19 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 name="steroids"
                 control={control}
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     <TouchableOpacity onPress={() => onChange(true)}>
                       {value === true ? (
                         <Image
                           source={require('../../../assets/checked.png')}
-                          style={{height: 30, width: 30}}
+                          style={{ height: 30, width: 30 }}
                         />
                       ) : (
                         <Image
                           source={require('../../../assets/unchecked.png')}
-                          style={{height: 30, width: 30}}
+                          style={{ height: 30, width: 30 }}
                         />
                       )}
                     </TouchableOpacity>
@@ -802,19 +820,19 @@ const PoultryType = ({navigation, route}) => {
               <Controller
                 name="steroids"
                 control={control}
-                render={({field}) => {
-                  const {onChange, value} = field;
+                render={({ field }) => {
+                  const { onChange, value } = field;
                   return (
                     <TouchableOpacity onPress={() => onChange(false)}>
                       {value === false ? (
                         <Image
                           source={require('../../../assets/checked.png')}
-                          style={{height: 30, width: 30}}
+                          style={{ height: 30, width: 30 }}
                         />
                       ) : (
                         <Image
                           source={require('../../../assets/unchecked.png')}
-                          style={{height: 30, width: 30}}
+                          style={{ height: 30, width: 30 }}
                         />
                       )}
                     </TouchableOpacity>
@@ -828,7 +846,7 @@ const PoultryType = ({navigation, route}) => {
               <Text style={styles.subAreaText}>Harvested Product</Text>
               <Divider
                 bold={true}
-                style={[styles.divider, {width: '45%'}]}
+                style={[styles.divider, { width: '45%' }]}
                 horizontalInset={true}
               />
               <TouchableOpacity
@@ -860,8 +878,8 @@ const PoultryType = ({navigation, route}) => {
                             dateValue={
                               data !== null || data !== undefined
                                 ? moment(item?.month_harvested).format(
-                                    'YYYY-MM-DD',
-                                  )
+                                  'YYYY-MM-DD',
+                                )
                                 : item?.month_harvested
                             }
                             qty={'Qty'}
@@ -893,12 +911,7 @@ const PoultryType = ({navigation, route}) => {
           </View>
           {message && (
             <Text
-              style={{
-                color: 'red',
-                fontSize: 14,
-                alignSelf: 'center',
-                marginTop: '5%',
-              }}>
+              style={styles.error}>
               {message}
             </Text>
           )}
@@ -940,8 +953,8 @@ const PoultryType = ({navigation, route}) => {
                 <Controller
                   control={control}
                   name="important_information.avg_age_of_live_stocks"
-                  render={({field}) => {
-                    const {onChange, value} = field;
+                  render={({ field }) => {
+                    const { onChange, value } = field;
                     return (
                       <Checkbox
                         name={item?.age}
@@ -987,7 +1000,7 @@ const PoultryType = ({navigation, route}) => {
               onFocus={() => setFocus(true)}
             />
           </View>
-          <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
+          <View style={{ marginTop: '15%', width: '90%', alignSelf: 'center' }}>
             <CustomButton
               btnText={'Submit'}
               onPress={() => {
@@ -1003,7 +1016,7 @@ const PoultryType = ({navigation, route}) => {
       <PopupModal
         modalVisible={savepopup}
         setBottomModalVisible={setSavepopup}
-        styleInner={[styles.savePopup, {width: '90%'}]}>
+        styleInner={[styles.savePopup, { width: '90%' }]}>
         <View style={styles.submitPopup}>
           <View style={styles.noteImage}>
             <Image
@@ -1035,7 +1048,7 @@ const PoultryType = ({navigation, route}) => {
       <PopupModal
         modalVisible={draftpopup}
         setBottomModalVisible={setDraftpopup}
-        styleInner={[styles.savePopup, {width: '90%'}]}>
+        styleInner={[styles.savePopup, { width: '90%' }]}>
         <View style={styles.submitPopup}>
           <View style={styles.noteImage}>
             <Image
