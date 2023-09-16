@@ -25,6 +25,7 @@ import PoultryEdit from '../Screens/Poultry/PoultryEdit';
 import FisheryRiver from '../Screens/Fishery/FisheryRiver';
 import FisheryRiverInput from '../Screens/Fishery/FisheryRiverInput';
 import CountryCheck from '../Screens/AuthScreens/CountryCheck';
+import Consumption from '../Screens/Consumption/Consumption';
 
 const Stack = createStackNavigator();
 

@@ -152,7 +152,9 @@ const [lang,setLang]=useState('en')
               </Box>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ConsumptionStack', {
+            screen: 'consumption'
+          })}>
             <Box style={styles.home_box}>
               <Box style={styles.home_box_lft_upr}>
                 <Box style={styles.hme_box_lft2}>

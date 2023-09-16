@@ -1,6 +1,7 @@
 export const validation = {
   success: {},
   error: {
+    self_grown:'Self grown is Required',
     land_measurement: 'Land measurement is Required',
     weight_measurement: 'Measurement is Required',
     number: 'Number is Required',
@@ -12,6 +13,7 @@ export const validation = {
     total_feed: 'Total feed is Required',
     self_produced: 'Self Produced is Required',
     purchased_from_market: 'Purchased from market is Required',
+    purchased_from_neighbour: 'Purchased from neighbour is Required',
     steroids: 'Steroids is Required',
     meat: 'Meat is Required',
     first_name: 'First Name is Required',
