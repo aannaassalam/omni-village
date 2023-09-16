@@ -761,7 +761,7 @@ const CropDescription = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           notRightText={true}
-                          productionName={'Description'}
+                          productionName={'Description(if applicable)'}
                           value={value}
                           multiline={true}
                           onChangeText={onChange}

@@ -692,7 +692,7 @@ const PoultryType = ({ navigation, route }) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}

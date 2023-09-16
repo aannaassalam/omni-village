@@ -211,7 +211,7 @@ const Storage = ({navigation}) => {
                 console.log(item?.stock_quantity, 'quan');
                 return (
                   <InputWithStorage
-                    productionName={`For ${item?.stock_name}`}
+                    productionName={`For ${item?.stock_name} if applicable`}
                     onChangeText={e => updateValueById(item?.stock_name, e)}
                     val={item?.stock_quantity.toString()}
                     keyboardType="numeric"

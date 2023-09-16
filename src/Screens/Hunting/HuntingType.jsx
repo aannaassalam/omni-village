@@ -335,7 +335,7 @@ const HuntingType = ({ navigation, route }) => {
       }
     }
   };
-
+  console.log("yeilds", userDetails?.land_measurement_symbol)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -582,7 +582,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -690,11 +690,11 @@ const HuntingType = ({ navigation, route }) => {
                 const { onChange, value } = field;
                 return (
                   <InputWithoutBorder
-                    measureName={userDetails?.currency}
+                    measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
                     productionName={'Yields'}
                     value={value}
                     onChangeText={onChange}
-                    notRightText={true}
+                    notRightText={false}
                     editable={false}
                   />
                 );

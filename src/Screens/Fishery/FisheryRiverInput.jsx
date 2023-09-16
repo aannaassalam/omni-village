@@ -706,7 +706,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={watch('weight_measurement')}
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -806,7 +806,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={'USD'}
+                  measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
                   productionName={'Yields'}
                   value={value}
                   onChangeText={onChange}

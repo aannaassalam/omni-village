@@ -690,7 +690,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -794,11 +794,11 @@ const FishTypeInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={'USD'}
+                  measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
                   productionName={'Yields'}
                   value={value}
                   onChangeText={onChange}
-                  notRightText={true}
+                  notRightText={false}
                   editable={false}
                 />
               );
