@@ -19,7 +19,8 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import { Divider } from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addConsumption, editConsumption } from '../../Redux/ConsumptionSlice';
 const ConsumptionInput = ({route,navigation}) => {
     const { cropType, data, cropId } = route.params;
     const { fontScale } = useWindowDimensions();
@@ -30,7 +31,7 @@ const ConsumptionInput = ({route,navigation}) => {
     const [savepopup, setSavepopup] = useState(false);
     const [message, setMessage] = useState('')
     const [draftpopup, setDraftpopup] = useState(false);
-    const [productName, setProductName] = useState('')
+    const dispatch = useDispatch()
     const schema = yup.object().shape({
         total_quantity: yup.string().required(validation.error.total_land),
         purchased_from_market: yup.string().required(validation.error.purchased_from_market),
@@ -56,14 +57,105 @@ const ConsumptionInput = ({route,navigation}) => {
         },
     });
 
-    const onSubmit = () =>{
-        if (data?._id) {
+    const onSubmit = (data2) =>{
+        let total = parseInt(data2.total_quantity);
+        let purchased_from_market = parseInt(data2.purchased_from_market);
+        let purchased_from_neighbours = parseInt(
+            data2.purchased_from_neighbours,
+        );
+        let self_grown = parseInt(data2.self_grown);
+        if (
+            watch('weight_measurement') == '' ||
+            watch('purchased_from_market') == '' ||
+            watch('purchased_from_neighbours') == ''||
+            watch('self_grown')==""
+        ) {
+            console.log("hete")
+            setMessage('Input all fields');
+            Toast.show({
+                type: 'error',
+                text1: 'Input all fields',
+            });
+            setSavepopup(false);
         } else {
-        }
+            if (
+                purchased_from_market + purchased_from_neighbours +self_grown >
+                total
+            ) {
+                setMessage('Total amount cannot be greater than output');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Total amount cannot be greater than output',
+                });
+                setSavepopup(false);
+            }else{
+                if (data?._id) {
+                    let formData = {
+                        weight_measurement: watch('weight_measurement'),
+                        consumption_id: cropId,
+                        total_quantity: watch('total_quantity'),
+                        purchased_from_market: watch('purchased_from_market'),
+                        purchased_from_neighbours: watch('purchased_from_neighbours'),
+                        self_grown: watch('self_grown'),
+                        status: 1
+                    }
+                    dispatch(editConsumption(formData))
+                        .then((res) => {
+                            console.log("response", res);
+                            navigation.goBack()
+                        })
+                        .catch(()=>setSavepopup(false))
+                        .finally(()=>setSavepopup(false))
+                } else {
+                    let formData = {
+                        weight_measurement: watch('weight_measurement'),
+                        consumption_crop_id: cropId,
+                        total_quantity: watch('total_quantity'),
+                        purchased_from_market: watch('purchased_from_market'),
+                        purchased_from_neighbours: watch('purchased_from_neighbours'),
+                        self_grown: watch('self_grown'),
+                        status: 1
+                    }
+                    dispatch(addConsumption(formData))
+                        .then((res) => {
+                            navigation.goBack()
+                        })
+                        .catch(() => setSavepopup(false))
+                        .finally(()=>setSavepopup(false))
+                }
+            }
     }
+
+}
     const handleDraft = ()=>{
         if (data?._id) {
+            let formData = {
+                weight_measurement: watch('weight_measurement'),
+                consumption_id: cropId,
+                total_quantity: watch('total_quantity'),
+                purchased_from_market: watch('purchased_from_market'),
+                purchased_from_neighbours: watch('purchased_from_neighbours'),
+                self_grown: watch('self_grown'),
+                status: 0
+            }
+            dispatch(editConsumption(formData))
+                .then((res) => {
+                    navigation.goBack()
+                })
         } else {
+            let formData = {
+                weight_measurement: watch('weight_measurement'),
+                consumption_crop_id: cropId,
+                total_quantity: watch('total_quantity'),
+                purchased_from_market: watch('purchased_from_market'),
+                purchased_from_neighbours: watch('purchased_from_neighbours'),
+                self_grown: watch('self_grown'),
+                status: 0
+            }
+            dispatch(addConsumption(formData))
+                .then((res) => {
+                    navigation.goBack()
+                })
         }
     }
   return (
@@ -234,6 +326,9 @@ const ConsumptionInput = ({route,navigation}) => {
                   </View>
               ) : null}
           </ScrollView>
+          {message &&
+              <Text style={styles.error}>{message}</Text>
+          }
           <View style={styles.bottomPopupbutton}>
               <CustomButton
                   style={styles.submitButton}

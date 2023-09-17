@@ -84,7 +84,7 @@ const FisheryRiverInput = ({navigation, route}) => {
       type_of_feed: yup.string().required(validation.error.type_of_feed),
     }),
     utilisation_information: yup.object().shape({
-      total_feed: yup.string().required(validation.error.total_feed),
+      // total_feed: yup.string().required(validation.error.total_feed),
       production_output: yup.string().required(validation.error.output),
       self_consumed: yup.string().required(validation.error.self_consumed),
       sold_to_neighbours: yup
@@ -129,7 +129,7 @@ const FisheryRiverInput = ({navigation, route}) => {
         type_of_feed: String(data?.important_information?.type_of_feed || ''),
       },
       utilisation_information: {
-        total_feed: String(data?.production_information?.total_feed || ''),
+        // total_feed: String(data?.production_information?.total_feed || ''),
         production_output: String(
           data?.production_information?.production_output || '',
         ),

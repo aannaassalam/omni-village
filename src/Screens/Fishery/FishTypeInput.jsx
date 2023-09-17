@@ -201,6 +201,7 @@ const FishTypeInput = ({navigation, route}) => {
               text2: 'Fishery added successfully!',
             }),
               setSavepopup(false),
+              // navigation.goBack()
               navigation.navigate('fishery', {
                 totalLand: null,
                 screenName: 'Harvested from Pond',

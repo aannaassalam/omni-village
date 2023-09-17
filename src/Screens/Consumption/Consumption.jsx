@@ -7,7 +7,7 @@ import {
     Image,
     Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
@@ -18,11 +18,16 @@ import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteConsumption, getConsumption } from '../../Redux/ConsumptionSlice';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Consumption = ({ navigation }) => {
+const Consumption = ({ route,navigation }) => {
+    const {typeId} = route.params
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
+    const {consumptionCrops}= useSelector((state)=>state.consumptionCrop)
+    const {consumption} = useSelector((state)=>state.consumption)
     const [cropType, setCropType] = useState([]);
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
@@ -33,12 +38,12 @@ const Consumption = ({ navigation }) => {
         const list = [...cropType];
         list.splice(index, 1);
         setCropType(list);
-        // dispatch(deleteHunting(id))
-        //     .unwrap()
-        //     .then(res => {
-        //         console.log(`delted hunting ${id}`, res);
-        //     })
-        //     .catch(err => console.log('error delete hunting', err));
+        dispatch(deleteConsumption(id))
+            .unwrap()
+            .then(res => {
+                console.log(`delted consumption ${id}`, res);
+            })
+            .catch(err => console.log('error delete consumption', err));
     };
     const addCrop = async () => {
         let ids = cropType.map(i => i?.id || i?._id);
@@ -95,9 +100,16 @@ const Consumption = ({ navigation }) => {
             setFocusOther(false);
         }
     };
-    useEffect(() => {
+    useFocusEffect(
+      useCallback  (() => {
         dispatch(getMeasurement())
-    }, [])
+        dispatch(getConsumption(typeId))
+    }, [typeId])
+    )
+    // console.log("type ifd", typeId, consumption)
+    useEffect(()=>{
+        setCropType(consumption.map((i) => i?.consumption_crop))
+    }, [consumption])
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -114,14 +126,14 @@ const Consumption = ({ navigation }) => {
                             () =>
                                 navigation.navigate('consumptionInput', {
                                     cropType: element?.name,
-                                    // cropId:
-                                    //     hunting[0] !== undefined &&
-                                    //         hunting.find(j => j?.hunting_crop?.name == element?.name)
-                                    //         ? hunting.find(
-                                    //             i => i?.hunting_crop?.name == element?.name,
-                                    //         )._id
-                                    //         : element?.id,
-                                    // data: hunting.find(i => i?.hunting_crop_id == element?._id),
+                                    cropId:
+                                        consumption[0] !== undefined &&
+                                            consumption.find(j => j?.consumption_crop?.name == element?.name)
+                                            ? consumption.find(
+                                                i => i?.consumption_crop?.name == element?.name,
+                                            )._id
+                                            : element?.id,
+                                    data: consumption.find(i => i?.consumption_crop_id == element?._id),
                                 })
                         }>
                         <AddAndDeleteCropButton
@@ -129,11 +141,11 @@ const Consumption = ({ navigation }) => {
                             cropName={element?.name}
                             onPress={() =>
                                 handleRemoveClick(
-                                    // hunting[0] !== undefined &&
-                                    //     hunting.find(j => j?.hunting_crop?.name == element?.name)
-                                    //     ? hunting.find(i => i?.hunting_crop?.name == element?.name)
-                                    //         ._id
-                                    //     : element?.id,
+                                    consumption[0] !== undefined &&
+                                        consumption.find(j => j?.consumption_crop?.name == element?.name)
+                                        ? consumption.find(i => i?.consumption_crop?.name == element?.name)
+                                            ._id
+                                        : element?.id,
                                     i,
                                 )
                             }
@@ -169,7 +181,7 @@ const Consumption = ({ navigation }) => {
                     <View style={styles.dropdownSection}>
                         <CustomDropdown4
                             selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
-                            // data={[{ _id: 0, name: 'Others' }]}
+                            data={[...consumptionCrops,{ _id: 0, name: 'Others' }]}
                             valu={dropdownVal?.name}
                         />
                         {dropdownVal.name?.label === 'Others' ? (
