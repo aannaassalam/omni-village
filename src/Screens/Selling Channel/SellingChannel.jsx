@@ -35,11 +35,13 @@ const SellingChannel = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       dispatch(getSellingChannelMethod());
+      dispatch(getSellingChannel())
     }, []),
   );
   useEffect(() => {
     setAverageAge(sellingChannelMethod);
-  }, [sellingChannelMethod]);
+    setToggleCheckBox(sellingChannel?.selling_channel_methods ? sellingChannel?.selling_channel_methods : [])
+  }, [sellingChannelMethod, sellingChannel]);
   const save = () => {
     if (idMatch?.selling_channel_methods) {
       let formData = {
