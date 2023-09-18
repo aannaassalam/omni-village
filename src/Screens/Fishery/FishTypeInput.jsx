@@ -39,7 +39,7 @@ const FishTypeInput = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fishFeed} = useSelector(state => state.Others);
   const {measurement} = useSelector(state => state.Others);
-  const { userDetails } = useSelector(state => state.auth);
+  const {userDetails} = useSelector(state => state.auth);
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -132,7 +132,9 @@ const FishTypeInput = ({navigation, route}) => {
         production_output: String(
           data?.production_information?.production_output || '',
         ),
-        self_consumed: String(data?.production_information?.self_consumed || ''),
+        self_consumed: String(
+          data?.production_information?.self_consumed || '',
+        ),
         sold_for_industrial_use: String(
           data?.production_information?.sold_for_industrial_use || '',
         ),
@@ -159,7 +161,7 @@ const FishTypeInput = ({navigation, route}) => {
       setSavepopup(false);
     }
   }, [errors]);
-  
+
   const onSubmit = data2 => {
     console.log(data2);
     if (
@@ -170,7 +172,7 @@ const FishTypeInput = ({navigation, route}) => {
       setMessage('Input all fields');
       Toast.show({
         type: 'error',
-        text1: 'All input fields fields',
+        text1: 'All fields are required!',
       })
         .catch(err => {
           console.log('err', err);
@@ -184,7 +186,7 @@ const FishTypeInput = ({navigation, route}) => {
           setSavepopup(false), navigation.goBack();
         });
     } else {
-      if(data?._id){
+      if (data?._id) {
         dispatch(
           editFishery({
             important_information: watch('important_information'),
@@ -220,7 +222,7 @@ const FishTypeInput = ({navigation, route}) => {
           .finally(() => {
             setSavepopup(false), navigation.goBack();
           });
-      }else{
+      } else {
         dispatch(
           addFishery({
             ...data2,
@@ -231,20 +233,18 @@ const FishTypeInput = ({navigation, route}) => {
           }),
         )
           .unwrap()
-          .then(
-            () => {
-              Toast.show({
-                text1: 'Success',
-                text2: 'Fishery added successfully!',
-              }),
-                setSavepopup(false),
-                // navigation.goBack()
-                navigation.navigate('fishery', {
-                  totalLand: null,
-                  screenName: 'Harvested from Pond',
-                });
-            },
-          )
+          .then(() => {
+            Toast.show({
+              text1: 'Success',
+              text2: 'Fishery added successfully!',
+            }),
+              setSavepopup(false),
+              // navigation.goBack()
+              navigation.navigate('fishery', {
+                totalLand: null,
+                screenName: 'Harvested from Pond',
+              });
+          })
           .catch(err => {
             console.log('err at add', err);
             Toast.show({
@@ -257,7 +257,7 @@ const FishTypeInput = ({navigation, route}) => {
       }
     }
   };
-  console.log("fishes", data?.important_information?.number_of_fishes)
+  console.log('fishes', data?.important_information?.number_of_fishes);
   const toggleItem = (value, index) => {
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)
@@ -374,7 +374,9 @@ const FishTypeInput = ({navigation, route}) => {
     <View style={styles.container}>
       <CustomHeader
         goBack={() => navigation.goBack()}
-        headerName={data?.fishery_crop?.name?data?.fishery_crop?.name:cropType}
+        headerName={
+          data?.fishery_crop?.name ? data?.fishery_crop?.name : cropType
+        }
         backIcon={true}
       />
       <ScrollView>
@@ -437,7 +439,7 @@ const FishTypeInput = ({navigation, route}) => {
                     <CustomDropdown3
                       data={measurement}
                       value={value}
-                      defaultVal={{ key: value, value: value }}
+                      defaultVal={{key: value, value: value}}
                       // defaultVal={{ key: 1, value: value }}
                       selectedValue={onChange}
                       infoName={'Weight Measuremnt'}
@@ -448,8 +450,8 @@ const FishTypeInput = ({navigation, route}) => {
               <Controller
                 control={control}
                 name="utilisation_information.total_feed"
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <InputWithoutBorder
                       measureName={
@@ -503,9 +505,11 @@ const FishTypeInput = ({navigation, route}) => {
                         const {onChange, value} = field;
                         return (
                           <InputWithoutBorder
-                            measureName={watch('weight_measurement')
-                              ? watch('weight_measurement')
-                              : 'kg'}
+                            measureName={
+                              watch('weight_measurement')
+                                ? watch('weight_measurement')
+                                : 'kg'
+                            }
                             productionName={'Create Type'}
                             value={value}
                             multiline={false}
@@ -833,7 +837,11 @@ const FishTypeInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
+                  measureName={
+                    watch('weight_measurement') +
+                    '/' +
+                    userDetails?.land_measurement_symbol
+                  }
                   productionName={'Yields'}
                   value={value}
                   onChangeText={onChange}
@@ -900,12 +908,7 @@ const FishTypeInput = ({navigation, route}) => {
             <Text style={styles.yes_text}>No</Text>
           </View>
         </View>
-        {message && (
-          <Text
-            style={styles.error}>
-            {message}
-          </Text>
-        )}
+        {message && <Text style={styles.error}>{message}</Text>}
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}

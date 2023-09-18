@@ -10,10 +10,13 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckToken} from '../../Helper/CheckToken';
 import {StackActions, NavigationAction} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 
 export default function LoginSuccessfull({navigation}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  const {t} = useTranslation();
 
   // const resetAction = StackActions.reset({
   //   index: 0,
@@ -43,10 +46,10 @@ export default function LoginSuccessfull({navigation}) {
               marginBottom: 15,
               fontFamily: 'ubuntu_medium',
             }}>
-            Successfully Logged In
+            {t('successfully logged in')}
           </Text>
           <Text variant="body1" style={styles.normalText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
         </View>
       </ScrollView>

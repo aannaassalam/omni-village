@@ -79,7 +79,7 @@ const makeStyles = fontScale =>
       // width: '70%',
       flex: 1,
       paddingHorizontal: 10,
-      paddingVertical: 5,
+      paddingVertical: 10,
       margin: 10,
       alignSelf: 'center',
     },

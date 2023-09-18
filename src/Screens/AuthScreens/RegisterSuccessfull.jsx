@@ -9,10 +9,12 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckToken} from '../../Helper/CheckToken';
+import {useTranslation} from 'react-i18next';
 
 export default function RegisterSuccessfull({navigation}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const {t} = useTranslation();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -37,10 +39,10 @@ export default function RegisterSuccessfull({navigation}) {
               marginBottom: 15,
               fontFamily: 'ubuntu_medium',
             }}>
-            Successfully Registered
+            {t('successfully registered')}
           </Text>
           <Text variant="body1" style={styles.normalText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
         </View>
       </ScrollView>

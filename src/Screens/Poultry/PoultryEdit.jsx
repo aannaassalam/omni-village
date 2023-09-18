@@ -51,7 +51,7 @@ const PoultryEdit = ({navigation, route}) => {
         {name: 'Sold to Neighbours', value: edit?.sold_to_neighbours},
         {name: 'Sold for Industrial Use', value: edit?.sold_for_industrial_use},
         {name: 'Wastage', value: edit?.wastage},
-        { name: 'Others(Specify if any)', value: edit?.other},
+        {name: 'Others(Specify if any)', value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
@@ -60,7 +60,7 @@ const PoultryEdit = ({navigation, route}) => {
         {name: 'Sold to Neighbours', value: 0},
         {name: 'Sold for Industrial Use', value: 0},
         {name: 'Wastage', value: 0},
-        { name: 'Others(Specify if any)', value: ''},
+        {name: 'Others(Specify if any)', value: ''},
       ]);
     }
   }, [edit]);
@@ -114,7 +114,7 @@ const PoultryEdit = ({navigation, route}) => {
         others == undefined ||
         others == ''
       ) {
-        setMessage('Input Fields Correctly');
+        setMessage('All fields are required!');
       } else {
         navigation.navigate('poultryType', {
           edit: formData,
@@ -214,10 +214,14 @@ const PoultryEdit = ({navigation, route}) => {
                         productionName={item?.name}
                         value={item?.value ? item?.value.toString() : ''}
                         keyboardType={
-                          item?.name === 'Others(Specify if any)' ? 'default' : 'numeric'
+                          item?.name === 'Others(Specify if any)'
+                            ? 'default'
+                            : 'numeric'
                         }
                         multiline={false}
-                        notRightText={item?.name === 'Others(Specify if any)' ? true : false}
+                        notRightText={
+                          item?.name === 'Others(Specify if any)' ? true : false
+                        }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(
                             lan => lan?.name == item?.name,

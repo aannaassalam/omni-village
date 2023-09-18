@@ -25,6 +25,7 @@ import CountryPicker, {
   Country,
   CountryCode,
 } from 'react-native-country-picker-modal';
+import {useTranslation} from 'react-i18next';
 export default function Login({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
@@ -40,6 +41,8 @@ export default function Login({navigation, route}) {
   });
   const [countryModal, setCountryModal] = useState(false);
 
+  const {t} = useTranslation();
+
   const onSelectCountry = country => {
     setSelectedCountry(country);
   };
@@ -47,7 +50,7 @@ export default function Login({navigation, route}) {
   const loginSchema = yup
     .object()
     .shape({
-      phone: yup.string().required('Phone number is required!'),
+      phone: yup.string().required(t('phone number is required')),
     })
     .required();
 
@@ -80,21 +83,22 @@ export default function Login({navigation, route}) {
         console.log(err.data.message);
       });
   };
+
   return (
     <LoginWrapper>
       <>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Login</Text>
-            <Text style={styles.subtitle}>Login with sent OTP</Text>
+            <Text style={styles.LoginHead}>{t('login')}</Text>
+            <Text style={styles.subtitle}>{t('login with sent OTP')}</Text>
           </View>
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="phone"
+              name={t('phone')}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <LoginInput
-                  placeholder={'Phone Number'}
+                  placeholder={t('phone number')}
                   // label={'Phone Number'}
                   countryModal={() => setCountryModal(!countryModal)}
                   onChangeText={e => {
@@ -142,7 +146,7 @@ export default function Login({navigation, route}) {
           </View>
           <View style={styles.login_submit}>
             <CustomButton
-              btnText={'Login'}
+              btnText={t('login')}
               onPress={handleSubmit(FormSubmit)}
             />
           </View>
@@ -207,9 +211,11 @@ export default function Login({navigation, route}) {
         </View>
       </View> */}
         <View style={styles.register_text}>
-          <Text style={styles.register_text_frst}>Don’t have an account?</Text>
+          <Text style={styles.register_text_frst}>
+            {t("don't have an account")}
+          </Text>
           <Pressable onPress={() => navigation.navigate('register')}>
-            <Text style={styles.register_text_scnd}>Register</Text>
+            <Text style={styles.register_text_scnd}>{t('register')}</Text>
           </Pressable>
         </View>
       </>

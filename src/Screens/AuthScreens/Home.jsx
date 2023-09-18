@@ -17,7 +17,7 @@ import {getUser, logout} from '../../Redux/AuthSlice';
 import {storage} from '../../Helper/Storage';
 import StringsOfLanguages from '../../string';
 import {useTranslation} from 'react-i18next';
-import '../../Translation';
+import '../../i18next';
 
 export default function Home({navigation, route}) {
   const {userToken, user} = useSelector(s => s.auth);
@@ -39,9 +39,10 @@ export default function Home({navigation, route}) {
     }
   }, [user]);
 
-  useEffect(() => {
-    StringsOfLanguages.setLanguage(lang);
-  }, [lang, StringsOfLanguages]);
+  // useEffect(() => {
+  //   StringsOfLanguages.setLanguage(lang);
+  // }, [lang, StringsOfLanguages]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
@@ -155,9 +156,12 @@ export default function Home({navigation, route}) {
               </Box>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('ConsumptionStack', {
-            screen: 'consumptionMain'
-          })}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ConsumptionStack', {
+                screen: 'consumptionMain',
+              })
+            }>
             <Box style={styles.home_box}>
               <Box style={styles.home_box_lft_upr}>
                 <Box style={styles.hme_box_lft2}>
@@ -174,7 +178,7 @@ export default function Home({navigation, route}) {
               <Box style={styles.hme_box_rgt}>
                 <Image
                   style={styles.tinyIcon}
-                  source={require('../../../assets/e5.png')}
+                  source={require('../../../assets/e4.png')}
                   // height={100}
                 />
               </Box>

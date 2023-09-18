@@ -52,7 +52,7 @@ const EditType = ({navigation, route}) => {
         {name: 'Sold to Neighbours', value: edit?.sold_to_neighbours},
         {name: 'Sold for Industrial Use', value: edit?.sold_for_industrial_use},
         {name: 'Wastage', value: edit?.wastage},
-        { name: 'Others(Specify if any)', value: edit?.other},
+        {name: 'Others(Specify if any)', value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
@@ -121,7 +121,7 @@ const EditType = ({navigation, route}) => {
           others == undefined ||
           others == ''
         ) {
-          setMessage('Input Fields Correctly');
+          setMessage('All fields are required!');
         } else {
           navigation.navigate('type', {
             edit: formData,
@@ -179,7 +179,7 @@ const EditType = ({navigation, route}) => {
         others == undefined ||
         others == ''
       ) {
-        setMessage('Input Fields Correctly');
+        setMessage('All fields are required!');
       } else {
         navigation.navigate('type', {
           edit: formData,
@@ -221,10 +221,14 @@ const EditType = ({navigation, route}) => {
                         productionName={item?.name}
                         value={item?.value ? item?.value.toString() : ''}
                         keyboardType={
-                          item?.name === 'Others(Specify if any)' ? 'default' : 'numeric'
+                          item?.name === 'Others(Specify if any)'
+                            ? 'default'
+                            : 'numeric'
                         }
                         multiline={false}
-                        notRightText={item?.name === 'Others(Specify if any)' ? true : false}
+                        notRightText={
+                          item?.name === 'Others(Specify if any)' ? true : false
+                        }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(
                             lan => lan?.name == item?.name,
@@ -313,11 +317,7 @@ const EditType = ({navigation, route}) => {
             <Text style={styles.yes_text}>No</Text>
           </View>
         </View>
-        {message && (
-          <Text style={styles.error}>
-            {message}
-          </Text>
-        )}
+        {message && <Text style={styles.error}>{message}</Text>}
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
@@ -550,12 +550,12 @@ const makeStyles = fontScale =>
       width: '95%',
       marginBottom: '5%',
     },
-    error:{
+    error: {
       fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
       // marginTop: 5,
       color: '#ff000e',
       marginLeft: 20,
       marginBottom: 20,
-    }
+    },
   });

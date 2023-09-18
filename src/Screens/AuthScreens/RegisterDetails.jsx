@@ -34,6 +34,7 @@ import {Scale} from '../../Helper/utils';
 import {useFocusEffect} from '@react-navigation/native';
 import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
+import {useTranslation} from 'react-i18next';
 
 // const FormData = global.FormData;
 
@@ -44,6 +45,8 @@ export default function RegisterDetails({navigation, route}) {
   const [file_err, setFile_err] = useState('');
   const {village} = useSelector(state => state.Others);
   const {landmeasurement} = useSelector(state => state.Others);
+
+  const {t} = useTranslation();
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -167,7 +170,6 @@ export default function RegisterDetails({navigation, route}) {
       setFile_err('Please select a document!');
       return;
     }
-    console.log('out', data);
     dispatch(
       EditUser({
         data: {
@@ -198,8 +200,8 @@ export default function RegisterDetails({navigation, route}) {
     <LoginWrapper no_gap>
       <View style={styles.form_section}>
         <View style={styles.form_head}>
-          <Text style={styles.LoginHead}>Register</Text>
-          <Text style={styles.subtitle}>Enter Details</Text>
+          <Text style={styles.LoginHead}>{t('register')}</Text>
+          <Text style={styles.subtitle}>{t('enter details')}</Text>
         </View>
         <Box style={styles.cmn_wrp}>
           <Box style={styles.input_wrap}>
@@ -209,7 +211,7 @@ export default function RegisterDetails({navigation, route}) {
                 name="first_name"
                 render={({field: {onChange, onBlur, value, name, ref}}) => (
                   <InputTextComponent
-                    placeholder={'First Name'}
+                    placeholder={t('first name')}
                     onChangeText={onChange}
                     value={value}
                   />
@@ -226,7 +228,7 @@ export default function RegisterDetails({navigation, route}) {
                 name="last_name"
                 render={({field: {onChange, onBlur, value, name, ref}}) => (
                   <InputTextComponent
-                    placeholder={'Last Name'}
+                    placeholder={t('last name')}
                     onChangeText={onChange}
                     value={value}
                   />
@@ -246,7 +248,7 @@ export default function RegisterDetails({navigation, route}) {
               name="phone"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Phone No'}
+                  placeholder={t('phone no')}
                   onChangeText={onChange}
                   value={value}
                   editable={false}
@@ -259,7 +261,7 @@ export default function RegisterDetails({navigation, route}) {
           </View>
         </Box>
         <View style={styles.form_btm_text}>
-          <Text style={styles.login_text}>Household Informations</Text>
+          <Text style={styles.login_text}>{t('household informations')}</Text>
           <View style={styles.line_border} />
         </View>
         <Box style={styles.cmn_wrp}>
@@ -269,7 +271,7 @@ export default function RegisterDetails({navigation, route}) {
               name="country_name"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Country Name'}
+                  placeholder={t('country name')}
                   onChangeText={onChange}
                   value={user?.country}
                   editable={false}
@@ -286,7 +288,7 @@ export default function RegisterDetails({navigation, route}) {
               <CustomDropdown1
                 data={village}
                 value={value}
-                placeholder={'Village Name'}
+                placeholder={t('village name')}
                 selectedValue={onChange}
                 search
               />
@@ -312,7 +314,7 @@ export default function RegisterDetails({navigation, route}) {
               <CustomDropdown1
                 data={landmeasurement}
                 value={value}
-                placeholder={'Land Measurement'}
+                placeholder={t('land measurement')}
                 selectedValue={onChange}
               />
             )}
@@ -336,7 +338,7 @@ export default function RegisterDetails({navigation, route}) {
               name="number_of_members"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Number of Family Members'}
+                  placeholder={t('number of family members')}
                   keyboardType="number-pad"
                   onChangeText={e => {
                     onChange(e);
@@ -368,7 +370,7 @@ export default function RegisterDetails({navigation, route}) {
                       padding: 3,
                     },
                   ]}>
-                  Member #{index + 1}
+                  {t('member')} #{index + 1}
                 </Text>
                 <Box style={styles.cmn_wrp}>
                   <View style={styles.login_input}>
@@ -379,7 +381,7 @@ export default function RegisterDetails({navigation, route}) {
                         field: {onChange, onBlur, value, name, ref},
                       }) => (
                         <InputTextComponent
-                          placeholder={'Member Name'}
+                          placeholder={t('member name')}
                           onChangeText={onChange}
                           value={value}
                         />
@@ -404,7 +406,7 @@ export default function RegisterDetails({navigation, route}) {
                                 {name: 'Female'},
                                 {name: 'Other'},
                               ]}
-                              placeholder={'Member Gender'}
+                              placeholder={t('member gender')}
                               selectedValue={onChange}
                             />
                           )}
@@ -423,7 +425,7 @@ export default function RegisterDetails({navigation, route}) {
                             field: {onChange, onBlur, value, name, ref},
                           }) => (
                             <InputTextComponent
-                              placeholder={'Member Age'}
+                              placeholder={t('member age')}
                               keyboardType={'numeric'}
                               onChangeText={onChange}
                               value={value}
@@ -449,7 +451,7 @@ export default function RegisterDetails({navigation, route}) {
               name="social_security_number"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Social Security number'}
+                  placeholder={t('social security number')}
                   onChangeText={onChange}
                   value={value}
                 />
@@ -469,7 +471,7 @@ export default function RegisterDetails({navigation, route}) {
               name="address"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <InputTextComponent
-                  placeholder={'Address'}
+                  placeholder={t('address')}
                   onChangeText={onChange}
                   value={value}
                 />
@@ -495,7 +497,7 @@ export default function RegisterDetails({navigation, route}) {
                   // height={100}
                 />
                 <Text varint="body1" style={styles.upload_txt}>
-                  Upload address proof
+                  {t('upload address proof')}
                 </Text>
               </Box>
               <Box style={styles.file_box_rgt}>
@@ -503,7 +505,7 @@ export default function RegisterDetails({navigation, route}) {
                 <TouchableOpacity
                   style={styles.btn}
                   onPress={handleDocumentSelection}>
-                  <Text style={styles.cmn_btn_text}>Browse</Text>
+                  <Text style={styles.cmn_btn_text}>{t('browse')}</Text>
                 </TouchableOpacity>
               </Box>
             </Box>
@@ -532,7 +534,7 @@ export default function RegisterDetails({navigation, route}) {
                         marginRight: 5,
                         marginLeft: 10,
                       }}>
-                      Remove
+                      {t('remove')}
                     </Text>
                   </Pressable>
                 </Box>
@@ -541,7 +543,10 @@ export default function RegisterDetails({navigation, route}) {
           </>
         )}
         <View style={styles.login_submit}>
-          <CustomButton btnText={'Submit'} onPress={handleSubmit(FormSubmit)} />
+          <CustomButton
+            btnText={t('submit')}
+            onPress={handleSubmit(FormSubmit)}
+          />
         </View>
       </View>
     </LoginWrapper>

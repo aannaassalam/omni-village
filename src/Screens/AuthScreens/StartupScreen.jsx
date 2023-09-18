@@ -13,20 +13,23 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {CheckToken} from '../../Helper/CheckToken';
+import {useTranslation} from 'react-i18next';
 
 export default function StartupScreen({navigation, route}) {
+  const {t} = useTranslation();
+
   const data = [
     {
       img: require('../../../assets/Startup-image.png'),
-      text: 'All your Agricultural monitoring needs one tap away',
+      text: t('all your agricultural monitoring needs one tap away'),
     },
     {
       img: require('../../../assets/Startup-image.png'),
-      text: 'All your Agricultural monitoring needs one tap away',
+      text: t('all your agricultural monitoring needs one tap away'),
     },
     {
       img: require('../../../assets/Startup-image.png'),
-      text: 'All your Agricultural monitoring needs one tap away',
+      text: t('all your agricultural monitoring needs one tap away'),
     },
   ];
 
@@ -76,20 +79,20 @@ export default function StartupScreen({navigation, route}) {
           </View>
         </View>
         <View style={styles.bottomContainer}>
-          <Text style={styles.title}>Welcome to Omni-village</Text>
+          <Text style={styles.title}>{t('welcome to omnivillage')}</Text>
           <Text style={styles.subtitle}>
-            All your Agricultural monitoring needs one tap away
+            {t('all your agricultural monitoring needs one tap away')}
           </Text>
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
               style={styles.button}
               onPress={() => navigation.navigate('register')}>
-              <Text style={styles.buttonDarkText}>Register</Text>
+              <Text style={styles.buttonDarkText}>{t('register')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, {backgroundColor: '#268C43'}]}
               onPress={() => navigation.navigate('login')}>
-              <Text style={styles.buttonLightText}>Login</Text>
+              <Text style={styles.buttonLightText}>{t('login')}</Text>
             </TouchableOpacity>
           </View>
         </View>

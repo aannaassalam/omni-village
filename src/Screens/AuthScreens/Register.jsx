@@ -25,21 +25,24 @@ import CountryPicker, {
   CountryCode,
 } from 'react-native-country-picker-modal';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
+import {useTranslation} from 'react-i18next';
 export default function Register({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
   const [selectedCountry, setSelectedCountry] = useState({
-    callingCode: ["91"], 
-    cca2: "IN", 
-    currency: ["INR"],
-    name: "India", 
-    region: "Asia", 
-    subregion: "Southern Asia"
+    callingCode: ['91'],
+    cca2: 'IN',
+    currency: ['INR'],
+    name: 'India',
+    region: 'Asia',
+    subregion: 'Southern Asia',
   });
   const [countryModal, setCountryModal] = useState(false);
 
-  const onSelectCountry = (country) => {
+  const {t} = useTranslation();
+
+  const onSelectCountry = country => {
     setSelectedCountry(country);
   };
   const InputValueCallback = data => {
@@ -49,7 +52,7 @@ export default function Register({navigation, route}) {
   const loginSchema = yup
     .object()
     .shape({
-      phone: yup.string().required('Phone number is required!'),
+      phone: yup.string().required(t('phone number is required')),
     })
     .required();
 
@@ -65,10 +68,15 @@ export default function Register({navigation, route}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const FormSubmit = async data => {
-    dispatch(SendOTP({ ...data, 
-      currency: selectedCountry?.currency[0], 
-      country_code: `+${selectedCountry?.callingCode[0]}`, 
-      country:selectedCountry?.name, type: 'register'}))
+    dispatch(
+      SendOTP({
+        ...data,
+        currency: selectedCountry?.currency[0],
+        country_code: `+${selectedCountry?.callingCode[0]}`,
+        country: selectedCountry?.name,
+        type: 'register',
+      }),
+    )
       .unwrap()
       .then(() => navigation.navigate('registerotp'))
       .catch(err => {
@@ -90,7 +98,7 @@ export default function Register({navigation, route}) {
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name="phone"
+              name={t('phone')}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 // <InputWithoutRightElement
                 //   label={'Phone Number'}
@@ -102,17 +110,20 @@ export default function Register({navigation, route}) {
                 //   keyboardType="number-pad"
                 // />
                 <LoginInput
-                  placeholder={'Phone Number'}
+                  placeholder={t('phone number')}
                   // label={'Phone Number'}
                   countryModal={() => setCountryModal(!countryModal)}
                   onChangeText={e => {
-                    console.log("hereeeeeee", e)
                     onChange(e);
                     setApi_err('');
                   }}
                   value={value}
                   keyboardType="number-pad"
-                  countryCode={selectedCountry !== null ? '+' + selectedCountry?.callingCode[0] : '+91'}
+                  countryCode={
+                    selectedCountry !== null
+                      ? '+' + selectedCountry?.callingCode[0]
+                      : '+91'
+                  }
                 />
               )}
             />
@@ -141,7 +152,7 @@ export default function Register({navigation, route}) {
           </View>
           <View style={styles.login_submit}>
             <CustomButton
-              btnText={'Register'}
+              btnText={t('register')}
               onPress={handleSubmit(FormSubmit)}
             />
           </View>
@@ -158,55 +169,55 @@ export default function Register({navigation, route}) {
           />
         </View>
       </View> */}
-       
+
         <View style={styles.register_text}>
           <Text style={styles.register_text_frst}>
-            Already have an account?
+            {t('already have an account')}
           </Text>
           <Pressable onPress={() => navigation.navigate('login')}>
-            <Text style={styles.register_text_scnd}>Login</Text>
+            <Text style={styles.register_text_scnd}>{t('login')}</Text>
           </Pressable>
         </View>
       </>
       <CountryPicker
         withCurrency
         onClose={() => {
-          setCountryModal(false)
+          setCountryModal(false);
         }}
         containerButtonStyle={{
-          display: 'none'
+          display: 'none',
         }}
         modalProps={{
-          visible: countryModal
+          visible: countryModal,
         }}
         flatListProps={{
-          renderItem: ({ item }) => {
+          renderItem: ({item}) => {
             return (
-              <TouchableOpacity style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 10
-              }}
-                onPress={() => {
-                  onSelectCountry(item)
-                  setCountryModal(false)
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: 10,
                 }}
-              >
+                onPress={() => {
+                  onSelectCountry(item);
+                  setCountryModal(false);
+                }}>
                 <Image
-                  source={{ uri: item?.flag }}
-                  resizeMode='contain'
+                  source={{uri: item?.flag}}
+                  resizeMode="contain"
                   style={{
                     width: 30,
                     height: 35,
-                    marginRight: 10
+                    marginRight: 10,
                   }}
                 />
-                <Text style={styles.text}>{' '}+{item?.callingCode}</Text>
-                <Text style={styles.text}>{' '}{item?.name}</Text>
-                <Text style={styles.text}>{' '}({item.currency[0]})</Text>
+                <Text style={styles.text}> +{item?.callingCode}</Text>
+                <Text style={styles.text}> {item?.name}</Text>
+                <Text style={styles.text}> ({item.currency[0]})</Text>
               </TouchableOpacity>
-            )
-          }
+            );
+          },
         }}
         countryCodes={['IN', 'BT', 'MY']}
         onSelect={onSelectCountry}
@@ -301,6 +312,6 @@ const makeStyles = fontScale =>
     text: {
       color: '#000',
       marginHorizontal: 2,
-      fontSize: 16 / fontScale
+      fontSize: 16 / fontScale,
     },
   });

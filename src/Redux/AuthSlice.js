@@ -291,6 +291,7 @@ export const AuthSlice = createSlice({
       .addCase(LandAllocation.fulfilled, (state, {payload}) => {
         if (payload?.status === 200) {
           state.userDetails = payload?.data;
+          state.user = payload?.data;
           state.status = 'idle';
         }
       })

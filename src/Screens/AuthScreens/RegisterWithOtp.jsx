@@ -18,11 +18,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RegisterUser, SendOTP} from '../../Redux/AuthSlice';
 import OtpInput from '../../Components/OtpInputs';
 import {Scale} from '../../Helper/utils';
+import {useTranslation} from 'react-i18next';
 
 export default function RegisterWithOtp({navigation}) {
   const {user} = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
+  const {t} = useTranslation();
 
   const [timer, setTimer] = useState(30);
   // const [otp, setOtp] = useState('');
@@ -47,7 +49,7 @@ export default function RegisterWithOtp({navigation}) {
     if (otp.current.length === 4) {
       dispatch(RegisterUser({...user, otp: otp.current}))
         .unwrap()
-        .then(() => navigation.replace('registerdetails',{edit:false}))
+        .then(() => navigation.replace('registerdetails', {edit: false}))
         .catch(error => {
           if (error.status === 401) {
             setErr(error.data.message);
@@ -55,7 +57,7 @@ export default function RegisterWithOtp({navigation}) {
           console.log(error, 'err');
         });
     } else {
-      setErr('Invalid OTP!');
+      setErr(t('invalid otp'));
     }
   };
 
@@ -65,7 +67,7 @@ export default function RegisterWithOtp({navigation}) {
         <View style={styles.form_head}>
           <Text style={styles.LoginHead}>Register</Text>
           <Text style={styles.subtitle}>
-            Enter OTP recieved in {`XXX${user?.phone?.slice(-2)}`}
+            {t('enter otp recieved in')} {`XXX${user?.phone?.slice(-2)}`}
           </Text>
         </View>
         <View style={styles.login_input}>
@@ -83,17 +85,17 @@ export default function RegisterWithOtp({navigation}) {
           )}
         </View>
         <View style={styles.login_submit}>
-          <CustomButton btnText={'Confirm'} onPress={FormSubmit} />
+          <CustomButton btnText={t('confirm')} onPress={FormSubmit} />
         </View>
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
-            <Text style={styles.normal_text}>Haven’t received any?</Text>
+            <Text style={styles.normal_text}>{t("haven't recieved any")}</Text>
             <Pressable
               onPress={() =>
                 timer === 0 ? dispatch(SendOTP(user.phone)) : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
-                Resend
+                {t('resend')}
               </Text>
             </Pressable>
           </Flex>
