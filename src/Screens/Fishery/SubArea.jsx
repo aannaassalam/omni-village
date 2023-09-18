@@ -16,7 +16,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {addFisherycrop, getFisheryCrops} from '../../Redux/FisheryCropSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
-import {getFishery} from '../../Redux/FisherySlice';
+import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {getHuntingCrops} from '../../Redux/HuntingCropSlice';
@@ -33,10 +33,17 @@ const SubArea = ({navigation, route}) => {
   const [otherCrop, setOtherCrop] = useState({});
   const [focusOther, setFocusOther] = useState(false);
   const dispatch = useDispatch();
-  const handleRemoveClick = index => {
+  const handleRemoveClick = (id,index )=> {
     const list = [...cropType];
     list.splice(index, 1);
     setCropType(list);
+    dispatch(deleteFishery(id))
+      .unwrap()
+      .then(res => {
+        console.log(`delted hunting ${id}`, res);
+      })
+      .catch(err => console.log('error delete hunting', err));
+
   };
   const addCrop = () => {
     let ids = cropType.map(i => i?.fishery_crop?._id || i?._id);
@@ -132,7 +139,16 @@ const SubArea = ({navigation, route}) => {
                       ? element?.fishery_crop?.name || element?.name
                       : element?.name
                   }
-                  onPress={() => handleRemoveClick(i)}
+                  onPress={() => 
+                    {
+                      handleRemoveClick(
+                      data?
+                    element?._id
+                      : element?.id,
+                    i,
+                  )
+                }
+                }
                 />
               </TouchableOpacity>
             );

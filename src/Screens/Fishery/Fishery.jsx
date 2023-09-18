@@ -75,12 +75,12 @@ const Fishery = ({navigation, route}) => {
       dispatch(getFishery('pond')).then(res => {
         setLoading(false);
       });
-      dispatch(getFishery('river')).then(res => {
-        setLoading(false);
-      });
-      dispatch(getFishery('pond')).then(res => {
-        setLoading(false);
-      });
+      // dispatch(getFishery('river')).then(res => {
+      //   setLoading(false);
+      // });
+      // dispatch(getFishery('pond')).then(res => {
+      //   setLoading(false);
+      // });
       dispatch(getFishFeed());
     }, []),
   );

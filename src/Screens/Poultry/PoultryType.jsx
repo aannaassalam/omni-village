@@ -160,7 +160,7 @@ const PoultryType = ({ navigation, route }) => {
     }
   }, [errors]);
   const onSubmit = data2 => {
-    console.log("here")
+    console.log("here", data2)
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
     let self_produced = parseInt(
       watch('utilisation_information.self_produced'),
