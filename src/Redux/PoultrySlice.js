@@ -28,7 +28,7 @@ export const getPoultry = createAsyncThunk(
 
 export const addPoultry = createAsyncThunk(
   'addpoultry',
-  async (treeData, {getState, rejectWithValue}) => {
+  async (treeData, {getState, rejectWithValue,dispatch}) => {
     console.log('add poultry', {
       ...treeData?.utilisation_information,
       personal_information:treeData?.important_information,
@@ -56,6 +56,7 @@ export const addPoultry = createAsyncThunk(
         poultry_crop_id: treeData?.crop_id,
       });
       console.log('resss at poultry slice', res?.data);
+      dispatch(getPoultry())
       return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'err2 at poultry add');

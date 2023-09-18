@@ -14,6 +14,7 @@ import {storage} from '../Helper/Storage';
 import {useSelector} from 'react-redux';
 import Productionstack from './ProductionStack';
 import CountryCheck from '../Screens/AuthScreens/CountryCheck';
+import ConsumptionStack from './ConsumptionStack';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,7 @@ export default function AuthStack({isLoggedIn}) {
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />
+      <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
     </Stack.Navigator>
   );
 }

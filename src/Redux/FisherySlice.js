@@ -52,7 +52,7 @@ export const addFishery = createAsyncThunk(
         pond_name: treeData?.pond_name,
       });
       console.log('resss at add fishery slice', res?.data);
-      // dispatch(getFishery(treeData?.pond_name));
+      dispatch(getFishery(treeData?.fishery_type));
       return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'err2 at hunting add');

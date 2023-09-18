@@ -148,7 +148,7 @@ const Storage = ({navigation}) => {
 
   const onContinue = () => {
     const total_quant = storageList.reduce((prev, current) => {
-      return prev + parseInt(current.stock_quantity);
+      return prev + parseInt(current.stock_quantity || "0");
     }, 0);
     if (total_quant <= user.sub_area.storage) {
       if (!storage.length) {
@@ -211,7 +211,7 @@ const Storage = ({navigation}) => {
                 console.log(item?.stock_quantity, 'quan');
                 return (
                   <InputWithStorage
-                    productionName={`For ${item?.stock_name}`}
+                    productionName={`For ${item?.stock_name} if applicable`}
                     onChangeText={e => updateValueById(item?.stock_name, e)}
                     val={item?.stock_quantity.toString()}
                     keyboardType="numeric"

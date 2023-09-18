@@ -38,21 +38,21 @@ const EditType = ({navigation, route}) => {
   const [output, setOutput] = useState(0);
   const [utilisationArray, setUtilisationArray] = useState([]);
   const [others, setOthers] = useState(0);
-  let findme = utilisationArray.find(i => i?.name == 'Others');
+  let findme = utilisationArray.find(i => i?.name == 'Others(Specify if any)');
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   useEffect(() => {
     if (edit) {
       setOthers(edit?.other_value);
       setOutput(edit?.production_output);
-      console.log('here', typeof edit?.production_output);
+      // console.log('here', typeof edit?.production_output);
       setUtilisationArray([
         {name: 'Self consumed', value: edit?.self_consumed},
         {name: 'Fed to Livestock', value: edit?.fed_to_livestock},
         {name: 'Sold to Neighbours', value: edit?.sold_to_neighbours},
         {name: 'Sold for Industrial Use', value: edit?.sold_for_industrial_use},
         {name: 'Wastage', value: edit?.wastage},
-        {name: 'Others', value: edit?.other},
+        { name: 'Others(Specify if any)', value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
@@ -61,23 +61,23 @@ const EditType = ({navigation, route}) => {
         {name: 'Sold to Neighbours', value: 0},
         {name: 'Sold for Industrial Use', value: 0},
         {name: 'Wastage', value: 0},
-        {name: 'Others', value: ''},
+        {name: 'Others(Specify if any)', value: ''},
       ]);
     }
   }, [edit]);
   const submit = () => {
     if (!data) {
       let formData = {
-        name: cropType,
-        production_output: output,
-        self_consumed: utilisationArray[0]?.value,
-        fed_to_livestock: utilisationArray[1]?.value,
-        sold_to_neighbours: utilisationArray[2]?.value,
-        sold_for_industrial_use: utilisationArray[3]?.value,
-        wastage: utilisationArray[4]?.value,
-        other: utilisationArray[5]?.value,
-        other_value: others,
-        month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
+        name: cropType || '',
+        production_output: output || '',
+        self_consumed: utilisationArray[0]?.value || '',
+        fed_to_livestock: utilisationArray[1]?.value || '',
+        sold_to_neighbours: utilisationArray[2]?.value || '',
+        sold_for_industrial_use: utilisationArray[3]?.value || '',
+        wastage: utilisationArray[4]?.value || '',
+        other: utilisationArray[5]?.value || '',
+        other_value: others || '',
+        month_harvested: moment(harvestedDate).format('YYYY-MM-DD') || '',
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
       const totalAmount = utilisationArray.reduce(
@@ -189,7 +189,7 @@ const EditType = ({navigation, route}) => {
       }
     }
   };
-  console.log('outpput', output, others);
+  // console.log('outpput', output, others);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -221,10 +221,10 @@ const EditType = ({navigation, route}) => {
                         productionName={item?.name}
                         value={item?.value ? item?.value.toString() : ''}
                         keyboardType={
-                          item?.name === 'Others' ? 'default' : 'numeric'
+                          item?.name === 'Others(Specify if any)' ? 'default' : 'numeric'
                         }
                         multiline={false}
-                        notRightText={item?.name === 'Others' ? true : false}
+                        notRightText={item?.name === 'Others(Specify if any)' ? true : false}
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(
                             lan => lan?.name == item?.name,
@@ -314,7 +314,7 @@ const EditType = ({navigation, route}) => {
           </View>
         </View>
         {message && (
-          <Text style={{color: 'red', fontSize: 16, alignSelf: 'center'}}>
+          <Text style={styles.error}>
             {message}
           </Text>
         )}
@@ -550,4 +550,12 @@ const makeStyles = fontScale =>
       width: '95%',
       marginBottom: '5%',
     },
+    error:{
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      // marginTop: 5,
+      color: '#ff000e',
+      marginLeft: 20,
+      marginBottom: 20,
+    }
   });

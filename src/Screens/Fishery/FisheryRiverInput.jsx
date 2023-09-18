@@ -84,7 +84,7 @@ const FisheryRiverInput = ({navigation, route}) => {
       type_of_feed: yup.string().required(validation.error.type_of_feed),
     }),
     utilisation_information: yup.object().shape({
-      total_feed: yup.string().required(validation.error.total_feed),
+      // total_feed: yup.string().required(validation.error.total_feed),
       production_output: yup.string().required(validation.error.output),
       self_consumed: yup.string().required(validation.error.self_consumed),
       sold_to_neighbours: yup
@@ -129,7 +129,7 @@ const FisheryRiverInput = ({navigation, route}) => {
         type_of_feed: String(data?.important_information?.type_of_feed || ''),
       },
       utilisation_information: {
-        total_feed: String(data?.production_information?.total_feed || ''),
+        // total_feed: String(data?.production_information?.total_feed || ''),
         production_output: String(
           data?.production_information?.production_output || '',
         ),
@@ -560,7 +560,7 @@ const FisheryRiverInput = ({navigation, route}) => {
             // fish={true}
             // />
             <View style={styles.perContainer}>
-              <Controller
+              {/* <Controller
                 control={control}
                 name="utilisation_information.total_feed"
                 render={({field}) => {
@@ -579,7 +579,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 <Text style={styles.error}>
                   {errors?.utilisation_information?.total_feed?.message}
                 </Text>
-              ) : null}
+              ) : null} */}
 
               <Controller
                 control={control}
@@ -706,7 +706,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={watch('weight_measurement')}
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -766,7 +766,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={userDetails?.currency}
-                  productionName={'Income from sale'}
+                  productionName={'Income from sale of Output'}
                   value={value}
                   onChangeText={onChange}
                 />
@@ -806,7 +806,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={'USD'}
+                  measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
                   productionName={'Yields'}
                   value={value}
                   onChangeText={onChange}
@@ -875,12 +875,7 @@ const FisheryRiverInput = ({navigation, route}) => {
         </View>
         {message && (
           <Text
-            style={{
-              color: 'red',
-              fontSize: 14,
-              alignSelf: 'center',
-              marginTop: '5%',
-            }}>
+            style={styles.error}>
             {message}
           </Text>
         )}

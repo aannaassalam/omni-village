@@ -33,7 +33,7 @@ export const addHunting = createAsyncThunk(
     // const {cultivationType, cropId, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(endpoints.hunting.add_hunting, {
-        number_hunted: treeData?.important_information?.number_hunted,
+        number_hunted: treeData?.number_hunted,
         ...treeData?.utilisation_information,
         income_from_sale: treeData?.income_from_sale,
         expenditure_on_inputs: treeData?.expenditure_on_inputs,
@@ -59,6 +59,7 @@ export const addHunting = createAsyncThunk(
 export const editHunting = createAsyncThunk(
   'edithunting',
   async (treeData, {getState, rejectWithValue, dispatch}) => {
+    console.log("editting hunting", treeData)
     // const {cultivationType, cropId, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(endpoints.hunting.edit_hunting, {

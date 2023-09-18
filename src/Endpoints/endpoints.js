@@ -80,11 +80,27 @@ export const endpoints = {
     edit_selling_channel: '/selling_channel/edit_selling_channel',
     delete_selling_channel: '/selling_channel/delete_selling_channel',
   },
-  measurement:{
+  measurement: {
     get_measurement: '/weight_measurements/',
     fish_feed: '/fish_feeds/',
     feed: '/feeds/',
     village: '/villages/',
-    landmeasurement: '/land_measurements/'
-  }
+    landmeasurement: '/land_measurements/',
+  },
+  consumtionCrop: {
+    get_consumption_crop: '/consumption_crop/',
+    add_consumption_crop: '/consumption_crop/add_consumption_crop',
+  },
+  consumtionType: {
+    fetch_consumption_type: '/consumption_type',
+    add_consumption_type: '/consumption_type/add_consumption_type',
+    edit_consumtion_type: '/consumption_type/edit_consumption_type',
+    delete_consumption_type: '/consumption_type/',
+  },
+  consumtion: {
+    fetch_consumption: '/consumption',
+    add_consumption: '/consumption/add_consumption',
+    edit_consumtion: '/consumption/edit_consumption',
+    delete_consumption: '/consumption/delete_consumption',
+  },
 };

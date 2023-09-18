@@ -155,7 +155,9 @@ export default function Home({navigation, route}) {
               </Box>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ConsumptionStack', {
+            screen: 'consumptionMain'
+          })}>
             <Box style={styles.home_box}>
               <Box style={styles.home_box_lft_upr}>
                 <Box style={styles.hme_box_lft2}>

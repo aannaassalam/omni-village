@@ -28,18 +28,20 @@ const SellingChannel = ({navigation}) => {
   const styles = makeStyles(fontScale);
   let idMatch = sellingChannel;
   const [toggleCheckBox, setToggleCheckBox] = useState(
-    idMatch?.selling_channel_methods ? idMatch?.selling_channel_methods : '',
+    idMatch?.selling_channel_methods ? idMatch?.selling_channel_methods : [],
   );
   const dispatch = useDispatch();
   const [averageAge, setAverageAge] = useState([]);
   useFocusEffect(
     useCallback(() => {
       dispatch(getSellingChannelMethod());
+      dispatch(getSellingChannel())
     }, []),
   );
   useEffect(() => {
     setAverageAge(sellingChannelMethod);
-  }, [sellingChannelMethod]);
+    setToggleCheckBox(sellingChannel?.selling_channel_methods ? sellingChannel?.selling_channel_methods : [])
+  }, [sellingChannelMethod, sellingChannel]);
   const save = () => {
     if (idMatch?.selling_channel_methods) {
       let formData = {
@@ -53,6 +55,14 @@ const SellingChannel = ({navigation}) => {
       );
     }
   };
+
+  const addRemoveId  = (id) =>{
+    if(toggleCheckBox.includes(id)){
+      setToggleCheckBox(toggleCheckBox.filter((item) => item !== id));
+    }else{
+      setToggleCheckBox([...toggleCheckBox, id]);
+    }
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -67,9 +77,8 @@ const SellingChannel = ({navigation}) => {
             <Text style={[styles.text, {fontSize: 14 / fontScale}]}>
               {item?.name}
             </Text>
-            <TouchableOpacity onPress={() => setToggleCheckBox(item?._id)}>
-              {/* {toggleCheckBox.includes(item?._id)? */}
-              {toggleCheckBox == item?._id ? (
+            <TouchableOpacity onPress={() => addRemoveId(item?._id)}>
+              {toggleCheckBox.includes(item?._id)?(
                 <Image
                   source={require('../../../assets/checked.png')}
                   style={{height: 30, width: 30}}

@@ -15,6 +15,9 @@ import { SellingChannelSlice } from '../Redux/SellingChannelSlice';
 import { FisheryCropSlice } from '../Redux/FisheryCropSlice';
 import { FisherySlice } from '../Redux/FisherySlice';
 import { OthersSlice } from '../Redux/OthersSlice';
+import { ConsumptionTypeSlice } from '../Redux/ConsumptionTypeSlice';
+import { ConsumptionCropSlice } from '../Redux/ConsumptionCropSlice';
+import { ConsumptionSlice } from '../Redux/ConsumptionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +36,9 @@ export const store = configureStore({
     sellingChannel:SellingChannelSlice.reducer,
     fisheryCrop: FisheryCropSlice.reducer,
     fishery: FisherySlice.reducer,
-    Others: OthersSlice.reducer
+    Others: OthersSlice.reducer,
+    consumptionType: ConsumptionTypeSlice.reducer,
+    consumptionCrop: ConsumptionCropSlice.reducer,
+    consumption:ConsumptionSlice.reducer
   },
 });

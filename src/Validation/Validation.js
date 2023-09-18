@@ -1,6 +1,7 @@
 export const validation = {
   success: {},
   error: {
+    self_grown:'Self grown is Required',
     land_measurement: 'Land measurement is Required',
     weight_measurement: 'Measurement is Required',
     number: 'Number is Required',
@@ -12,6 +13,7 @@ export const validation = {
     total_feed: 'Total feed is Required',
     self_produced: 'Self Produced is Required',
     purchased_from_market: 'Purchased from market is Required',
+    purchased_from_neighbour: 'Purchased from neighbour is Required',
     steroids: 'Steroids is Required',
     meat: 'Meat is Required',
     first_name: 'First Name is Required',
@@ -46,7 +48,7 @@ export const validation = {
     decreasing_rate: 'Decreasing rate is required',
     type_of_fertilizer_used: 'Type of fertilizer is required',
     type_of_pesticide_used: 'Type of pesticide is required',
-    income_from_sale: 'Income from sale is required',
+    income_from_sale: 'Income from sale of Output is required',
     yeild: 'Yeild is required',
     processing_method: 'Processing Method Required',
     expenditure_on_inputs: 'Expenditure is required',

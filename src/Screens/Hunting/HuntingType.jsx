@@ -112,7 +112,7 @@ const HuntingType = ({ navigation, route }) => {
         meat: String(data?.meat || ""),
         self_consumed: String(data?.self_consumed || ""),
         sold_in_consumer_market: String(data?.sold_in_consumer_market || ""),
-        sold_to_neighbours: String(data?.sold_in_consumer_market || ""),
+        sold_to_neighbours: String(data?.sold_to_neighbours || ""),
         wastage: String(data?.wastage || ""),
         other: String(data?.other || ''),
         other_value: String(data?.other_value || "")
@@ -176,7 +176,15 @@ const HuntingType = ({ navigation, route }) => {
         if (data?._id) {
           dispatch(
             editHunting({
-              ...data2,
+                number_hunted: watch('important_information.number_hunted'),
+              utilisation_information: watch('utilisation_information'),
+              income_from_sale: watch('income_from_sale'),
+              expenditure_on_inputs: watch('expenditure_on_inputs'),
+              yeild: watch('yeild'),
+              weight_measurement: watch('weight_measurement')
+              ? watch('weight_measurement')
+              : 'kg',
+              processing_method: watch('processing_method'),
               status: 1,
               crop_id: cropId,
             }),
@@ -203,7 +211,15 @@ const HuntingType = ({ navigation, route }) => {
         } else {
           dispatch(
             addHunting({
-              ...data2,
+              number_hunted: watch('important_information.number_hunted'),
+              utilisation_information: watch('utilisation_information'),
+              income_from_sale: watch('income_from_sale'),
+              expenditure_on_inputs: watch('expenditure_on_inputs'),
+              yeild: watch('yeild'),
+              weight_measurement: watch('weight_measurement')
+                ? watch('weight_measurement')
+                : 'kg',
+              processing_method: watch('processing_method'),
               status: 1,
               crop_id: cropId,
             }),
@@ -234,7 +250,7 @@ const HuntingType = ({ navigation, route }) => {
   // console.log("data", watch('weight_measurement'))
   // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
 
-  const handleDraft = () => {
+  const handleDraft = (data2) => {
     let meat = parseInt(watch('utilisation_information.meat'));
     let self_consumed = parseInt(
       watch('utilisation_information.self_consumed'),
@@ -335,7 +351,7 @@ const HuntingType = ({ navigation, route }) => {
       }
     }
   };
-
+  console.log("yeilds", userDetails?.land_measurement_symbol)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -582,7 +598,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others"
+                          productionName="Others(Specify if any)"
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -651,7 +667,7 @@ const HuntingType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Income from sale'}
+                    productionName={'Income from sale of Output'}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -690,11 +706,11 @@ const HuntingType = ({ navigation, route }) => {
                 const { onChange, value } = field;
                 return (
                   <InputWithoutBorder
-                    measureName={userDetails?.currency}
+                    measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
                     productionName={'Yields'}
                     value={value}
                     onChangeText={onChange}
-                    notRightText={true}
+                    notRightText={false}
                     editable={false}
                   />
                 );
@@ -757,12 +773,7 @@ const HuntingType = ({ navigation, route }) => {
           </View>
           {message && (
             <Text
-              style={{
-                color: 'red',
-                fontSize: 14,
-                alignSelf: 'center',
-                marginTop: '5%',
-              }}>
+              style={styles.error}>
               {message}
             </Text>
           )}
