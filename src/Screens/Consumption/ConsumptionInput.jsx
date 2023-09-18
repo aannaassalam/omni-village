@@ -22,7 +22,7 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addConsumption, editConsumption } from '../../Redux/ConsumptionSlice';
 const ConsumptionInput = ({route,navigation}) => {
-    const { cropType, data, cropId } = route.params;
+    const { cropType, data, cropId,typeName } = route.params;
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { measurement } = useSelector((state) => state.Others)
@@ -93,6 +93,7 @@ const ConsumptionInput = ({route,navigation}) => {
                     let formData = {
                         weight_measurement: watch('weight_measurement'),
                         consumption_id: cropId,
+                        consumption_type_name: typeName,
                         total_quantity: watch('total_quantity'),
                         purchased_from_market: watch('purchased_from_market'),
                         purchased_from_neighbours: watch('purchased_from_neighbours'),
@@ -110,6 +111,7 @@ const ConsumptionInput = ({route,navigation}) => {
                     let formData = {
                         weight_measurement: watch('weight_measurement'),
                         consumption_crop_id: cropId,
+                        consumption_type_name: typeName,
                         total_quantity: watch('total_quantity'),
                         purchased_from_market: watch('purchased_from_market'),
                         purchased_from_neighbours: watch('purchased_from_neighbours'),

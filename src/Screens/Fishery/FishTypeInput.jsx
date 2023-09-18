@@ -184,42 +184,80 @@ const FishTypeInput = ({navigation, route}) => {
           setSavepopup(false), navigation.goBack();
         });
     } else {
-      dispatch(
-        addFishery({
-          ...data2,
-          status: 1,
-          crop_id: cropId,
-          fishery_type: 'pond',
-          pond_name: type,
-        }),
-      )
-        .unwrap()
-        .then(
-          () => {
-            Toast.show({
-              text1: 'Success',
-              text2: 'Fishery added successfully!',
-            }),
-              setSavepopup(false),
-              // navigation.goBack()
-              navigation.navigate('fishery', {
-                totalLand: null,
-                screenName: 'Harvested from Pond',
-              });
-          },
+      if(data?._id){
+        dispatch(
+          editFishery({
+            important_information: watch('important_information'),
+            utilisation_information: watch('utilisation_information'),
+            processing_method: watch('processing_method'),
+            weight_measurement: watch('weight_measurement')
+              ? watch('weight_measurement')
+              : 'kg',
+            status: 1,
+            crop_id: cropId,
+            fishery_type: 'river',
+            pond_name: cropType,
+          }),
         )
-        .catch(err => {
-          console.log('err at add', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
+          .unwrap()
+          .then(
+            () =>
+              Toast.show({
+                text1: 'Success',
+                text2: 'Fishery updated successfully!',
+              }),
+            dispatch(getFishery('pond')),
+            navigation.goBack(),
+          )
+          .catch(err => {
+            console.log('err', err);
+            Toast.show({
+              type: 'error',
+              text1: 'Error Occurred',
+              text2: 'Something Went wrong, Please try again later!',
+            });
+          })
+          .finally(() => {
+            setSavepopup(false), navigation.goBack();
           });
-        })
-        .finally(() => setSavepopup(false));
+      }else{
+        dispatch(
+          addFishery({
+            ...data2,
+            status: 1,
+            crop_id: cropId,
+            fishery_type: 'pond',
+            pond_name: type,
+          }),
+        )
+          .unwrap()
+          .then(
+            () => {
+              Toast.show({
+                text1: 'Success',
+                text2: 'Fishery added successfully!',
+              }),
+                setSavepopup(false),
+                // navigation.goBack()
+                navigation.navigate('fishery', {
+                  totalLand: null,
+                  screenName: 'Harvested from Pond',
+                });
+            },
+          )
+          .catch(err => {
+            console.log('err at add', err);
+            Toast.show({
+              type: 'error',
+              text1: 'Error Occurred',
+              text2: 'Something Went wrong, Please try again later!',
+            });
+          })
+          .finally(() => setSavepopup(false));
+      }
     }
   };
-
+  console.log("fishes", data?.important_information?.number_of_fishes)
   const toggleItem = (value, index) => {
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)

@@ -40,7 +40,7 @@ const ConsumptionMain = ({ navigation }) => {
                                 productionName={item?.name}
                                 progressBar={false}
                                 onPress={() => {
-                                    navigation.navigate('consumption', { typeId: item?._id }),
+                                    navigation.navigate('consumption', { typeId: item?._id, typeName: item?.name }),
                                         dispatch(getConsumptionCrops(item?._id))
                                 }}
                             />

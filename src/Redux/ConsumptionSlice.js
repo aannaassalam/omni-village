@@ -9,9 +9,11 @@ const initialState = {
 
 export const getConsumption = createAsyncThunk(
   'getconsumption',
-  async (_, {getState, rejectWithValue}) => {
+  async (name, {getState, rejectWithValue}) => {
     try {
-      const res = await axiosInstance.get(endpoints.consumtion.fetch_consumption);
+      const res = await axiosInstance.get(
+        endpoints.consumtion.fetch_consumption + `/${name}`,
+      );
       // console.log(res.data, 'ftech consumption');
       return {status: res.status, data: res.data};
     } catch (err) {

@@ -21,14 +21,16 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteConsumption, getConsumption } from '../../Redux/ConsumptionSlice';
 import { useFocusEffect } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native-paper';
 
 const Consumption = ({ route,navigation }) => {
-    const {typeId} = route.params
+    const {typeId, typeName} = route.params
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const {consumptionCrops}= useSelector((state)=>state.consumptionCrop)
     const {consumption} = useSelector((state)=>state.consumption)
     const [cropType, setCropType] = useState([]);
+    const [loading,setLoading] = useState(true)
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
     const [otherCrop, setOtherCrop] = useState('');
@@ -103,8 +105,9 @@ const Consumption = ({ route,navigation }) => {
     useFocusEffect(
       useCallback  (() => {
         dispatch(getMeasurement())
-        dispatch(getConsumption(typeId))
-    }, [typeId])
+        dispatch(getConsumption(typeName))
+        .then(()=>setLoading(false))
+    }, [typeName])
     )
     // console.log("type ifd", typeId, consumption)
     useEffect(()=>{
@@ -117,7 +120,13 @@ const Consumption = ({ route,navigation }) => {
                 headerName={'Consumption'}
                 goBack={() => navigation.goBack()}
             />
-            <CustomDashboard first={'Production'} second={'Consumption'} />
+            <CustomDashboard first={'Consumption'} second={typeName} />
+            {loading?
+        <View style={{marginTop:'50%'}}>
+            <ActivityIndicator size={'large'} color='green'/>
+            </View>    
+            :
+            <>
             {cropType?.map((element, i) => {
                 return (
                     <TouchableOpacity
@@ -126,6 +135,7 @@ const Consumption = ({ route,navigation }) => {
                             () =>
                                 navigation.navigate('consumptionInput', {
                                     cropType: element?.name,
+                                    typeName: typeName,
                                     cropId:
                                         consumption[0] !== undefined &&
                                             consumption.find(j => j?.consumption_crop?.name == element?.name)
@@ -162,6 +172,8 @@ const Consumption = ({ route,navigation }) => {
                     onPress={() => setCropModal(true)}
                 />
             </TouchableOpacity>
+            </>
+        }
             {cropModal && (
                 <AddBottomSheet>
                     <View style={styles.BottomTopContainer}>
