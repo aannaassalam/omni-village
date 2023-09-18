@@ -16,13 +16,16 @@ import {useFocusEffect} from '@react-navigation/native';
 import {getUser, logout} from '../../Redux/AuthSlice';
 import {storage} from '../../Helper/Storage';
 import StringsOfLanguages from '../../string';
+import {useTranslation} from 'react-i18next';
+import '../../Translation';
 
 export default function Home({navigation, route}) {
   const {userToken, user} = useSelector(s => s.auth);
   const dispatch = useDispatch();
-const [lang,setLang]=useState('en')
+  const [lang, setLang] = useState('en');
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const {t} = useTranslation();
 
   useFocusEffect(
     useCallback(() => {
@@ -36,9 +39,9 @@ const [lang,setLang]=useState('en')
     }
   }, [user]);
 
-  useEffect(()=>{
-    StringsOfLanguages.setLanguage(lang)
-  }, [lang, StringsOfLanguages])
+  useEffect(() => {
+    StringsOfLanguages.setLanguage(lang);
+  }, [lang, StringsOfLanguages]);
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={{flex: 1}}>
@@ -85,7 +88,7 @@ const [lang,setLang]=useState('en')
               <Box style={styles.usr_land}>
                 <Text variant="body1" style={styles.usr_txt}>
                   {/* Land allocated */}
-                  {StringsOfLanguages.land_allocated}
+                  {t('land allocated')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt}>
                   {user.total_land}{' '}
@@ -106,7 +109,7 @@ const [lang,setLang]=useState('en')
               <Box style={[styles.usr_land, {paddingLeft: 17}]}>
                 <Text variant="body1" style={styles.usr_txt}>
                   {/* Used land */}
-                  {StringsOfLanguages.used_land}
+                  {t('used land')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
                   {user.sub_area &&
@@ -140,7 +143,7 @@ const [lang,setLang]=useState('en')
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt}>
-                  Production
+                  {t('production')}
                 </Text>
               </Box>
               <Box style={styles.hme_box_rgt}>
@@ -163,7 +166,7 @@ const [lang,setLang]=useState('en')
                   />
                 </Box>
                 <Text variant="h3" style={styles.hme_box_txt2}>
-                  Consumption
+                  {t('consumption')}
                 </Text>
               </Box>
               <Box style={styles.hme_box_rgt}>
@@ -175,16 +178,16 @@ const [lang,setLang]=useState('en')
               </Box>
             </Box>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setLang('en')}>
+          {/* <TouchableOpacity onPress={() => setLang('en')}>
             <Text>Italian</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setLang('it')}>
             <Text>English</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
           <View style={{marginTop: 'auto', marginBottom: 20}}>
             <CustomButton
-              btnText={'Logout'}
+              btnText={t('logout')}
               onPress={() => {
                 dispatch(logout());
                 navigation.replace('startup');

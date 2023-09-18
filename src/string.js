@@ -22,4 +22,4 @@ let StringsOfLanguages = new LocalizedStrings({
   },
 });
 
-export default StringsOfLanguages
+export default StringsOfLanguages;

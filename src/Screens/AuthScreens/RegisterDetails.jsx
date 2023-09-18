@@ -39,7 +39,7 @@ import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
-  const isEdit = route?.params?.edit || false
+  const isEdit = route?.params?.edit || false;
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
   const {village} = useSelector(state => state.Others);
@@ -112,9 +112,7 @@ export default function RegisterDetails({navigation, route}) {
       last_name: isEdit ? user?.last_name : '',
       members: isEdit ? user?.members : '',
       number_of_members: isEdit ? user?.number_of_members : '',
-      social_security_number: isEdit
-        ? user?.social_security_number
-        : '',
+      social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
       // number_of_members: '',
     },
@@ -177,15 +175,14 @@ export default function RegisterDetails({navigation, route}) {
           land_measurement_symbol: landmeasurement.find(
             lm => lm.name === data.land_measurement,
           ).symbol,
+          edit: isEdit,
         },
         file: fileResponse[0] || {},
       }),
     )
       .unwrap()
       .then(res =>
-        isEdit
-          ? navigation.goBack()
-          : navigation.replace('registersuccess'),
+        isEdit ? navigation.goBack() : navigation.replace('registersuccess'),
       )
       .catch(err => console.log(err, 'err from register details'));
   };

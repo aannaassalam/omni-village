@@ -22,6 +22,7 @@ import {getUser} from './src/Redux/AuthSlice';
 import ToastManager from 'toastify-react-native';
 import Toast from 'react-native-toast-message';
 import {storage} from './src/Helper/Storage';
+import './src/Translation';
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);

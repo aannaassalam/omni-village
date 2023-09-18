@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,35 +12,35 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { useDispatch } from 'react-redux';
-import { SendOTP } from '../../Redux/AuthSlice';
-import { TextInput } from 'react-native-gesture-handler';
-import { Scale } from '../../Helper/utils';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {useDispatch} from 'react-redux';
+import {SendOTP} from '../../Redux/AuthSlice';
+import {TextInput} from 'react-native-gesture-handler';
+import {Scale} from '../../Helper/utils';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Controller, useForm } from 'react-hook-form';
+import {Controller, useForm} from 'react-hook-form';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
 import CountryPicker, {
   Country,
   CountryCode,
 } from 'react-native-country-picker-modal';
-export default function Login({ navigation, route }) {
+export default function Login({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
 
   const [selectedCountry, setSelectedCountry] = useState({
-    callingCode: ["91"],
-    cca2: "IN",
-    currency: ["INR"],
-    name: "India",
-    region: "Asia",
-    subregion: "Southern Asia"
+    callingCode: ['91'],
+    cca2: 'IN',
+    currency: ['INR'],
+    name: 'India',
+    region: 'Asia',
+    subregion: 'Southern Asia',
   });
   const [countryModal, setCountryModal] = useState(false);
 
-  const onSelectCountry = (country) => {
+  const onSelectCountry = country => {
     setSelectedCountry(country);
   };
 
@@ -55,16 +55,22 @@ export default function Login({ navigation, route }) {
     handleSubmit,
     setValue,
     control,
-    formState: { errors },
+    formState: {errors},
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
 
-  const { fontScale } = useWindowDimensions();
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   const FormSubmit = data => {
-    dispatch(SendOTP({ ...data, country_code: `+${selectedCountry?.callingCode[0]}`, type: 'login' }))
+    dispatch(
+      SendOTP({
+        ...data,
+        country_code: `+${selectedCountry?.callingCode[0]}`,
+        type: 'login',
+      }),
+    )
       .unwrap()
       .then(() => navigation.navigate('loginotp'))
       .catch(err => {
@@ -86,19 +92,22 @@ export default function Login({ navigation, route }) {
             <Controller
               control={control}
               name="phone"
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <LoginInput
                   placeholder={'Phone Number'}
                   // label={'Phone Number'}
                   countryModal={() => setCountryModal(!countryModal)}
                   onChangeText={e => {
-                    console.log("hereeeeeee", e)
                     onChange(e);
                     setApi_err('');
                   }}
                   value={value}
                   keyboardType="number-pad"
-                  countryCode={selectedCountry !== null ? '+' + selectedCountry?.callingCode[0] : '+91'}
+                  countryCode={
+                    selectedCountry !== null
+                      ? '+' + selectedCountry?.callingCode[0]
+                      : '+91'
+                  }
                 />
               )}
             />
@@ -140,43 +149,43 @@ export default function Login({ navigation, route }) {
           <CountryPicker
             withCountryNameButton={false}
             containerButtonStyle={{
-              display:'none'
+              display: 'none',
             }}
             withCurrency
             onClose={() => {
-              setCountryModal(false)
+              setCountryModal(false);
             }}
             modalProps={{
-              visible: countryModal
+              visible: countryModal,
             }}
             flatListProps={{
-              renderItem: ({ item }) => {
+              renderItem: ({item}) => {
                 return (
-                  <TouchableOpacity style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: 10
-                  }}
-                    onPress={() => {
-                      onSelectCountry(item)
-                      setCountryModal(false)
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: 10,
                     }}
-                  >
+                    onPress={() => {
+                      onSelectCountry(item);
+                      setCountryModal(false);
+                    }}>
                     <Image
-                      source={{ uri: item?.flag }}
-                      resizeMode='contain'
+                      source={{uri: item?.flag}}
+                      resizeMode="contain"
                       style={{
                         width: 30,
                         height: 35,
-                        marginRight: 10
+                        marginRight: 10,
                       }}
                     />
-                    <Text style={styles.text}>{' '}+{item?.callingCode}</Text>
-                    <Text style={styles.text}>{' '}{item?.name}</Text>
-                    <Text style={styles.text}>{' '}({item.currency[0]})</Text>
+                    <Text style={styles.text}> +{item?.callingCode}</Text>
+                    <Text style={styles.text}> {item?.name}</Text>
+                    <Text style={styles.text}> ({item.currency[0]})</Text>
                   </TouchableOpacity>
-                )
-              }
+                );
+              },
             }}
             countryCodes={['IN', 'BT', 'MY']}
             onSelect={onSelectCountry}
@@ -225,7 +234,7 @@ const makeStyles = fontScale =>
     text: {
       color: '#000',
       marginHorizontal: 2,
-      fontSize: 16 / fontScale
+      fontSize: 16 / fontScale,
     },
     subtitle: {
       fontFamily: 'ubuntu',

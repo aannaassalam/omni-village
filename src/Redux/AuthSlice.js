@@ -118,18 +118,22 @@ export const EditUser = createAsyncThunk(
         name: 'address_proof',
       });
       // for (var item of formData) {
-      console.log(formData);
+      const submitable_data = data.edit ? data : formData;
       // }
-      let res = await axiosInstance.post(endpoints?.auth?.editUser, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      let res = await axiosInstance.post(
+        endpoints?.auth?.editUser,
+        submitable_data,
+        !data.edit && {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: (data, error) => {
+            return formData;
+          },
         },
-        transformRequest: (data, error) => {
-          return formData;
-        },
-      });
+      );
       console.log(res, 'res');
-      // return {status: res.status, data: res.data};
+      return {status: res.status, data: res.data};
     } catch (err) {
       console.log(err, 'errpr');
       return rejectWithValue({
