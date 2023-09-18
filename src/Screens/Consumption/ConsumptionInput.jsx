@@ -134,6 +134,7 @@ const ConsumptionInput = ({route,navigation}) => {
             let formData = {
                 weight_measurement: watch('weight_measurement'),
                 consumption_id: cropId,
+                consumption_type_name: typeName,
                 total_quantity: watch('total_quantity'),
                 purchased_from_market: watch('purchased_from_market'),
                 purchased_from_neighbours: watch('purchased_from_neighbours'),
@@ -148,6 +149,7 @@ const ConsumptionInput = ({route,navigation}) => {
             let formData = {
                 weight_measurement: watch('weight_measurement'),
                 consumption_crop_id: cropId,
+                consumption_type_name: typeName,
                 total_quantity: watch('total_quantity'),
                 purchased_from_market: watch('purchased_from_market'),
                 purchased_from_neighbours: watch('purchased_from_neighbours'),
