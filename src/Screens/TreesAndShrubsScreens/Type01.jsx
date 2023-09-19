@@ -31,6 +31,8 @@ import { fertilisers, pesticides, soilHealth } from '../../MockData/Mockdata';
 import moment from 'moment';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Type01 = ({ navigation, route }) => {
   const { cropType, edit, cropId, data } = route.params;
@@ -38,6 +40,7 @@ const Type01 = ({ navigation, route }) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const { userDetails } = useSelector(state => state.auth);
   const [treeAge, setTreeAge] = useState(false);
   const [harvestProdAdd, setHarvestProdAdd] = useState(false);
@@ -362,7 +365,7 @@ const Type01 = ({ navigation, route }) => {
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Important Information</Text>
+            <Text style={styles.subAreaText}>{t('important information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, { width: '45%' }]}
@@ -392,7 +395,7 @@ const Type01 = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={'kg'}
-                      productionName={'Number of trees'}
+                      productionName={t('number trees')}
                       value={value}
                       onChangeText={onChange}
                       notRightText={true}
@@ -415,7 +418,7 @@ const Type01 = ({ navigation, route }) => {
                     <TouchableHighlight onPress={() => setTreeAge(true)}>
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={'Average age of the tree'}
+                        productionName={t('average of tree')}
                         value={value}
                         onChangeText={onChange}
                         notRightText={true}
@@ -443,7 +446,7 @@ const Type01 = ({ navigation, route }) => {
                       value={value}
                       defaultVal={{ key: value, value: value }}
                       selectedValue={onChange}
-                      infoName={'Soil Health'}
+                      infoName={t('soil health')}
                     />
                   );
                 }}
@@ -466,7 +469,7 @@ const Type01 = ({ navigation, route }) => {
                           return (
                             <InputWithoutBorder
                               measureName={'%'}
-                              productionName={'how much from first planting'}
+                              productionName={t('how much from first planting')}
                               value={value}
                               onChangeText={onChange}
                             />
@@ -495,7 +498,7 @@ const Type01 = ({ navigation, route }) => {
                       selectedValue={onChange}
                       value={value}
                       defaultVal={{ key: value, value: value }}
-                      infoName={'Type of fertiliser used'}
+                      infoName={t('type of fertilizer')}
                     />
                   );
                 }}
@@ -520,7 +523,7 @@ const Type01 = ({ navigation, route }) => {
                       selectedValue={onChange}
                       value={value}
                       defaultVal={{ key: value, value: value }}
-                      infoName={'Type of pesticides used'}
+                      infoName={t('type of pesticides')}
                     />
                   );
                 }}
@@ -542,7 +545,7 @@ const Type01 = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={userDetails?.currency}
-                      productionName={'Income from sale of Output'}
+                      productionName={t('income from sale')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -562,7 +565,7 @@ const Type01 = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={userDetails?.currency}
-                      productionName={'Expenditure on inputs'}
+                      productionName={t('expenditure on inputs')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -580,7 +583,7 @@ const Type01 = ({ navigation, route }) => {
             </View>
           ) : null}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Harvested Product</Text>
+            <Text style={styles.subAreaText}>{t('harvested product')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, { width: '45%' }]}
@@ -610,9 +613,9 @@ const Type01 = ({ navigation, route }) => {
                     {harvestedProductList.map(item => {
                       return (
                         <ProductDescription
-                          productName={'Product Type'}
+                          productName={t('product type')}
                           productNameValue={item?.name}
-                          date={'Harvested On'}
+                          date={t('harvested on')}
                           dateValue={
                             data !== null || data !== undefined
                               ? moment(item?.month_harvested).format(
@@ -620,7 +623,7 @@ const Type01 = ({ navigation, route }) => {
                               )
                               : item?.month_harvested
                           }
-                          qty={'Qty'}
+                          qty={t('quantity')}
                           qtyValue={item?.production_output}
                           del={() => removeList(item?.name)}
                           data={item ? item : []}
@@ -643,21 +646,21 @@ const Type01 = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.add_button}
             onPress={() => setHarvestProdAdd(true)}>
-            <Text style={styles.add_button_text}>Add</Text>
+            <Text style={styles.add_button_text}>{t('add')}</Text>
             <AntDesign name="plus" size={15} color="#fff" />
           </TouchableOpacity>
         </View>
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
-            btnText={'Submit'}
+            btnText={t('submit')}
             onPress={() => {
               setSavepopup(true);
             }}
           />
           <CustomButton
             style={styles.draftButton}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             onPress={() => {
               setDraftpopup(true);
             }}
@@ -667,7 +670,7 @@ const Type01 = ({ navigation, route }) => {
       {treeAge && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Average Age of the tree</Text>
+            <Text style={styles.headerText}>{t('average of tree')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setTreeAge(!treeAge);
@@ -709,7 +712,7 @@ const Type01 = ({ navigation, route }) => {
       {harvestProdAdd && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Harvested Product</Text>
+            <Text style={styles.headerText}>{t('add harvested product')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setHarvestProdAdd(!harvestProdAdd);
@@ -724,7 +727,7 @@ const Type01 = ({ navigation, route }) => {
           <View style={styles.harvested_prod_container}>
             <InputWithoutBorder
               measureName={'kg'}
-              productionName={'Name Of harvested Product'}
+              productionName={t('name of harvested product')}
               value={productName}
               keyboardType="default"
               onChangeText={e => {
@@ -737,7 +740,7 @@ const Type01 = ({ navigation, route }) => {
           </View>
           <View style={{ marginTop: '15%', width: '90%', alignSelf: 'center' }}>
             <CustomButton
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={() => {
                 setHarvestProdAdd(!harvestProdAdd);
                 setFocus(!focus);
@@ -759,19 +762,19 @@ const Type01 = ({ navigation, route }) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => {
                 setSavepopup(false), navigation.goBack();
               }}
@@ -791,19 +794,19 @@ const Type01 = ({ navigation, route }) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Save as Draft</Text>
+          <Text style={styles.confirmText}>{t('save as draft')}</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Save'}
+              btnText={t('save')}
               onPress={handleDraft}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
             />
           </View>

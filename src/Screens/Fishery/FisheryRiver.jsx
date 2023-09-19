@@ -25,10 +25,13 @@ import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import {ActivityIndicator} from 'react-native-paper';
 import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const FisheryRiver = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const {screenName} = route.params;
+  const { t } = useTranslation();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {fisheryCrop} = useSelector(state => state.fisheryCrop);
@@ -113,13 +116,13 @@ const FisheryRiver = ({navigation, route}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Fishery'}
+        headerName={t('fishery')}
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
       <CustomDashboard
-        first={'Production'}
-        second={'Fishery'}
+        first={t('production')}
+        second={t('fishery')}
         third={screenName}
       />
       {loading ? (
@@ -187,7 +190,7 @@ const FisheryRiver = ({navigation, route}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Fish</Text>
+            <Text style={styles.headerText}>{t('add fish')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -213,8 +216,8 @@ const FisheryRiver = ({navigation, route}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Fish Name'}
-                placeholder={'Eg: Salmon'}
+                label={t('fish name')}
+                placeholder={t('eg fish')}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
@@ -231,7 +234,7 @@ const FisheryRiver = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => addingHuntingCrop()}
             />

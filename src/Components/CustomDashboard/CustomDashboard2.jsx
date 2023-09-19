@@ -8,17 +8,19 @@ import {
 import React from 'react';
 import {Divider} from 'react-native-paper';
 import {useSelector} from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import '../../i18next/index'
 
 const CustomDashboard2 = ({allocatedFor, usedLand}) => {
   const {user} = useSelector(state => state.auth);
-
+  const { t } = useTranslation();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
     <View style={styles.container}>
       <View style={styles.top_container}>
         <View style={[styles.top_container_inner, {flex: 1}]}>
-          <Text style={styles.land_allocated_text}>Land allocated for</Text>
+          <Text style={styles.land_allocated_text}>{t('land allocated for')}</Text>
           <Text style={styles.value_text}>{allocatedFor}</Text>
         </View>
         <Divider style={styles.divider} />

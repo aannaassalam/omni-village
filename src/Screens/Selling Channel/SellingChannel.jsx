@@ -18,12 +18,15 @@ import {
   editSellingChannel,
   getSellingChannel,
 } from '../../Redux/SellingChannelSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const SellingChannel = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const {sellingChannelMethod} = useSelector(
     state => state.sellingChannelMethod,
   );
+  const { t } = useTranslation();
   const {sellingChannel} = useSelector(state => state.sellingChannel);
   const styles = makeStyles(fontScale);
   let idMatch = sellingChannel;
@@ -67,10 +70,10 @@ const SellingChannel = ({navigation}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Selling Channel'}
+        headerName={t('selling channel')}
         goBack={() => navigation.goBack()}
       />
-      <CustomDashboard first={'Production'} second={'Selling Channel'} />
+      <CustomDashboard first={t('production')} second={t('selling channel')} />
       {averageAge.map(item => {
         return (
           <View key={item._id} style={styles.mainContainer}>
@@ -94,7 +97,7 @@ const SellingChannel = ({navigation}) => {
         );
       })}
       <View style={styles.buttonContainer}>
-        <CustomButton btnText={'Save'} onPress={() => save()} />
+        <CustomButton btnText={t('save')} onPress={() => save()} />
       </View>
     </View>
   );

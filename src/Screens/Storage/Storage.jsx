@@ -27,6 +27,8 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {addStorage, editStorage, getStorage} from '../../Redux/StorageSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Storage = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -35,6 +37,7 @@ const Storage = ({navigation}) => {
   const {storage} = useSelector(state => state.storage);
   const {user} = useSelector(state => state.auth);
   const [storageList, setStorageList] = useState([]);
+  const { t } = useTranslation();
   const [storageItem, setStorageItem] = useState(null);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -183,7 +186,7 @@ const Storage = ({navigation}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Storage'}
+        headerName={t('storage')}
         goBack={() => navigation.goBack()}
       />
       <ScrollView>
@@ -193,13 +196,13 @@ const Storage = ({navigation}) => {
           </View>
         ) : (
           <>
-            <CustomDashboard first={'Production'} second={'Storage'} />
+            <CustomDashboard first={t('production')} second={t('storage')} />
             <CustomDashboard2
-              allocatedFor={'Storage'}
+              allocatedFor={t('storage')}
               usedLand={user.sub_area.storage}
             />
             <View style={styles.subArea}>
-              <Text style={styles.subAreaText}>Storage</Text>
+              <Text style={styles.subAreaText}>{t('storage')}</Text>
               <Divider
                 bold={true}
                 style={[styles.divider]}
@@ -208,14 +211,13 @@ const Storage = ({navigation}) => {
             </View>
             <View style={styles.storageInput}>
               {storageList.map((item, index) => {
-                console.log(item?.stock_quantity, 'quan');
                 return (
                   <InputWithStorage
                     productionName={`For ${item?.stock_name} if applicable`}
                     onChangeText={e => updateValueById(item?.stock_name, e)}
                     val={item?.stock_quantity.toString()}
                     keyboardType="numeric"
-                    storageMethod={item?.storage_name || 'Add Storage'}
+                    storageMethod={item?.storage_name || t('add storage')}
                     storagePress={() => {
                       setStorageItem({...item, index: index});
                       setCropModal(true);
@@ -227,7 +229,7 @@ const Storage = ({navigation}) => {
             </View>
             <Text style={styles.error}>{globalError}</Text>
             <View style={styles.buttonContainer}>
-              <CustomButton btnText={'Continue'} onPress={onContinue} />
+              <CustomButton btnText={t('continue')} onPress={onContinue} />
             </View>
           </>
         )}
@@ -235,7 +237,7 @@ const Storage = ({navigation}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Storage Method</Text>
+            <Text style={styles.headerText}>{t('add storage method')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -289,7 +291,7 @@ const Storage = ({navigation}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => {
                 var local_storage_list = storageList;

@@ -5,6 +5,8 @@ import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShow
 import { useDispatch, useSelector } from 'react-redux';
 import { getConsumptionType } from '../../Redux/ConsumptionTypeSlice';
 import { getConsumptionCrops } from '../../Redux/ConsumptionCropSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const ConsumptionMain = ({ navigation }) => {
     const { fontScale } = useWindowDimensions();
@@ -12,6 +14,8 @@ const ConsumptionMain = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
     const { consumptionType } = useSelector((state) => state.consumptionType)
     const dispatch = useDispatch()
+    const { t } = useTranslation();
+
     useEffect(() => {
         setLoading(true)
         dispatch(getConsumptionType())
@@ -24,7 +28,7 @@ const ConsumptionMain = ({ navigation }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Consumption'}
+                headerName={t('consumption')}
                 goBack={() => navigation.goBack()}
             />
             {loading ?

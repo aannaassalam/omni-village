@@ -20,11 +20,14 @@ import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {getHuntingCrops} from '../../Redux/HuntingCropSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const SubArea = ({navigation, route}) => {
   const {totalLand, screenName, type, cropId, data} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const {fisheryCrop} = useSelector(state => state.fisheryCrop);
   const {fishery} = useSelector(state => state.fishery);
   const [cropType, setCropType] = useState([]);
@@ -166,7 +169,7 @@ const SubArea = ({navigation, route}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Fish</Text>
+            <Text style={styles.headerText}>{t('add fish')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -189,8 +192,8 @@ const SubArea = ({navigation, route}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Fish Name'}
-                placeholder={'Eg: Salmon'}
+                label={t('fish name')}
+                placeholder={t('eg fish')}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
@@ -207,7 +210,7 @@ const SubArea = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => addingHuntingCrop()}
             />

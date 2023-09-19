@@ -23,10 +23,13 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
 import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Hunting = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const {huntingCrops} = useSelector(state => state.huntingCrop);
   const {hunting} = useSelector(state => state.hunting);
   const [cropType, setCropType] = useState([]);
@@ -111,7 +114,7 @@ const Hunting = ({navigation}) => {
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
-      <CustomDashboard first={'Production'} second={'Hunting'} />
+      <CustomDashboard first={t('production')} second={t('hunting')} />
       {/* Crop adding */}
       {cropType?.map((element, i) => {
         return (
@@ -155,14 +158,14 @@ const Hunting = ({navigation}) => {
         style={styles.addAndDeleteButtonSection}>
         <AddAndDeleteCropButton
           add={true}
-          cropName={`Select Type`}
+          cropName={t('select type')}
           onPress={() => setCropModal(true)}
         />
       </TouchableOpacity>
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Hunting Livestock</Text>
+            <Text style={styles.headerText}>{t('add hunting livestock')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -188,8 +191,8 @@ const Hunting = ({navigation}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Livestock Name'}
-                placeholder={'Eg: Boar'}
+                label={t('livestock name')}
+                placeholder={t('eg boar')}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
@@ -206,7 +209,7 @@ const Hunting = ({navigation}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => addingHuntingCrop()}
             />

@@ -18,12 +18,15 @@ import CalendarPicker from 'react-native-calendar-picker';
 import {Divider} from 'react-native-paper';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const PoultryEdit = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
   const {fontScale} = useWindowDimensions();
   const [message, setMessage] = useState('');
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const [harvestedPopup, setHarvestedPopup] = useState(false);
   const [harvestedDate, setHarvestedDate] = useState(
     edit
@@ -46,20 +49,20 @@ const PoultryEdit = ({navigation, route}) => {
       setOthers(edit?.other_value);
       setOutput(edit?.production_output);
       setUtilisationArray([
-        {name: 'Self consumed', value: edit?.self_consumed},
-        {name: 'Fed to Livestock', value: edit?.fed_to_livestock},
-        {name: 'Sold to Neighbours', value: edit?.sold_to_neighbours},
-        {name: 'Sold for Industrial Use', value: edit?.sold_for_industrial_use},
-        {name: 'Wastage', value: edit?.wastage},
+        { name: t('self consumed'), value: edit?.self_consumed},
+        { name: t('fed to livestock'), value: edit?.fed_to_livestock},
+        { name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
+        { name: t('sold for indutrial use'), value: edit?.sold_for_industrial_use},
+        { name: t('wastage'), value: edit?.wastage},
         {name: 'Others(Specify if any)', value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
-        {name: 'Self consumed', value: 0},
-        {name: 'Fed to Livestock', value: 0},
-        {name: 'Sold to Neighbours', value: 0},
-        {name: 'Sold for Industrial Use', value: 0},
-        {name: 'Wastage', value: 0},
+        { name: t('self consumed'), value: 0},
+        { name: t('fed to livestock'), value: 0},
+        { name: t('sold to neighbour'), value: 0},
+        { name: t('sold for indutrial use'), value: 0},
+        { name: t('wastage'), value: 0},
         {name: 'Others(Specify if any)', value: ''},
       ]);
     }
@@ -277,7 +280,7 @@ const PoultryEdit = ({navigation, route}) => {
           />
           <Divider style={styles.divider} />
           <Text style={styles.processing_text}>
-            Required Processing method if any for the outputs
+            {t('required processing')}
           </Text>
           <View style={styles.processing_container}>
             <TouchableOpacity onPress={() => setToggleCheckBox('yes')}>
@@ -318,7 +321,7 @@ const PoultryEdit = ({navigation, route}) => {
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
-            btnText={'Submit'}
+            btnText={t('submit')}
             onPress={() => {
               // setSavepopup(true) ,
               submit();
@@ -360,54 +363,24 @@ const PoultryEdit = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={() => {
                 setSavepopup(false), navigation.goBack();
               }}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => {
                 setSavepopup(false), navigation.goBack();
               }}
-            />
-          </View>
-        </View>
-      </PopupModal>
-      {/* draft popup */}
-      <PopupModal
-        modalVisible={draftpopup}
-        setBottomModalVisible={setDraftpopup}
-        styleInner={[styles.savePopup, {width: '90%'}]}>
-        <View style={styles.submitPopup}>
-          <View style={styles.noteImage}>
-            <Image
-              source={require('../../../assets/note.png')}
-              style={styles.noteImage}
-            />
-          </View>
-          <Text style={styles.confirmText}>Save as Draft</Text>
-          <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
-          </Text>
-          <View style={styles.bottomPopupbutton}>
-            <CustomButton
-              style={styles.submitButton}
-              btnText={'Save'}
-              onPress={() => setDraftpopup(false)}
-            />
-            <CustomButton
-              style={styles.draftButton}
-              btnText={'Cancel'}
-              onPress={() => setDraftpopup(false)}
             />
           </View>
         </View>

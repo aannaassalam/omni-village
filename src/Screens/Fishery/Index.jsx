@@ -14,12 +14,15 @@ import {useFocusEffect} from '@react-navigation/native';
 import {getFisheryCrops} from '../../Redux/FisheryCropSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Index = ({navigation, route}) => {
   // const { totalLand } = route.params;
   const {user} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const styles = makeStyles(fontScale);
   useFocusEffect(
     useCallback(() => {
@@ -30,12 +33,12 @@ const Index = ({navigation, route}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Fishery'}
+        headerName={t('fishery')}
         goBack={() => navigation.goBack()}
       />
-      <CustomDashboard first={'Production'} second={'Fishery'} />
+      <CustomDashboard first={t('production')} second={t('fishery')} />
       <CustomDashboard2
-        allocatedFor="Fishery"
+        allocatedFor={t("fishery")}
         usedLand={user.sub_area.fishery}
       />
       <View style={styles.optionsContainer}>
@@ -47,7 +50,7 @@ const Index = ({navigation, route}) => {
           <Box style={styles.home_box}>
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt}>
-                Harvested From Pond
+                {t('harvested from pond')}
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
@@ -75,7 +78,7 @@ const Index = ({navigation, route}) => {
             </Box> */}
             <Box style={styles.home_box_lft_upr}>
               <Text variant="h3" style={styles.hme_box_txt}>
-                Harvested From River/Lake/Ocean
+                {t('harvested from river')}
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
