@@ -29,8 +29,11 @@ import * as yup from 'yup';
 import { addHunting, editHunting, getHunting } from '../../Redux/HuntingSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 const HuntingType = ({ navigation, route }) => {
   const { cropType, data, cropId } = route.params;
+  const { t } = useTranslation();
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const [productionInfo, setProductionInfo] = useState(true)
@@ -363,7 +366,7 @@ const HuntingType = ({ navigation, route }) => {
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Important Information</Text>
+            <Text style={styles.subAreaText}>{t('important information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, { width: '45%' }]}
@@ -393,7 +396,7 @@ const HuntingType = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={'kg'}
-                      productionName={'Number'}
+                      productionName={t('number')}
                       value={value}
                       onChangeText={onChange}
                       notRightText={true}
@@ -417,7 +420,7 @@ const HuntingType = ({ navigation, route }) => {
                       value={value}
                       defaultVal={{ key: value, value: value }}
                       selectedValue={onChange}
-                      infoName={'Weight Measuremnt'}
+                      infoName={t('weight measuremnt')}
                     />
                   );
                 }}
@@ -426,7 +429,7 @@ const HuntingType = ({ navigation, route }) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Production Information</Text>
+            <Text style={styles.subAreaText}>{t('production information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, { width: '45%' }]}
@@ -461,7 +464,7 @@ const HuntingType = ({ navigation, route }) => {
                           ? watch('weight_measurement')
                           : 'kg'
                       }
-                      productionName={'Meat'}
+                      productionName={t('meat')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -488,7 +491,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName={'Self Comsumed'}
+                          productionName={t('self consumed')}
                           value={value}
                           onChangeText={onChange}
                         />
@@ -512,7 +515,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Sold to Neighbours"
+                          productionName={t('sold to neighbour')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -542,7 +545,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Sold for Industrial Use"
+                          productionName={t('sold for industrial use')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -572,7 +575,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Wastage"
+                          productionName={t('wastage')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -667,7 +670,7 @@ const HuntingType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Income from sale of Output'}
+                    productionName={t('income from sale')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -687,7 +690,7 @@ const HuntingType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Expenditure on inputs'}
+                    productionName={t('expenditure on input')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -707,7 +710,7 @@ const HuntingType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
-                    productionName={'Yields'}
+                    productionName={t('yeilds')}
                     value={value}
                     onChangeText={onChange}
                     notRightText={false}
@@ -720,7 +723,7 @@ const HuntingType = ({ navigation, route }) => {
               <Text style={styles.error}>{errors?.yeild?.message}</Text>
             ) : null}
             <Text style={styles.processing_text}>
-              Required Processing method if any for the outputs
+              {t('required processing')}
             </Text>
             <View style={styles.processing_container}>
               <Controller
@@ -780,14 +783,14 @@ const HuntingType = ({ navigation, route }) => {
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={() => {
                 setSavepopup(true);
               }}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Save as draft'}
+              btnText={t('save as draft')}
               onPress={() => {
                 setDraftpopup(true);
               }}
@@ -806,19 +809,19 @@ const HuntingType = ({ navigation, route }) => {
                 style={styles.noteImage}
               />
             </View>
-            <Text style={styles.confirmText}>Confirm</Text>
+            <Text style={styles.confirmText}>{t('confirm')}</Text>
             <Text style={styles.nextText}>
-              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+              {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
             </Text>
             <View style={styles.bottomPopupbutton}>
               <CustomButton
                 style={styles.submitButton}
-                btnText={'Submit'}
+                btnText={t('submit')}
                 onPress={handleSubmit(onSubmit)}
               />
               <CustomButton
                 style={styles.draftButton}
-                btnText={'Cancel'}
+                btnText={t('cancel')}
                 onPress={() => {
                   setSavepopup(false);
                 }}
@@ -838,19 +841,19 @@ const HuntingType = ({ navigation, route }) => {
                 style={styles.noteImage}
               />
             </View>
-            <Text style={styles.confirmText}>Save as Draft</Text>
+            <Text style={styles.confirmText}>{t('save as draft')}</Text>
             <Text style={styles.nextText}>
-              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+              {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
             </Text>
             <View style={styles.bottomPopupbutton}>
               <CustomButton
                 style={styles.submitButton}
-                btnText={'Save'}
+                btnText={t('save')}
                 onPress={handleDraft}
               />
               <CustomButton
                 style={styles.draftButton}
-                btnText={'Cancel'}
+                btnText={t('cancel')}
                 onPress={() => setDraftpopup(false)}
               />
             </View>

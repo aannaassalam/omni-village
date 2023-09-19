@@ -22,20 +22,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteConsumption, getConsumption } from '../../Redux/ConsumptionSlice';
 import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
-const Consumption = ({ route,navigation }) => {
-    const {typeId, typeName} = route.params
+const Consumption = ({ route, navigation }) => {
+    const { typeId, typeName } = route.params
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
-    const {consumptionCrops}= useSelector((state)=>state.consumptionCrop)
-    const {consumption} = useSelector((state)=>state.consumption)
+    const { consumptionCrops } = useSelector((state) => state.consumptionCrop)
+    const { consumption } = useSelector((state) => state.consumption)
     const [cropType, setCropType] = useState([]);
-    const [loading,setLoading] = useState(true)
+    const [loading, setLoading] = useState(true)
     const [cropModal, setCropModal] = useState(false);
     const [dropdownVal, setDropdownVal] = useState('');
     const [otherCrop, setOtherCrop] = useState('');
     const [focusOther, setFocusOther] = useState(false);
     const dispatch = useDispatch()
+    const { t } = useTranslation();
     const handleRemoveClick = (id, index) => {
         const list = [...cropType];
         list.splice(index, 1);
@@ -103,81 +106,81 @@ const Consumption = ({ route,navigation }) => {
         }
     };
     useFocusEffect(
-      useCallback  (() => {
-        dispatch(getMeasurement())
-        dispatch(getConsumption(typeName))
-        .then(()=>setLoading(false))
-    }, [typeName])
+        useCallback(() => {
+            dispatch(getMeasurement())
+            dispatch(getConsumption(typeName))
+                .then(() => setLoading(false))
+        }, [typeName])
     )
     // console.log("type ifd", typeId, consumption)
-    useEffect(()=>{
+    useEffect(() => {
         setCropType(consumption.map((i) => i?.consumption_crop))
     }, [consumption])
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Consumption'}
+                headerName={t('consumption')}
                 goBack={() => navigation.goBack()}
             />
-            <CustomDashboard first={'Consumption'} second={typeName} />
-            {loading?
-        <View style={{marginTop:'50%'}}>
-            <ActivityIndicator size={'large'} color='green'/>
-            </View>    
-            :
-            <>
-            {cropType?.map((element, i) => {
-                return (
+            <CustomDashboard first={t('consumption')} second={t(typeName)} />
+            {loading ?
+                <View style={{ marginTop: '50%' }}>
+                    <ActivityIndicator size={'large'} color='green' />
+                </View>
+                :
+                <>
+                    {cropType?.map((element, i) => {
+                        return (
+                            <TouchableOpacity
+                                style={styles.addAndDeleteButtonSection}
+                                onPress={
+                                    () =>
+                                        navigation.navigate('consumptionInput', {
+                                            cropType: element?.name,
+                                            typeName: typeName,
+                                            cropId:
+                                                consumption[0] !== undefined &&
+                                                    consumption.find(j => j?.consumption_crop?.name == element?.name)
+                                                    ? consumption.find(
+                                                        i => i?.consumption_crop?.name == element?.name,
+                                                    )._id
+                                                    : element?.id,
+                                            data: consumption.find(i => i?.consumption_crop_id == element?._id),
+                                        })
+                                }>
+                                <AddAndDeleteCropButton
+                                    add={false}
+                                    cropName={element?.name}
+                                    onPress={() =>
+                                        handleRemoveClick(
+                                            consumption[0] !== undefined &&
+                                                consumption.find(j => j?.consumption_crop?.name == element?.name)
+                                                ? consumption.find(i => i?.consumption_crop?.name == element?.name)
+                                                    ._id
+                                                : element?.id,
+                                            i,
+                                        )
+                                    }
+                                />
+                            </TouchableOpacity>
+                        );
+                    })}
                     <TouchableOpacity
-                        style={styles.addAndDeleteButtonSection}
-                        onPress={
-                            () =>
-                                navigation.navigate('consumptionInput', {
-                                    cropType: element?.name,
-                                    typeName: typeName,
-                                    cropId:
-                                        consumption[0] !== undefined &&
-                                            consumption.find(j => j?.consumption_crop?.name == element?.name)
-                                            ? consumption.find(
-                                                i => i?.consumption_crop?.name == element?.name,
-                                            )._id
-                                            : element?.id,
-                                    data: consumption.find(i => i?.consumption_crop_id == element?._id),
-                                })
-                        }>
+                        onPress={() => setCropModal(true)}
+                        style={styles.addAndDeleteButtonSection}>
                         <AddAndDeleteCropButton
-                            add={false}
-                            cropName={element?.name}
-                            onPress={() =>
-                                handleRemoveClick(
-                                    consumption[0] !== undefined &&
-                                        consumption.find(j => j?.consumption_crop?.name == element?.name)
-                                        ? consumption.find(i => i?.consumption_crop?.name == element?.name)
-                                            ._id
-                                        : element?.id,
-                                    i,
-                                )
-                            }
+                            add={true}
+                            cropName={t('select type')}
+                            onPress={() => setCropModal(true)}
                         />
                     </TouchableOpacity>
-                );
-            })}
-            <TouchableOpacity
-                onPress={() => setCropModal(true)}
-                style={styles.addAndDeleteButtonSection}>
-                <AddAndDeleteCropButton
-                    add={true}
-                    cropName={`Select Type`}
-                    onPress={() => setCropModal(true)}
-                />
-            </TouchableOpacity>
-            </>
-        }
+                </>
+            }
             {cropModal && (
                 <AddBottomSheet>
                     <View style={styles.BottomTopContainer}>
-                        <Text style={styles.headerText}>Add Type</Text>
+                        <Text style={styles.headerText}>{t('add type')}</Text>
                         <TouchableOpacity
                             onPress={() => {
                                 setCropModal(!cropModal);
@@ -193,13 +196,13 @@ const Consumption = ({ route,navigation }) => {
                     <View style={styles.dropdownSection}>
                         <CustomDropdown4
                             selectedValue={e => DropdownSelectedValue({ name: e, _id: e._id })}
-                            data={[...consumptionCrops,{ _id: 0, name: 'Others' }]}
+                            data={[...consumptionCrops, { _id: 0, name: 'Others' }]}
                             valu={dropdownVal?.name}
                         />
                         {dropdownVal.name?.label === 'Others' ? (
                             <InputWithoutRightElement
-                                label={'Consumption Name'}
-                                placeholder={'Eg: Nuts'}
+                                label={t('consumption name')}
+                                placeholder={t('eg nuts')}
                                 onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
                                 value={otherCrop?.name}
                                 onFocus={() => setFocusOther(true)}
@@ -216,7 +219,7 @@ const Consumption = ({ route,navigation }) => {
                             />
                         </TouchableOpacity>
                         <CustomButton
-                            btnText={'Create'}
+                            btnText={t('create')}
                             style={{ width: '80%' }}
                             onPress={() => addingHuntingCrop()}
                         />

@@ -21,6 +21,9 @@ import { Divider } from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addConsumption, editConsumption } from '../../Redux/ConsumptionSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
+
 const ConsumptionInput = ({route,navigation}) => {
     const { cropType, data, cropId,typeName } = route.params;
     const { fontScale } = useWindowDimensions();
@@ -32,6 +35,8 @@ const ConsumptionInput = ({route,navigation}) => {
     const [message, setMessage] = useState('')
     const [draftpopup, setDraftpopup] = useState(false);
     const dispatch = useDispatch()
+    const { t } = useTranslation();
+
     const schema = yup.object().shape({
         total_quantity: yup.string().required(validation.error.total_land),
         purchased_from_market: yup.string().required(validation.error.purchased_from_market),
@@ -171,7 +176,7 @@ const ConsumptionInput = ({route,navigation}) => {
           />
           <ScrollView>
               <View style={styles.subArea}>
-                  <Text style={styles.subAreaText}>Consumption Information</Text>
+                  <Text style={styles.subAreaText}>{t('consumption information')}</Text>
                   <Divider
                       bold={true}
                       style={[styles.divider, { width: '40%' }]}
@@ -204,7 +209,7 @@ const ConsumptionInput = ({route,navigation}) => {
                                   value={value}
                                   defaultVal={{ key: value, value: value }}
                                   selectedValue={onChange}
-                                  infoName={'Weight Measuremnt'}
+                                  infoName={t('weight measurement')}
                               />
                           );
                       }}
@@ -219,7 +224,7 @@ const ConsumptionInput = ({route,navigation}) => {
                                       measureName={watch('weight_measurement')
                                           ? watch('weight_measurement')
                                           : 'kg'}
-                                      productionName={'Total Quantity'}
+                                      productionName={t('total quantity')}
                                       value={value}
                                       onChangeText={onChange}
                                       notRightText={false}
@@ -247,7 +252,7 @@ const ConsumptionInput = ({route,navigation}) => {
                                               ? watch('weight_measurement')
                                               : 'kg'
                                       }
-                                      productionName="Purchased from market"
+                                      productionName={t('purchased from market')}
                                       value={value}
                                       multiline={false}
                                       notRightText={false}
@@ -277,7 +282,7 @@ const ConsumptionInput = ({route,navigation}) => {
                                               ? watch('weight_measurement')
                                               : 'kg'
                                       }
-                                      productionName="Purchased from neighbour"
+                                      productionName={t('purchased from neighbour')}
                                       value={value}
                                       multiline={false}
                                       notRightText={false}
@@ -307,7 +312,7 @@ const ConsumptionInput = ({route,navigation}) => {
                                                   ? watch('weight_measurement')
                                                   : 'kg'
                                           }
-                                          productionName="Self-Grown"
+                                          productionName={t('self grown')}
                                           value={value}
                                           multiline={false}
                                           notRightText={false}

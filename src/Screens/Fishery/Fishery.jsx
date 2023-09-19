@@ -21,11 +21,14 @@ import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import {ActivityIndicator} from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Fishery = ({navigation, route}) => {
   const {user} = useSelector(state => state.auth);
   const totalLand = user.sub_area.fishery;
   const {screenName} = route.params;
+  const { t } = useTranslation();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [loading, setLoading] = useState(false);
@@ -98,8 +101,8 @@ const Fishery = ({navigation, route}) => {
       />
       {/*Top Dashboard  */}
       <CustomDashboard
-        first={'Production'}
-        second={'Fishery'}
+        first={t('production')}
+        second={t('fishery')}
         third={screenName}
       />
       {/* Next Dashboard */}
@@ -155,7 +158,7 @@ const Fishery = ({navigation, route}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Pond Name</Text>
+            <Text style={styles.headerText}>{t('add pond name')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -170,8 +173,8 @@ const Fishery = ({navigation, route}) => {
           </View>
           <View style={styles.dropdownSection}>
             <InputWithoutRightElement
-              label={'Pond Name'}
-              placeholder={'Eg: Pond 1'}
+              label={t('pond name')}
+              placeholder={t('eg pond')}
               onChangeText={e => setOtherCrop(e)}
               value={otherCrop}
               onFocus={() => setFocusOther(true)}

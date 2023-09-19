@@ -37,6 +37,8 @@ import {addPoultry, editPoultry, getPoultry} from '../../Redux/PoultrySlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const PoultryType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -45,6 +47,7 @@ const PoultryType = ({navigation, route}) => {
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const {measurement} = useSelector(state => state.Others);
   const {feed} = useSelector(state => state.Others);
   const [message, setMessage] = useState('');
@@ -440,7 +443,7 @@ const PoultryType = ({navigation, route}) => {
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Important Information</Text>
+            <Text style={styles.subAreaText}>{t('important information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -470,7 +473,7 @@ const PoultryType = ({navigation, route}) => {
                   return (
                     <InputWithoutBorder
                       measureName={weight ? weight : 'kg'}
-                      productionName={'Number'}
+                      productionName={t('number')}
                       value={value}
                       onChangeText={onChange}
                       notRightText={true}
@@ -492,7 +495,7 @@ const PoultryType = ({navigation, route}) => {
                     // <TouchableOpacity onPress={() => { setTreeAge(true) }}>
                     <InputWithoutBorder
                       measureName={'Years'}
-                      productionName={'Average age of the live stocks'}
+                      productionName={t('average age of the live stocks')}
                       value={value.toString()}
                       onChangeText={onChange}
                       notRightText={false}
@@ -521,7 +524,7 @@ const PoultryType = ({navigation, route}) => {
                       value={value == 1 ? 'others' : value}
                       defaultVal={{key: value, value: value}}
                       infoName={
-                        'Type of feed required apart from grassland grazing'
+                        t('type of feed')
                       }
                     />
                   );
@@ -569,7 +572,7 @@ const PoultryType = ({navigation, route}) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Feed Information</Text>
+            <Text style={styles.subAreaText}>{t('feed information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -600,7 +603,7 @@ const PoultryType = ({navigation, route}) => {
                   return (
                     <InputWithoutBorder
                       measureName={weight ? weight : 'kg'}
-                      productionName={'Total Feed'}
+                      productionName={t('total feed')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -623,7 +626,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName={'Self Produced'}
+                          productionName={t('self produced')}
                           value={value}
                           onChangeText={onChange}
                         />
@@ -643,7 +646,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName="Neighbours"
+                          productionName={t('neighbour')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -665,7 +668,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName="Purchased from market"
+                          productionName={t('purchased from market')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -757,7 +760,7 @@ const PoultryType = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Income from sale of Output'}
+                    productionName={t('income from sale')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -777,7 +780,7 @@ const PoultryType = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'Expenditure on inputs'}
+                    productionName={t('expenditure on input')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -790,7 +793,7 @@ const PoultryType = ({navigation, route}) => {
               </Text>
             ) : null}
             <Text style={styles.processing_text}>
-              Any hormones/ artificial productivity enhancing mechanism applied
+              {t('any hormones/ artificial productivity enhancing mechanism applied')}
             </Text>
             <View style={styles.processing_container}>
               <Controller
@@ -842,7 +845,7 @@ const PoultryType = ({navigation, route}) => {
             </View>
             {/* harvested product section */}
             <View style={styles.subArea}>
-              <Text style={styles.subAreaText}>Harvested Product</Text>
+              <Text style={styles.subAreaText}>{t('harvested product')}</Text>
               <Divider
                 bold={true}
                 style={[styles.divider, {width: '45%'}]}
@@ -871,9 +874,9 @@ const PoultryType = ({navigation, route}) => {
                       {harvestedProductList.map(item => {
                         return (
                           <ProductDescription
-                            productName={'Product Type'}
+                            productName={t('product type')}
                             productNameValue={item?.name}
-                            date={'Harvested On'}
+                            date={t('harvested on')}
                             dateValue={
                               data !== null || data !== undefined
                                 ? moment(item?.month_harvested).format(
@@ -881,7 +884,7 @@ const PoultryType = ({navigation, route}) => {
                                   )
                                 : item?.month_harvested
                             }
-                            qty={'Qty'}
+                            qty={t('quantity')}
                             qtyValue={item?.production_output}
                             del={() => removeList(item?.name)}
                             data={item ? item : []}
@@ -904,7 +907,7 @@ const PoultryType = ({navigation, route}) => {
             <TouchableOpacity
               style={styles.add_button}
               onPress={() => setHarvestProdAdd(true)}>
-              <Text style={styles.add_button_text}>Add</Text>
+              <Text style={styles.add_button_text}>{t('add')}</Text>
               <AntDesign name="plus" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -912,14 +915,14 @@ const PoultryType = ({navigation, route}) => {
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={() => {
                 setSavepopup(true);
               }}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Save as draft'}
+              btnText={t('save as draft')}
               onPress={() => {
                 setDraftpopup(true);
               }}
@@ -930,7 +933,7 @@ const PoultryType = ({navigation, route}) => {
       {treeAge && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Average Age of the tree</Text>
+            <Text style={styles.headerText}>{t('average of tree')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setTreeAge(!treeAge);
@@ -968,7 +971,7 @@ const PoultryType = ({navigation, route}) => {
       {harvestProdAdd && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Harvested Product</Text>
+            <Text style={styles.headerText}>{t('add harvested product')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setHarvestProdAdd(!harvestProdAdd);
@@ -983,7 +986,7 @@ const PoultryType = ({navigation, route}) => {
           <View style={styles.harvested_prod_container}>
             <InputWithoutBorder
               measureName={weight ? weight : 'kg'}
-              productionName={'Name Of harvested Product'}
+              productionName={t('name of harvested product')}
               value={productName}
               keyboardType="default"
               onChangeText={e => {
@@ -996,7 +999,7 @@ const PoultryType = ({navigation, route}) => {
           </View>
           <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
             <CustomButton
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={() => {
                 setHarvestProdAdd(!harvestProdAdd);
                 setFocus(!focus);
@@ -1018,19 +1021,19 @@ const PoultryType = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => {
                 setSavepopup(false), navigation.goBack();
               }}
@@ -1050,19 +1053,19 @@ const PoultryType = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Save as Draft</Text>
+          <Text style={styles.confirmText}>{t('save as draft')}</Text>
           <Text style={styles.nextText}>
-            Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Save'}
+              btnText={t('save')}
               onPress={handleDraft}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
             />
           </View>

@@ -23,12 +23,15 @@ import {deleteTree, getTree, setCurrentTree} from '../../Redux/TreesSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const TreesShrubsScreen = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const dispatch = useDispatch();
   const {userDetails} = useSelector(s => s.auth);
+  const { t } = useTranslation();
   const {treeCrops} = useSelector(state => state.treeCrop);
   const {trees} = useSelector(state => state?.treeShrub);
   const totalLand = userDetails.sub_area.trees;
@@ -106,17 +109,17 @@ const TreesShrubsScreen = ({navigation, route}) => {
       {/* Header */}
       <CustomHeader
         goBack={() => navigation.goBack()}
-        headerName={'Trees, Shrubs & Grasslands'}
+        headerName={t('tree shrub grassland')}
         backIcon={true}
       />
       {/*Top Dashboard  */}
       <CustomDashboard
-        first={'production'}
-        second={'Trees, Shrubs & Grasslands'}
+        first={t('production')}
+        second={t('tree shrub grassland')}
       />
       {/* Next Dashboard */}
       <CustomDashboard2
-        allocatedFor={'Trees, Shrubs & Grasslands'}
+        allocatedFor={t('tree shrub grassland')}
         usedLand={totalLand}
       />
       {/* Crop adding */}
@@ -163,14 +166,14 @@ const TreesShrubsScreen = ({navigation, route}) => {
         onPress={() => setCropModal(true)}>
         <AddAndDeleteCropButton
           add={true}
-          cropName={'Add Trees/Shrubs'}
+          cropName={t('add tree shrub')}
           onPress={() => setCropModal(true)}
         />
       </TouchableOpacity>
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Tree/Shrub</Text>
+            <Text style={styles.headerText}>{t('add tree shrub')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -186,7 +189,6 @@ const TreesShrubsScreen = ({navigation, route}) => {
           <View style={styles.dropdownSection}>
             <CustomDropdown4
               selectedValue={e => {
-                console.log('e', e);
                 DropdownSelectedValue({name: e, _id: e.value});
               }}
               data={[...treeCrops, {_id: 0, name: 'Others'}]}
@@ -194,8 +196,8 @@ const TreesShrubsScreen = ({navigation, route}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Tree/Shrub Name'}
-                placeholder={'Eg: Banyaan tree'}
+                label={t('tree shrub name')}
+                placeholder={t('eg banyan')}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
@@ -212,7 +214,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => {
                 addingTreesCrop();

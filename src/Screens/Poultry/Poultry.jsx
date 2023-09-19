@@ -24,10 +24,13 @@ import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import { ActivityIndicator } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Poultry = ({ navigation, route }) => {
   const { user } = useSelector(state => state.auth);
   const totalLand = user.sub_area.poultry;
+  const { t } = useTranslation();
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const dispatch = useDispatch();
@@ -108,14 +111,14 @@ const Poultry = ({ navigation, route }) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Livestock, feed & produce'}
+        headerName={t('livestock feed produce')}
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
-      <CustomDashboard first={'production'} second={'Poultry'} />
+      <CustomDashboard first={t('production')} second={t('poultry')} />
       {/* Next Dashboard */}
       <CustomDashboard2
-        allocatedFor={'Livestock, feed & produce'}
+        allocatedFor={t('livestock feed produce')}
         usedLand={totalLand}
       />
       {loading ?
@@ -171,7 +174,7 @@ const Poultry = ({ navigation, route }) => {
             <View style={styles.addAndDeleteButtonSection}>
               <AddAndDeleteCropButton
                 add={true}
-                cropName={'Add Livestock'}
+                cropName={t('add livestock')}
                 onPress={() => setCropModal(true)}
               />
             </View>
@@ -179,7 +182,7 @@ const Poultry = ({ navigation, route }) => {
           {cropModal && (
             <AddBottomSheet>
               <View style={styles.BottomTopContainer}>
-                <Text style={styles.headerText}>Add Livestock</Text>
+                <Text style={styles.headerText}>{t('add livestock')}</Text>
                 <TouchableOpacity
                   onPress={() => {
                     setCropModal(!cropModal);
@@ -202,8 +205,8 @@ const Poultry = ({ navigation, route }) => {
                 />
                 {dropdownVal.name?.label === 'Others' ? (
                   <InputWithoutRightElement
-                    label={'Livestock Name'}
-                    placeholder={'Eg: Hen'}
+                    label={t('livestock name')}
+                    placeholder={t('eg hen')}
                     onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
                     value={otherCrop}
                     onFocus={() => setFocusOther(true)}
@@ -220,7 +223,7 @@ const Poultry = ({ navigation, route }) => {
                   />
                 </TouchableOpacity>
                 <CustomButton
-                  btnText={'Create'}
+                  btnText={t('create')}
                   style={{ width: '80%' }}
                   onPress={() => addingTreesCrop()}
                 />

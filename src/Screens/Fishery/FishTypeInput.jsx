@@ -32,7 +32,8 @@ import {addFishery, editFishery, getFishery} from '../../Redux/FisherySlice';
 import {Others} from '../../MockData/Mockdata';
 import {getFishFeed} from '../../Redux/OthersSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
   const [impInfo, setImpInfo] = useState(true);
@@ -42,6 +43,7 @@ const FishTypeInput = ({navigation, route}) => {
   const {userDetails} = useSelector(state => state.auth);
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
+  const { t } = useTranslation();
   const styles = makeStyles(fontScale);
   const [message, setMessage] = useState('');
   const [income, setIncome] = useState('');
@@ -257,7 +259,6 @@ const FishTypeInput = ({navigation, route}) => {
       }
     }
   };
-  console.log('fishes', data?.important_information?.number_of_fishes);
   const toggleItem = (value, index) => {
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)
@@ -383,7 +384,7 @@ const FishTypeInput = ({navigation, route}) => {
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Important Information</Text>
+            <Text style={styles.subAreaText}>{t('important information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -417,7 +418,7 @@ const FishTypeInput = ({navigation, route}) => {
                   return (
                     <InputWithoutBorder
                       measureName={'kg'}
-                      productionName={'Number'}
+                      productionName={t('number')}
                       value={value}
                       onChangeText={onChange}
                       notRightText={true}
@@ -442,7 +443,7 @@ const FishTypeInput = ({navigation, route}) => {
                       defaultVal={{key: value, value: value}}
                       // defaultVal={{ key: 1, value: value }}
                       selectedValue={onChange}
-                      infoName={'Weight Measuremnt'}
+                      infoName={t('weight measurement')}
                     />
                   );
                 }}
@@ -459,7 +460,7 @@ const FishTypeInput = ({navigation, route}) => {
                           ? watch('weight_measurement')
                           : 'kg'
                       }
-                      productionName={'Total Feed'}
+                      productionName={t('total feed')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -483,7 +484,7 @@ const FishTypeInput = ({navigation, route}) => {
                       value={value}
                       defaultVal={{key: value, value: value}}
                       infoName={
-                        'Type of feed required apart from grassland grazing'
+                        t('type of feed')
                       }
                     />
                   );
@@ -510,7 +511,7 @@ const FishTypeInput = ({navigation, route}) => {
                                 ? watch('weight_measurement')
                                 : 'kg'
                             }
-                            productionName={'Create Type'}
+                            productionName={t('create type')}
                             value={value}
                             multiline={false}
                             notRightText={false}
@@ -533,7 +534,7 @@ const FishTypeInput = ({navigation, route}) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Production Information</Text>
+            <Text style={styles.subAreaText}>{t('production information')}</Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -596,7 +597,7 @@ const FishTypeInput = ({navigation, route}) => {
                           ? watch('weight_measurement')
                           : 'kg'
                       }
-                      productionName={'Output'}
+                      productionName={t('output')}
                       value={value}
                       onChangeText={onChange}
                     />
@@ -623,7 +624,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName={'Self Comsumed'}
+                          productionName={t('self consumed')}
                           value={value}
                           onChangeText={onChange}
                         />
@@ -647,7 +648,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Sold to Neighbours"
+                          productionName={t('sold to neighbour')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -677,7 +678,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Sold for Industrial Use"
+                          productionName={t('sold for industrial use')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -707,7 +708,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Wastage"
+                          productionName={t('wastage')}
                           value={value}
                           multiline={false}
                           notRightText={false}
@@ -797,7 +798,7 @@ const FishTypeInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={userDetails?.currency}
-                  productionName={'Income from sale of Output'}
+                  productionName={t('income from sale')}
                   value={value}
                   onChangeText={onChange}
                 />
@@ -817,7 +818,7 @@ const FishTypeInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={userDetails?.currency}
-                  productionName={'Expenditure on inputs'}
+                  productionName={t('expenditure on input')}
                   value={value}
                   onChangeText={onChange}
                 />
@@ -842,7 +843,7 @@ const FishTypeInput = ({navigation, route}) => {
                     '/' +
                     userDetails?.land_measurement_symbol
                   }
-                  productionName={'Yields'}
+                  productionName={t('yeilds')}
                   value={value}
                   onChangeText={onChange}
                   notRightText={false}
@@ -857,7 +858,7 @@ const FishTypeInput = ({navigation, route}) => {
             </Text>
           ) : null}
           <Text style={styles.processing_text}>
-            Required Processing method if any for the outputs
+            {t('required processing')}
           </Text>
           <View style={styles.processing_container}>
             <Controller
@@ -912,14 +913,14 @@ const FishTypeInput = ({navigation, route}) => {
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
-            btnText={'Submit'}
+            btnText={t('submit')}
             onPress={() => {
               setSavepopup(true);
             }}
           />
           <CustomButton
             style={styles.draftButton}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             onPress={() => {
               setDraftpopup(true);
             }}
@@ -964,14 +965,14 @@ const FishTypeInput = ({navigation, route}) => {
                 style={styles.noteImage}
               />
             </View>
-            <Text style={styles.confirmText}>Confirm</Text>
+            <Text style={styles.confirmText}>{t('confirm')}</Text>
             <Text style={styles.nextText}>
-              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+              {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
             </Text>
             <View style={styles.bottomPopupbutton}>
               <CustomButton
                 style={styles.submitButton}
-                btnText={'Submit'}
+                btnText={t('submit')}
                 onPress={
                   // setSavepopup(false), navigation.goBack();
                   handleSubmit(onSubmit)
@@ -979,7 +980,7 @@ const FishTypeInput = ({navigation, route}) => {
               />
               <CustomButton
                 style={styles.draftButton}
-                btnText={'Cancel'}
+                btnText={t('cancel')}
                 onPress={() => {
                   setSavepopup(false);
                 }}
@@ -999,19 +1000,19 @@ const FishTypeInput = ({navigation, route}) => {
                 style={styles.noteImage}
               />
             </View>
-            <Text style={styles.confirmText}>Save as Draft</Text>
+            <Text style={styles.confirmText}>{t('save as draft')}</Text>
             <Text style={styles.nextText}>
-              Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+              {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
             </Text>
             <View style={styles.bottomPopupbutton}>
               <CustomButton
                 style={styles.submitButton}
-                btnText={'Save'}
+                btnText={t('save')}
                 onPress={handleDraft}
               />
               <CustomButton
                 style={styles.draftButton}
-                btnText={'Cancel'}
+                btnText={t('cancel')}
                 onPress={() => setDraftpopup(false)}
               />
             </View>
