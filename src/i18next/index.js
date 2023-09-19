@@ -4,6 +4,7 @@ import {initReactI18next} from 'react-i18next';
 import * as RNLocalize from 'react-native-localize';
 
 import en from './translations/en';
+import ms from './translations/ms';
 // import bhasa_malaysia from './translations/spanish.json';
 
 /**
@@ -28,6 +29,7 @@ const LANGUAGE_DETECTOR = {
 
 const RESOURCES = {
   en: {translation: en},
+  ms: {translation: ms},
   // es: spanish,
 };
 
