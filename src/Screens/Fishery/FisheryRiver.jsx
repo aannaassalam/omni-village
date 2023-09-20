@@ -116,14 +116,14 @@ const FisheryRiver = ({navigation, route}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={t('fishery')}
+        headerName={t('harvested from river')}
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
       <CustomDashboard
         first={t('production')}
         second={t('fishery')}
-        third={screenName}
+        third={t('harvested from river')}
       />
       {loading ? (
         <View style={{marginTop: '70%'}}>
@@ -181,7 +181,7 @@ const FisheryRiver = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName="Add Fish"
+              cropName={t('add fish')}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>

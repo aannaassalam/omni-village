@@ -52,7 +52,7 @@ const PoultryEdit = ({navigation, route}) => {
         { name: t('self consumed'), value: edit?.self_consumed},
         { name: t('fed to livestock'), value: edit?.fed_to_livestock},
         { name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
-        { name: t('sold for indutrial use'), value: edit?.sold_for_industrial_use},
+        { name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
         { name: t('wastage'), value: edit?.wastage},
         {name: 'Others(Specify if any)', value: edit?.other},
       ]);
@@ -61,7 +61,7 @@ const PoultryEdit = ({navigation, route}) => {
         { name: t('self consumed'), value: 0},
         { name: t('fed to livestock'), value: 0},
         { name: t('sold to neighbour'), value: 0},
-        { name: t('sold for indutrial use'), value: 0},
+        { name: t('sold for industrial use'), value: 0},
         { name: t('wastage'), value: 0},
         {name: 'Others(Specify if any)', value: ''},
       ]);
@@ -198,7 +198,7 @@ const PoultryEdit = ({navigation, route}) => {
           <View style={styles.container}>
             <InputWithoutBorder
               measureName={'kg'}
-              productionName={'Output'}
+              productionName={t('output')}
               keyboardType="numeric"
               value={output == undefined ? output : output.toString()}
               onChangeText={e => {
@@ -271,7 +271,7 @@ const PoultryEdit = ({navigation, route}) => {
             {width: '93%', alignSelf: 'center', marginTop: 2},
           ]}>
           <InputLikeButton
-            text={'Month Harvested'}
+            text={t('month harvested')}
             rightIcon={true}
             calendarPress={() => {
               setHarvestedPopup(true);

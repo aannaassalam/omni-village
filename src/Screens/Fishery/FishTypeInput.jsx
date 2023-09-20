@@ -843,7 +843,7 @@ const FishTypeInput = ({navigation, route}) => {
                     '/' +
                     userDetails?.land_measurement_symbol
                   }
-                  productionName={t('yeilds')}
+                  productionName={t('yields')}
                   value={value}
                   onChangeText={onChange}
                   notRightText={false}

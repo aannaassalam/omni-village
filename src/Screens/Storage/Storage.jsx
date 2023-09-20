@@ -273,7 +273,7 @@ const Storage = ({navigation}) => {
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
-                label={'Storage Name'}
+                label={t('storage name')}
                 placeholder={'Eg: Racks'}
                 onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}

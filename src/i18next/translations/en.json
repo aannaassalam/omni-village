@@ -67,7 +67,7 @@
   "type of fertilizer": "Type of fertilizer used",
   "type of pesticides": "Type of pesticides used",
   "income from sale": "Income From Sale Of Output",
-  "expenditure on inputs": "Expenditure On Inputs",
+  "expenditure on input": "Expenditure On Inputs",
   "harvested product": "Harvested Product",
   "product type": "Product Type",
   "harvested on": "Harvested on",
@@ -118,5 +118,12 @@
   "add storage": "Add Storage",
   "continue": "Continue",
   "add storage method": "Add Storage method",
-  "selling channel": "Selling Channel"
+  "selling channel": "Selling Channel",
+  "sold for industrial use": "Sold for industrial use",
+  "less than a year": "Less than a year",
+  "1 to 2 years": "1 to 2 years",
+  "2 to 3 years": "2 to 3 years",
+  "3 to 5 years": "3 to 5 years",
+  "storage name": "Storage Name",
+  "storage method": "Storage Method"
 }

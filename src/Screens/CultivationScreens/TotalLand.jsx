@@ -83,7 +83,7 @@ const TotalLand = ({navigation}) => {
       dispatch(LandAllocation(data))
         .unwrap()
         .then(() => {
-          navigation.navigate('production');
+          navigation.replace('production');
         })
         .catch(err => console.log(err));
     }
