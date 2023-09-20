@@ -420,7 +420,7 @@ const HuntingType = ({ navigation, route }) => {
                       value={value}
                       defaultVal={{ key: value, value: value }}
                       selectedValue={onChange}
-                      infoName={t('weight measuremnt')}
+                      infoName={t('weight measurement')}
                     />
                   );
                 }}
@@ -710,7 +710,7 @@ const HuntingType = ({ navigation, route }) => {
                 return (
                   <InputWithoutBorder
                     measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
-                    productionName={t('yeilds')}
+                    productionName={t('yields')}
                     value={value}
                     onChangeText={onChange}
                     notRightText={false}

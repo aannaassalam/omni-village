@@ -181,7 +181,7 @@ const FisheryRiver = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName="Add Fish"
+              cropName={t('add fish')}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>

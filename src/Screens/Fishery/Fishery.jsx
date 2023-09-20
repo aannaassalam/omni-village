@@ -103,7 +103,7 @@ const Fishery = ({navigation, route}) => {
       <CustomDashboard
         first={t('production')}
         second={t('fishery')}
-        third={screenName}
+        third={t('harvested from river')}
       />
       {/* Next Dashboard */}
       {/* <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} /> */}
@@ -149,7 +149,7 @@ const Fishery = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName={'Add Pond Name'}
+                cropName={t('add pond name')}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -190,7 +190,7 @@ const Fishery = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={() => addingHuntingCrop()}
             />

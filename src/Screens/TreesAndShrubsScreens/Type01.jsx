@@ -53,22 +53,22 @@ const Type01 = ({ navigation, route }) => {
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
-      age: 'Less than a year',
+      age: t('less than a year'),
       checked: false,
     },
     {
       id: 2,
-      age: '1 to 2 years',
+      age: t('1 to 2 years'),
       checked: false,
     },
     {
       id: 3,
-      age: '2 to 3 years',
+      age: t('2 to 3 years'),
       checked: false,
     },
     {
       id: 4,
-      age: '3 to 5 year',
+      age: t('3 to 5 years'),
       checked: false,
     },
   ]);
@@ -565,7 +565,7 @@ const Type01 = ({ navigation, route }) => {
                   return (
                     <InputWithoutBorder
                       measureName={userDetails?.currency}
-                      productionName={t('expenditure on inputs')}
+                      productionName={t('expenditure on input')}
                       value={value}
                       onChangeText={onChange}
                     />

@@ -809,7 +809,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
-                  productionName={t('yeilds')}
+                  productionName={t('yields')}
                   value={value}
                   onChangeText={onChange}
                   notRightText={true}
