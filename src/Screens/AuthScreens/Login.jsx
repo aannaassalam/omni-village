@@ -58,6 +58,7 @@ export default function Login({navigation, route}) {
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: {errors},
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -77,6 +78,7 @@ export default function Login({navigation, route}) {
       .unwrap()
       .then(() => navigation.navigate('loginotp'))
       .catch(err => {
+        console.log(err);
         if (err.status === 400) {
           setApi_err(err.data.message);
         }
@@ -95,7 +97,7 @@ export default function Login({navigation, route}) {
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name={t('phone')}
+              name={'phone'}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <LoginInput
                   placeholder={t('phone number')}

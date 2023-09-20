@@ -92,13 +92,13 @@ export default function Register({navigation, route}) {
       <>
         <View style={styles.form_section}>
           <View style={styles.form_head}>
-            <Text style={styles.LoginHead}>Register</Text>
-            <Text style={styles.subtitle}>Register with sent OTP</Text>
+            <Text style={styles.LoginHead}>{t('register')}</Text>
+            <Text style={styles.subtitle}>{t('register with sent OTP')}</Text>
           </View>
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name={t('phone')}
+              name={'phone'}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 // <InputWithoutRightElement
                 //   label={'Phone Number'}
