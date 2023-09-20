@@ -98,7 +98,7 @@ export default function Register({navigation, route}) {
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name={t('phone')}
+              name={'phone'}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 // <InputWithoutRightElement
                 //   label={'Phone Number'}

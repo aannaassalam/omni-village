@@ -96,14 +96,14 @@ const Fishery = ({navigation, route}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={screenName}
+        headerName={t('harvested from pond')}
         goBack={() => navigation.goBack()}
       />
       {/*Top Dashboard  */}
       <CustomDashboard
         first={t('production')}
         second={t('fishery')}
-        third={t('harvested from river')}
+        third={t('harvested from pond')}
       />
       {/* Next Dashboard */}
       {/* <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} /> */}

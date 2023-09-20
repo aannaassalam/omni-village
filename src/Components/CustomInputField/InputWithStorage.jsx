@@ -9,6 +9,8 @@ import {
 import React from 'react';
 import {Divider} from 'react-native-paper';
 import {useSelector} from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 // import {TextInput} from 'react-native-paper';
 
 const InputWithStorage = ({
@@ -30,7 +32,7 @@ const InputWithStorage = ({
   const styles = makeStyles(fontScale);
 
   const {userDetails} = useSelector(state => state.auth);
-
+  const { t } = useTranslation();
   return (
     <View>
       <View style={[styles.textInputContainer]}>
@@ -72,7 +74,7 @@ const InputWithStorage = ({
                   styles.cultivationText,
                   {marginTop: 0, marginBottom: 0},
                 ]}>
-                Storage method
+                {t('storage method')}
               </Text>
               <Text style={styles.methodText}>{storageMethod}</Text>
             </TouchableOpacity>

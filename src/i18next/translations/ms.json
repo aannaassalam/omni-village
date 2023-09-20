@@ -99,7 +99,7 @@
   "total feed": "Jumlah suapan",
   "create type": "Cipta Jenis",
   "type of feed": "Jenis makanan yang diperlukan selain daripada ragut padang rumput",
-  "yields": "Yeilds",
+  "yields": "Hasil",
   "livestock feed produce": "Ternakan, makanan & hasil",
   "poultry": "Ayam",
   "add livestock": "Tambah Ternakan",
@@ -122,5 +122,7 @@
   "less than 1 year": "kurang dari setahun",
   "1 to 2 years": "1 hingga 2 tahun",
   "2 to 3 years": "2 hingga 3 tahun",
-  "3 to 5 years": "3 hingga 5 tahun"
+  "3 to 5 years": "3 hingga 5 tahun",
+  "storage name": "Nama Storan",
+  "storage method": "Kaedah Penyimpanan"
 }

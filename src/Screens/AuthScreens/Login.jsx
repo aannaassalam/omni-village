@@ -95,7 +95,7 @@ export default function Login({navigation, route}) {
           <View style={styles.login_input}>
             <Controller
               control={control}
-              name={t('phone')}
+              name={'phone'}
               render={({field: {onChange, onBlur, value, name, ref}}) => (
                 <LoginInput
                   placeholder={t('phone number')}

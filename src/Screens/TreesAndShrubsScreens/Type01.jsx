@@ -889,7 +889,7 @@ const makeStyles = fontScale =>
       width: '90%',
     },
     add_button: {
-      width: '20%',
+      width: 'auto',
       padding: 8,
       alignSelf: 'flex-start',
       justifyContent: 'space-around',
@@ -904,6 +904,7 @@ const makeStyles = fontScale =>
       fontSize: 14 / fontScale,
       color: '#fff',
       alignSelf: 'center',
+      paddingHorizontal: 5
     },
     harvested_prod_container: {
       alignSelf: 'center',
