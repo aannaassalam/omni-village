@@ -33,11 +33,15 @@ import {
   getCurrentCrop,
 } from '../../Redux/CultivationSlice';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
+  const { userDetails } = useSelector(state => state.auth);
   const styles = makeStyles(fontScale);
   const {cropName} = route.params;
+  const { t } = useTranslation();
   const [area, setArea] = useState('');
   const [utilisation, setUtilisation] = useState(true);
   const [impInfo, setImpInfo] = useState(true);
@@ -354,7 +358,7 @@ const CropDescription = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <CustomInputField
-                  label={'Area allocated'}
+                  label={t('area allocated')}
                   value={value}
                   onChangeText={onChange}
                 />
@@ -374,7 +378,7 @@ const CropDescription = ({navigation, route}) => {
               return (
                 <InputWithoutBorder
                   measureName={'kg'}
-                  productionName={'Output'}
+                  productionName={t('output')}
                   value={value}
                   onChangeText={onChange}
                 />
@@ -387,7 +391,7 @@ const CropDescription = ({navigation, route}) => {
         </View>
         {/* utilisation section */}
         <View style={styles.subArea}>
-          <Text style={styles.subAreaText}>Utilisation</Text>
+          <Text style={styles.subAreaText}>{('utilisation')}</Text>
           <Divider bold={true} style={styles.divider} horizontalInset={true} />
           <TouchableOpacity onPress={() => setUtilisation(!utilisation)}>
             {utilisation ? (
@@ -419,7 +423,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Self consumed"
+                        productionName={t("self consumed")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -441,7 +445,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Fed to Livestock"
+                        productionName={t("Fed to Livestock")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -463,7 +467,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Sold to Neighbours"
+                        productionName={t("sold to neighbour")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -485,7 +489,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Sold for Industrial Use"
+                        productionName={t("sold for industrial Use")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -507,7 +511,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Wastage"
+                        productionName={t("wastage")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -592,7 +596,7 @@ const CropDescription = ({navigation, route}) => {
         ) : null}
         {/* important information section */}
         <View style={styles.subArea}>
-          <Text style={styles.subAreaText}>Important Information</Text>
+          <Text style={styles.subAreaText}>{t('important information')}</Text>
           <Divider
             bold={true}
             style={[styles.divider, {width: '45%'}]}
@@ -624,7 +628,7 @@ const CropDescription = ({navigation, route}) => {
                     data={soilHealth}
                     value={value}
                     selectedValue={onChange}
-                    infoName={'Soil Health'}
+                    infoName={t('soil health')}
                   />
                 );
               }}
@@ -647,7 +651,7 @@ const CropDescription = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={'%'}
-                          productionName={'how much from first planting'}
+                          productionName={t('how much from first planting')}
                           value={value}
                           onChangeText={onChange}
                         />
@@ -672,7 +676,7 @@ const CropDescription = ({navigation, route}) => {
                     data={fertilisers}
                     selectedValue={onChange}
                     value={value}
-                    infoName={'Type of fertiliser used'}
+                    infoName={t('type of fertilizer')}
                   />
                 );
               }}
@@ -695,7 +699,7 @@ const CropDescription = ({navigation, route}) => {
                     data={pesticides}
                     selectedValue={onChange}
                     value={value}
-                    infoName={'Type of pesticides used'}
+                    infoName={t('type of pesticides')}
                   />
                 );
               }}
@@ -712,8 +716,8 @@ const CropDescription = ({navigation, route}) => {
                 const {onChange, value} = field;
                 return (
                   <InputWithoutBorder
-                    measureName={'USD'}
-                    productionName={'Income from sale of Output'}
+                    measureName={userDetails?.currency}
+                    productionName={t('income from sale')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -732,8 +736,8 @@ const CropDescription = ({navigation, route}) => {
                 const {onChange, value} = field;
                 return (
                   <InputWithoutBorder
-                    measureName={'USD'}
-                    productionName={'Expenditure on inputs'}
+                    measureName={userDetails?.currency}
+                    productionName={'expenditure on input'}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -746,7 +750,7 @@ const CropDescription = ({navigation, route}) => {
               </Text>
             ) : null}
             <InputLikeButton
-              text={'Proccessing Method'}
+              text={t('Proccessing Method')}
               onPress={() => setProccessing(!proccessing)}
             />
             {proccessing && (
@@ -761,7 +765,7 @@ const CropDescription = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           notRightText={true}
-                          productionName={'Description(if applicable)'}
+                          productionName={t('Description(if applicable)')}
                           value={value}
                           multiline={true}
                           onChangeText={onChange}
@@ -781,7 +785,7 @@ const CropDescription = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={'acres'}
-                    productionName={'Yeild'}
+                    productionName={t('yields')}
                     value={value}
                     editable={false}
                   />
@@ -789,7 +793,7 @@ const CropDescription = ({navigation, route}) => {
               }}
             />
             <InputLikeButton
-              text={'Month Planted'}
+              text={t('Month Planted')}
               rightIcon={true}
               onPress={() => setPopup(true)}
               date={moment(watch('important_information.month_planted')).format(
@@ -797,7 +801,7 @@ const CropDescription = ({navigation, route}) => {
               )}
             />
             <InputLikeButton
-              text={'Month Harvested'}
+              text={t('month harvested')}
               rightIcon={true}
               onPress={() => setHarvestedPopup(true)}
               date={moment(
@@ -809,7 +813,7 @@ const CropDescription = ({navigation, route}) => {
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
-            btnText={'Submit'}
+            btnText={t('submit')}
             onPress={() => {
               setStatus(1);
               setSavepopup(true);
@@ -817,7 +821,7 @@ const CropDescription = ({navigation, route}) => {
           />
           <CustomButton
             style={styles.draftButton}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             onPress={() => {
               setStatus(0);
               setDraftpopup(true);
@@ -846,7 +850,7 @@ const CropDescription = ({navigation, route}) => {
             }}
           />
           <CustomButton
-            btnText={'Done'}
+            btnText={t('done')}
             onPress={() => setPopup(false)}
             style={styles.popupButton}
           />
@@ -872,7 +876,7 @@ const CropDescription = ({navigation, route}) => {
             }}
           />
           <CustomButton
-            btnText={'Done'}
+            btnText={t('done')}
             onPress={() => setHarvestedPopup(false)}
             style={styles.popupButton}
           />
@@ -890,19 +894,19 @@ const CropDescription = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
           <Text style={styles.nextText}>
-            Do you want to submit this cultivation?
+            {t('Do you want to submit this cultivation?')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Submit'}
+              btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => {
                 setStatus(-1);
               }}
@@ -922,19 +926,19 @@ const CropDescription = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Save as Draft</Text>
+          <Text style={styles.confirmText}>{t('save as Draft')}</Text>
           <Text style={styles.nextText}>
-            Do you want to save this crop as draft?
+            {t('Do you want to save this crop as draft?')}
           </Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Save'}
+              btnText={t('save')}
               onPress={handleDraft}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'Cancel'}
+              btnText={t('cancel')}
               onPress={() => {
                 setStatus(-1);
                 setDraftpopup(false);

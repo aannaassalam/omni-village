@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,41 +12,42 @@ import {
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
+import { Box, Pressable, TextInput, Wrap } from '@react-native-material/core';
 import SelectDropdown from 'react-native-select-dropdown';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
+import DocumentPicker, { types } from 'react-native-document-picker';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
   faChevronCircleDown,
   faChevronDown,
   faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import CustomProgress from '../../Components/CustomProgress/CustomProgress';
-import {validation} from '../../Validation/Validation';
-import {useDispatch, useSelector} from 'react-redux';
-import {EditUser, getUser} from '../../Redux/AuthSlice';
+import { validation } from '../../Validation/Validation';
+import { useDispatch, useSelector } from 'react-redux';
+import { EditUser, getUser } from '../../Redux/AuthSlice';
 import axiosInstance from '../../Helper/Helper';
-import {Scale} from '../../Helper/utils';
-import {useFocusEffect} from '@react-navigation/native';
-import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
+import { Scale } from '../../Helper/utils';
+import { useFocusEffect } from '@react-navigation/native';
+import { getLandmeasurement, getVillage } from '../../Redux/OthersSlice';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 
 // const FormData = global.FormData;
 
-export default function RegisterDetails({navigation, route}) {
+export default function RegisterDetails({ navigation, route }) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
   const isEdit = route?.params?.edit || false;
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
-  const {village} = useSelector(state => state.Others);
-  const {landmeasurement} = useSelector(state => state.Others);
+  const { village } = useSelector(state => state.Others);
+  const { landmeasurement } = useSelector(state => state.Others);
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -62,9 +63,9 @@ export default function RegisterDetails({navigation, route}) {
     }
   }, []);
 
-  const {user} = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
 
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   const schema = yup
@@ -102,7 +103,7 @@ export default function RegisterDetails({navigation, route}) {
     handleSubmit,
     setValue,
     control,
-    formState: {errors},
+    formState: { errors },
     getValues,
   } = useForm({
     resolver: yupResolver(schema),
@@ -130,7 +131,7 @@ export default function RegisterDetails({navigation, route}) {
     setNumMembers(value);
     if (value > familyMembers.length) {
       const newMembers = Array.from(
-        {length: value - familyMembers.length},
+        { length: value - familyMembers.length },
         (_, index) => ({
           id: familyMembers.length + index + 1,
           member_name: '',
@@ -209,8 +210,9 @@ export default function RegisterDetails({navigation, route}) {
               <Controller
                 control={control}
                 name="first_name"
-                render={({field: {onChange, onBlur, value, name, ref}}) => (
-                  <InputTextComponent
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <InputWithoutRightElement
+                    label={t('first name')}
                     placeholder={t('first name')}
                     onChangeText={onChange}
                     value={value}
@@ -226,8 +228,9 @@ export default function RegisterDetails({navigation, route}) {
               <Controller
                 control={control}
                 name="last_name"
-                render={({field: {onChange, onBlur, value, name, ref}}) => (
-                  <InputTextComponent
+                render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                  <InputWithoutRightElement
+                    label={t('last name')}
                     placeholder={t('last name')}
                     onChangeText={onChange}
                     value={value}
@@ -246,11 +249,12 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="phone"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                <InputWithoutRightElement
+                  label={t('phone no')}
                   placeholder={t('phone no')}
                   onChangeText={onChange}
-                  value={value}
+                  value={value.toString()||value}
                   editable={false}
                 />
               )}
@@ -269,8 +273,9 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="country_name"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                <InputWithoutRightElement
+                  label={t('country name')}
                   placeholder={t('country name')}
                   onChangeText={onChange}
                   value={user?.country}
@@ -280,11 +285,12 @@ export default function RegisterDetails({navigation, route}) {
             />
           </View>
         </Box>
+          <Text style={styles.cityName}>Village Name</Text>
         <Box style={styles.cmn_wrp}>
           <Controller
             control={control}
             name="village_name"
-            render={({field: {onChange, onBlur, value, name, ref}}) => (
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <CustomDropdown1
                 data={village}
                 value={value}
@@ -306,11 +312,12 @@ export default function RegisterDetails({navigation, route}) {
             {errors?.village_name?.message}
           </Text>
         )}
+        <Text style={styles.cityName}>Land Measurement</Text>
         <Box style={styles.cmn_wrp}>
           <Controller
             control={control}
             name="land_measurement"
-            render={({field: {onChange, onBlur, value, name, ref}}) => (
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
               <CustomDropdown1
                 data={landmeasurement}
                 value={value}
@@ -336,19 +343,22 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="number_of_members"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
+              render={({ field: { onChange, onBlur, value, name, ref } }) => {
+                return(
+                  <InputWithoutRightElement
+                  label={t('number of family members')}
                   placeholder={t('number of family members')}
                   keyboardType="number-pad"
                   onChangeText={e => {
                     onChange(e);
                     if (e !== '' && parseInt(e) !== 0)
-                      setNumMembers(parseInt(e));
-                  }}
-                  value={value}
+                    setNumMembers(parseInt(e));
+                }}
+                value={value.toString()||value}
                 />
-              )}
-            />
+                )
+              }}
+              />
             {errors?.number_of_members?.message ? (
               <Text style={styles.error}>
                 {errors?.number_of_members?.message}
@@ -378,9 +388,10 @@ export default function RegisterDetails({navigation, route}) {
                       control={control}
                       name={`members[${index}].name`}
                       render={({
-                        field: {onChange, onBlur, value, name, ref},
+                        field: { onChange, onBlur, value, name, ref },
                       }) => (
-                        <InputTextComponent
+                        <InputWithoutRightElement
+                          label={t('member name')}
                           placeholder={t('member name')}
                           onChangeText={onChange}
                           value={value}
@@ -392,19 +403,20 @@ export default function RegisterDetails({navigation, route}) {
                         {errors?.members?.[index]?.name?.message}
                       </Text>
                     ) : null}
-                    <View style={[styles.input_wrap, {marginTop: '4%'}]}>
+                    <Text style={[styles.cityName,{marginTop:15, marginBottom:0}]}>Member Gender</Text>
+                    <View style={[styles.input_wrap, { marginTop: '4%' }]}>
                       <View style={styles.half_input}>
                         <Controller
                           control={control}
                           name={`members[${index}].gender`}
                           render={({
-                            field: {onChange, onBlur, value, name, ref},
+                            field: { onChange, onBlur, value, name, ref },
                           }) => (
                             <CustomDropdown1
                               data={[
-                                {name: 'Male'},
-                                {name: 'Female'},
-                                {name: 'Other'},
+                                { name: t('Male') },
+                                { name: t('Female') },
+                                { name: t('Other') },
                               ]}
                               placeholder={t('member gender')}
                               selectedValue={onChange}
@@ -422,9 +434,13 @@ export default function RegisterDetails({navigation, route}) {
                           control={control}
                           name={`members[${index}].age`}
                           render={({
-                            field: {onChange, onBlur, value, name, ref},
+                            field: { onChange, onBlur, value, name, ref },
                           }) => (
-                            <InputTextComponent
+                            <InputWithoutRightElement
+                            style={{
+                              marginTop:-15
+                            }}
+                              label={t('member age')}
                               placeholder={t('member age')}
                               keyboardType={'numeric'}
                               onChangeText={onChange}
@@ -449,9 +465,10 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="social_security_number"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
-                  placeholder={t('social security number')}
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                <InputWithoutRightElement
+                  label={t('identity proof number')}
+                  placeholder={t('identity proof number')}
                   onChangeText={onChange}
                   value={value}
                 />
@@ -469,8 +486,9 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="address"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputTextComponent
+              render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                <InputWithoutRightElement
+                  label={t('address')}
                   placeholder={t('address')}
                   onChangeText={onChange}
                   value={value}
@@ -494,7 +512,7 @@ export default function RegisterDetails({navigation, route}) {
                 <Image
                   style={styles.tinyLogo}
                   source={require('../../../assets/file_img.png')}
-                  // height={100}
+                // height={100}
                 />
                 <Text varint="body1" style={styles.upload_txt}>
                   {t('upload address proof')}
@@ -518,7 +536,7 @@ export default function RegisterDetails({navigation, route}) {
                   <Image
                     style={styles.tinyLogo}
                     source={require('../../../assets/file_img.png')}
-                    // height={100}
+                  // height={100}
                   />
                   <Text
                     varint="body1"
@@ -643,7 +661,7 @@ const makeStyles = fontScale =>
       width: '50%',
       paddingHorizontal: 7,
     },
-    login_input: {flexBasis: '100%', width: '100%'},
+    login_input: { flexBasis: '100%', width: '100%' },
     input_wrap: {
       flexDirection: 'row',
       marginHorizontal: -7,
@@ -695,4 +713,13 @@ const makeStyles = fontScale =>
       alignItems: 'center',
       marginTop: 15,
     },
+    cityName: {
+      fontFamily: 'ubuntu_regular',
+      fontSize: 14 / fontScale,
+      alignSelf:'flex-start',
+      marginTop: 5,
+      color: 'grey',
+      marginLeft: 5, 
+    marginBottom: 10
+    }
   });

@@ -403,6 +403,12 @@ const PoultryType = ({navigation, route}) => {
         processing_method: false,
       },
     ]);
+    navigation.navigate('poultryEdit', {
+      cropType: productName,
+      edit: {},
+      cropId: cropId,
+      data: data,
+    })
     setProductName('');
   };
   const removeList = name => {

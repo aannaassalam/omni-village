@@ -3,11 +3,13 @@ export const fertilisers = [
   { key: 0, name:'organic self made'},
   { key: 1, name:'organic purchased'},
   {key:2,name:'chemical based'},
+  { key: 3, name: 'None' }
 ];
 export const pesticides = [
   { key: 0, name: 'organic self made'},
   { key: 1, name:'organic purchased'},
   { key: 2, name:'chemical based'},
+  {key:3, name:'None'}
 ];
 export const averageTreeAge = [
   { key: 0, name:'Less than a year'},

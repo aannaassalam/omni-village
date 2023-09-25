@@ -1,6 +1,8 @@
 import {Button, Text, Box, Flex} from '@react-native-material/core';
 import React from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const styles = StyleSheet.create({
   cultivate_sec: {
@@ -46,6 +48,7 @@ const styles = StyleSheet.create({
 });
 
 export default function CultivationLand() {
+  const { t } = useTranslation();
   return (
     <>
       <SafeAreaView style={{flex: 1}}>

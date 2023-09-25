@@ -9,6 +9,7 @@ const InputWithoutRightElement = ({
   onChangeText,
   placeholder,
   onFocus,
+  style,
   keyboardType = 'default',
 }) => {
   const {fontScale} = useWindowDimensions();
@@ -27,7 +28,7 @@ const InputWithoutRightElement = ({
           mode="outlined"
           label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
           value={value}
-          style={styles.textInput}
+          style={[styles.textInput,style]}
           placeholder={placeholder}
           placeholderTextColor={'#333'}
           onFocus={onFocus}

@@ -70,6 +70,17 @@ const SubArea = ({navigation, route}) => {
           progress: '',
         },
       ]);
+      navigation.navigate('fishTypeInput', {
+        type: type,
+        screenName: screenName,
+        cropType: dropdownVal.name?.label,
+        cropId:
+          data[0] !== undefined &&
+            data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+            : dropdownVal.name?.value,
+        data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
+      })
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -78,10 +89,22 @@ const SubArea = ({navigation, route}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({name: otherCrop?.name}));
-      dispatch(getHuntingCrops());
+      dispatch(addFisherycrop({name: otherCrop?.name}))
+      .then((res) => {
+        navigation.navigate('fishTypeInput',
+          {
+            type: type,
+            screenName: screenName,
+            cropType: res?.payload?.data?.name,
+            cropId: res?.payload?.data?._id,
+            data: null,
+          }
+        )
+      })
+      dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
+      setCropModal(!cropModal);
     } else {
       addCrop();
     }

@@ -4,6 +4,8 @@ import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {useDispatch} from 'react-redux';
 import {setSeason} from '../../Redux/CultivationSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -38,6 +40,7 @@ const styles = StyleSheet.create({
 
 export default function CultivationTwice({navigation}) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   return (
     <>

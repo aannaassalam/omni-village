@@ -24,12 +24,15 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {Controller, useForm} from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   // const {totalLand = 20} = route.params;
   const {userDetails} = useSelector(s => s.auth);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -109,20 +112,20 @@ const CultivationDashboard = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Cultivation'}
+        headerName={t('cultivation')}
         goBack={() => navigation.goBack()}
       />
-      <CustomDashboard first={'production'} second={'cultivation'} />
+      <CustomDashboard first={t('production')} second={t('cultivation')} />
       {/* land allocated and modify section */}
       <View style={styles.secondTopContainer}>
         <View style={styles.secondTopContainerInner}>
-          <Text style={[styles.acresText, {flex: 0}]}>Land allocated for</Text>
+          <Text style={[styles.acresText, {flex: 0}]}>{t('land allocated for')}</Text>
           <Text
             style={[
               styles.acresText,
               {color: '#000', alignSelf: 'flex-start', marginTop: 5, flex: 0},
             ]}>
-            Cultivation
+            {t("cultivation")}
           </Text>
         </View>
         <Divider style={styles.divider} />
@@ -133,7 +136,7 @@ const CultivationDashboard = ({navigation, route}) => {
             : userDetails.land_measurement}
         </Text>
         <CustomButton
-          btnText={'Modify'}
+          btnText={t('modify')}
           style={styles.modifyButton}
           onPress={() => setModify(!modify)}
         />
@@ -171,7 +174,7 @@ const CultivationDashboard = ({navigation, route}) => {
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
                 }>
-                Cultivation once in a year
+                {t('cultivated once in a year')}
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
@@ -225,7 +228,7 @@ const CultivationDashboard = ({navigation, route}) => {
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
                 }>
-                Cultivation twice in a year
+                {t('cultivated twice in a year')}
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>
@@ -272,7 +275,7 @@ const CultivationDashboard = ({navigation, route}) => {
                     ? styles.hme_box_txt2
                     : styles.hme_box_txt
                 }>
-                Cultivation thrice in a year
+                {t('cultivated thrice in a year')}
               </Text>
             </Box>
             <Box style={styles.hme_box_rgt}>

@@ -72,6 +72,16 @@ const Hunting = ({navigation}) => {
           progress: '',
         },
       ]);
+      navigation.navigate('huntingType', {
+        cropType: dropdownVal.name?.label,
+        cropId:
+          hunting[0] !== undefined &&
+            hunting.find(j => j?.hunting_crop?.name == dropdownVal.name?.label)
+            ? hunting.find(i => i?.hunting_crop?.name == dropdownVal.name?.label)
+              ._id
+            : dropdownVal.name?.value,
+        data: hunting.find(i => i?.hunting_crop_id == dropdownVal.name?.value),
+      });
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -80,10 +90,19 @@ const Hunting = ({navigation}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addHuntingCrops({name: otherCrop?.name}));
+      dispatch(addHuntingCrops({name: otherCrop?.name}))
+        .then((res) => {
+          navigation.navigate('huntingType', {
+            cropType: res?.payload?.data?.name,
+            cropId: res?.payload?.data?._id,
+            data: null,
+          })
+          setFocusOther(false)
+        })
       dispatch(getHuntingCrops());
       setDropdownVal([]);
       setOtherCrop('');
+      setCropModal(!cropModal);
     } else {
       addCrop();
     }
@@ -133,8 +152,6 @@ const Hunting = ({navigation}) => {
                       : element?.id,
                   data: hunting.find(i => i?.hunting_crop_id == element?._id),
                 })
-              //             huntingid:64f2ead3b994c1b6aa39e802
-              // huntingcropid: 64f2ccd2b994c1b6aa39e76f
             }>
             <AddAndDeleteCropButton
               add={false}

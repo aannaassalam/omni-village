@@ -327,7 +327,14 @@ const Type01 = ({ navigation, route }) => {
       month_harvested: moment().format('YYYY-MM-DD') || '',
       processing_method: false,
     }]);
+    navigation.navigate('editType', {
+      cropType: productName,
+      edit: {},
+      cropId: cropId,
+      data: data,
+    })
     setProductName('');
+
   };
   const removeList = name => {
     let newList = harvestedProductList.filter(obj => obj.name !== name);

@@ -20,6 +20,8 @@ import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
 import {LandAllocation} from '../../Redux/AuthSlice';
 import {useFocusEffect} from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const landSchema = yup
   .object()
@@ -35,7 +37,7 @@ const landSchema = yup
 
 const TotalLand = ({navigation}) => {
   const {userDetails} = useSelector(s => s.auth);
-
+  const { t } = useTranslation();
   const [globalError, setGlobalError] = useState('');
 
   // console.log(userDetails.sub_area);
