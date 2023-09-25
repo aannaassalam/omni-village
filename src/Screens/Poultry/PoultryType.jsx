@@ -99,8 +99,7 @@ const PoultryType = ({navigation, route}) => {
         .required(validation.error.avg_age_of_live_stocks),
       type_of_feed: yup.string().required(validation.error.type_of_feed),
       other_type_of_feed: yup
-        .string()
-        .required(validation.error.other_type_of_feed),
+        .string(),
     }),
     utilisation_information: yup.object().shape({
       total_feed: yup.string().required(validation.error.total_feed),
@@ -162,8 +161,8 @@ const PoultryType = ({navigation, route}) => {
       setSavepopup(false);
     }
   }, [errors]);
-  const onSubmit = data2 => {
-    console.log('here', data2);
+  const submit = () => {
+    console.log("i m here")
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
     let self_produced = parseInt(
       watch('utilisation_information.self_produced'),
@@ -1035,7 +1034,8 @@ const PoultryType = ({navigation, route}) => {
             <CustomButton
               style={styles.submitButton}
               btnText={t('submit')}
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSubmit(submit)}
+              // onPress={()=>{}}
             />
             <CustomButton
               style={styles.draftButton}

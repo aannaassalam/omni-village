@@ -96,8 +96,8 @@ const FishTypeInput = ({navigation, route}) => {
         .string()
         .required(validation.error.sold_for_industrial_use),
       wastage: yup.string().required(validation.error.wastage),
-      other: yup.string().required(validation.error.other),
-      other_value: yup.string().required(validation.error.other_value),
+      other: yup.string(),
+      other_value: yup.string(),
       income_from_sale: yup
         .string()
         .required(validation.error.income_from_sale),
@@ -162,6 +162,7 @@ const FishTypeInput = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
+    console.log("error", errors)
   }, [errors]);
 
   const onSubmit = data2 => {

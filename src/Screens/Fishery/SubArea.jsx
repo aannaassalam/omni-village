@@ -70,16 +70,32 @@ const SubArea = ({navigation, route}) => {
           progress: '',
         },
       ]);
+      console.log("fishery",
+        dropdownVal.name?.label,
+        dropdownVal?.name?.value,
+        data,
+      // {
+      //   type: type,
+      //     screenName: screenName,
+      //     cropType: 'hey',
+      //     cropId:
+      //       data[0] !== undefined &&
+      //         data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+      //         ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+      //         : dropdownVal.name?.value,
+      //     data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
+      // }
+      )
       navigation.navigate('fishTypeInput', {
         type: type,
         screenName: screenName,
         cropType: dropdownVal.name?.label,
         cropId:
-          data[0] !== undefined &&
+           data!== null &&
             data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
             ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
             : dropdownVal.name?.value,
-        data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
+        data: data !== null && data.find(i => i?.fishery_crop == dropdownVal.name?.label)|| null,
       })
       setCropModal(!cropModal);
       setFocusOther(false);
@@ -143,6 +159,22 @@ const SubArea = ({navigation, route}) => {
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
                 onPress={() => {
+                  console.log("id",
+                  {
+                    cropType: element?.name,
+                    type: type,
+                    screenName: screenName,
+                    cropId: element?._id,
+                    data: data
+                      ? data.find(
+                        i =>
+                          i?.fishery_crop?.name == element?.name ||
+                          i?.fishery_crop?.name ==
+                          element?.fishery_crop?.name,
+                      )
+                      : null,
+                  }
+                  )
                   navigation.navigate('fishTypeInput', {
                     cropType: element?.name,
                     type: type,
