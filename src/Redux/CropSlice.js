@@ -11,11 +11,9 @@ const initialState = {
 
 export const getCrops = createAsyncThunk(
   'getcrop',
-  async (categoryId, {rejectWithValue}) => {
+  async (_, {rejectWithValue}) => {
     try {
-      const res = await axiosInstance.post(endpoints.crop.getCrop, {
-        categoryId,
-      });
+      const res = await axiosInstance.post(endpoints.crop.getCrop);
       return {status: res.status, data: res.data};
     } catch (err) {
       return rejectWithValue({

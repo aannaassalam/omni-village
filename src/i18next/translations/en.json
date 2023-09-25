@@ -148,5 +148,9 @@
   "Do you want to save this crop as draft?":"Do you want to save this crop as draft?",
   "Male":"Male",
   "Female":"Female",
-  "Other":"Other"
+  "Other":"Other",
+  "Identity Card":"Identity Card",
+  "Passport":"Passport",
+  "Driving Licence":"Driving Licence",
+  "document type":"Document Type"
 }

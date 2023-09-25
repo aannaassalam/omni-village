@@ -85,12 +85,12 @@ const Season1 = ({navigation, route}) => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(getCropCategories());
+      dispatch(getCrops());
       dispatch(getCultivation());
     }, []),
   );
-
   const addCrop = () => {
+    console.log("here i am ")
     if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
       // setCropModal(false);
       // setFocusOther(false);
@@ -98,30 +98,37 @@ const Season1 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        if (selectedCategory.label?.length > 0) {
-          const cat = cropCategories.find(
-            c => c._id === selectedCategory.value,
-          );
           dispatch(
-            saveCrop({name: otherCrop, categoryId: selectedCategory.value}),
+            saveCrop({name: otherCrop, categoryId: ''}),
           )
             .unwrap()
-            .then(res => {
+            .then(async(res) => {
               setSelectCrops(prev => [...prev, res.data]);
               setCropModal(false);
               setCropModal(!cropModal);
               setFocusOther(false);
               setOtherCrop('');
+             await  dispatch(setCropId(res?.data._id))
+                navigation.navigate('cropDescription', {
+                  cropName: res?.data?.name,
+                });
             })
             .catch(err => console.log(err));
-        } else {
-          setGlobalError('Please select a Category!');
-        }
       } else {
         setSelectCrops(prev => [...prev, selectedCrop]);
         setCropModal(false);
         setFocusOther(false);
         setOtherCrop('');
+        console.log("i am here bro", 
+          crops.find((i) => i?.name === selectedCrop.name)._id
+        )
+        dispatch(setCropId(crops.find((i) => i?.name === selectedCrop.name)._id))
+        .then((res)=>{
+          console.log("res say", res)
+          navigation.navigate('cropDescription', {
+            cropName: crops.find((i) => i?.name === selectedCrop.name).name,
+          });
+        })
       }
     }
   };
@@ -262,36 +269,6 @@ const Season1 = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <View style={{marginBottom: 15}}>
-              {/* <CustomDropdown2
-                selectedValue={e => {
-                  setSelectedCategory(e);
-                  // setSelectCrops({name: ''});
-                  console.log(e);
-                  dispatch(
-                    getCrops(cropCategories.find(cp => cp.name === e.name)._id),
-                  );
-                }}
-                value={selectedCategory}
-                placeholder="Select a category"
-                data={cropCategories}
-              /> */}
-              <CustomDropdown4
-                selectedValue={e => {
-                  setSelectedCategory(e);
-                  // setSelectCrops({name: ''});
-                  console.log(e);
-                  dispatch(
-                    getCrops(
-                      cropCategories.find(cp => cp.name === e.label)._id,
-                    ),
-                  );
-                }}
-                data={cropCategories}
-                placeholder="Select a category"
-                valu={selectedCategory}
-              />
-            </View>
             {/* <CustomDropdown2
               selectedValue={e => {
                 setSelectedCrop(

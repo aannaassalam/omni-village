@@ -148,5 +148,9 @@
   "Do you want to save this crop as draft?": "Adakah anda ingin menyimpan tanaman ini sebagai draf?",
   "Male": "Jejaka",
   "Female": "Perempuan",
-  "Other": "Lain"
+  "Other": "Lain",
+  "Identity Card": "Kad Pengenalan / MyKad",
+  "Passport": "Pasport",
+  "Driving Licence": "Lesen Memandu",
+  "document type": "Jenis dokumen"
 }

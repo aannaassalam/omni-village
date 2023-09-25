@@ -46,8 +46,12 @@ export default function RegisterDetails({ navigation, route }) {
   const [file_err, setFile_err] = useState('');
   const { village } = useSelector(state => state.Others);
   const { landmeasurement } = useSelector(state => state.Others);
-
   const { t } = useTranslation();
+  const documentType = [
+    { name: 'Kad Pengenalan / MyKad (Identity Card)' }, 
+    {name: 'Pasport (Passport)' }, 
+    { name: 'Lesen Memandu (Driving Licence)' }
+  ]
 
   const handleDocumentSelection = useCallback(async () => {
     try {
@@ -116,6 +120,7 @@ export default function RegisterDetails({ navigation, route }) {
       last_name: isEdit ? user?.last_name : '',
       members: isEdit ? user?.members : '',
       number_of_members: isEdit ? user?.number_of_members : '',
+      document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
       // number_of_members: '',
@@ -254,7 +259,7 @@ export default function RegisterDetails({ navigation, route }) {
                   label={t('phone no')}
                   placeholder={t('phone no')}
                   onChangeText={onChange}
-                  value={value.toString()||value}
+                  value={value.toString() || value}
                   editable={false}
                 />
               )}
@@ -285,7 +290,7 @@ export default function RegisterDetails({ navigation, route }) {
             />
           </View>
         </Box>
-          <Text style={styles.cityName}>Village Name</Text>
+        <Text style={styles.cityName}>Village Name</Text>
         <Box style={styles.cmn_wrp}>
           <Controller
             control={control}
@@ -344,21 +349,21 @@ export default function RegisterDetails({ navigation, route }) {
               control={control}
               name="number_of_members"
               render={({ field: { onChange, onBlur, value, name, ref } }) => {
-                return(
+                return (
                   <InputWithoutRightElement
-                  label={t('number of family members')}
-                  placeholder={t('number of family members')}
-                  keyboardType="number-pad"
-                  onChangeText={e => {
-                    onChange(e);
-                    if (e !== '' && parseInt(e) !== 0)
-                    setNumMembers(parseInt(e));
-                }}
-                value={value.toString()||value}
-                />
+                    label={t('number of family members')}
+                    placeholder={t('number of family members')}
+                    keyboardType="number-pad"
+                    onChangeText={e => {
+                      onChange(e);
+                      if (e !== '' && parseInt(e) !== 0)
+                        setNumMembers(parseInt(e));
+                    }}
+                    value={value.toString() || value}
+                  />
                 )
               }}
-              />
+            />
             {errors?.number_of_members?.message ? (
               <Text style={styles.error}>
                 {errors?.number_of_members?.message}
@@ -403,7 +408,7 @@ export default function RegisterDetails({ navigation, route }) {
                         {errors?.members?.[index]?.name?.message}
                       </Text>
                     ) : null}
-                    <Text style={[styles.cityName,{marginTop:15, marginBottom:0}]}>Member Gender</Text>
+                    <Text style={[styles.cityName, { marginTop: 15, marginBottom: 0 }]}>Member Gender</Text>
                     <View style={[styles.input_wrap, { marginTop: '4%' }]}>
                       <View style={styles.half_input}>
                         <Controller
@@ -437,9 +442,9 @@ export default function RegisterDetails({ navigation, route }) {
                             field: { onChange, onBlur, value, name, ref },
                           }) => (
                             <InputWithoutRightElement
-                            style={{
-                              marginTop:-15
-                            }}
+                              style={{
+                                marginTop: -15
+                              }}
                               label={t('member age')}
                               placeholder={t('member age')}
                               keyboardType={'numeric'}
@@ -460,6 +465,32 @@ export default function RegisterDetails({ navigation, route }) {
               </View>
             );
           })}
+        <Text style={styles.cityName}>Document Type</Text>
+        <Box style={styles.cmn_wrp}>
+          <Controller
+            control={control}
+            name="document_type"
+            render={({ field: { onChange, onBlur, value, name, ref } }) => (
+              <CustomDropdown1
+                data={documentType}
+                value={value}
+                placeholder={t('document type')}
+                selectedValue={onChange}
+              />
+            )}
+          />
+        </Box>
+        {errors?.document_type && (
+          <Text
+            style={{
+              ...styles.error,
+              width: '100%',
+              marginBottom: 15,
+              marginTop: -10,
+            }}>
+            {errors?.document_type?.message}
+          </Text>
+        )}
         <Box style={styles.cmn_wrp}>
           <View style={styles.login_input}>
             <Controller
@@ -716,10 +747,10 @@ const makeStyles = fontScale =>
     cityName: {
       fontFamily: 'ubuntu_regular',
       fontSize: 14 / fontScale,
-      alignSelf:'flex-start',
+      alignSelf: 'flex-start',
       marginTop: 5,
       color: 'grey',
-      marginLeft: 5, 
-    marginBottom: 10
+      marginLeft: 5,
+      marginBottom: 10
     }
   });
