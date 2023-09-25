@@ -32,10 +32,13 @@ import PopupModal from '../../Components/Popups/PopupModal';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -82,12 +85,12 @@ const Season1 = ({navigation, route}) => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(getCropCategories());
+      dispatch(getCrops());
       dispatch(getCultivation());
     }, []),
   );
-
   const addCrop = () => {
+    console.log("here i am ")
     if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
       // setCropModal(false);
       // setFocusOther(false);
@@ -95,30 +98,37 @@ const Season1 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        if (selectedCategory.label?.length > 0) {
-          const cat = cropCategories.find(
-            c => c._id === selectedCategory.value,
-          );
           dispatch(
-            saveCrop({name: otherCrop, categoryId: selectedCategory.value}),
+            saveCrop({name: otherCrop, categoryId: ''}),
           )
             .unwrap()
-            .then(res => {
+            .then(async(res) => {
               setSelectCrops(prev => [...prev, res.data]);
               setCropModal(false);
               setCropModal(!cropModal);
               setFocusOther(false);
               setOtherCrop('');
+             await  dispatch(setCropId(res?.data._id))
+                navigation.navigate('cropDescription', {
+                  cropName: res?.data?.name,
+                });
             })
             .catch(err => console.log(err));
-        } else {
-          setGlobalError('Please select a Category!');
-        }
       } else {
         setSelectCrops(prev => [...prev, selectedCrop]);
         setCropModal(false);
         setFocusOther(false);
         setOtherCrop('');
+        console.log("i am here bro", 
+          crops.find((i) => i?.name === selectedCrop.name)._id
+        )
+        dispatch(setCropId(crops.find((i) => i?.name === selectedCrop.name)._id))
+        .then((res)=>{
+          console.log("res say", res)
+          navigation.navigate('cropDescription', {
+            cropName: crops.find((i) => i?.name === selectedCrop.name).name,
+          });
+        })
       }
     }
   };
@@ -148,19 +158,19 @@ const Season1 = ({navigation, route}) => {
         goBack={() => navigation.goBack()}
       />
       <CustomDashboard
-        first={'production'}
-        second={`cultivation ${
+        first={t('production')}
+        second={t(`cultivation ${
           cultivationType === 1
             ? 'once'
             : cultivationType === 2
             ? 'twice'
             : 'thrice'
-        }`}
+        }`)}
       />
       {/* top container for land allocated and modify */}
       <View style={styles.top_container}>
         <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>Land allocated</Text>
+          <Text style={styles.land_allocated_text}>{t('land allocated')}</Text>
         </View>
         <View style={styles.top_container_inner}>
           <Text style={styles.value_text}>
@@ -221,7 +231,7 @@ const Season1 = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-              cropName={'Add Corp'}
+              cropName={t('add crop')}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -242,7 +252,7 @@ const Season1 = ({navigation, route}) => {
           }}
           styleInner={{height: focusOther ? '80%' : '35%'}}>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>Add Crop</Text>
+            <Text style={styles.headerText}>{t('add crop')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(false);
@@ -259,36 +269,6 @@ const Season1 = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <View style={{marginBottom: 15}}>
-              {/* <CustomDropdown2
-                selectedValue={e => {
-                  setSelectedCategory(e);
-                  // setSelectCrops({name: ''});
-                  console.log(e);
-                  dispatch(
-                    getCrops(cropCategories.find(cp => cp.name === e.name)._id),
-                  );
-                }}
-                value={selectedCategory}
-                placeholder="Select a category"
-                data={cropCategories}
-              /> */}
-              <CustomDropdown4
-                selectedValue={e => {
-                  setSelectedCategory(e);
-                  // setSelectCrops({name: ''});
-                  console.log(e);
-                  dispatch(
-                    getCrops(
-                      cropCategories.find(cp => cp.name === e.label)._id,
-                    ),
-                  );
-                }}
-                data={cropCategories}
-                placeholder="Select a category"
-                valu={selectedCategory}
-              />
-            </View>
             {/* <CustomDropdown2
               selectedValue={e => {
                 setSelectedCrop(
@@ -321,8 +301,8 @@ const Season1 = ({navigation, route}) => {
             />
             {selectedCrop?.name === 'Others' ? (
               <InputWithoutRightElement
-                label={'Crop Name'}
-                placeholder={'Crop 01'}
+                label={t('crop name')}
+                placeholder={t('crop 01')}
                 onChangeText={e => setOtherCrop(e)}
                 value={otherCrop}
                 onFocus={() => setFocusOther(true)}
@@ -354,7 +334,7 @@ const Season1 = ({navigation, route}) => {
               />
             </TouchableOpacity>
             <CustomButton
-              btnText={'Create'}
+              btnText={t('create')}
               style={{width: '80%'}}
               onPress={addCrop}
             />
@@ -376,17 +356,17 @@ const Season1 = ({navigation, route}) => {
               style={styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>Confirm</Text>
-          <Text style={styles.nextText}>Do you want to delete this crop?</Text>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
+          <Text style={styles.nextText}>{t('Do you want to delete this crop?')}</Text>
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
-              btnText={'Yes, Delete'}
+              btnText={t('yes delete')}
               onPress={handleDelete}
             />
             <CustomButton
               style={styles.draftButton}
-              btnText={'No'}
+              btnText={t('no')}
               onPress={() => {
                 setDelete_id('');
                 setDeleteCrop('');

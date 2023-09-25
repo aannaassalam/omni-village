@@ -70,6 +70,33 @@ const SubArea = ({navigation, route}) => {
           progress: '',
         },
       ]);
+      console.log("fishery",
+        dropdownVal.name?.label,
+        dropdownVal?.name?.value,
+        data,
+      // {
+      //   type: type,
+      //     screenName: screenName,
+      //     cropType: 'hey',
+      //     cropId:
+      //       data[0] !== undefined &&
+      //         data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+      //         ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+      //         : dropdownVal.name?.value,
+      //     data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
+      // }
+      )
+      navigation.navigate('fishTypeInput', {
+        type: type,
+        screenName: screenName,
+        cropType: dropdownVal.name?.label,
+        cropId:
+           data!== null &&
+            data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+            : dropdownVal.name?.value,
+        data: data !== null && data.find(i => i?.fishery_crop == dropdownVal.name?.label)|| null,
+      })
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -78,10 +105,22 @@ const SubArea = ({navigation, route}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({name: otherCrop?.name}));
-      dispatch(getHuntingCrops());
+      dispatch(addFisherycrop({name: otherCrop?.name}))
+      .then((res) => {
+        navigation.navigate('fishTypeInput',
+          {
+            type: type,
+            screenName: screenName,
+            cropType: res?.payload?.data?.name,
+            cropId: res?.payload?.data?._id,
+            data: null,
+          }
+        )
+      })
+      dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
+      setCropModal(!cropModal);
     } else {
       addCrop();
     }
@@ -120,6 +159,22 @@ const SubArea = ({navigation, route}) => {
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
                 onPress={() => {
+                  console.log("id",
+                  {
+                    cropType: element?.name,
+                    type: type,
+                    screenName: screenName,
+                    cropId: element?._id,
+                    data: data
+                      ? data.find(
+                        i =>
+                          i?.fishery_crop?.name == element?.name ||
+                          i?.fishery_crop?.name ==
+                          element?.fishery_crop?.name,
+                      )
+                      : null,
+                  }
+                  )
                   navigation.navigate('fishTypeInput', {
                     cropType: element?.name,
                     type: type,

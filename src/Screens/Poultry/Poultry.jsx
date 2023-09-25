@@ -70,6 +70,16 @@ const Poultry = ({ navigation, route }) => {
           progress: '',
         },
       ]);
+      navigation.navigate('poultryType', {
+        cropType: dropdownVal.name?.label,
+        cropId:
+          poultry[0] !== undefined &&
+            poultry.find(j => j?.poultry_crop?.name == dropdownVal.name?.label)
+            ? poultry.find(i => i?.poultry_crop?.name == dropdownVal.name?.label)
+              ._id
+            : dropdownVal.name?.value,
+        data: poultry.find(i => i?.poultry_crop_id == dropdownVal.name?.value),
+      });
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -78,10 +88,19 @@ const Poultry = ({ navigation, route }) => {
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addPoultryCrops({ name: otherCrop?.name }));
+      dispatch(addPoultryCrops({ name: otherCrop?.name }))
+      .then((res)=>{
+        navigation.navigate('poultryType',{
+          cropType: res?.payload?.data?.name,
+          cropId: res?.payload?.data?._id,
+          data: null,
+        })
+      })
       dispatch(getPoultryCrops());
       setDropdownVal([]);
+      setCropModal(!cropModal)
       setOtherCrop('');
+      setFocusOther(false);
     } else {
       addCrop();
     }

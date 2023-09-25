@@ -76,6 +76,15 @@ const FisheryRiver = ({navigation, route}) => {
           progress: '',
         },
       ]);
+      navigation.navigate('fisheryRiverInput', {
+        cropType: dropdownVal.name?.label,
+        cropId:
+          fishery[0] !== undefined &&
+            fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? fishery.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+            : dropdownVal.name?.value,
+        data: fishery.find(i => i?.fishery_crop_id == dropdownVal.name?.label),
+      })
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -84,10 +93,19 @@ const FisheryRiver = ({navigation, route}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({name: otherCrop?.name}));
+      dispatch(addFisherycrop({name: otherCrop?.name}))
+      .then((res)=>{
+        navigation.navigate('fisheryRiverInput', {
+          cropType: res?.payload?.data?.name,
+          cropId: res?.payload?.data?._id,
+          data: null,
+        })
+      })
+      setFocusOther(false)
       dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
+      setCropModal(!cropModal);
     } else {
       addCrop();
     }

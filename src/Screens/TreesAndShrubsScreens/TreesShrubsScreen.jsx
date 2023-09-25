@@ -75,14 +75,35 @@ const TreesShrubsScreen = ({navigation, route}) => {
       setFocusOther(false);
       setDropdownVal('');
       setOtherCrop('');
+      navigation.navigate('type',{
+        cropType: dropdownVal.name?.label,
+            cropId:
+              trees[0] !== undefined &&
+                trees.find(j => j?.tree_crop?.name == dropdownVal.name?.label)
+                ? trees.find(i => i?.tree_crop?.name == dropdownVal.name?.label)._id
+                : dropdownVal.name?.value,
+            data: trees.find(i => i?.tree_crop_id == dropdownVal.name?.label),
+      })
+      setCropModal(!cropModal);
     }
   };
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addTreeCrops({name: otherCrop?.name}));
+      dispatch(addTreeCrops({name: otherCrop?.name}))
+      .then((res)=>{
+        navigation.navigate('type',
+          {
+              cropType: res?.payload?.data?.name,
+              cropId: res?.payload?.data?._id,
+              data: null,
+            }
+        )
+      })
       dispatch(getTreeCrops());
       setDropdownVal([]);
       setOtherCrop('');
+      setFocusOther(false)
+      setCropModal(!cropModal);
     } else {
       addCrop();
     }

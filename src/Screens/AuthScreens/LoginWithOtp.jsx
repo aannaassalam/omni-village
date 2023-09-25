@@ -107,7 +107,8 @@ export default function LoginWithOtp({navigation}) {
                   ? dispatch(
                       SendOTP({
                         phone: user.phone,
-                        country_code: `+${user?.country_code}`,
+                        country_code: `${user?.country_code}`,
+                        type:'login'
                       }),
                     )
                   : null

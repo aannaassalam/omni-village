@@ -92,7 +92,11 @@ export default function RegisterWithOtp({navigation}) {
             <Text style={styles.normal_text}>{t("haven't recieved any")}</Text>
             <Pressable
               onPress={() =>
-                timer === 0 ? dispatch(SendOTP(user.phone)) : null
+                timer === 0 ? dispatch(SendOTP({
+                  phone: user.phone,
+                  country_code: `${user?.country_code}`,
+                  type: 'register'
+                })) : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
                 {t('resend')}

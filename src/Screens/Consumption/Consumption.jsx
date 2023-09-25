@@ -73,6 +73,16 @@ const Consumption = ({ route, navigation }) => {
                     progress: '',
                 },
             ]);
+            navigation.navigate('consumptionInput', {
+                cropType: dropdownVal.name?.label,
+                cropId:
+                    poultry[0] !== undefined &&
+                        consumption.find(j => j?.consumption_crop?.name == dropdownVal.name?.label)
+                        ? consumption.find(i => i?.consumption_crop?.name == dropdownVal.name?.label)
+                            ._id
+                        : dropdownVal.name?.value,
+                data: consumption.find(i => i?.consumption_crop_id == dropdownVal.name?.value),
+            });
             setCropModal(!cropModal);
             setFocusOther(false);
             setDropdownVal('');

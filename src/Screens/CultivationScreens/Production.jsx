@@ -15,12 +15,15 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {getTree} from '../../Redux/TreesSlice';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
   const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const {user} = useSelector(s => s.auth);
 

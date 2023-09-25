@@ -15,15 +15,18 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {useDispatch} from 'react-redux';
 import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
 import Toast, {BaseToast} from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const LandAllocation = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const { t } = useTranslation();
   const {totalLand} = 20;
   const [cultivation, setCultivation] = useState([
-    {name: 'Cultivated once in a year', area: 0},
-    {name: 'Cultivated twice in a year', area: 0},
-    {name: 'Cultivated thrice in a year', area: 0},
+    {name: t('cultivated once in a year'), area: 0},
+    {name: t('Cultivated twice in a year'), area: 0},
+    {name: t('Cultivated thrice in a year'), area: 0},
   ]);
 
   const [globalError, setGlobalError] = useState('');
@@ -58,9 +61,9 @@ const LandAllocation = ({navigation, route}) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      once: '',
-      twice: '',
-      thrice: '',
+      once: '0',
+      twice: '0',
+      thrice: '0',
     },
   });
 
@@ -111,7 +114,7 @@ const LandAllocation = ({navigation, route}) => {
       <KeyboardAvoidingView>
         <CustomHeader
           backIcon={true}
-          headerName={'Land Allocation'}
+          headerName={t('land allocation')}
           goBack={() => navigation.goBack()}
         />
         <View style={styles.textInputArea}>
@@ -125,8 +128,8 @@ const LandAllocation = ({navigation, route}) => {
             name="once"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName="Cultivated once in a year"
-                placeholder={'0'}
+                productionName={t("cultivated once in a year")}
+                // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
               />
@@ -137,8 +140,8 @@ const LandAllocation = ({navigation, route}) => {
             name="twice"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName="Cultivated twice in a year"
-                placeholder={'0'}
+                productionName={t("cultivated twice in a year")}
+                // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
               />
@@ -149,8 +152,8 @@ const LandAllocation = ({navigation, route}) => {
             name="thrice"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName="Cultivated thrice in a year"
-                placeholder={'0'}
+                productionName={t("cultivated thrice in a year")}
+                // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
               />
