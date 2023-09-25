@@ -53,22 +53,22 @@ const Type01 = ({ navigation, route }) => {
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
-      age: t('less than a year'),
+      age: 'less than a year',
       checked: false,
     },
     {
       id: 2,
-      age: t('1 to 2 years'),
+      age: '1 to 2 years',
       checked: false,
     },
     {
       id: 3,
-      age: t('2 to 3 years'),
+      age: '2 to 3 years',
       checked: false,
     },
     {
       id: 4,
-      age: t('3 to 5 years'),
+      age: '3 to 5 years',
       checked: false,
     },
   ]);
