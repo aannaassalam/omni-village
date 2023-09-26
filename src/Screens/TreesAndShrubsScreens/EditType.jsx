@@ -41,7 +41,7 @@ const EditType = ({navigation, route}) => {
   const [output, setOutput] = useState(0);
   const [utilisationArray, setUtilisationArray] = useState([]);
   const [others, setOthers] = useState(0);
-  let findme = utilisationArray.find(i => i?.name == 'Others(Specify if any)');
+  let findme = utilisationArray.find(i => i?.name == t('Other(Specify if any)'));
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   useEffect(() => {
@@ -53,18 +53,18 @@ const EditType = ({navigation, route}) => {
         {name: t('self consumed'), value: edit?.self_consumed},
         {name: t('fed to livestock'), value: edit?.fed_to_livestock},
         {name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
-        {name: t('sold for indutrial use'), value: edit?.sold_for_industrial_use},
+        {name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
         {name: t('wastage'), value: edit?.wastage},
-        {name: 'Others(Specify if any)', value: edit?.other},
+        {name: t('Other(Specify if any)'), value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
         { name: t('self consumed'), value: 0},
         { name: t('fed to livestock'), value: 0},
         { name: t('sold to neighbour'), value: 0},
-        { name: t('sold for indutrial use'), value: 0},
+        { name: t('sold for industrial use'), value: 0},
         { name: t('wastage'), value: 0},
-        {name: 'Others(Specify if any)', value: ''},
+        {name: t('Other(Specify if any)'), value: ''},
       ]);
     }
   }, [edit]);
@@ -96,17 +96,17 @@ const EditType = ({navigation, route}) => {
           text1: 'Output cannot be empty',
         });
       } else {
-        if (amount > out) {
-          setMessage('Total amount cannot be greater than output');
+        if (amount !== out) {
+          setMessage('Total amount should be equal to output');
           Toast.show({
             type: 'error',
-            text1: 'Total amount cannot be greater than output',
+            text1: 'Total amount should be equal to output',
           });
-        } else if (amount > out) {
-          setMessage('Total amount cannot be greater than output');
+        } else if (amount !== out) {
+          setMessage('Total amount should be equal to output');
           Toast.show({
             type: 'error',
-            text1: 'Total amount cannot be greater than output',
+            text1: 'Total amount should be equal to output',
           });
         } else if (
           utilisationArray[0]?.value == 0 ||
@@ -160,11 +160,11 @@ const EditType = ({navigation, route}) => {
           type: 'error',
           text1: 'Output cannot be empty',
         });
-      } else if (amount > out) {
-        setMessage('Total amount cannot be greater than output');
+      } else if (amount !== out) {
+        setMessage('Total amount should be equal to output');
         Toast.show({
           type: 'error',
-          text1: 'Total amount cannot be greater than output',
+          text1: 'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -224,13 +224,13 @@ const EditType = ({navigation, route}) => {
                         productionName={item?.name}
                         value={item?.value ? item?.value.toString() : ''}
                         keyboardType={
-                          item?.name === 'Others(Specify if any)'
+                          item?.name === t('Other(Specify if any)')
                             ? 'default'
                             : 'numeric'
                         }
                         multiline={false}
                         notRightText={
-                          item?.name === 'Others(Specify if any)' ? true : false
+                          item?.name === t('Other(Specify if any)') ? true : false
                         }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(

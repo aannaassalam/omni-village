@@ -41,7 +41,7 @@ const PoultryEdit = ({navigation, route}) => {
   const [output, setOutput] = useState(0);
   const [utilisationArray, setUtilisationArray] = useState([]);
   const [others, setOthers] = useState(0);
-  let findme = utilisationArray.find(i => i?.name == 'Others(Specify if any)');
+  let findme = utilisationArray.find(i => i?.name == t('Other(Specify if any)'));
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   useEffect(() => {
@@ -53,7 +53,7 @@ const PoultryEdit = ({navigation, route}) => {
         { name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
         { name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
         { name: t('wastage'), value: edit?.wastage},
-        {name: 'Others(Specify if any)', value: edit?.other},
+        {name: t('Other(Specify if any)'), value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
@@ -61,7 +61,7 @@ const PoultryEdit = ({navigation, route}) => {
         { name: t('sold to neighbour'), value: 0},
         { name: t('sold for industrial use'), value: 0},
         { name: t('wastage'), value: 0},
-        {name: 'Others(Specify if any)', value: ''},
+        {name: t('Other(Specify if any)'), value: ''},
       ]);
     }
   }, [edit]);
@@ -92,11 +92,11 @@ const PoultryEdit = ({navigation, route}) => {
           type: 'error',
           text1: 'Output cannot be empty',
         });
-      } else if (amount > out) {
-        setMessage('Total amount cannot be greater than output');
+      } else if (amount !== out) {
+        setMessage('Total amount should be equal to output');
         Toast.show({
           type: 'error',
-          text1: 'Total amount cannot be greater than output',
+          text1: 'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -144,11 +144,11 @@ const PoultryEdit = ({navigation, route}) => {
           type: 'error',
           text1: 'Output cannot be empty',
         });
-      } else if (amounts > outs) {
-        setMessage('Total amount cannot be greater than output');
+      } else if (amounts !== outs) {
+        setMessage('Total amount should be equal to output');
         Toast.show({
           type: 'error',
-          text1: 'Total amount cannot be greater than output',
+          text1: 'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -172,7 +172,6 @@ const PoultryEdit = ({navigation, route}) => {
       }
     }
   };
-  console.log("others", others)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -204,13 +203,13 @@ const PoultryEdit = ({navigation, route}) => {
                         productionName={item?.name}
                         value={item?.value ? item?.value.toString() : ''}
                         keyboardType={
-                          item?.name === 'Others(Specify if any)'
+                          item?.name === t('Other(Specify if any)')
                             ? 'default'
                             : 'numeric'
                         }
                         multiline={false}
                         notRightText={
-                          item?.name === 'Others(Specify if any)' ? true : false
+                          item?.name === t('Other(Specify if any)') ? true : false
                         }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(

@@ -41,7 +41,7 @@ const ConsumptionMain = ({ navigation }) => {
                         return (
                             <CustomShowcaseInput
                                 key={indx}
-                                productionName={item?.name}
+                                productionName={t(`${item?.name}`)}
                                 progressBar={false}
                                 onPress={() => {
                                     navigation.navigate('consumption', { typeId: item?._id, typeName: item?.name }),

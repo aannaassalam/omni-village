@@ -701,7 +701,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -998,6 +998,12 @@ const PoultryType = ({navigation, route}) => {
               keyboardType="default"
               onChangeText={e => {
                 setProductName(e);
+                if (e.endsWith("\n")) {
+                  setProductName(e);
+                  setHarvestProdAdd(!harvestProdAdd);
+                  setFocus(!focus);
+                  addProduct()
+                }
               }}
               multiline={false}
               notRightText={true}

@@ -30,7 +30,7 @@ const InputWithoutBorder = ({
   return (
     <View>
       <View style={[styles.textInputContainer]}>
-        <View style={styles.textInputInner}>
+        <View style={[styles.textInputInner, { backgroundColor: editable == false ? '#cacaca':'#fff',}]}>
           <View
             style={[
               styles.textInputAcres,

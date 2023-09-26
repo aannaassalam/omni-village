@@ -708,7 +708,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={watch('weight_measurement')}
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}

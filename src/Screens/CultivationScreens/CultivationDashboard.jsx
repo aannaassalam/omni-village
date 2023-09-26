@@ -198,7 +198,7 @@ const CultivationDashboard = ({navigation, route}) => {
               dispatch(setCultivationType(2))
                 .unwrap()
                 .then(() => {
-                  navigation.navigate('cultivationTwice');
+                  navigation.navigate('season1', { seasonName: 'Season 1' });
                 });
             } else {
               setGobalError('No Land Allocated for Cultivated twice in a year');
@@ -252,7 +252,7 @@ const CultivationDashboard = ({navigation, route}) => {
               dispatch(setCultivationType(3))
                 .unwrap()
                 .then(() => {
-                  navigation.navigate('cultivationThrice');
+                  navigation.navigate('season1', { seasonName: 'Season 1' });
                 });
             } else {
               setGobalError('No Land Allocated for Cultivated once in a year');

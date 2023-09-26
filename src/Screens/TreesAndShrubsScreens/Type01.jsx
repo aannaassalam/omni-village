@@ -53,22 +53,44 @@ const Type01 = ({ navigation, route }) => {
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
-      age: 'less than a year',
+      name: '0 to 5 years',
+      age: t('0 to 5 years'),
       checked: false,
     },
     {
       id: 2,
-      age: '1 to 2 years',
+      name: '5 to 10 years',
+      age: t('5 to 10 years'),
       checked: false,
     },
     {
       id: 3,
-      age: '2 to 3 years',
+      name: '10 to 20 years',
+      age: t('10 to 20 years'),
       checked: false,
     },
     {
       id: 4,
-      age: '3 to 5 years',
+      name: '20 to 30 years',
+      age: t('20 to 30 years'),
+      checked: false,
+    },
+    {
+      id: 5,
+      name: '30 to 50 years',
+      age: t('30 to 50 years'),
+      checked: false,
+    },
+    {
+      id: 6,
+      name: '50 to 70 years',
+      age: t('50 to 70 years'),
+      checked: false,
+    },
+    {
+      id: 7,
+      name: 'Above 70',
+      age: t('Above 70'),
       checked: false,
     },
   ]);
@@ -334,7 +356,6 @@ const Type01 = ({ navigation, route }) => {
       data: data,
     })
     setProductName('');
-
   };
   const removeList = name => {
     let newList = harvestedProductList.filter(obj => obj.name !== name);
@@ -705,7 +726,7 @@ const Type01 = ({ navigation, route }) => {
                         name={item?.age}
                         checked={item?.checked}
                         checking={() => {
-                          onChange(item?.age), toggleItem(item?.age, indx);
+                          onChange(item?.name), toggleItem(item?.age, indx);
                         }}
                       />
                     );
@@ -739,6 +760,12 @@ const Type01 = ({ navigation, route }) => {
               keyboardType="default"
               onChangeText={e => {
                 setProductName(e);
+                if (e.endsWith("\n")){
+                  setProductName(e);
+                  setHarvestProdAdd(!harvestProdAdd);
+                  setFocus(!focus);
+                  addProduct()
+                }
               }}
               multiline={true}
               notRightText={true}

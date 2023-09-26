@@ -445,7 +445,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("Fed to Livestock")}
+                        productionName={t("fed to livestock")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -489,7 +489,7 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("sold for industrial Use")}
+                        productionName={t("sold for industrial use")}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -533,12 +533,11 @@ const CropDescription = ({navigation, route}) => {
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName="Others"
+                        productionName={t("Other(Specify if any)")}
                         value={value}
                         multiline={false}
                         notRightText={true}
                         onChangeText={onChange}
-                        d
                       />
                     );
                   }}
@@ -737,7 +736,7 @@ const CropDescription = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
-                    productionName={'expenditure on input'}
+                    productionName={t('expenditure on input')}
                     value={value}
                     onChangeText={onChange}
                   />
@@ -788,6 +787,7 @@ const CropDescription = ({navigation, route}) => {
                     productionName={t('yields')}
                     value={value}
                     editable={false}
+                    
                   />
                 );
               }}

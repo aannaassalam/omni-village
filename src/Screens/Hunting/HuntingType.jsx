@@ -601,7 +601,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}
