@@ -50,7 +50,6 @@ const PoultryEdit = ({navigation, route}) => {
       setOutput(edit?.production_output);
       setUtilisationArray([
         { name: t('self consumed'), value: edit?.self_consumed},
-        { name: t('fed to livestock'), value: edit?.fed_to_livestock},
         { name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
         { name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
         { name: t('wastage'), value: edit?.wastage},
@@ -59,7 +58,6 @@ const PoultryEdit = ({navigation, route}) => {
     } else {
       setUtilisationArray([
         { name: t('self consumed'), value: 0},
-        { name: t('fed to livestock'), value: 0},
         { name: t('sold to neighbour'), value: 0},
         { name: t('sold for industrial use'), value: 0},
         { name: t('wastage'), value: 0},
@@ -74,11 +72,10 @@ const PoultryEdit = ({navigation, route}) => {
         name: cropType,
         production_output: output,
         self_consumed: utilisationArray[0]?.value,
-        fed_to_livestock: utilisationArray[1]?.value,
-        sold_to_neighbours: utilisationArray[2]?.value,
-        sold_for_industrial_use: utilisationArray[3]?.value,
-        wastage: utilisationArray[4]?.value,
-        other: utilisationArray[5]?.value,
+        sold_to_neighbours: utilisationArray[1]?.value,
+        sold_for_industrial_use: utilisationArray[2]?.value,
+        wastage: utilisationArray[3]?.value,
+        other: utilisationArray[4]?.value,
         other_value: others,
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
@@ -109,13 +106,7 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[2]?.value == 0 ||
         utilisationArray[2]?.value == undefined ||
         utilisationArray[3]?.value == 0 ||
-        utilisationArray[3]?.value == undefined ||
-        utilisationArray[4]?.value == 0 ||
-        utilisationArray[4]?.value == undefined ||
-        utilisationArray[5]?.value == 0 ||
-        utilisationArray[5]?.value == undefined ||
-        others == undefined ||
-        others == ''
+        utilisationArray[3]?.value == undefined
       ) {
         setMessage('All fields are required!');
       } else {
@@ -132,11 +123,11 @@ const PoultryEdit = ({navigation, route}) => {
         _id: edit?._id,
         production_output: output,
         self_consumed: utilisationArray[0]?.value,
-        fed_to_livestock: utilisationArray[1]?.value,
-        sold_to_neighbours: utilisationArray[2]?.value,
-        sold_for_industrial_use: utilisationArray[3]?.value,
-        wastage: utilisationArray[4]?.value,
-        other: utilisationArray[5]?.value,
+        // fed_to_livestock: utilisationArray[1]?.value,
+        sold_to_neighbours: utilisationArray[1]?.value,
+        sold_for_industrial_use: utilisationArray[2]?.value,
+        wastage: utilisationArray[3]?.value,
+        other: utilisationArray[4]?.value,
         other_value: others,
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
@@ -169,11 +160,7 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[3]?.value == 0 ||
         utilisationArray[3]?.value == undefined ||
         utilisationArray[4]?.value == 0 ||
-        utilisationArray[4]?.value == undefined ||
-        utilisationArray[5]?.value == 0 ||
-        utilisationArray[5]?.value == undefined ||
-        others == undefined ||
-        others == ''
+        utilisationArray[4]?.value == undefined
       ) {
         setMessage('Input all Fields Correctly');
       } else {
@@ -185,7 +172,7 @@ const PoultryEdit = ({navigation, route}) => {
       }
     }
   };
-  // console.log("others", edit)
+  console.log("others", others)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -231,7 +218,7 @@ const PoultryEdit = ({navigation, route}) => {
                           );
                           if (targetedArea !== -1) {
                             const updatedDataArray = [...utilisationArray];
-                            if (targetedArea === 5) {
+                            if (targetedArea === 4) {
                               updatedDataArray[targetedArea].value = e;
                               setUtilisationArray(updatedDataArray);
                             } else {
@@ -242,7 +229,7 @@ const PoultryEdit = ({navigation, route}) => {
                           }
                         }}
                       />
-                      {index == 5 && findme?.value !== '' ? (
+                      {index == 4 && findme?.value !== '' ? (
                         <View style={styles.innerInputView}>
                           <Divider style={styles.divider2} />
                           <View style={{width: '100%'}}>
@@ -252,7 +239,7 @@ const PoultryEdit = ({navigation, route}) => {
                               value={
                                 others == undefined ? others : others.toString()
                               }
-                              onChangeText={e => setOthers(e)}
+                              onChangeText={e => {setOthers(e), console.log("othersssssss", others)}}
                             />
                           </View>
                         </View>

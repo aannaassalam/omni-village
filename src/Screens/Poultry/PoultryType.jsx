@@ -39,6 +39,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
 import { useTranslation } from 'react-i18next';
 import '../../i18next';
+import PoultryProductDescription from '../../Components/CustomDashboard/PoultryProductDescription';
 
 const PoultryType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -108,8 +109,8 @@ const PoultryType = ({navigation, route}) => {
       purchased_from_market: yup
         .string()
         .required(validation.error.purchased_from_market),
-      other: yup.string().required(validation.error.other),
-      other_value: yup.string().required(validation.error.other_value),
+      other: yup.string(),
+      other_value: yup.string(),
     }),
     income_from_sale: yup.string().required(validation.error.income_from_sale),
     expenditure_on_inputs: yup
@@ -160,6 +161,7 @@ const PoultryType = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
+    console.log("erooorrrr", errors)
   }, [errors]);
   const submit = () => {
     console.log("i m here")
@@ -878,7 +880,7 @@ const PoultryType = ({navigation, route}) => {
                     <>
                       {harvestedProductList.map(item => {
                         return (
-                          <ProductDescription
+                          <PoultryProductDescription
                             productName={t('product type')}
                             productNameValue={item?.name}
                             date={t('harvested on')}
