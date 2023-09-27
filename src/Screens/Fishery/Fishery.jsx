@@ -5,35 +5,37 @@ import {
   useWindowDimensions,
   TouchableOpacity,
   Image,
-  ScrollView,
+  Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
-import {addFisherycrop, getFisheryCrops} from '../../Redux/FisheryCropSlice';
-import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
+import { useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { addHuntingCrops, getHuntingCrops } from '../../Redux/HuntingCropSlice';
+import { deleteHunting, getHunting } from '../../Redux/HuntingSlice';
+import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import {getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
-import {ActivityIndicator} from 'react-native-paper';
+import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice';
+import { deleteFishery, getFishery } from '../../Redux/FisherySlice';
+import { ActivityIndicator } from 'react-native-paper';
+import { getFeed, getFishFeed, getMeasurement } from '../../Redux/OthersSlice';
+import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import { useTranslation } from 'react-i18next';
 import '../../i18next';
 
-const Fishery = ({navigation, route}) => {
-  const {user} = useSelector(state => state.auth);
-  const totalLand = user.sub_area.fishery;
-  const {screenName} = route.params;
-  const { t } = useTranslation();
-  const {fontScale} = useWindowDimensions();
-  const styles = makeStyles(fontScale);
+const Fishery = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
-  const {fisheryCrop} = useSelector(state => state.fisheryCrop);
-  const {fishery} = useSelector(state => state.fishery);
+  const { screenName } = route.params;
+  const { t } = useTranslation();
+  const { fontScale } = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+  const { fisheryCrop } = useSelector(state => state.fisheryCrop);
+  const { fishery } = useSelector(state => state.fishery);
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -48,23 +50,69 @@ const Fishery = ({navigation, route}) => {
       .unwrap()
       .then(res => {
         console.log(`delted hunting ${id}`, res);
-        dispatch(getFishery('pond'));
       })
       .catch(err => console.log('error delete hunting', err));
   };
   const addCrop = () => {
-    setCropType([...cropType, otherCrop]);
-    setCropModal(!cropModal);
-    setFocusOther(false);
-    setDropdownVal('');
-    setOtherCrop('');
+    let ids = cropType.map(i => i.id || i?._id);
+    if (ids.includes(dropdownVal?.name?.value)) {
+      Alert.alert('Crop Already exists');
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    } else {
+      setCropType([
+        ...cropType,
+        {
+          name:
+            dropdownVal.name == 'Others'
+              ? otherCrop.name
+              : dropdownVal.name?.label,
+          id:
+            dropdownVal.name == 'Others'
+              ? otherCrop._id
+              : dropdownVal.name?.value,
+          progress: '',
+        },
+      ]);
+      navigation.navigate('fishTypeInput', {
+        cropType: dropdownVal.name?.label,
+        cropId:
+          fishery[0] !== undefined &&
+            fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? fishery.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+            : dropdownVal.name?.value,
+        data: fishery.find(i => i?.fishery_crop_id == dropdownVal.name?.label),
+      })
+      setCropModal(!cropModal);
+      setFocusOther(false);
+      setDropdownVal('');
+      setOtherCrop('');
+    }
   };
   const addingHuntingCrop = () => {
-    addCrop();
+    if (dropdownVal.name?.label === 'Others') {
+      dispatch(addFisherycrop({ name: otherCrop?.name }))
+        .then((res) => {
+          navigation.navigate('fisheryRiverInput', {
+            cropType: res?.payload?.data?.name,
+            cropId: res?.payload?.data?._id,
+            data: null,
+          })
+        })
+      setFocusOther(false)
+      dispatch(getFisheryCrops());
+      setDropdownVal([]);
+      setOtherCrop('');
+      setCropModal(!cropModal);
+    } else {
+      addCrop();
+    }
   };
-
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
+    console.log('data', data);
     if (data !== 'Others') {
       setFocusOther(false);
     }
@@ -73,18 +121,15 @@ const Fishery = ({navigation, route}) => {
     useCallback(() => {
       setLoading(true);
       dispatch(getFisheryCrops());
-      dispatch(getMeasurement());
       dispatch(getFishery('pond')).then(res => {
+        console.log(res);
+        setCropType(res?.payload.data.map(i => i?.fishery_crop));
         setLoading(false);
       });
       dispatch(getFishFeed());
+      dispatch(getMeasurement());
     }, []),
   );
-  useEffect(() => {
-    setCropType(Object.keys(fishery));
-  }, [fishery]);
-
-  // console.log("croptype", cropType)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -98,10 +143,8 @@ const Fishery = ({navigation, route}) => {
         second={t('fishery')}
         third={t('harvested from pond')}
       />
-      {/* Next Dashboard */}
-      {/* <CustomDashboard2 allocatedFor={screenName} usedLand={totalLand} /> */}
       {loading ? (
-        <View style={{marginTop: '40%'}}>
+        <View style={{ marginTop: '70%' }}>
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       ) : (
@@ -111,28 +154,42 @@ const Fishery = ({navigation, route}) => {
             return (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
-                onPress={() => {
-                  navigation.navigate('subArea', {
-                    type: element,
-                    screenName: element,
-                    data: fishery !== '' ? fishery[element] : null,
-                  });
-                }}>
+                onPress={
+                  () =>
+                    navigation.navigate('fishTypeInput', {
+                      cropType: element?.name,
+                      cropId:
+                        fishery[0] !== undefined &&
+                          fishery.find(
+                            j => j?.fishery_crop?.name == element?.name,
+                          )
+                          ? fishery.find(
+                            i => i?.fishery_crop?.name == element?.name,
+                          )._id
+                          : element?.id,
+                      data: fishery.find(
+                        i => i?.fishery_crop_id == element?._id,
+                      ),
+                    })
+                  //             huntingid:64f2ead3b994c1b6aa39e802
+                  // huntingcropid: 64f2ccd2b994c1b6aa39e76f
+                }>
                 <AddAndDeleteCropButton
                   add={false}
-                  cropName={element}
-                  onPress={() => {
-                    let findId = Object.values(fishery).flatMap(i =>
-                      i.filter(i => (i.pond_name == element ? i?._id : 0)),
-                    );
-                    // console.log("idddd", Object.values(fishery).flatMap((i) => i.filter((i) => i.pond_name == element?i?._id:0)))
-                    console.log('id', findId[0]?._id);
+                  cropName={element?.name}
+                  onPress={() =>
                     handleRemoveClick(
-                      fishery ? findId[0]?._id : element?.id,
+                      fishery[0] !== undefined &&
+                        fishery.find(
+                          j => j?.fishery_crop?.name == element?.name,
+                        )
+                        ? fishery.find(
+                          i => i?.fishery_crop?.name == element?.name,
+                        )._id
+                        : element?.id,
                       i,
-                    );
-                  }}
-                  // handleRemoveClick(fishery!==""?Object.values(fishery)[0].find((i) => i.pond_name == element)._id : element?.id, i)}
+                    )
+                  }
                 />
               </TouchableOpacity>
             );
@@ -142,7 +199,7 @@ const Fishery = ({navigation, route}) => {
             onPress={() => setCropModal(true)}>
             <AddAndDeleteCropButton
               add={true}
-                cropName={t('add pond name')}
+              cropName={t('add fish')}
               onPress={() => setCropModal(true)}
             />
           </TouchableOpacity>
@@ -151,7 +208,7 @@ const Fishery = ({navigation, route}) => {
       {cropModal && (
         <AddBottomSheet>
           <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('add pond name')}</Text>
+            <Text style={styles.headerText}>{t('add fish')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(!cropModal);
@@ -165,13 +222,25 @@ const Fishery = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.dropdownSection}>
-            <InputWithoutRightElement
-              label={t('pond name')}
-              placeholder={t('eg pond')}
-              onChangeText={e => setOtherCrop(e)}
-              value={otherCrop}
-              onFocus={() => setFocusOther(true)}
+            <CustomDropdown4
+              selectedValue={e =>
+                DropdownSelectedValue({
+                  name: e,
+                  _id: fisheryCrop.find(cp => cp.name === e)?._id,
+                })
+              }
+              data={[...fisheryCrop, { _id: 0, name: 'Others' }]}
+              valu={dropdownVal?.name}
             />
+            {dropdownVal.name?.label === 'Others' ? (
+              <InputWithoutRightElement
+                label={t('fish name')}
+                placeholder={t('eg fish')}
+                onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
+                value={otherCrop?.name}
+                onFocus={() => setFocusOther(true)}
+              />
+            ) : null}
           </View>
           <View style={styles.BottomSheetButton}>
             <TouchableOpacity
@@ -184,7 +253,7 @@ const Fishery = ({navigation, route}) => {
             </TouchableOpacity>
             <CustomButton
               btnText={t('create')}
-              style={{width: '80%'}}
+              style={{ width: '80%' }}
               onPress={() => addingHuntingCrop()}
             />
           </View>
@@ -239,7 +308,6 @@ const makeStyles = fontScale =>
       width: '90%',
       justifyContent: 'center',
       alignSelf: 'center',
-      // flex:1,
     },
     addCropIcon: {
       height: 50,

@@ -76,13 +76,13 @@ export default CustomDropdown3 = ({
           data={
             data?.length >= 1 && data !== undefined
               ? data.map((j, index) => {
-                  return {key: index, value: j?.name};
+                  return {key: j?.key, value: j?.name};
                 })
               : cropType.map((i, index) => {
-                  return {key: index, value: i};
+                  return {key: i, value: i};
                 })
           }
-          save="value"
+          save="key"
           dropdownTextStyles={{
             color: '#000',
             fontSize: 14 / fontScale,

@@ -38,11 +38,11 @@ const ConsumptionInput = ({route,navigation}) => {
     const { t } = useTranslation();
 
     const schema = yup.object().shape({
-        total_quantity: yup.string().required(validation.error.total_land),
-        purchased_from_market: yup.string().required(validation.error.purchased_from_market),
-        purchased_from_neighbours: yup.string().required(validation.error.purchased_from_neighbour),
-        self_grown: yup.string().required(validation.error.self_grown),
-        weight_measurement: yup.string().required(validation.error.weight_measurement),
+        total_quantity: yup.string().required(t('total_land is required')),
+        purchased_from_market: yup.string().required(t('purchased_from_market is required')),
+        purchased_from_neighbours: yup.string().required(t('purchased_from_neighbour is required')),
+        self_grown: yup.string().required(t('self_grown is required')),
+        weight_measurement: yup.string().required(t('weight_measurement is required')),
     });
     const {
         handleSubmit,
@@ -76,21 +76,21 @@ const ConsumptionInput = ({route,navigation}) => {
             watch('self_grown')==""
         ) {
             console.log("hete")
-            setMessage('Input all fields');
+            setMessage(t('All fields are required!') + '/' + 'All fields are required!');
             Toast.show({
                 type: 'error',
-                text1: 'Input all fields',
+                text1: t('All fields are required!') + '/' + 'All fields are required!',
             });
             setSavepopup(false);
         } else {
             if (
-                purchased_from_market + purchased_from_neighbours +self_grown >
+                purchased_from_market + purchased_from_neighbours +self_grown !==
                 total
             ) {
-                setMessage('Total amount cannot be greater than output');
+                setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
                 Toast.show({
                     type: 'error',
-                    text1: 'Total amount cannot be greater than output',
+                    text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
                 });
                 setSavepopup(false);
             }else{
@@ -108,7 +108,7 @@ const ConsumptionInput = ({route,navigation}) => {
                     dispatch(editConsumption(formData))
                         .then((res) => {
                             console.log("response", res);
-                            navigation.goBack()
+                            navigation.navigate('consumptionSuccessfull')
                         })
                         .catch(()=>setSavepopup(false))
                         .finally(()=>setSavepopup(false))
@@ -125,7 +125,7 @@ const ConsumptionInput = ({route,navigation}) => {
                     }
                     dispatch(addConsumption(formData))
                         .then((res) => {
-                            navigation.goBack()
+                            navigation.navigate('consumptionSuccessfull')
                         })
                         .catch(() => setSavepopup(false))
                         .finally(()=>setSavepopup(false))
@@ -134,6 +134,11 @@ const ConsumptionInput = ({route,navigation}) => {
     }
 
 }
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            setSavepopup(false);
+        }
+    }, [errors]);
     const handleDraft = ()=>{
         if (data?._id) {
             let formData = {
@@ -148,7 +153,7 @@ const ConsumptionInput = ({route,navigation}) => {
             }
             dispatch(editConsumption(formData))
                 .then((res) => {
-                    navigation.goBack()
+                    navigation.navigate('consumptionSuccessfull')
                 })
         } else {
             let formData = {
@@ -163,7 +168,8 @@ const ConsumptionInput = ({route,navigation}) => {
             }
             dispatch(addConsumption(formData))
                 .then((res) => {
-                    navigation.goBack()
+                    // navigation.goBack()
+                    navigation.navigate('consumptionSuccessfull')
                 })
         }
     }
@@ -341,14 +347,14 @@ const ConsumptionInput = ({route,navigation}) => {
           <View style={styles.bottomPopupbutton}>
               <CustomButton
                   style={styles.submitButton}
-                  btnText={'Submit'}
+                  btnText={t('submit')}
                   onPress={() => {
                       setSavepopup(true);
                   }}
               />
               <CustomButton
                   style={styles.draftButton}
-                  btnText={'Save as draft'}
+                  btnText={t('save as draft')}
                   onPress={() => {
                       setDraftpopup(true);
                   }}
@@ -366,19 +372,19 @@ const ConsumptionInput = ({route,navigation}) => {
                           style={styles.noteImage}
                       />
                   </View>
-                  <Text style={styles.confirmText}>Confirm</Text>
+                  <Text style={styles.confirmText}>{t('confirm')}</Text>
                   <Text style={styles.nextText}>
-                      Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+                      {t('')}
                   </Text>
                   <View style={styles.bottomPopupbutton}>
                       <CustomButton
                           style={styles.submitButton}
-                          btnText={'Submit'}
+                          btnText={t('submit')}
                           onPress={handleSubmit(onSubmit)}
                       />
                       <CustomButton
                           style={styles.draftButton}
-                          btnText={'Cancel'}
+                          btnText={t('cancel')}
                           onPress={() => {
                               setSavepopup(false);
                           }}
@@ -398,19 +404,19 @@ const ConsumptionInput = ({route,navigation}) => {
                           style={styles.noteImage}
                       />
                   </View>
-                  <Text style={styles.confirmText}>Save as Draft</Text>
+                  <Text style={styles.confirmText}>{t('save as draft')}</Text>
                   <Text style={styles.nextText}>
-                      Lorem Ipsum is simply dummy text of the.Lorem Ipsum.
+                      {t('')}
                   </Text>
                   <View style={styles.bottomPopupbutton}>
                       <CustomButton
                           style={styles.submitButton}
-                          btnText={'Save'}
+                          btnText={t('save')}
                           onPress={handleDraft}
                       />
                       <CustomButton
                           style={styles.draftButton}
-                          btnText={'Cancel'}
+                          btnText={t('cancel')}
                           onPress={() => setDraftpopup(false)}
                       />
                   </View>

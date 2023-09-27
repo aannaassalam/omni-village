@@ -32,7 +32,7 @@ export const addSellingChannel = createAsyncThunk(
       const res = await axiosInstance.post(
         endpoints.sellingChannel.add_selling_channel,
         {
-          selling_channel_methods: storageData
+          selling_channel_names: storageData,
         },
       );
       console.log('resss at add seliing channel slice', res?.data);
@@ -57,7 +57,7 @@ export const editSellingChannel = createAsyncThunk(
         endpoints.sellingChannel.edit_selling_channel,
         {
           selling_channel_id: storageData?.selling_channel_id,
-          selling_channel_methods: storageData?.selling_channel_methods,
+          selling_channel_names: storageData?.selling_channel_names,
         },
       );
       console.log('resss at edit seliing channel slice', res?.data);

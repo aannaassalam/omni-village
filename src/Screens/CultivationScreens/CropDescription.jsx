@@ -54,52 +54,64 @@ const CropDescription = ({navigation, route}) => {
   const [globalError, setGlobalError] = useState('');
 
   const dispatch = useDispatch();
-
+  const soilHealth = [{ key: 'stable', name: t('stable') }, { key: 'decreasing yield', name: t('decreasing yield') }];
+   const fertilisers = [
+    { key: 'organic self made', name: t('organic self made') },
+    { key: 'organic purchased', name: t('organic purchased') },
+    { key: 'chemical based', name: t('chemical based') },
+    { key: 'none', name: t('none') }
+  ];
+   const pesticides = [
+     { key: 'organic self made', name: t('organic self made') },
+     { key: 'organic purchased', name: t('organic purchased') },
+     { key: 'chemical based', name: t('chemical based') },
+     { key: 'none', name: t('none') }
+  ];
   const {currentCrop} = useSelector(s => s.cultivation);
 
   const schema = yup.object().shape({
-    area_allocated: yup.string().required(validation.error.area_allocated),
-    output: yup.string().required(validation.error.output),
+    area_allocated: yup.string().required(t('area_allocated is required')),
+    output: yup.string().required(t('output is required')),
     utilization: yup.object().shape({
-      self_consumed: yup.string().required(validation.error.self_consumed),
+      self_consumed: yup.string().required(t('self_consumed is required')),
       fed_to_livestock: yup
         .string()
-        .required(validation.error.fed_to_livestock),
+        .required(t('fed_to_livestock is required')),
       sold_to_neighbours: yup
         .string()
-        .required(validation.error.sold_to_neighbours),
+        .required(t('sold_to_neighbours is required')),
       sold_for_industrial_use: yup
         .string()
-        .required(validation.error.sold_for_industrial_use),
-      wastage: yup.string().required(validation.error.wastage),
+        .required(t('sold_for_industrial_use is required')),
+      wastage: yup.string().required(t('wastage is required')),
       other: yup.string(),
       other_value: yup.string(),
     }),
     important_information: yup.object().shape({
-      soil_health: yup.string().required(validation.error.soil_health),
+      soil_health: yup.string().required(t('soil_health is required')),
       decreasing_rate: yup
         .string()
         .when('soil_health', (soil_health, schema2) =>
           soil_health === 'decreasing yield'
-            ? yup.string().required(validation.error.decreasing_rate)
+            ? yup.string().required(t('decreasing_rate is required'))
             : schema2,
         ),
       type_of_fertilizer_used: yup
         .string()
-        .required(validation.error.type_of_fertilizer_used),
+        .required(t('type_of_fertilizer_used is required')),
       type_of_pesticide_used: yup
         .string()
-        .required(validation.error.type_of_pesticide_used),
+        .required(t('type_of_pesticide_used is required')),
       income_from_sale: yup
         .string()
-        .required(validation.error.income_from_sale),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: yup
         .string()
-        .required(validation.error.expenditure_on_inputs),
+        .required(t('expenditure_on_inputs is required')),
       description: yup.string(),
       yeild: yup.string(),
-      month_planted: yup.date().required(validation.error.month_planted),
-      month_harvested: yup.date().required(validation.error.month_harvested),
+      month_planted: yup.date().required(t('month_planted is required')),
+      month_harvested: yup.date().required(t('month_harvested is required')),
     }),
     // ultilization,
     // important_information,
@@ -174,9 +186,9 @@ const CropDescription = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
+    console.log("errorrrrrr", currentCrop)
   }, [errors]);
 
-  console.log(errors);
 
   const onSubmit = data => {
     const output = parseInt(data.output) || 0;
@@ -249,12 +261,14 @@ const CropDescription = ({navigation, route}) => {
         )
           .unwrap()
           .then(
-            () =>
-              Toast.show({
+            (res) =>
+              {Toast.show({
                 text1: 'Success',
                 text2: 'Cultivation added successfully!',
               }),
-            navigation.goBack(),
+            // navigation.goBack(),
+            navigation.navigate('successfull')
+            console.log("response", res)}
           )
           .catch(err => {
             console.log('err', err);
@@ -341,7 +355,7 @@ const CropDescription = ({navigation, route}) => {
         .finally(() => setSavepopup(false));
     }
   };
-
+console.log("watch", watch('important_information'))
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -626,6 +640,7 @@ const CropDescription = ({navigation, route}) => {
                   <CustomDropdown3
                     data={soilHealth}
                     value={value}
+                    defaultVal={{ key: value, value: t(value) }}
                     selectedValue={onChange}
                     infoName={t('soil health')}
                   />
@@ -675,6 +690,7 @@ const CropDescription = ({navigation, route}) => {
                     data={fertilisers}
                     selectedValue={onChange}
                     value={value}
+                    defaultVal={{ key: value, value: t(value) }}
                     infoName={t('type of fertilizer')}
                   />
                 );
@@ -698,6 +714,7 @@ const CropDescription = ({navigation, route}) => {
                     data={pesticides}
                     selectedValue={onChange}
                     value={value}
+                    defaultVal={{ key: value, value: t(value) }}
                     infoName={t('type of pesticides')}
                   />
                 );
@@ -800,6 +817,7 @@ const CropDescription = ({navigation, route}) => {
                 'MMMM DD,YYYY',
               )}
             />
+            
             <InputLikeButton
               text={t('month harvested')}
               rightIcon={true}

@@ -31,12 +31,12 @@ export default function Register({navigation, route}) {
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
   const [selectedCountry, setSelectedCountry] = useState({
-    callingCode: ['91'],
-    cca2: 'IN',
-    currency: ['INR'],
-    name: 'India',
+    callingCode: ['60'],
+    cca2: 'MY',
+    currency: ['MYR'],
+    name: 'Malaysia',
     region: 'Asia',
-    subregion: 'Southern Asia',
+    subregion: 'South-Eastern Asia',
   });
   const [countryModal, setCountryModal] = useState(false);
 
@@ -122,7 +122,7 @@ export default function Register({navigation, route}) {
                   countryCode={
                     selectedCountry !== null
                       ? '+' + selectedCountry?.callingCode[0]
-                      : '+91'
+                      : '+60'
                   }
                 />
               )}

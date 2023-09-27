@@ -90,23 +90,17 @@ const EditType = ({navigation, route}) => {
       let amount = parseInt(totalAmount) + parseInt(others);
       let out = parseInt(output);
       if (output == '' || output == undefined) {
-        setMessage('Output cannot be empty');
+        setMessage(t('Output cannot be empty') + '/' + 'Output cannot be empty');
         Toast.show({
           type: 'error',
-          text1: 'Output cannot be empty',
+          text1: t('Output cannot be empty') + '/' + 'Output cannot be empty',
         });
       } else {
         if (amount !== out) {
-          setMessage('Total amount should be equal to output');
+          setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
           Toast.show({
             type: 'error',
-            text1: 'Total amount should be equal to output',
-          });
-        } else if (amount !== out) {
-          setMessage('Total amount should be equal to output');
-          Toast.show({
-            type: 'error',
-            text1: 'Total amount should be equal to output',
+            text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
           });
         } else if (
           utilisationArray[0]?.value == 0 ||
@@ -124,7 +118,7 @@ const EditType = ({navigation, route}) => {
           others == undefined ||
           others == ''
         ) {
-          setMessage('All fields are required!');
+          setMessage(t('All fields are required!') + '/' +'All fields are required!');
         } else {
           navigation.navigate('type', {
             edit: formData,
@@ -158,13 +152,13 @@ const EditType = ({navigation, route}) => {
       if (output == '' || output == undefined) {
         Toast.show({
           type: 'error',
-          text1: 'Output cannot be empty',
+          text1: t('Output cannot be empty') + '/' + 'All fields are required!',
         });
       } else if (amount !== out) {
-        setMessage('Total amount should be equal to output');
+        setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
         Toast.show({
           type: 'error',
-          text1: 'Total amount should be equal to output',
+          text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -182,7 +176,7 @@ const EditType = ({navigation, route}) => {
         others == undefined ||
         others == ''
       ) {
-        setMessage('All fields are required!');
+        setMessage(t('All fields are required!') + '/' + 'All fields are required!');
       } else {
         navigation.navigate('type', {
           edit: formData,

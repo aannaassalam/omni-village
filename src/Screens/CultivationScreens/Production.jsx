@@ -34,7 +34,7 @@ const Production = ({navigation, route}) => {
           d => d !== 0,
         ).length > 0
       ) {
-        navigation.navigate('cultivationDashboard');
+        navigation.navigate('season1', { seasonName: 'Cultivation' });
       } else {
         navigation.navigate('landAllocation');
       }
@@ -67,13 +67,13 @@ const Production = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Production'}
+        headerName={t('production')}
         goBack={() => navigation.goBack()}
       />
       {/* top container for used and allocated land */}
       <View style={styles.top_container}>
         <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>Land allocated</Text>
+          <Text style={styles.land_allocated_text}>{t('land allocated')}</Text>
           <Text style={styles.value_text}>
             {userDetails?.total_land}{' '}
             {userDetails.land_measurement_symbol
@@ -83,7 +83,7 @@ const Production = ({navigation, route}) => {
         </View>
         <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>Used Land</Text>
+          <Text style={styles.land_allocated_text}>{t('used land')}</Text>
           <Text style={[styles.value_text, {color: '#E5C05E'}]}>
             {usedLand}{' '}
             {userDetails.land_measurement_symbol
@@ -96,7 +96,7 @@ const Production = ({navigation, route}) => {
           <Text
             style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
             onPress={() => navigation.navigate('totalLand')}>
-            Modify
+            {t('modify')}
           </Text>
         </View>
       </View>
@@ -107,7 +107,7 @@ const Production = ({navigation, route}) => {
             return (
               <CustomShowcaseInput
                 key={item}
-                productionName={item}
+                productionName={t(item)}
                 productionArea={
                   item === 'cultivation'
                     ? userDetails?.sub_area[item].land
@@ -119,12 +119,12 @@ const Production = ({navigation, route}) => {
             );
           })}
           <CustomShowcaseInput
-            productionName={'Hunting'}
+            productionName={t('hunting')}
             productionArea={''}
             onPress={() => goToNext('hunting')}
           />
           <CustomShowcaseInput
-            productionName={'Selling Channel'}
+            productionName={t('selling channel')}
             productionArea={''}
             onPress={() => goToNext('sellingChannel')}
           />
