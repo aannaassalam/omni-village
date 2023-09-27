@@ -23,13 +23,13 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
 import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const Hunting = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const {huntingCrops} = useSelector(state => state.huntingCrop);
   const {hunting} = useSelector(state => state.hunting);
   const [cropType, setCropType] = useState([]);
@@ -76,9 +76,10 @@ const Hunting = ({navigation}) => {
         cropType: dropdownVal.name?.label,
         cropId:
           hunting[0] !== undefined &&
-            hunting.find(j => j?.hunting_crop?.name == dropdownVal.name?.label)
-            ? hunting.find(i => i?.hunting_crop?.name == dropdownVal.name?.label)
-              ._id
+          hunting.find(j => j?.hunting_crop?.name == dropdownVal.name?.label)
+            ? hunting.find(
+                i => i?.hunting_crop?.name == dropdownVal.name?.label,
+              )._id
             : dropdownVal.name?.value,
         data: hunting.find(i => i?.hunting_crop_id == dropdownVal.name?.value),
       });
@@ -90,15 +91,14 @@ const Hunting = ({navigation}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addHuntingCrops({name: otherCrop?.name}))
-        .then((res) => {
-          navigation.navigate('huntingType', {
-            cropType: res?.payload?.data?.name,
-            cropId: res?.payload?.data?._id,
-            data: null,
-          })
-          setFocusOther(false)
-        })
+      dispatch(addHuntingCrops({name: otherCrop?.name})).then(res => {
+        navigation.navigate('huntingType', {
+          cropType: res?.payload?.data?.name,
+          cropId: res?.payload?.data?._id,
+          data: null,
+        });
+        setFocusOther(false);
+      });
       dispatch(getHuntingCrops());
       setDropdownVal([]);
       setOtherCrop('');
@@ -139,19 +139,18 @@ const Hunting = ({navigation}) => {
         return (
           <TouchableOpacity
             style={styles.addAndDeleteButtonSection}
-            onPress={
-              () =>
-                navigation.navigate('huntingType', {
-                  cropType: element?.name,
-                  cropId:
-                    hunting[0] !== undefined &&
-                    hunting.find(j => j?.hunting_crop?.name == element?.name)
-                      ? hunting.find(
-                          i => i?.hunting_crop?.name == element?.name,
-                        )._id
-                      : element?.id,
-                  data: hunting.find(i => i?.hunting_crop_id == element?._id),
-                })
+            key={i}
+            onPress={() =>
+              navigation.navigate('huntingType', {
+                cropType: element?.name,
+                cropId:
+                  hunting[0] !== undefined &&
+                  hunting.find(j => j?.hunting_crop?.name == element?.name)
+                    ? hunting.find(i => i?.hunting_crop?.name == element?.name)
+                        ._id
+                    : element?.id,
+                data: hunting.find(i => i?.hunting_crop_id == element?._id),
+              })
             }>
             <AddAndDeleteCropButton
               add={false}

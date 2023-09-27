@@ -18,7 +18,7 @@ import CalendarPicker from 'react-native-calendar-picker';
 import {Divider} from 'react-native-paper';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import Toast from 'react-native-toast-message';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const PoultryEdit = ({navigation, route}) => {
@@ -26,7 +26,7 @@ const PoultryEdit = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const [message, setMessage] = useState('');
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [harvestedPopup, setHarvestedPopup] = useState(false);
   const [harvestedDate, setHarvestedDate] = useState(
     edit
@@ -41,7 +41,9 @@ const PoultryEdit = ({navigation, route}) => {
   const [output, setOutput] = useState(0);
   const [utilisationArray, setUtilisationArray] = useState([]);
   const [others, setOthers] = useState(0);
-  let findme = utilisationArray.find(i => i?.name == t('Other(Specify if any)'));
+  let findme = utilisationArray.find(
+    i => i?.name == t('Other(Specify if any)'),
+  );
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   useEffect(() => {
@@ -49,18 +51,21 @@ const PoultryEdit = ({navigation, route}) => {
       setOthers(edit?.other_value);
       setOutput(edit?.production_output);
       setUtilisationArray([
-        { name: t('self consumed'), value: edit?.self_consumed},
-        { name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
-        { name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
-        { name: t('wastage'), value: edit?.wastage},
+        {name: t('self consumed'), value: edit?.self_consumed},
+        {name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
+        {
+          name: t('sold for industrial use'),
+          value: edit?.sold_for_industrial_use,
+        },
+        {name: t('wastage'), value: edit?.wastage},
         {name: t('Other(Specify if any)'), value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
-        { name: t('self consumed'), value: 0},
-        { name: t('sold to neighbour'), value: 0},
-        { name: t('sold for industrial use'), value: 0},
-        { name: t('wastage'), value: 0},
+        {name: t('self consumed'), value: 0},
+        {name: t('sold to neighbour'), value: 0},
+        {name: t('sold for industrial use'), value: 0},
+        {name: t('wastage'), value: 0},
         {name: t('Other(Specify if any)'), value: ''},
       ]);
     }
@@ -87,16 +92,25 @@ const PoultryEdit = ({navigation, route}) => {
       let amount = parseInt(totalAmount) + parseInt(others);
       let out = parseInt(output);
       if (output == '' || output == undefined) {
-        setMessage(t('Output cannot be empty') + '/' + 'Output cannot be empty');
+        setMessage(
+          t('Output cannot be empty') + '/' + 'Output cannot be empty',
+        );
         Toast.show({
           type: 'error',
           text1: t('Output cannot be empty') + '/' + 'Output cannot be empty',
         });
       } else if (amount !== out) {
-        setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
+        setMessage(
+          t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
+        );
         Toast.show({
           type: 'error',
-          text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
+          text1:
+            t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -108,7 +122,9 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[3]?.value == 0 ||
         utilisationArray[3]?.value == undefined
       ) {
-        setMessage(t('All fields are required!') + '/' + 'All fields are required!');
+        setMessage(
+          t('All fields are required!') + '/' + 'All fields are required!',
+        );
       } else {
         navigation.navigate('poultryType', {
           edit: formData,
@@ -139,16 +155,25 @@ const PoultryEdit = ({navigation, route}) => {
       let amounts = parseInt(totalAmounts) + parseInt(others);
       let outs = parseInt(output);
       if (output == '' || output == undefined) {
-        setMessage(t('Output cannot be empty') + '/' + 'Output cannot be empty');
+        setMessage(
+          t('Output cannot be empty') + '/' + 'Output cannot be empty',
+        );
         Toast.show({
           type: 'error',
           text1: t('Output cannot be empty') + '/' + 'Output cannot be empty',
         });
       } else if (amounts !== outs) {
-        setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
+        setMessage(
+          t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
+        );
         Toast.show({
           type: 'error',
-          text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
+          text1:
+            t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -162,7 +187,9 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[4]?.value == 0 ||
         utilisationArray[4]?.value == undefined
       ) {
-        setMessage(t('All fields are required!') + '/' + 'All fields are required!');
+        setMessage(
+          t('All fields are required!') + '/' + 'All fields are required!',
+        );
       } else {
         navigation.navigate('poultryType', {
           edit: formData,
@@ -209,7 +236,9 @@ const PoultryEdit = ({navigation, route}) => {
                         }
                         multiline={false}
                         notRightText={
-                          item?.name === t('Other(Specify if any)') ? true : false
+                          item?.name === t('Other(Specify if any)')
+                            ? true
+                            : false
                         }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(
@@ -238,7 +267,10 @@ const PoultryEdit = ({navigation, route}) => {
                               value={
                                 others == undefined ? others : others.toString()
                               }
-                              onChangeText={e => {setOthers(e), console.log("othersssssss", others)}}
+                              onChangeText={e => {
+                                setOthers(e),
+                                  console.log('othersssssss', others);
+                              }}
                             />
                           </View>
                         </View>
@@ -265,9 +297,7 @@ const PoultryEdit = ({navigation, route}) => {
             date={moment(harvestedDate).format('MMMM DD,YYYY')}
           />
           <Divider style={styles.divider} />
-          <Text style={styles.processing_text}>
-            {t('required processing')}
-          </Text>
+          <Text style={styles.processing_text}>{t('required processing')}</Text>
           <View style={styles.processing_container}>
             <TouchableOpacity onPress={() => setToggleCheckBox('yes')}>
               {toggleCheckBox === 'yes' ? (
@@ -282,7 +312,7 @@ const PoultryEdit = ({navigation, route}) => {
                 />
               )}
             </TouchableOpacity>
-            <Text style={styles.yes_text}>Yes</Text>
+            <Text style={styles.yes_text}>{t('yes')}</Text>
             <TouchableOpacity onPress={() => setToggleCheckBox('no')}>
               {toggleCheckBox === 'no' ? (
                 <Image
@@ -296,7 +326,7 @@ const PoultryEdit = ({navigation, route}) => {
                 />
               )}
             </TouchableOpacity>
-            <Text style={styles.yes_text}>No</Text>
+            <Text style={styles.yes_text}>{t('no')}</Text>
           </View>
         </View>
         {message && (

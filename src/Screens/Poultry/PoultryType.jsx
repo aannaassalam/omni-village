@@ -37,7 +37,7 @@ import {addPoultry, editPoultry, getPoultry} from '../../Redux/PoultrySlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import PoultryProductDescription from '../../Components/CustomDashboard/PoultryProductDescription';
 
@@ -48,7 +48,7 @@ const PoultryType = ({navigation, route}) => {
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const {measurement} = useSelector(state => state.Others);
   const {feed} = useSelector(state => state.Others);
   const [message, setMessage] = useState('');
@@ -99,13 +99,14 @@ const PoultryType = ({navigation, route}) => {
         .number()
         .required(t('avg_age_of_live_stocks is required')),
       type_of_feed: yup.string().required(t('type_of_feed is required')),
-      other_type_of_feed: yup
-        .string(),
+      other_type_of_feed: yup.string(),
     }),
     utilisation_information: yup.object().shape({
       total_feed: yup.string().required(t('total_feed is required')),
       self_produced: yup.string().required(t('self_produced is required')),
-      neighbours: yup.string().required(t('purchased_from_neighbour is required')),
+      neighbours: yup
+        .string()
+        .required(t('purchased_from_neighbour is required')),
       purchased_from_market: yup
         .string()
         .required(t('purchased_from_market is required')),
@@ -161,10 +162,10 @@ const PoultryType = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
-    console.log("erooorrrr", errors)
+    console.log('erooorrrr', errors);
   }, [errors]);
   const submit = () => {
-    console.log("i m here")
+    console.log('i m here');
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
     let self_produced = parseInt(
       watch('utilisation_information.self_produced'),
@@ -236,7 +237,7 @@ const PoultryType = ({navigation, route}) => {
                   text2: 'Poultry updated successfully!',
                 }),
               dispatch(getPoultry()),
-              navigation.navigate('successfull')
+              navigation.navigate('successfull'),
               // navigation.goBack(),
             )
             .catch(err => {
@@ -248,7 +249,7 @@ const PoultryType = ({navigation, route}) => {
               });
             })
             .finally(() => {
-              setSavepopup(false)
+              setSavepopup(false);
             });
         } else {
           dispatch(
@@ -271,8 +272,7 @@ const PoultryType = ({navigation, route}) => {
                   text2: 'Poultry added successfully!',
                 }),
               dispatch(getPoultry()),
-              navigation.navigate('successfull')
-
+              navigation.navigate('successfull'),
             )
             .catch(err => {
               console.log('err at add', err);
@@ -411,7 +411,7 @@ const PoultryType = ({navigation, route}) => {
       edit: {},
       cropId: cropId,
       data: data,
-    })
+    });
     setProductName('');
   };
   const removeList = name => {
@@ -532,9 +532,7 @@ const PoultryType = ({navigation, route}) => {
                       selectedValue={onChange}
                       value={value == 1 ? 'others' : value}
                       defaultVal={{key: value, value: value}}
-                      infoName={
-                        t('type of feed')
-                      }
+                      infoName={t('type of feed')}
                     />
                   );
                 }}
@@ -703,7 +701,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName={t("Other(Specify if any)")}
+                          productionName={t('Other(Specify if any)')}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -727,7 +725,7 @@ const PoultryType = ({navigation, route}) => {
                               productionName={
                                 watch('utilisation_information.other')
                                   ? watch('utilisation_information.other')
-                                  : 'Other Value'
+                                  : t('other value')
                               }
                               value={value}
                               multiline={false}
@@ -802,7 +800,9 @@ const PoultryType = ({navigation, route}) => {
               </Text>
             ) : null}
             <Text style={styles.processing_text}>
-              {t('any hormones/ artificial productivity enhancing mechanism applied')}
+              {t(
+                'any hormones/ artificial productivity enhancing mechanism applied',
+              )}
             </Text>
             <View style={styles.processing_container}>
               <Controller
@@ -827,7 +827,7 @@ const PoultryType = ({navigation, route}) => {
                   );
                 }}
               />
-              <Text style={styles.yes_text}>Yes</Text>
+              <Text style={styles.yes_text}>{t('yes')}</Text>
               <Controller
                 name="steroids"
                 control={control}
@@ -850,7 +850,7 @@ const PoultryType = ({navigation, route}) => {
                   );
                 }}
               />
-              <Text style={styles.yes_text}>No</Text>
+              <Text style={styles.yes_text}>{t('no')}</Text>
             </View>
             {/* harvested product section */}
             <View style={styles.subArea}>
@@ -958,6 +958,7 @@ const PoultryType = ({navigation, route}) => {
               return (
                 <Controller
                   control={control}
+                  key={indx}
                   name="important_information.avg_age_of_live_stocks"
                   render={({field}) => {
                     const {onChange, value} = field;
@@ -1000,11 +1001,11 @@ const PoultryType = ({navigation, route}) => {
               keyboardType="default"
               onChangeText={e => {
                 setProductName(e);
-                if (e.endsWith("\n")) {
+                if (e.endsWith('\n')) {
                   setProductName(e);
                   setHarvestProdAdd(!harvestProdAdd);
                   setFocus(!focus);
-                  addProduct()
+                  addProduct();
                 }
               }}
               multiline={false}
@@ -1183,7 +1184,7 @@ const makeStyles = fontScale =>
       fontSize: 14 / fontScale,
       color: '#fff',
       alignSelf: 'center',
-      paddingHorizontal:5
+      paddingHorizontal: 5,
     },
     harvested_prod_container: {
       alignSelf: 'center',

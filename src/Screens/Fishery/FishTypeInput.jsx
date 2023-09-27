@@ -32,7 +32,7 @@ import {addFishery, editFishery, getFishery} from '../../Redux/FisherySlice';
 import {Others} from '../../MockData/Mockdata';
 import {getFishFeed} from '../../Redux/OthersSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
@@ -43,7 +43,7 @@ const FishTypeInput = ({navigation, route}) => {
   const {userDetails} = useSelector(state => state.auth);
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const styles = makeStyles(fontScale);
   const [message, setMessage] = useState('');
   const [income, setIncome] = useState('');
@@ -162,7 +162,7 @@ const FishTypeInput = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
-    console.log("error", errors)
+    console.log('error', errors);
   }, [errors]);
 
   const onSubmit = data2 => {
@@ -186,8 +186,7 @@ const FishTypeInput = ({navigation, route}) => {
           });
         })
         .finally(() => {
-          setSavepopup(false), 
-          navigation.navigate('successfull')
+          setSavepopup(false), navigation.navigate('successfull');
         });
     } else {
       if (data?._id) {
@@ -214,7 +213,7 @@ const FishTypeInput = ({navigation, route}) => {
               }),
             dispatch(getFishery('pond')),
             // navigation.goBack(),
-            navigation.navigate('successfull')
+            navigation.navigate('successfull'),
           )
           .catch(err => {
             console.log('err', err);
@@ -225,7 +224,7 @@ const FishTypeInput = ({navigation, route}) => {
             });
           })
           .finally(() => {
-            setSavepopup(false)
+            setSavepopup(false);
           });
       } else {
         dispatch(
@@ -245,7 +244,7 @@ const FishTypeInput = ({navigation, route}) => {
             }),
               setSavepopup(false),
               // navigation.goBack()
-              navigation.navigate('successfull')
+              navigation.navigate('successfull');
           })
           .catch(err => {
             console.log('err at add', err);
@@ -483,9 +482,7 @@ const FishTypeInput = ({navigation, route}) => {
                       selectedValue={onChange}
                       value={value}
                       defaultVal={{key: value, value: value}}
-                      infoName={
-                        t('type of feed')
-                      }
+                      infoName={t('type of feed')}
                     />
                   );
                 }}
@@ -534,7 +531,9 @@ const FishTypeInput = ({navigation, route}) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>{t('production information')}</Text>
+            <Text style={styles.subAreaText}>
+              {t('production information')}
+            </Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -734,7 +733,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName={t("Other(Specify if any)")}
+                          productionName={t('Other(Specify if any)')}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -762,7 +761,7 @@ const FishTypeInput = ({navigation, route}) => {
                               productionName={
                                 watch('utilisation_information.other')
                                   ? watch('utilisation_information.other')
-                                  : 'Other Value'
+                                  : t('other value')
                               }
                               value={value}
                               multiline={false}
@@ -857,9 +856,7 @@ const FishTypeInput = ({navigation, route}) => {
               {errors?.utilisation_information?.yeild?.message}
             </Text>
           ) : null}
-          <Text style={styles.processing_text}>
-            {t('required processing')}
-          </Text>
+          <Text style={styles.processing_text}>{t('required processing')}</Text>
           <View style={styles.processing_container}>
             <Controller
               name="processing_method"
@@ -883,7 +880,7 @@ const FishTypeInput = ({navigation, route}) => {
                 );
               }}
             />
-            <Text style={styles.yes_text}>Yes</Text>
+            <Text style={styles.yes_text}>{t('yes')}</Text>
             <Controller
               name="processing_method"
               control={control}
@@ -906,7 +903,7 @@ const FishTypeInput = ({navigation, route}) => {
                 );
               }}
             />
-            <Text style={styles.yes_text}>No</Text>
+            <Text style={styles.yes_text}>{t('no')}</Text>
           </View>
         </View>
         {message && <Text style={styles.error}>{message}</Text>}
@@ -945,6 +942,7 @@ const FishTypeInput = ({navigation, route}) => {
                 return (
                   <Checkbox
                     name={item?.age}
+                    key={indx}
                     checked={item?.checked}
                     checking={value => toggleItem(value, indx)}
                   />

@@ -31,7 +31,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {addFishery, editFishery, getFishery} from '../../Redux/FisherySlice';
 import {Others} from '../../MockData/Mockdata';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const FisheryRiverInput = ({navigation, route}) => {
@@ -44,7 +44,7 @@ const FisheryRiverInput = ({navigation, route}) => {
   const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [message, setMessage] = useState('');
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
@@ -230,7 +230,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 }),
               dispatch(getFishery('river')),
               // navigation.goBack(),
-              navigation.navigate('successfull')
+              navigation.navigate('successfull'),
             )
             .catch(err => {
               console.log('err', err);
@@ -241,8 +241,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               });
             })
             .finally(() => {
-              setSavepopup(false), 
-                navigation.goBack()
+              setSavepopup(false), navigation.goBack();
             });
         } else {
           dispatch(
@@ -264,7 +263,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               dispatch(getFishery('river')),
               setSavepopup(false),
               // navigation.goBack(),.
-              navigation.navigate('successfull')
+              navigation.navigate('successfull'),
             )
             .catch(err => {
               console.log('err at add', err);
@@ -389,7 +388,6 @@ const FisheryRiverInput = ({navigation, route}) => {
     }
   };
 
-
   // console.log("watch import", watch('important_information'))
   // console.log("watch personal", watch('utilisation_information'))
   // console.log("watch process", watch('processing_method'))
@@ -479,9 +477,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       selectedValue={onChange}
                       value={value}
                       defaultVal={{key: value, value: value}}
-                      infoName={
-                        t('type of feed')
-                      }
+                      infoName={t('type of feed')}
                     />
                     // </TouchableOpacity>
                     // <InputWithoutBorder
@@ -539,7 +535,9 @@ const FisheryRiverInput = ({navigation, route}) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>{t('production information')}</Text>
+            <Text style={styles.subAreaText}>
+              {t('production information')}
+            </Text>
             <Divider
               bold={true}
               style={[styles.divider, {width: '45%'}]}
@@ -711,7 +709,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={watch('weight_measurement')}
-                          productionName={t("Other(Specify if any)")}
+                          productionName={t('Other(Specify if any)')}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -735,7 +733,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                               productionName={
                                 watch('utilisation_information.other')
                                   ? watch('utilisation_information.other')
-                                  : 'Other Value'
+                                  : t('other value')
                               }
                               value={value}
                               multiline={false}
@@ -811,7 +809,11 @@ const FisheryRiverInput = ({navigation, route}) => {
               const {onChange, value} = field;
               return (
                 <InputWithoutBorder
-                  measureName={watch('weight_measurement') + '/' + userDetails?.land_measurement_symbol}
+                  measureName={
+                    watch('weight_measurement') +
+                    '/' +
+                    userDetails?.land_measurement_symbol
+                  }
                   productionName={t('yields')}
                   value={value}
                   onChangeText={onChange}
@@ -826,9 +828,7 @@ const FisheryRiverInput = ({navigation, route}) => {
               {errors?.utilisation_information?.yeild?.message}
             </Text>
           ) : null}
-          <Text style={styles.processing_text}>
-            {t('required processing')}
-          </Text>
+          <Text style={styles.processing_text}>{t('required processing')}</Text>
           <View style={styles.processing_container}>
             <Controller
               name="processing_method"
@@ -852,7 +852,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 );
               }}
             />
-            <Text style={styles.yes_text}>Yes</Text>
+            <Text style={styles.yes_text}>{t('yes')}</Text>
             <Controller
               name="processing_method"
               control={control}
@@ -875,15 +875,10 @@ const FisheryRiverInput = ({navigation, route}) => {
                 );
               }}
             />
-            <Text style={styles.yes_text}>No</Text>
+            <Text style={styles.yes_text}>{t('no')}</Text>
           </View>
         </View>
-        {message && (
-          <Text
-            style={styles.error}>
-            {message}
-          </Text>
-        )}
+        {message && <Text style={styles.error}>{message}</Text>}
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
@@ -919,6 +914,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 return (
                   <Checkbox
                     name={item?.age}
+                    key={indx}
                     checked={item?.checked}
                     checking={value => toggleItem(value, indx)}
                   />

@@ -25,13 +25,13 @@ import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import {ActivityIndicator} from 'react-native-paper';
 import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const FisheryRiver = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const {screenName} = route.params;
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {fisheryCrop} = useSelector(state => state.fisheryCrop);
@@ -80,11 +80,13 @@ const FisheryRiver = ({navigation, route}) => {
         cropType: dropdownVal.name?.label,
         cropId:
           fishery[0] !== undefined &&
-            fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
-            ? fishery.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+          fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? fishery.find(
+                i => i?.fishery_crop?.name == dropdownVal.name?.label,
+              )._id
             : dropdownVal.name?.value,
         data: fishery.find(i => i?.fishery_crop_id == dropdownVal.name?.label),
-      })
+      });
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -93,15 +95,14 @@ const FisheryRiver = ({navigation, route}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({name: otherCrop?.name}))
-      .then((res)=>{
+      dispatch(addFisherycrop({name: otherCrop?.name})).then(res => {
         navigation.navigate('fisheryRiverInput', {
           cropType: res?.payload?.data?.name,
           cropId: res?.payload?.data?._id,
           data: null,
-        })
-      })
-      setFocusOther(false)
+        });
+      });
+      setFocusOther(false);
       dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
@@ -154,6 +155,8 @@ const FisheryRiver = ({navigation, route}) => {
             return (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
+                i
+                key={i}
                 onPress={
                   () =>
                     navigation.navigate('fisheryRiverInput', {

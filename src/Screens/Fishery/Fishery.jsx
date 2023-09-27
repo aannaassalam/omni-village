@@ -7,35 +7,35 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import { useFocusEffect } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { addHuntingCrops, getHuntingCrops } from '../../Redux/HuntingCropSlice';
-import { deleteHunting, getHunting } from '../../Redux/HuntingSlice';
+import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {addHuntingCrops, getHuntingCrops} from '../../Redux/HuntingCropSlice';
+import {deleteHunting, getHunting} from '../../Redux/HuntingSlice';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import { addFisherycrop, getFisheryCrops } from '../../Redux/FisheryCropSlice';
-import { deleteFishery, getFishery } from '../../Redux/FisherySlice';
-import { ActivityIndicator } from 'react-native-paper';
-import { getFeed, getFishFeed, getMeasurement } from '../../Redux/OthersSlice';
+import {addFisherycrop, getFisheryCrops} from '../../Redux/FisheryCropSlice';
+import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
+import {ActivityIndicator} from 'react-native-paper';
+import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
-const Fishery = ({ navigation, route }) => {
+const Fishery = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
-  const { screenName } = route.params;
-  const { t } = useTranslation();
-  const { fontScale } = useWindowDimensions();
+  const {screenName} = route.params;
+  const {t} = useTranslation();
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { fisheryCrop } = useSelector(state => state.fisheryCrop);
-  const { fishery } = useSelector(state => state.fishery);
+  const {fisheryCrop} = useSelector(state => state.fisheryCrop);
+  const {fishery} = useSelector(state => state.fishery);
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
@@ -80,11 +80,13 @@ const Fishery = ({ navigation, route }) => {
         cropType: dropdownVal.name?.label,
         cropId:
           fishery[0] !== undefined &&
-            fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
-            ? fishery.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+          fishery.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? fishery.find(
+                i => i?.fishery_crop?.name == dropdownVal.name?.label,
+              )._id
             : dropdownVal.name?.value,
         data: fishery.find(i => i?.fishery_crop_id == dropdownVal.name?.label),
-      })
+      });
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -93,15 +95,14 @@ const Fishery = ({ navigation, route }) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({ name: otherCrop?.name }))
-        .then((res) => {
-          navigation.navigate('fisheryRiverInput', {
-            cropType: res?.payload?.data?.name,
-            cropId: res?.payload?.data?._id,
-            data: null,
-          })
-        })
-      setFocusOther(false)
+      dispatch(addFisherycrop({name: otherCrop?.name})).then(res => {
+        navigation.navigate('fisheryRiverInput', {
+          cropType: res?.payload?.data?.name,
+          cropId: res?.payload?.data?._id,
+          data: null,
+        });
+      });
+      setFocusOther(false);
       dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
@@ -144,7 +145,7 @@ const Fishery = ({ navigation, route }) => {
         third={t('harvested from pond')}
       />
       {loading ? (
-        <View style={{ marginTop: '70%' }}>
+        <View style={{marginTop: '70%'}}>
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       ) : (
@@ -154,18 +155,19 @@ const Fishery = ({ navigation, route }) => {
             return (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
+                kdy={i}
                 onPress={
                   () =>
                     navigation.navigate('fishTypeInput', {
                       cropType: element?.name,
                       cropId:
                         fishery[0] !== undefined &&
-                          fishery.find(
-                            j => j?.fishery_crop?.name == element?.name,
-                          )
+                        fishery.find(
+                          j => j?.fishery_crop?.name == element?.name,
+                        )
                           ? fishery.find(
-                            i => i?.fishery_crop?.name == element?.name,
-                          )._id
+                              i => i?.fishery_crop?.name == element?.name,
+                            )._id
                           : element?.id,
                       data: fishery.find(
                         i => i?.fishery_crop_id == element?._id,
@@ -184,8 +186,8 @@ const Fishery = ({ navigation, route }) => {
                           j => j?.fishery_crop?.name == element?.name,
                         )
                         ? fishery.find(
-                          i => i?.fishery_crop?.name == element?.name,
-                        )._id
+                            i => i?.fishery_crop?.name == element?.name,
+                          )._id
                         : element?.id,
                       i,
                     )
@@ -229,14 +231,14 @@ const Fishery = ({ navigation, route }) => {
                   _id: fisheryCrop.find(cp => cp.name === e)?._id,
                 })
               }
-              data={[...fisheryCrop, { _id: 0, name: 'Others' }]}
+              data={[...fisheryCrop, {_id: 0, name: 'Others'}]}
               valu={dropdownVal?.name}
             />
             {dropdownVal.name?.label === 'Others' ? (
               <InputWithoutRightElement
                 label={t('fish name')}
                 placeholder={t('eg fish')}
-                onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
+                onChangeText={e => setOtherCrop({name: e, _id: 0})}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
               />
@@ -253,7 +255,7 @@ const Fishery = ({ navigation, route }) => {
             </TouchableOpacity>
             <CustomButton
               btnText={t('create')}
-              style={{ width: '80%' }}
+              style={{width: '80%'}}
               onPress={() => addingHuntingCrop()}
             />
           </View>

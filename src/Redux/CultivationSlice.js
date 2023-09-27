@@ -27,7 +27,8 @@ export const getCultivation = createAsyncThunk(
     const {cultivationType, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(
-        endpoints.cultivation.fetchCultivation);
+        endpoints.cultivation.fetchCultivation,
+      );
       console.log(res.data, cultivationType, season, 'is it this');
       return {status: res.status, data: res.data};
     } catch (err) {
@@ -48,9 +49,7 @@ export const addCultivation = createAsyncThunk(
         endpoints.cultivation.addCultivation,
         {
           ...cultivationData,
-          cultivation_type: cultivationType,
           crop_id: cropId,
-          season,
         },
       );
       return {status: res.status, data: res.data};
@@ -123,12 +122,7 @@ export const CultivationSlice = createSlice({
         state.cropId = payload;
         const cultivationString = JSON.stringify(state.cultivations);
         state.currentCrop =
-          JSON.parse(cultivationString).find(
-            c =>
-              c.crop_id === payload &&
-              c.season === state.season &&
-              c.cultivation_type === state.cultivationType,
-          ) || {};
+          JSON.parse(cultivationString).find(c => c.crop_id === payload) || {};
       })
       // Get Cultivation Slice
       .addCase(getCultivation.pending, (state, {payload}) => {

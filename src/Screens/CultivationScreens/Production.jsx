@@ -15,29 +15,30 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {getTree} from '../../Redux/TreesSlice';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {Wrap} from '@react-native-material/core';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
   const {userDetails} = useSelector(state => state.auth);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const {user} = useSelector(s => s.auth);
 
   const goToNext = name => {
     if (name === 'cultivation') {
-      if (
-        Object.values(user?.sub_area.cultivation.distribution || {}).filter(
-          d => d !== 0,
-        ).length > 0
-      ) {
-        navigation.navigate('season1', { seasonName: 'Cultivation' });
-      } else {
-        navigation.navigate('landAllocation');
-      }
+      // if (
+      //   Object.values(user?.sub_area.cultivation.distribution || {}).filter(
+      //     d => d !== 0,
+      //   ).length > 0
+      // ) {
+      navigation.navigate('season1', {seasonName: t('cultivation')});
+      // } else {
+      //   navigation.navigate('landAllocation');
+      // }
     } else if (name === 'trees') {
       navigation.navigate('treesShrubGrassland');
     } else if (name == 'poultry') {
@@ -157,11 +158,14 @@ const makeStyles = fontScale =>
     top_container_inner: {
       padding: 5,
       alignSelf: 'center',
+      flex: 1,
+      paddingLeft: 10,
     },
     land_allocated_text: {
       fontSize: 14 / fontScale,
       color: '#C1D8C7',
       fontFamily: 'ubuntu_medium',
+      flexWrap: 'wrap',
     },
     value_text: {
       fontSize: 14 / fontScale,

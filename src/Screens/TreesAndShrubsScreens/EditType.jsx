@@ -18,13 +18,13 @@ import CalendarPicker from 'react-native-calendar-picker';
 import {Divider} from 'react-native-paper';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import Toast from 'react-native-toast-message';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const EditType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
   const {fontScale} = useWindowDimensions();
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const styles = makeStyles(fontScale);
   const [message, setMessage] = useState('');
   const [harvestedPopup, setHarvestedPopup] = useState(false);
@@ -41,7 +41,9 @@ const EditType = ({navigation, route}) => {
   const [output, setOutput] = useState(0);
   const [utilisationArray, setUtilisationArray] = useState([]);
   const [others, setOthers] = useState(0);
-  let findme = utilisationArray.find(i => i?.name == t('Other(Specify if any)'));
+  let findme = utilisationArray.find(
+    i => i?.name == t('Other(Specify if any)'),
+  );
   const [savepopup, setSavepopup] = useState(false);
   const [draftpopup, setDraftpopup] = useState(false);
   useEffect(() => {
@@ -53,17 +55,20 @@ const EditType = ({navigation, route}) => {
         {name: t('self consumed'), value: edit?.self_consumed},
         {name: t('fed to livestock'), value: edit?.fed_to_livestock},
         {name: t('sold to neighbour'), value: edit?.sold_to_neighbours},
-        {name: t('sold for industrial use'), value: edit?.sold_for_industrial_use},
+        {
+          name: t('sold for industrial use'),
+          value: edit?.sold_for_industrial_use,
+        },
         {name: t('wastage'), value: edit?.wastage},
         {name: t('Other(Specify if any)'), value: edit?.other},
       ]);
     } else {
       setUtilisationArray([
-        { name: t('self consumed'), value: 0},
-        { name: t('fed to livestock'), value: 0},
-        { name: t('sold to neighbour'), value: 0},
-        { name: t('sold for industrial use'), value: 0},
-        { name: t('wastage'), value: 0},
+        {name: t('self consumed'), value: 0},
+        {name: t('fed to livestock'), value: 0},
+        {name: t('sold to neighbour'), value: 0},
+        {name: t('sold for industrial use'), value: 0},
+        {name: t('wastage'), value: 0},
         {name: t('Other(Specify if any)'), value: ''},
       ]);
     }
@@ -90,17 +95,26 @@ const EditType = ({navigation, route}) => {
       let amount = parseInt(totalAmount) + parseInt(others);
       let out = parseInt(output);
       if (output == '' || output == undefined) {
-        setMessage(t('Output cannot be empty') + '/' + 'Output cannot be empty');
+        setMessage(
+          t('Output cannot be empty') + '/' + 'Output cannot be empty',
+        );
         Toast.show({
           type: 'error',
           text1: t('Output cannot be empty') + '/' + 'Output cannot be empty',
         });
       } else {
         if (amount !== out) {
-          setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
+          setMessage(
+            t('Total amount should be equal to output') +
+              '/' +
+              'Total amount should be equal to output',
+          );
           Toast.show({
             type: 'error',
-            text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
+            text1:
+              t('Total amount should be equal to output') +
+              '/' +
+              'Total amount should be equal to output',
           });
         } else if (
           utilisationArray[0]?.value == 0 ||
@@ -118,7 +132,9 @@ const EditType = ({navigation, route}) => {
           others == undefined ||
           others == ''
         ) {
-          setMessage(t('All fields are required!') + '/' +'All fields are required!');
+          setMessage(
+            t('All fields are required!') + '/' + 'All fields are required!',
+          );
         } else {
           navigation.navigate('type', {
             edit: formData,
@@ -155,10 +171,17 @@ const EditType = ({navigation, route}) => {
           text1: t('Output cannot be empty') + '/' + 'All fields are required!',
         });
       } else if (amount !== out) {
-        setMessage(t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output');
+        setMessage(
+          t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
+        );
         Toast.show({
           type: 'error',
-          text1: t('Total amount should be equal to output') + '/' + 'Total amount should be equal to output',
+          text1:
+            t('Total amount should be equal to output') +
+            '/' +
+            'Total amount should be equal to output',
         });
       } else if (
         utilisationArray[0]?.value == 0 ||
@@ -176,7 +199,9 @@ const EditType = ({navigation, route}) => {
         others == undefined ||
         others == ''
       ) {
-        setMessage(t('All fields are required!') + '/' + 'All fields are required!');
+        setMessage(
+          t('All fields are required!') + '/' + 'All fields are required!',
+        );
       } else {
         navigation.navigate('type', {
           edit: formData,
@@ -224,7 +249,9 @@ const EditType = ({navigation, route}) => {
                         }
                         multiline={false}
                         notRightText={
-                          item?.name === t('Other(Specify if any)') ? true : false
+                          item?.name === t('Other(Specify if any)')
+                            ? true
+                            : false
                         }
                         onChangeText={e => {
                           let targetedArea = utilisationArray.findIndex(
@@ -280,9 +307,7 @@ const EditType = ({navigation, route}) => {
             date={moment(harvestedDate).format('MMMM DD,YYYY')}
           />
           <Divider style={styles.divider} />
-          <Text style={styles.processing_text}>
-            {t('required processing')}
-          </Text>
+          <Text style={styles.processing_text}>{t('required processing')}</Text>
           <View style={styles.processing_container}>
             <TouchableOpacity onPress={() => setToggleCheckBox('yes')}>
               {toggleCheckBox === 'yes' ? (
@@ -297,7 +322,7 @@ const EditType = ({navigation, route}) => {
                 />
               )}
             </TouchableOpacity>
-            <Text style={styles.yes_text}>Yes</Text>
+            <Text style={styles.yes_text}>{t('yes')}</Text>
             <TouchableOpacity onPress={() => setToggleCheckBox('no')}>
               {toggleCheckBox === 'no' ? (
                 <Image
@@ -311,7 +336,7 @@ const EditType = ({navigation, route}) => {
                 />
               )}
             </TouchableOpacity>
-            <Text style={styles.yes_text}>No</Text>
+            <Text style={styles.yes_text}>{t('no')}</Text>
           </View>
         </View>
         {message && <Text style={styles.error}>{message}</Text>}

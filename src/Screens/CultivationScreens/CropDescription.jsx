@@ -33,15 +33,15 @@ import {
   getCurrentCrop,
 } from '../../Redux/CultivationSlice';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
-  const { userDetails } = useSelector(state => state.auth);
+  const {userDetails} = useSelector(state => state.auth);
   const styles = makeStyles(fontScale);
   const {cropName} = route.params;
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [area, setArea] = useState('');
   const [utilisation, setUtilisation] = useState(true);
   const [impInfo, setImpInfo] = useState(true);
@@ -54,19 +54,24 @@ const CropDescription = ({navigation, route}) => {
   const [globalError, setGlobalError] = useState('');
 
   const dispatch = useDispatch();
-  const soilHealth = [{ key: 'stable', name: t('stable') }, { key: 'decreasing yield', name: t('decreasing yield') }];
-   const fertilisers = [
-    { key: 'organic self made', name: t('organic self made') },
-    { key: 'organic purchased', name: t('organic purchased') },
-    { key: 'chemical based', name: t('chemical based') },
-    { key: 'none', name: t('none') }
+
+  const soilHealth = [
+    {key: 'stable', name: t('stable')},
+    {key: 'decreasing yield', name: t('decreasing yield')},
   ];
-   const pesticides = [
-     { key: 'organic self made', name: t('organic self made') },
-     { key: 'organic purchased', name: t('organic purchased') },
-     { key: 'chemical based', name: t('chemical based') },
-     { key: 'none', name: t('none') }
+  const fertilisers = [
+    {key: 'organic self made', name: t('organic self made')},
+    {key: 'organic purchased', name: t('organic purchased')},
+    {key: 'chemical based', name: t('chemical based')},
+    {key: 'none', name: t('none')},
   ];
+  const pesticides = [
+    {key: 'organic self made', name: t('organic self made')},
+    {key: 'organic purchased', name: t('organic purchased')},
+    {key: 'chemical based', name: t('chemical based')},
+    {key: 'none', name: t('none')},
+  ];
+
   const {currentCrop} = useSelector(s => s.cultivation);
 
   const schema = yup.object().shape({
@@ -176,8 +181,8 @@ const CropDescription = ({navigation, route}) => {
     setValue(
       'important_information.yeild',
       String(
-        parseInt(getValues('output'), 10) /
-          parseInt(getValues('area_allocated'), 10) || '0',
+        parseFloat(watch('output')) / parseFloat(watch('area_allocated')) ||
+          '0',
       ),
     );
   }, [watch('area_allocated'), watch('output')]);
@@ -186,9 +191,8 @@ const CropDescription = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
-    console.log("errorrrrrr", currentCrop)
+    console.log('errorrrrrr', currentCrop);
   }, [errors]);
-
 
   const onSubmit = data => {
     const output = parseInt(data.output) || 0;
@@ -260,16 +264,15 @@ const CropDescription = ({navigation, route}) => {
           }),
         )
           .unwrap()
-          .then(
-            (res) =>
-              {Toast.show({
-                text1: 'Success',
-                text2: 'Cultivation added successfully!',
-              }),
-            // navigation.goBack(),
-            navigation.navigate('successfull')
-            console.log("response", res)}
-          )
+          .then(res => {
+            Toast.show({
+              text1: 'Success',
+              text2: 'Cultivation added successfully!',
+            }),
+              // navigation.goBack(),
+              navigation.navigate('successfull');
+            console.log('response', res);
+          })
           .catch(err => {
             console.log('err', err);
             Toast.show({
@@ -355,7 +358,7 @@ const CropDescription = ({navigation, route}) => {
         .finally(() => setSavepopup(false));
     }
   };
-console.log("watch", watch('important_information'))
+
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -375,6 +378,7 @@ console.log("watch", watch('important_information'))
                   label={t('area allocated')}
                   value={value}
                   onChangeText={onChange}
+                  keyboardType="number-pad"
                 />
               );
             }}
@@ -405,7 +409,7 @@ console.log("watch", watch('important_information'))
         </View>
         {/* utilisation section */}
         <View style={styles.subArea}>
-          <Text style={styles.subAreaText}>{('utilisation')}</Text>
+          <Text style={styles.subAreaText}>{t('utilisation')}</Text>
           <Divider bold={true} style={styles.divider} horizontalInset={true} />
           <TouchableOpacity onPress={() => setUtilisation(!utilisation)}>
             {utilisation ? (
@@ -437,7 +441,7 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("self consumed")}
+                        productionName={t('self consumed')}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -459,7 +463,7 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("fed to livestock")}
+                        productionName={t('fed to livestock')}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -481,7 +485,7 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("sold to neighbour")}
+                        productionName={t('sold to neighbour')}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -503,7 +507,7 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("sold for industrial use")}
+                        productionName={t('sold for industrial use')}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -525,7 +529,7 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("wastage")}
+                        productionName={t('wastage')}
                         value={value}
                         multiline={false}
                         notRightText={false}
@@ -547,11 +551,12 @@ console.log("watch", watch('important_information'))
                     return (
                       <InputWithoutBorder
                         measureName={'kg'}
-                        productionName={t("Other(Specify if any)")}
+                        productionName={t('Other(Specify if any)')}
                         value={value}
                         multiline={false}
                         notRightText={true}
                         onChangeText={onChange}
+                        keyboardType="default"
                       />
                     );
                   }}
@@ -570,7 +575,7 @@ console.log("watch", watch('important_information'))
                             productionName={
                               watch('utilization.other')
                                 ? watch('utilization.other')
-                                : 'Other Value'
+                                : t('other value')
                             }
                             value={value}
                             multiline={false}
@@ -640,7 +645,7 @@ console.log("watch", watch('important_information'))
                   <CustomDropdown3
                     data={soilHealth}
                     value={value}
-                    defaultVal={{ key: value, value: t(value) }}
+                    defaultVal={{key: value, value: t(value)}}
                     selectedValue={onChange}
                     infoName={t('soil health')}
                   />
@@ -690,7 +695,7 @@ console.log("watch", watch('important_information'))
                     data={fertilisers}
                     selectedValue={onChange}
                     value={value}
-                    defaultVal={{ key: value, value: t(value) }}
+                    defaultVal={{key: value, value: t(value)}}
                     infoName={t('type of fertilizer')}
                   />
                 );
@@ -714,7 +719,7 @@ console.log("watch", watch('important_information'))
                     data={pesticides}
                     selectedValue={onChange}
                     value={value}
-                    defaultVal={{ key: value, value: t(value) }}
+                    defaultVal={{key: value, value: t(value)}}
                     infoName={t('type of pesticides')}
                   />
                 );
@@ -800,11 +805,14 @@ console.log("watch", watch('important_information'))
                 const {value} = field;
                 return (
                   <InputWithoutBorder
-                    measureName={'acres'}
+                    measureName={`${
+                      userDetails.land_measurement_symbol
+                        ? userDetails.land_measurement_symbol
+                        : userDetails.land_measurement
+                    } / kg`}
                     productionName={t('yields')}
                     value={value}
                     editable={false}
-                    
                   />
                 );
               }}
@@ -817,7 +825,7 @@ console.log("watch", watch('important_information'))
                 'MMMM DD,YYYY',
               )}
             />
-            
+
             <InputLikeButton
               text={t('month harvested')}
               rightIcon={true}
@@ -927,6 +935,7 @@ console.log("watch", watch('important_information'))
               btnText={t('cancel')}
               onPress={() => {
                 setStatus(-1);
+                setSavepopup(false);
               }}
             />
           </View>

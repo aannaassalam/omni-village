@@ -3,7 +3,13 @@ import React from 'react';
 import {TextInput} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 
-const CustomInputField = ({label, value, onChangeText, placeholder}) => {
+const CustomInputField = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType = 'default',
+}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
@@ -41,6 +47,7 @@ const CustomInputField = ({label, value, onChangeText, placeholder}) => {
               textStyle={{color: '#000', fontFamily: 'ubuntu_medium'}}
             />
           }
+          keyboardType={keyboardType}
         />
       </View>
     </View>

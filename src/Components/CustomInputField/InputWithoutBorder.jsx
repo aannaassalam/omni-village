@@ -30,7 +30,11 @@ const InputWithoutBorder = ({
   return (
     <View>
       <View style={[styles.textInputContainer]}>
-        <View style={[styles.textInputInner, { backgroundColor: editable == false ? '#cacaca':'#fff',}]}>
+        <View
+          style={[
+            styles.textInputInner,
+            {backgroundColor: editable == false ? '#cacaca' : '#fff'},
+          ]}>
           <View
             style={[
               styles.textInputAcres,
@@ -102,7 +106,8 @@ const makeStyles = fontScale =>
       borderRadius: 10,
     },
     textInput: {
-      width: '75%',
+      // width: '75%',
+      flex: 0.75,
       margin: -10,
       padding: 5,
     },

@@ -20,14 +20,14 @@ import {deleteFishery, getFishery} from '../../Redux/FisherySlice';
 import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {getHuntingCrops} from '../../Redux/HuntingCropSlice';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const SubArea = ({navigation, route}) => {
   const {totalLand, screenName, type, cropId, data} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const {fisheryCrop} = useSelector(state => state.fisheryCrop);
   const {fishery} = useSelector(state => state.fishery);
   const [cropType, setCropType] = useState([]);
@@ -36,7 +36,7 @@ const SubArea = ({navigation, route}) => {
   const [otherCrop, setOtherCrop] = useState({});
   const [focusOther, setFocusOther] = useState(false);
   const dispatch = useDispatch();
-  const handleRemoveClick = (id,index )=> {
+  const handleRemoveClick = (id, index) => {
     const list = [...cropType];
     list.splice(index, 1);
     setCropType(list);
@@ -46,7 +46,6 @@ const SubArea = ({navigation, route}) => {
         console.log(`delted hunting ${id}`, res);
       })
       .catch(err => console.log('error delete hunting', err));
-
   };
   const addCrop = () => {
     let ids = cropType.map(i => i?.fishery_crop?._id || i?._id);
@@ -70,33 +69,38 @@ const SubArea = ({navigation, route}) => {
           progress: '',
         },
       ]);
-      console.log("fishery",
+      console.log(
+        'fishery',
         dropdownVal.name?.label,
         dropdownVal?.name?.value,
         data,
-      // {
-      //   type: type,
-      //     screenName: screenName,
-      //     cropType: 'hey',
-      //     cropId:
-      //       data[0] !== undefined &&
-      //         data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
-      //         ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
-      //         : dropdownVal.name?.value,
-      //     data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
-      // }
-      )
+        // {
+        //   type: type,
+        //     screenName: screenName,
+        //     cropType: 'hey',
+        //     cropId:
+        //       data[0] !== undefined &&
+        //         data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+        //         ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+        //         : dropdownVal.name?.value,
+        //     data: data.find(i => i?.fishery_crop == dropdownVal.name?.label),
+        // }
+      );
       navigation.navigate('fishTypeInput', {
         type: type,
         screenName: screenName,
         cropType: dropdownVal.name?.label,
         cropId:
-           data!== null &&
-            data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
-            ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)._id
+          data !== null &&
+          data.find(j => j?.fishery_crop?.name == dropdownVal.name?.label)
+            ? data.find(i => i?.fishery_crop?.name == dropdownVal.name?.label)
+                ._id
             : dropdownVal.name?.value,
-        data: data !== null && data.find(i => i?.fishery_crop == dropdownVal.name?.label)|| null,
-      })
+        data:
+          (data !== null &&
+            data.find(i => i?.fishery_crop == dropdownVal.name?.label)) ||
+          null,
+      });
       setCropModal(!cropModal);
       setFocusOther(false);
       setDropdownVal('');
@@ -105,18 +109,15 @@ const SubArea = ({navigation, route}) => {
   };
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      dispatch(addFisherycrop({name: otherCrop?.name}))
-      .then((res) => {
-        navigation.navigate('fishTypeInput',
-          {
-            type: type,
-            screenName: screenName,
-            cropType: res?.payload?.data?.name,
-            cropId: res?.payload?.data?._id,
-            data: null,
-          }
-        )
-      })
+      dispatch(addFisherycrop({name: otherCrop?.name})).then(res => {
+        navigation.navigate('fishTypeInput', {
+          type: type,
+          screenName: screenName,
+          cropType: res?.payload?.data?.name,
+          cropId: res?.payload?.data?._id,
+          data: null,
+        });
+      });
       dispatch(getFisheryCrops());
       setDropdownVal([]);
       setOtherCrop('');
@@ -158,23 +159,22 @@ const SubArea = ({navigation, route}) => {
             return (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
+                key={i}
                 onPress={() => {
-                  console.log("id",
-                  {
+                  console.log('id', {
                     cropType: element?.name,
                     type: type,
                     screenName: screenName,
                     cropId: element?._id,
                     data: data
                       ? data.find(
-                        i =>
-                          i?.fishery_crop?.name == element?.name ||
-                          i?.fishery_crop?.name ==
-                          element?.fishery_crop?.name,
-                      )
+                          i =>
+                            i?.fishery_crop?.name == element?.name ||
+                            i?.fishery_crop?.name ==
+                              element?.fishery_crop?.name,
+                        )
                       : null,
-                  }
-                  )
+                  });
                   navigation.navigate('fishTypeInput', {
                     cropType: element?.name,
                     type: type,
@@ -197,16 +197,9 @@ const SubArea = ({navigation, route}) => {
                       ? element?.fishery_crop?.name || element?.name
                       : element?.name
                   }
-                  onPress={() => 
-                    {
-                      handleRemoveClick(
-                      data?
-                    element?._id
-                      : element?.id,
-                    i,
-                  )
-                }
-                }
+                  onPress={() => {
+                    handleRemoveClick(data ? element?._id : element?.id, i);
+                  }}
                 />
               </TouchableOpacity>
             );

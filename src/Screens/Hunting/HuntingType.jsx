@@ -8,9 +8,9 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
-import { Divider } from 'react-native-paper';
+import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import ProductDescription from '../../Components/CustomDashboard/ProductDescription';
 import Checkbox from '../../Components/Checkboxes/Checkbox';
@@ -21,62 +21,65 @@ import PopupModal from '../../Components/Popups/PopupModal';
 import ImportantInformationHunting from '../../Components/Accordion/ImportantInformationHunting';
 import ProductionInformation from '../../Components/Accordion/ProductionInformation';
 import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion';
-import { validation } from '../../Validation/Validation';
+import {validation} from '../../Validation/Validation';
 import Toast from 'react-native-toast-message';
-import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {Controller, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { addHunting, editHunting, getHunting } from '../../Redux/HuntingSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import {addHunting, editHunting, getHunting} from '../../Redux/HuntingSlice';
+import {useDispatch, useSelector} from 'react-redux';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
-const HuntingType = ({ navigation, route }) => {
-  const { cropType, data, cropId } = route.params;
-  const { t } = useTranslation();
+const HuntingType = ({navigation, route}) => {
+  const {cropType, data, cropId} = route.params;
+  const {t} = useTranslation();
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
-  const [productionInfo, setProductionInfo] = useState(true)
-  const { fontScale } = useWindowDimensions();
-  const { measurement } = useSelector((state) => state.Others)
-  const [weight, setWeight] = useState('')
-  const { userDetails } = useSelector(state => state.auth);
+  const [productionInfo, setProductionInfo] = useState(true);
+  const {fontScale} = useWindowDimensions();
+  const {measurement} = useSelector(state => state.Others);
+  const [weight, setWeight] = useState('');
+  const {userDetails} = useSelector(state => state.auth);
   const styles = makeStyles(fontScale);
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
-  const [treeAge, setTreeAge] = useState(false)
-  const [harvestProdAdd, setHarvestProdAdd] = useState(false)
-  const [focus, setFocus] = useState(false)
+  const [treeAge, setTreeAge] = useState(false);
+  const [harvestProdAdd, setHarvestProdAdd] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [savepopup, setSavepopup] = useState(false);
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
   const [draftpopup, setDraftpopup] = useState(false);
-  const [productName, setProductName] = useState('')
-  const [yields, setYields] = useState('')
-  const dispatch = useDispatch()
+  const [productName, setProductName] = useState('');
+  const [yields, setYields] = useState('');
+  const dispatch = useDispatch();
   const [others, setOthers] = useState('');
-  const [toggleCheckBox, setToggleCheckBox] = useState('')
+  const [toggleCheckBox, setToggleCheckBox] = useState('');
   const addProduct = () => {
-    setHarvestedProductList([...harvestedProductList, { productName: productName }])
-    setProductName('')
-  }
+    setHarvestedProductList([
+      ...harvestedProductList,
+      {productName: productName},
+    ]);
+    setProductName('');
+  };
   const toggleItem = (value, index) => {
     const newValue = averageAge.map((checkbox, i) => {
       if (i !== index)
         return {
           ...checkbox,
           checked: false,
-        }
+        };
       if (i === index) {
         const item = {
           ...checkbox,
           checked: !checkbox.checked,
-        }
-        return item
+        };
+        return item;
       }
-      return checkbox
-    })
-    setAverageAge(newValue)
-  }
+      return checkbox;
+    });
+    setAverageAge(newValue);
+  };
   const schema = yup.object().shape({
     important_information: yup.object().shape({
       number_hunted: yup.string().required(t('number_hunted is required')),
@@ -84,18 +87,27 @@ const HuntingType = ({ navigation, route }) => {
     utilisation_information: yup.object().shape({
       meat: yup.string().required(t('meat is required')),
       self_consumed: yup.string().required(t('self_consumed is required')),
-      sold_to_neighbours: yup.string().required(t('sold_to_neighbours is required')),
-      sold_in_consumer_market: yup.string().required(t('sold_in_consumer_market is required')),
+      sold_to_neighbours: yup
+        .string()
+        .required(t('sold_to_neighbours is required')),
+      sold_in_consumer_market: yup
+        .string()
+        .required(t('sold_in_consumer_market is required')),
       wastage: yup.string().required(t('wastage is required')),
       other: yup.string(),
       other_value: yup.string(),
     }),
     income_from_sale: yup.string().required(t('income_from_sale is required')),
-    expenditure_on_inputs: yup.string().required(t('expenditure_on_inputs is required')),
+    expenditure_on_inputs: yup
+      .string()
+      .required(t('expenditure_on_inputs is required')),
     yeild: yup.string(),
-    processing_method: yup.string().required(t('processing_method is required')),
-    weight_measurement: yup.string().required(t('weight_measurement is required')),
-
+    processing_method: yup
+      .string()
+      .required(t('processing_method is required')),
+    weight_measurement: yup
+      .string()
+      .required(t('weight_measurement is required')),
   });
   // console.log("cropid", userDetails?.currency)
   const {
@@ -104,25 +116,25 @@ const HuntingType = ({ navigation, route }) => {
     getValues,
     watch,
     control,
-    formState: { errors },
+    formState: {errors},
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       important_information: {
-        number_hunted: String(data?.number_hunted || ""),
+        number_hunted: String(data?.number_hunted || ''),
       },
       utilisation_information: {
-        meat: String(data?.meat || ""),
-        self_consumed: String(data?.self_consumed || ""),
-        sold_in_consumer_market: String(data?.sold_in_consumer_market || ""),
-        sold_to_neighbours: String(data?.sold_to_neighbours || ""),
-        wastage: String(data?.wastage || ""),
+        meat: String(data?.meat || ''),
+        self_consumed: String(data?.self_consumed || ''),
+        sold_in_consumer_market: String(data?.sold_in_consumer_market || ''),
+        sold_to_neighbours: String(data?.sold_to_neighbours || ''),
+        wastage: String(data?.wastage || ''),
         other: String(data?.other || ''),
-        other_value: String(data?.other_value || "")
+        other_value: String(data?.other_value || ''),
       },
-      expenditure_on_inputs: String(data?.expenditure_on_inputs || ""),
-      income_from_sale: String(data?.income_from_sale || ""), // TODO: add validation for this field
-      yeild: String(data?.yeild || ""),
+      expenditure_on_inputs: String(data?.expenditure_on_inputs || ''),
+      income_from_sale: String(data?.income_from_sale || ''), // TODO: add validation for this field
+      yeild: String(data?.yeild || ''),
       weight_measurement: String(data?.weight_measurement || 'kilogram'),
       processing_method: Boolean(data?.processing_method || false),
     },
@@ -132,10 +144,13 @@ const HuntingType = ({ navigation, route }) => {
       'yeild',
       String(
         parseInt(getValues('utilisation_information.meat'), 10) /
-        parseInt(getValues('important_information.number_hunted'), 10) || '0',
+          parseInt(getValues('important_information.number_hunted'), 10) || '0',
       ),
     );
-  }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
+  }, [
+    watch('important_information.number_hunted'),
+    watch('utilisation_information.meat'),
+  ]);
 
   const onSubmit = data2 => {
     // console.log("here")
@@ -163,10 +178,10 @@ const HuntingType = ({ navigation, route }) => {
     } else {
       if (
         self_consumed +
-        sold_in_consumer_market +
-        sold_to_neighbours +
-        wastage +
-        other_value >
+          sold_in_consumer_market +
+          sold_to_neighbours +
+          wastage +
+          other_value >
         meat
       ) {
         setMessage('Total amount cannot be greater than output');
@@ -179,14 +194,14 @@ const HuntingType = ({ navigation, route }) => {
         if (data?._id) {
           dispatch(
             editHunting({
-                number_hunted: watch('important_information.number_hunted'),
+              number_hunted: watch('important_information.number_hunted'),
               utilisation_information: watch('utilisation_information'),
               income_from_sale: watch('income_from_sale'),
               expenditure_on_inputs: watch('expenditure_on_inputs'),
               yeild: watch('yeild'),
               weight_measurement: watch('weight_measurement')
-              ? watch('weight_measurement')
-              : 'kg',
+                ? watch('weight_measurement')
+                : 'kg',
               processing_method: watch('processing_method'),
               status: 1,
               crop_id: cropId,
@@ -200,7 +215,7 @@ const HuntingType = ({ navigation, route }) => {
                   text2: 'Trees updated successfully!',
                 }),
               dispatch(getHunting()),
-              navigation.navigate('successfull')
+              navigation.navigate('successfull'),
             )
             .catch(err => {
               console.log('err', err);
@@ -235,7 +250,7 @@ const HuntingType = ({ navigation, route }) => {
                   text2: 'Trees added successfully!',
                 }),
               dispatch(getHunting()),
-              navigation.navigate('successfull')
+              navigation.navigate('successfull'),
             )
             .catch(err => {
               console.log('err at add', err);
@@ -257,7 +272,7 @@ const HuntingType = ({ navigation, route }) => {
       setSavepopup(false);
     }
   }, [errors]);
-  const handleDraft = (data2) => {
+  const handleDraft = data2 => {
     let meat = parseInt(watch('utilisation_information.meat'));
     let self_consumed = parseInt(
       watch('utilisation_information.self_consumed'),
@@ -272,10 +287,10 @@ const HuntingType = ({ navigation, route }) => {
     let other_value = parseInt(watch('utilisation_information.other_value'));
     if (
       self_consumed +
-      sold_in_consumer_market +
-      sold_to_neighbours +
-      wastage +
-      other_value >
+        sold_in_consumer_market +
+        sold_to_neighbours +
+        wastage +
+        other_value >
       meat
     ) {
       setMessage('Total amount cannot be greater than total output');
@@ -372,7 +387,7 @@ const HuntingType = ({ navigation, route }) => {
             <Text style={styles.subAreaText}>{t('important information')}</Text>
             <Divider
               bold={true}
-              style={[styles.divider, { width: '45%' }]}
+              style={[styles.divider, {width: '45%'}]}
               horizontalInset={true}
             />
             <TouchableOpacity onPress={() => setImpInfo(!impInfo)}>
@@ -394,8 +409,8 @@ const HuntingType = ({ navigation, route }) => {
               <Controller
                 control={control}
                 name="important_information.number_hunted"
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <InputWithoutBorder
                       measureName={'kg'}
@@ -415,13 +430,13 @@ const HuntingType = ({ navigation, route }) => {
               <Controller
                 control={control}
                 name="weight_measurement"
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <CustomDropdown3
                       data={measurement}
                       value={value}
-                      defaultVal={{ key: value, value: value }}
+                      defaultVal={{key: value, value: value}}
                       selectedValue={onChange}
                       infoName={t('weight measurement')}
                     />
@@ -432,10 +447,12 @@ const HuntingType = ({ navigation, route }) => {
           ) : null}
           {/* production information */}
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>{t('production information')}</Text>
+            <Text style={styles.subAreaText}>
+              {t('production information')}
+            </Text>
             <Divider
               bold={true}
-              style={[styles.divider, { width: '45%' }]}
+              style={[styles.divider, {width: '45%'}]}
               horizontalInset={true}
             />
             <TouchableOpacity
@@ -458,8 +475,8 @@ const HuntingType = ({ navigation, route }) => {
               <Controller
                 control={control}
                 name="utilisation_information.meat"
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <InputWithoutBorder
                       measureName={
@@ -481,12 +498,12 @@ const HuntingType = ({ navigation, route }) => {
               ) : null}
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
-                <View style={{ width: '100%' }}>
+                <View style={{width: '100%'}}>
                   <Controller
                     control={control}
                     name="utilisation_information.self_consumed"
-                    render={({ field }) => {
-                      const { onChange, value } = field;
+                    render={({field}) => {
+                      const {onChange, value} = field;
                       return (
                         <InputWithoutBorder
                           measureName={
@@ -509,8 +526,8 @@ const HuntingType = ({ navigation, route }) => {
                   <Controller
                     name="utilisation_information.sold_to_neighbours"
                     control={control}
-                    render={({ field }) => {
-                      const { onChange, value } = field;
+                    render={({field}) => {
+                      const {onChange, value} = field;
                       return (
                         <InputWithoutBorder
                           measureName={
@@ -539,8 +556,8 @@ const HuntingType = ({ navigation, route }) => {
                   <Controller
                     name="utilisation_information.sold_in_consumer_market"
                     control={control}
-                    render={({ field }) => {
-                      const { onChange, value } = field;
+                    render={({field}) => {
+                      const {onChange, value} = field;
                       return (
                         <InputWithoutBorder
                           measureName={
@@ -569,8 +586,8 @@ const HuntingType = ({ navigation, route }) => {
                   <Controller
                     name="utilisation_information.wastage"
                     control={control}
-                    render={({ field }) => {
-                      const { onChange, value } = field;
+                    render={({field}) => {
+                      const {onChange, value} = field;
                       return (
                         <InputWithoutBorder
                           measureName={
@@ -595,8 +612,8 @@ const HuntingType = ({ navigation, route }) => {
                   <Controller
                     name="utilisation_information.other"
                     control={control}
-                    render={({ field }) => {
-                      const { onChange, value } = field;
+                    render={({field}) => {
+                      const {onChange, value} = field;
                       return (
                         <InputWithoutBorder
                           measureName={
@@ -604,7 +621,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName={t("Other(Specify if any)")}
+                          productionName={t('Other(Specify if any)')}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -616,12 +633,12 @@ const HuntingType = ({ navigation, route }) => {
                   />
                   <View style={styles.innerInputView}>
                     <Divider style={styles.divider2} />
-                    <View style={{ width: '100%' }}>
+                    <View style={{width: '100%'}}>
                       <Controller
                         name="utilisation_information.other_value"
                         control={control}
-                        render={({ field }) => {
-                          const { onChange, value } = field;
+                        render={({field}) => {
+                          const {onChange, value} = field;
                           return (
                             <InputWithoutBorder
                               measureName={
@@ -632,7 +649,7 @@ const HuntingType = ({ navigation, route }) => {
                               productionName={
                                 watch('utilisation_information.other')
                                   ? watch('utilisation_information.other')
-                                  : 'Other Value'
+                                  : t('other value')
                               }
                               value={value}
                               multiline={false}
@@ -646,9 +663,10 @@ const HuntingType = ({ navigation, route }) => {
                           );
                         }}
                       />
-                      {watch('utilisation_information.other').length > 0 &&
+                      {watch('utilisation_information.other').length > 0 && (
                         <>
-                          {errors?.utilisation_information?.other_value?.message ? (
+                          {errors?.utilisation_information?.other_value
+                            ?.message ? (
                             <Text style={styles.error}>
                               {
                                 errors?.utilisation_information?.other_value
@@ -657,19 +675,19 @@ const HuntingType = ({ navigation, route }) => {
                             </Text>
                           ) : null}
                         </>
-                      }
+                      )}
                     </View>
                   </View>
                 </View>
               </View>
             </View>
           ) : null}
-          <View style={{ width: '95%', alignSelf: 'center' }}>
+          <View style={{width: '95%', alignSelf: 'center'}}>
             <Controller
               name="income_from_sale"
               control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
+              render={({field}) => {
+                const {onChange, value} = field;
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
@@ -688,8 +706,8 @@ const HuntingType = ({ navigation, route }) => {
             <Controller
               name="expenditure_on_inputs"
               control={control}
-              render={({ field }) => {
-                const { onChange, value } = field;
+              render={({field}) => {
+                const {onChange, value} = field;
                 return (
                   <InputWithoutBorder
                     measureName={userDetails?.currency}
@@ -732,57 +750,52 @@ const HuntingType = ({ navigation, route }) => {
               <Controller
                 name="processing_method"
                 control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <TouchableOpacity onPress={() => onChange(true)}>
                       {value === true ? (
                         <Image
                           source={require('../../../assets/checked.png')}
-                          style={{ height: 30, width: 30 }}
+                          style={{height: 30, width: 30}}
                         />
                       ) : (
                         <Image
                           source={require('../../../assets/unchecked.png')}
-                          style={{ height: 30, width: 30 }}
+                          style={{height: 30, width: 30}}
                         />
                       )}
                     </TouchableOpacity>
                   );
                 }}
               />
-              <Text style={styles.yes_text}>Yes</Text>
+              <Text style={styles.yes_text}>{t('yes')}</Text>
               <Controller
                 name="processing_method"
                 control={control}
-                render={({ field }) => {
-                  const { onChange, value } = field;
+                render={({field}) => {
+                  const {onChange, value} = field;
                   return (
                     <TouchableOpacity onPress={() => onChange(false)}>
                       {value === false ? (
                         <Image
                           source={require('../../../assets/checked.png')}
-                          style={{ height: 30, width: 30 }}
+                          style={{height: 30, width: 30}}
                         />
                       ) : (
                         <Image
                           source={require('../../../assets/unchecked.png')}
-                          style={{ height: 30, width: 30 }}
+                          style={{height: 30, width: 30}}
                         />
                       )}
                     </TouchableOpacity>
                   );
                 }}
               />
-              <Text style={styles.yes_text}>No</Text>
+              <Text style={styles.yes_text}>{t('no')}</Text>
             </View>
           </View>
-          {message && (
-            <Text
-              style={styles.error}>
-              {message}
-            </Text>
-          )}
+          {message && <Text style={styles.error}>{message}</Text>}
           <View style={styles.bottomPopupbutton}>
             <CustomButton
               style={styles.submitButton}
@@ -804,7 +817,7 @@ const HuntingType = ({ navigation, route }) => {
         <PopupModal
           modalVisible={savepopup}
           setBottomModalVisible={setSavepopup}
-          styleInner={[styles.savePopup, { width: '90%' }]}>
+          styleInner={[styles.savePopup, {width: '90%'}]}>
           <View style={styles.submitPopup}>
             <View style={styles.noteImage}>
               <Image
@@ -836,7 +849,7 @@ const HuntingType = ({ navigation, route }) => {
         <PopupModal
           modalVisible={draftpopup}
           setBottomModalVisible={setDraftpopup}
-          styleInner={[styles.savePopup, { width: '90%' }]}>
+          styleInner={[styles.savePopup, {width: '90%'}]}>
           <View style={styles.submitPopup}>
             <View style={styles.noteImage}>
               <Image

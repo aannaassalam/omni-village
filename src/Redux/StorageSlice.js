@@ -13,7 +13,7 @@ export const getStorage = createAsyncThunk(
   async (_, {getState, rejectWithValue}) => {
     try {
       const res = await axiosInstance.get(endpoints.storage.fetch_storage);
-      // console.log(res.data, 'ftech storage');
+      console.log(res.data, 'ftech storage');
       return {status: res.status, data: res.data};
     } catch (err) {
       rejectWithValue({
