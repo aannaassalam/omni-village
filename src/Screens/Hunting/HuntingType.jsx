@@ -79,22 +79,22 @@ const HuntingType = ({ navigation, route }) => {
   }
   const schema = yup.object().shape({
     important_information: yup.object().shape({
-      number_hunted: yup.string().required(validation.error.number_hunted),
+      number_hunted: yup.string().required(t('number_hunted is required')),
     }),
     utilisation_information: yup.object().shape({
-      meat: yup.string().required(validation.error.meat),
-      self_consumed: yup.string().required(validation.error.self_consumed),
-      sold_to_neighbours: yup.string().required(validation.error.sold_to_neighbours),
-      sold_in_consumer_market: yup.string().required(validation.error.sold_for_industrial_use),
-      wastage: yup.string().required(validation.error.wastage),
+      meat: yup.string().required(t('meat is required')),
+      self_consumed: yup.string().required(t('self_consumed is required')),
+      sold_to_neighbours: yup.string().required(t('sold_to_neighbours is required')),
+      sold_in_consumer_market: yup.string().required(t('sold_in_consumer_market is required')),
+      wastage: yup.string().required(t('wastage is required')),
       other: yup.string(),
       other_value: yup.string(),
     }),
-    income_from_sale: yup.string().required(validation.error.income_from_sale),
-    expenditure_on_inputs: yup.string().required(validation.error.expenditure_on_inputs),
-    yeild: yup.string().required(validation.error.yeild),
-    processing_method: yup.string().required(validation.error.processing_method),
-    weight_measurement: yup.string().required(validation.error.weight_measurement),
+    income_from_sale: yup.string().required(t('income_from_sale is required')),
+    expenditure_on_inputs: yup.string().required(t('expenditure_on_inputs is required')),
+    yeild: yup.string(),
+    processing_method: yup.string().required(t('processing_method is required')),
+    weight_measurement: yup.string().required(t('weight_measurement is required')),
 
   });
   // console.log("cropid", userDetails?.currency)
@@ -138,7 +138,7 @@ const HuntingType = ({ navigation, route }) => {
   }, [watch('important_information.number_hunted'), watch('utilisation_information.meat')]);
 
   const onSubmit = data2 => {
-    console.log("here")
+    // console.log("here")
     let meat = parseInt(data2.utilisation_information.meat);
     let self_consumed = parseInt(data2.utilisation_information.self_consumed);
     let sold_to_neighbours = parseInt(
@@ -200,7 +200,7 @@ const HuntingType = ({ navigation, route }) => {
                   text2: 'Trees updated successfully!',
                 }),
               dispatch(getHunting()),
-              navigation.goBack(),
+              navigation.navigate('successfull')
             )
             .catch(err => {
               console.log('err', err);
@@ -235,7 +235,7 @@ const HuntingType = ({ navigation, route }) => {
                   text2: 'Trees added successfully!',
                 }),
               dispatch(getHunting()),
-              navigation.goBack(),
+              navigation.navigate('successfull')
             )
             .catch(err => {
               console.log('err at add', err);
@@ -252,7 +252,11 @@ const HuntingType = ({ navigation, route }) => {
   };
   // console.log("data", watch('weight_measurement'))
   // console.log("watch and check", watch('utilisation_information'), watch('important_information'), watch('processing_method'))
-
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      setSavepopup(false);
+    }
+  }, [errors]);
   const handleDraft = (data2) => {
     let meat = parseInt(watch('utilisation_information.meat'));
     let self_consumed = parseInt(
@@ -354,7 +358,6 @@ const HuntingType = ({ navigation, route }) => {
       }
     }
   };
-  console.log("yeilds", userDetails?.land_measurement_symbol)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -601,7 +604,7 @@ const HuntingType = ({ navigation, route }) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -702,7 +705,7 @@ const HuntingType = ({ navigation, route }) => {
                 {errors?.expenditure_on_inputs?.message}
               </Text>
             ) : null}
-            <Controller
+            {/* <Controller
               name="yeild"
               control={control}
               render={({ field }) => {
@@ -721,7 +724,7 @@ const HuntingType = ({ navigation, route }) => {
             />
             {errors?.yeild?.message ? (
               <Text style={styles.error}>{errors?.yeild?.message}</Text>
-            ) : null}
+            ) : null} */}
             <Text style={styles.processing_text}>
               {t('required processing')}
             </Text>

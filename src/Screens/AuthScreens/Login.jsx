@@ -32,12 +32,12 @@ export default function Login({navigation, route}) {
   const [api_err, setApi_err] = useState('');
 
   const [selectedCountry, setSelectedCountry] = useState({
-    callingCode: ['91'],
-    cca2: 'IN',
-    currency: ['INR'],
-    name: 'India',
+    callingCode: ['60'],
+    cca2: 'MY',
+    currency: ['MYR'],
+    name: 'Malaysia',
     region: 'Asia',
-    subregion: 'Southern Asia',
+    subregion: 'South-Eastern Asia',
   });
   const [countryModal, setCountryModal] = useState(false);
 
@@ -63,7 +63,6 @@ export default function Login({navigation, route}) {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
-
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
@@ -112,7 +111,7 @@ export default function Login({navigation, route}) {
                   countryCode={
                     selectedCountry !== null
                       ? '+' + selectedCountry?.callingCode[0]
-                      : '+91'
+                      : '+60'
                   }
                 />
               )}

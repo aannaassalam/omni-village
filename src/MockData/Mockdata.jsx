@@ -1,15 +1,15 @@
-export const soilHealth = [{ key: 0, name: 'stable' }, { key: 1, name: 'decreasing yield' }];
+export const soilHealth = [{ key: 'stable', name: 'stable' }, { key: 'decreasing yield', name: 'decreasing yield' }];
 export const fertilisers = [
-  { key: 0, name: 'organic self made' },
-  { key: 1, name: 'organic purchased' },
-  { key: 2, name: 'chemical based' },
-  { key: 3, name: 'none' }
+  { key: 'organic self made', name: 'organic self made' },
+  { key: 'organic purchased', name: 'organic purchased' },
+  { key: 'chemical based', name: 'chemical based' },
+  { key: 'none', name: 'none' }
 ];
 export const pesticides = [
-  { key: 0, name: 'organic self made' },
-  { key: 1, name: 'organic purchased' },
-  { key: 2, name: 'chemical based' },
-  { key: 3, name: 'none' }
+  { key: 'organic self made', name: 'organic self made' },
+  { key: 'organic purchased', name: 'organic purchased' },
+  { key: 'chemical based', name: 'chemical based' },
+  { key: 'none', name: 'none' }
 ];
 export const averageTreeAge = [
   { key: 0, name: 'Less than a year' },

@@ -26,6 +26,7 @@ import FisheryRiver from '../Screens/Fishery/FisheryRiver';
 import FisheryRiverInput from '../Screens/Fishery/FisheryRiverInput';
 import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 import Consumption from '../Screens/Consumption/Consumption';
+import Succsessfull from '../Screens/Successfull';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +68,9 @@ export default function Productionstack() {
       <Stack.Screen name="storage" component={Storage} />
       {/* SellingChannel */}
       <Stack.Screen name="sellingChannel" component={SellingChannel} />
+      {/* successfull screen */}
+      <Stack.Screen name="successfull" component={Succsessfull} />
+
     </Stack.Navigator>
   );
 }

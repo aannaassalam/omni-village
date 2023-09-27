@@ -35,12 +35,25 @@ import { useTranslation } from 'react-i18next';
 import '../../i18next';
 
 const Type01 = ({ navigation, route }) => {
+  const { t } = useTranslation();
+  const soilHealth = [{ key: 'stable', name: t('stable') }, { key: 'decreasing yield', name: t('decreasing yield') }];
+  const fertilisers = [
+    { key: 'organic self made', name: t('organic self made') },
+    { key: 'organic purchased', name: t('organic purchased') },
+    { key: 'chemical based', name: t('chemical based') },
+    { key: 'none', name: t('none') }
+  ];
+  const pesticides = [
+    { key: 'organic self made', name: t('organic self made') },
+    { key: 'organic purchased', name: t('organic purchased') },
+    { key: 'chemical based', name: t('chemical based') },
+    { key: 'none', name: t('none') }
+  ];
   const { cropType, edit, cropId, data } = route.params;
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
   const { userDetails } = useSelector(state => state.auth);
   const [treeAge, setTreeAge] = useState(false);
   const [harvestProdAdd, setHarvestProdAdd] = useState(false);
@@ -53,22 +66,44 @@ const Type01 = ({ navigation, route }) => {
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
-      age: 'less than a year',
+      name: '0 to 5 years',
+      age: t('0 to 5 years'),
       checked: false,
     },
     {
       id: 2,
-      age: '1 to 2 years',
+      name: '5 to 10 years',
+      age: t('5 to 10 years'),
       checked: false,
     },
     {
       id: 3,
-      age: '2 to 3 years',
+      name: '10 to 20 years',
+      age: t('10 to 20 years'),
       checked: false,
     },
     {
       id: 4,
-      age: '3 to 5 years',
+      name: '20 to 30 years',
+      age: t('20 to 30 years'),
+      checked: false,
+    },
+    {
+      id: 5,
+      name: '30 to 50 years',
+      age: t('30 to 50 years'),
+      checked: false,
+    },
+    {
+      id: 6,
+      name: '50 to 70 years',
+      age: t('50 to 70 years'),
+      checked: false,
+    },
+    {
+      id: 7,
+      name: 'Above 70',
+      age: t('Above 70'),
       checked: false,
     },
   ]);
@@ -77,30 +112,30 @@ const Type01 = ({ navigation, route }) => {
   const [age, setAge] = useState('');
   const schema = yup.object().shape({
     important_information: yup.object().shape({
-      number_of_trees: yup.string().required(validation.error.number_of_trees),
+      number_of_trees: yup.string().required(t('trees is required')),
       avg_age_of_trees: yup
         .string()
-        .required(validation.error.avg_age_of_trees),
-      soil_health: yup.string().required(validation.error.soil_health),
+        .required(t('avg_age_of_trees is required')),
+      soil_health: yup.string().required(t('soil_health is required')),
       decreasing_rate: yup
         .string()
         .when('soil_health', (soil_health, schema2) =>
           soil_health === 'decreasing yield'
-            ? yup.string().required(validation.error.decreasing_rate)
+            ? yup.string().required(t('decreasing_rate is required'))
             : schema2,
         ),
       type_of_fertilizer_used: yup
         .string()
-        .required(validation.error.type_of_fertilizer_used),
+        .required(t('type_of_fertilizer_used is required')),
       type_of_pesticide_used: yup
         .string()
-        .required(validation.error.type_of_pesticide_used),
+        .required(t('type_of_pesticide_used is required')),
       income_from_sale: yup
         .string()
-        .required(validation.error.income_from_sale),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: yup
         .string()
-        .required(validation.error.expenditure_on_inputs),
+        .required(t('expenditure_on_inputs is required')),
     }),
   });
   useEffect(() => {
@@ -137,7 +172,7 @@ const Type01 = ({ navigation, route }) => {
       setSavepopup(false);
     }
   }, [errors]);
-  // console.log("data", data?.number_of_trees)
+  // console.log("data", errors)
   const onSubmit = data2 => {
     console.log('hitting here');
     if (data?._id) {
@@ -174,7 +209,8 @@ const Type01 = ({ navigation, route }) => {
               text2: 'Trees updated successfully!',
             }),
           dispatch(getTree()),
-          navigation.goBack(),
+          // navigation.goBack(),
+          navigation.navigate('successfull'),
           setSavepopup(false),
           // navigation.goBack(),
         )
@@ -187,7 +223,7 @@ const Type01 = ({ navigation, route }) => {
           });
         })
         .finally(() => {
-          setSavepopup(false), navigation.goBack();
+          setSavepopup(false)
         });
     } else {
       dispatch(
@@ -205,7 +241,8 @@ const Type01 = ({ navigation, route }) => {
             text2: 'Trees added successfully!',
           }),
             dispatch(getTree()),
-            navigation.goBack(),
+            // navigation.goBack(),
+            navigation.navigate('successfull'),
             setSavepopup(false);
           console.log('here', res);
         })
@@ -334,7 +371,6 @@ const Type01 = ({ navigation, route }) => {
       data: data,
     })
     setProductName('');
-
   };
   const removeList = name => {
     let newList = harvestedProductList.filter(obj => obj.name !== name);
@@ -360,7 +396,7 @@ const Type01 = ({ navigation, route }) => {
     setAverageAge(newValue);
     setTreeAge(false);
   };
-  // console.log("form", watch('important_information'))
+  console.log("form", watch('important_information'))
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -430,7 +466,7 @@ const Type01 = ({ navigation, route }) => {
                         onChangeText={onChange}
                         notRightText={true}
                         editable={false}
-                        placeholder={'Select Average age of tree'}
+                        placeholder={t('Select Average age of tree')}
                       />
                     </TouchableHighlight>
                   );
@@ -447,11 +483,12 @@ const Type01 = ({ navigation, route }) => {
                 name="important_information.soil_health"
                 render={({ field }) => {
                   const { onChange, value } = field;
+                  console.log("soil health", value)
                   return (
                     <CustomDropdown3
                       data={soilHealth}
                       value={value}
-                      defaultVal={{ key: value, value: value }}
+                      defaultVal={{ key:value, value: t(value) }}
                       selectedValue={onChange}
                       infoName={t('soil health')}
                     />
@@ -504,7 +541,7 @@ const Type01 = ({ navigation, route }) => {
                       data={fertilisers}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{ key: value, value: value }}
+                      defaultVal={{ key: value, value: t(value) }}
                       infoName={t('type of fertilizer')}
                     />
                   );
@@ -529,7 +566,7 @@ const Type01 = ({ navigation, route }) => {
                       data={pesticides}
                       selectedValue={onChange}
                       value={value}
-                      defaultVal={{ key: value, value: value }}
+                      defaultVal={{ key: value, value: t(value) }}
                       infoName={t('type of pesticides')}
                     />
                   );
@@ -705,7 +742,7 @@ const Type01 = ({ navigation, route }) => {
                         name={item?.age}
                         checked={item?.checked}
                         checking={() => {
-                          onChange(item?.age), toggleItem(item?.age, indx);
+                          onChange(item?.name), toggleItem(item?.age, indx);
                         }}
                       />
                     );
@@ -739,6 +776,12 @@ const Type01 = ({ navigation, route }) => {
               keyboardType="default"
               onChangeText={e => {
                 setProductName(e);
+                if (e.endsWith("\n")){
+                  setProductName(e);
+                  setHarvestProdAdd(!harvestProdAdd);
+                  setFocus(!focus);
+                  addProduct()
+                }
               }}
               multiline={true}
               notRightText={true}

@@ -83,36 +83,36 @@ const FisheryRiverInput = ({navigation, route}) => {
 
   const schema = yup.object().shape({
     important_information: yup.object().shape({
-      number_of_fishes: yup.string().required(validation.error.number),
-      type_of_feed: yup.string().required(validation.error.type_of_feed),
+      number_of_fishes: yup.string().required(t('number is required')),
+      type_of_feed: yup.string().required(t('type_of_feed is required')),
     }),
     utilisation_information: yup.object().shape({
       // total_feed: yup.string().required(validation.error.total_feed),
-      production_output: yup.string().required(validation.error.output),
-      self_consumed: yup.string().required(validation.error.self_consumed),
+      production_output: yup.string().required(t('output is required')),
+      self_consumed: yup.string().required(t('self_consumed is required')),
       sold_to_neighbours: yup
         .string()
-        .required(validation.error.sold_to_neighbours),
+        .required(t('sold_to_neighbours is required')),
       sold_for_industrial_use: yup
         .string()
-        .required(validation.error.sold_for_industrial_use),
-      wastage: yup.string().required(validation.error.wastage),
+        .required(t('sold_for_industrial_use is required')),
+      wastage: yup.string().required(t('wastage is required')),
       other: yup.string(),
       other_value: yup.string(),
       income_from_sale: yup
         .string()
-        .required(validation.error.income_from_sale),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: yup
         .string()
-        .required(validation.error.expenditure_on_inputs),
-      yeild: yup.string().required(validation.error.yeild),
+        .required(t('expenditure_on_inputs is required')),
+      yeild: yup.string().required(),
     }),
     processing_method: yup
       .string()
-      .required(validation.error.processing_method),
+      .required(t('processing_method is required')),
     weight_measurement: yup
       .string()
-      .required(validation.error.weight_measurement),
+      .required(t('weight_measurement is required')),
   });
   const {
     handleSubmit,
@@ -230,6 +230,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 }),
               dispatch(getFishery('river')),
               // navigation.goBack(),
+              navigation.navigate('successfull')
             )
             .catch(err => {
               console.log('err', err);
@@ -240,7 +241,8 @@ const FisheryRiverInput = ({navigation, route}) => {
               });
             })
             .finally(() => {
-              setSavepopup(false), navigation.goBack();
+              setSavepopup(false), 
+                navigation.goBack()
             });
         } else {
           dispatch(
@@ -261,7 +263,8 @@ const FisheryRiverInput = ({navigation, route}) => {
                 }),
               dispatch(getFishery('river')),
               setSavepopup(false),
-              navigation.goBack(),
+              // navigation.goBack(),.
+              navigation.navigate('successfull')
             )
             .catch(err => {
               console.log('err at add', err);
@@ -708,7 +711,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={watch('weight_measurement')}
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -775,9 +778,9 @@ const FisheryRiverInput = ({navigation, route}) => {
               );
             }}
           />
-          {errors?.income_from_sale?.message ? (
+          {errors?.utilisation_information?.income_from_sale?.message ? (
             <Text style={styles.error}>
-              {errors?.income_from_sale?.message}
+              {errors?.utilisation_information?.income_from_sale?.message}
             </Text>
           ) : null}
           <Controller
@@ -795,9 +798,9 @@ const FisheryRiverInput = ({navigation, route}) => {
               );
             }}
           />
-          {errors?.expenditure_on_inputs?.message ? (
+          {errors?.utilisation_information?.expenditure_on_inputs?.message ? (
             <Text style={styles.error}>
-              {errors?.expenditure_on_inputs?.message}
+              {errors?.utilisation_information?.expenditure_on_inputs?.message}
             </Text>
           ) : null}
 

@@ -90,7 +90,6 @@ const Season1 = ({navigation, route}) => {
     }, []),
   );
   const addCrop = () => {
-    console.log("here i am ")
     if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
       // setCropModal(false);
       // setFocusOther(false);

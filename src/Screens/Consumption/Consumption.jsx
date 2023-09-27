@@ -59,6 +59,7 @@ const Consumption = ({ route, navigation }) => {
             setDropdownVal('');
             setOtherCrop('');
         } else {
+            console.log("hereeee i am")
             setCropType([
                 ...cropType,
                 {
@@ -74,9 +75,10 @@ const Consumption = ({ route, navigation }) => {
                 },
             ]);
             navigation.navigate('consumptionInput', {
+                typeName:typeName,
                 cropType: dropdownVal.name?.label,
                 cropId:
-                    poultry[0] !== undefined &&
+                    consumption[0] !== undefined &&
                         consumption.find(j => j?.consumption_crop?.name == dropdownVal.name?.label)
                         ? consumption.find(i => i?.consumption_crop?.name == dropdownVal.name?.label)
                             ._id
@@ -101,10 +103,10 @@ const Consumption = ({ route, navigation }) => {
                     progress: '',
                 },
             ]);
+            setCropModal(!cropModal)
             setDropdownVal([]);
             setOtherCrop('');
             setFocusOther(false)
-            setCropModal(!cropModal)
         } else {
             addCrop();
         }

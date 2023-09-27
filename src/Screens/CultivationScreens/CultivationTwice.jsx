@@ -62,7 +62,7 @@ export default function CultivationTwice({navigation}) {
             <Flex style={styles.cultivate_sec}>
               <Box style={styles.cul_lft}>
                 <Text variant="h4" style={styles.h4}>
-                  Season 01
+                  {t('Season 01')}
                 </Text>
               </Box>
             </Flex>
@@ -78,7 +78,7 @@ export default function CultivationTwice({navigation}) {
             <Flex style={styles.cultivate_sec}>
               <Box style={styles.cul_lft}>
                 <Text variant="h4" style={styles.h4}>
-                  Season 02
+                  {t('Season 02')}
                 </Text>
               </Box>
             </Flex>

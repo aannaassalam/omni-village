@@ -27,9 +27,7 @@ export const getCultivation = createAsyncThunk(
     const {cultivationType, season} = getState().cultivation;
     try {
       const res = await axiosInstance.post(
-        endpoints.cultivation.fetchCultivation,
-        {cultivation_type: cultivationType, season},
-      );
+        endpoints.cultivation.fetchCultivation);
       console.log(res.data, cultivationType, season, 'is it this');
       return {status: res.status, data: res.data};
     } catch (err) {

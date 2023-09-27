@@ -186,7 +186,8 @@ const FishTypeInput = ({navigation, route}) => {
           });
         })
         .finally(() => {
-          setSavepopup(false), navigation.goBack();
+          setSavepopup(false), 
+          navigation.navigate('successfull')
         });
     } else {
       if (data?._id) {
@@ -212,7 +213,8 @@ const FishTypeInput = ({navigation, route}) => {
                 text2: 'Fishery updated successfully!',
               }),
             dispatch(getFishery('pond')),
-            navigation.goBack(),
+            // navigation.goBack(),
+            navigation.navigate('successfull')
           )
           .catch(err => {
             console.log('err', err);
@@ -223,7 +225,7 @@ const FishTypeInput = ({navigation, route}) => {
             });
           })
           .finally(() => {
-            setSavepopup(false), navigation.goBack();
+            setSavepopup(false)
           });
       } else {
         dispatch(
@@ -243,10 +245,7 @@ const FishTypeInput = ({navigation, route}) => {
             }),
               setSavepopup(false),
               // navigation.goBack()
-              navigation.navigate('fishery', {
-                totalLand: null,
-                screenName: 'Harvested from Pond',
-              });
+              navigation.navigate('successfull')
           })
           .catch(err => {
             console.log('err at add', err);
@@ -735,7 +734,7 @@ const FishTypeInput = ({navigation, route}) => {
                               ? watch('weight_measurement')
                               : 'kg'
                           }
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}

@@ -39,6 +39,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
 import { useTranslation } from 'react-i18next';
 import '../../i18next';
+import PoultryProductDescription from '../../Components/CustomDashboard/PoultryProductDescription';
 
 const PoultryType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -93,29 +94,29 @@ const PoultryType = ({navigation, route}) => {
   const [harvestedProductList, setHarvestedProductList] = useState([]);
   const schema = yup.object().shape({
     important_information: yup.object().shape({
-      number: yup.string().required(validation.error.number),
+      number: yup.string().required(t('number is required')),
       avg_age_of_live_stocks: yup
         .number()
-        .required(validation.error.avg_age_of_live_stocks),
-      type_of_feed: yup.string().required(validation.error.type_of_feed),
+        .required(t('avg_age_of_live_stocks is required')),
+      type_of_feed: yup.string().required(t('type_of_feed is required')),
       other_type_of_feed: yup
         .string(),
     }),
     utilisation_information: yup.object().shape({
-      total_feed: yup.string().required(validation.error.total_feed),
-      self_produced: yup.string().required(validation.error.self_produced),
-      neighbours: yup.string().required(validation.error.sold_to_neighbours),
+      total_feed: yup.string().required(t('total_feed is required')),
+      self_produced: yup.string().required(t('self_produced is required')),
+      neighbours: yup.string().required(t('purchased_from_neighbour is required')),
       purchased_from_market: yup
         .string()
-        .required(validation.error.purchased_from_market),
-      other: yup.string().required(validation.error.other),
-      other_value: yup.string().required(validation.error.other_value),
+        .required(t('purchased_from_market is required')),
+      other: yup.string(),
+      other_value: yup.string(),
     }),
-    income_from_sale: yup.string().required(validation.error.income_from_sale),
+    income_from_sale: yup.string().required(t('income_from_sale is required')),
     expenditure_on_inputs: yup
       .string()
-      .required(validation.error.expenditure_on_inputs),
-    steroids: yup.string().required(validation.error.steroids),
+      .required(t('expenditure_on_inputs is required')),
+    steroids: yup.string().required(t('Steroids is Required')),
   });
   useEffect(() => {
     if (data) {
@@ -160,6 +161,7 @@ const PoultryType = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
+    console.log("erooorrrr", errors)
   }, [errors]);
   const submit = () => {
     console.log("i m here")
@@ -234,6 +236,7 @@ const PoultryType = ({navigation, route}) => {
                   text2: 'Poultry updated successfully!',
                 }),
               dispatch(getPoultry()),
+              navigation.navigate('successfull')
               // navigation.goBack(),
             )
             .catch(err => {
@@ -245,7 +248,7 @@ const PoultryType = ({navigation, route}) => {
               });
             })
             .finally(() => {
-              setSavepopup(false), navigation.goBack();
+              setSavepopup(false)
             });
         } else {
           dispatch(
@@ -268,7 +271,8 @@ const PoultryType = ({navigation, route}) => {
                   text2: 'Poultry added successfully!',
                 }),
               dispatch(getPoultry()),
-              navigation.goBack(),
+              navigation.navigate('successfull')
+
             )
             .catch(err => {
               console.log('err at add', err);
@@ -499,7 +503,7 @@ const PoultryType = ({navigation, route}) => {
                   return (
                     // <TouchableOpacity onPress={() => { setTreeAge(true) }}>
                     <InputWithoutBorder
-                      measureName={'Years'}
+                      measureName={t('Years')}
                       productionName={t('average age of the live stocks')}
                       value={value.toString()}
                       onChangeText={onChange}
@@ -699,7 +703,7 @@ const PoultryType = ({navigation, route}) => {
                       return (
                         <InputWithoutBorder
                           measureName={weight ? weight : 'kg'}
-                          productionName="Others(Specify if any)"
+                          productionName={t("Other(Specify if any)")}
                           value={value}
                           multiline={false}
                           notRightText={true}
@@ -878,7 +882,7 @@ const PoultryType = ({navigation, route}) => {
                     <>
                       {harvestedProductList.map(item => {
                         return (
-                          <ProductDescription
+                          <PoultryProductDescription
                             productName={t('product type')}
                             productNameValue={item?.name}
                             date={t('harvested on')}
@@ -996,6 +1000,12 @@ const PoultryType = ({navigation, route}) => {
               keyboardType="default"
               onChangeText={e => {
                 setProductName(e);
+                if (e.endsWith("\n")) {
+                  setProductName(e);
+                  setHarvestProdAdd(!harvestProdAdd);
+                  setFocus(!focus);
+                  addProduct()
+                }
               }}
               multiline={false}
               notRightText={true}

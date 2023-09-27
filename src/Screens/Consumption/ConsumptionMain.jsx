@@ -41,9 +41,10 @@ const ConsumptionMain = ({ navigation }) => {
                         return (
                             <CustomShowcaseInput
                                 key={indx}
-                                productionName={item?.name}
+                                productionName={t(`${item?.name}`)}
                                 progressBar={false}
                                 onPress={() => {
+                                    console.log("itemmmmmmmm", item?.name)
                                     navigation.navigate('consumption', { typeId: item?._id, typeName: item?.name }),
                                         dispatch(getConsumptionCrops(item?._id))
                                 }}

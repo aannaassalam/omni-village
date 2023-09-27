@@ -75,7 +75,7 @@ const TotalLand = ({navigation}) => {
       return accumulator;
     }, 0);
     if (sumofAreas > parseInt(data?.total_land)) {
-      setGlobalError('Your sub area acres are greater than total land area');
+      setGlobalError(t('Your sub area acres are greater than total land area'));
       // Toast.show({
       //   type: 'error',
       //   text1: 'Error',
@@ -97,7 +97,7 @@ const TotalLand = ({navigation}) => {
     <ScrollView style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Total Land'}
+        headerName={t('total land')}
         goBack={() => navigation.goBack()}
       />
       <View style={styles.textInputArea}>
@@ -112,10 +112,10 @@ const TotalLand = ({navigation}) => {
           render={({field: {onChange, onBlur, value, name, ref}}) => (
             <CustomInputField
               placeholder={'0'}
-              label={'Total Land area'}
+              label={t('total land area')}
               onChangeText={onChange}
               value={value}
-              productionName={'total_land'}
+              productionName={t('total land area')}
             />
           )}
         />
@@ -126,7 +126,7 @@ const TotalLand = ({navigation}) => {
       <ScrollView>
         <>
           <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>Sub area</Text>
+            <Text style={styles.subAreaText}>{t('sub area')}</Text>
             <Divider
               bold={true}
               style={styles.divider}
@@ -142,7 +142,7 @@ const TotalLand = ({navigation}) => {
                   placeholder={'0'}
                   onChangeText={onChange}
                   value={value}
-                  productionName={'cultivation'}
+                  productionName={t('cultivation')}
                 />
               )}
             />
@@ -159,7 +159,7 @@ const TotalLand = ({navigation}) => {
                   placeholder={'0'}
                   onChangeText={onChange}
                   value={value}
-                  productionName={'trees'}
+                  productionName={t('trees')}
                 />
               )}
             />
@@ -176,7 +176,7 @@ const TotalLand = ({navigation}) => {
                   placeholder={'0'}
                   onChangeText={onChange}
                   value={value}
-                  productionName={'poultry'}
+                  productionName={t('poultry')}
                 />
               )}
             />
@@ -194,7 +194,7 @@ const TotalLand = ({navigation}) => {
                   placeholder={'0'}
                   onChangeText={onChange}
                   value={value}
-                  productionName={'fishery'}
+                  productionName={t('fishery')}
                 />
               )}
             />
@@ -212,7 +212,7 @@ const TotalLand = ({navigation}) => {
                   placeholder={'0'}
                   onChangeText={onChange}
                   value={value}
-                  productionName={'storage'}
+                  productionName={t('storage')}
                 />
               )}
             />
@@ -248,7 +248,7 @@ const TotalLand = ({navigation}) => {
                 /> */}
 
           <View style={styles.save}>
-            <CustomButton btnText={'Save'} onPress={handleSubmit(onSave)} />
+            <CustomButton btnText={t('save')} onPress={handleSubmit(onSave)} />
           </View>
         </>
       </ScrollView>
