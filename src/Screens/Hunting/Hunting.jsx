@@ -154,6 +154,12 @@ const Hunting = ({navigation}) => {
             }>
             <AddAndDeleteCropButton
               add={false}
+              darftStyle={{
+                borderColor: hunting[0] !== undefined && hunting.find(j => j?.hunting_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+              }}
+              drafted={
+                hunting[0] !== undefined && hunting.find(j => j?.hunting_crop?.name == element?.name).status == 1 ? false : true
+              }
               cropName={element?.name}
               onPress={() =>
                 handleRemoveClick(

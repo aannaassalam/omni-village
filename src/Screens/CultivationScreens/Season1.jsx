@@ -6,14 +6,14 @@ import {
   Image,
   useWindowDimensions,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import {ActivityIndicator, Divider} from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllCrop,
   getCrop,
@@ -27,24 +27,24 @@ import {
   setCropId,
 } from '../../Redux/CultivationSlice';
 import Toast from 'react-native-toast-message';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import PopupModal from '../../Components/Popups/PopupModal';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import '../../i18next';
 
-const Season1 = ({navigation, route}) => {
-  const {fontScale} = useWindowDimensions();
+const Season1 = ({ navigation, route }) => {
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState({name: ''});
+  const [selectedCategory, setSelectedCategory] = useState({ name: '' });
   const [selectCrops, setSelectCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState({});
   const [deletePopup, setDeletePopup] = useState(false);
@@ -53,13 +53,13 @@ const Season1 = ({navigation, route}) => {
   const [globalError, setGlobalError] = useState('');
 
   const dispatch = useDispatch();
-  const {seasonName = 'Season 1'} = route.params;
+  const { seasonName = 'Season 1' } = route.params;
 
-  const {userDetails} = useSelector(s => s.auth);
-  const {cultivations, cultivationType, status} = useSelector(
+  const { userDetails } = useSelector(s => s.auth);
+  const { cultivations, cultivationType, status } = useSelector(
     s => s.cultivation,
   );
-  const {crops, cropCategories, addedCrop} = useSelector(s => s.crop);
+  const { crops, cropCategories, addedCrop } = useSelector(s => s.crop);
 
   useFocusEffect(
     useCallback(() => {
@@ -73,7 +73,7 @@ const Season1 = ({navigation, route}) => {
       return () => {
         setSelectCrops([]);
         setSelectedCrop({});
-        setSelectedCategory({name: ''});
+        setSelectedCategory({ name: '' });
         setGlobalError('');
       };
     }, [cultivations]),
@@ -97,7 +97,7 @@ const Season1 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        dispatch(saveCrop({name: otherCrop, categoryId: ''}))
+        dispatch(saveCrop({ name: otherCrop, categoryId: '' }))
           .unwrap()
           .then(async res => {
             setSelectCrops(prev => [...prev, res.data]);
@@ -148,7 +148,6 @@ const Season1 = ({navigation, route}) => {
       setDeletePopup(false);
     }
   };
-
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -196,6 +195,12 @@ const Season1 = ({navigation, route}) => {
                     });
                 }}>
                 <AddAndDeleteCropButton
+                  darftStyle={{
+                    borderColor: cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? 'grey' :'#e5c05e'
+                  }}
+                  drafted={
+                    cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? false : true
+                  }
                   add={false}
                   cropName={element?.name}
                   onPress={() => {
@@ -219,7 +224,7 @@ const Season1 = ({navigation, route}) => {
           </TouchableOpacity>
         </>
       ) : (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
       )}
@@ -228,17 +233,17 @@ const Season1 = ({navigation, route}) => {
           modalVisible={cropModal}
           setBottomModalVisible={toggle => {
             setCropModal(toggle);
-            setSelectedCategory({name: ''});
+            setSelectedCategory({ name: '' });
             setSelectedCrop({});
             setOtherCrop('');
           }}
-          styleInner={{height: focusOther ? '80%' : '35%'}}>
+          styleInner={{ height: focusOther ? '80%' : '35%' }}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>{t('add crop')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({name: ''});
+                setSelectedCategory({ name: '' });
                 setSelectedCrop({});
                 setOtherCrop('');
                 setFocusOther(false);
@@ -277,9 +282,9 @@ const Season1 = ({navigation, route}) => {
                 );
                 setOtherCrop('');
               }}
-              data={[...crops, {_id: 0, name: 'Others'}]}
+              data={[...crops, { _id: 0, name: 'Others' }]}
               placeholder="Select a crop"
-              valu={{label: selectedCrop.name, value: selectedCrop._id}}
+              valu={{ label: selectedCrop.name, value: selectedCrop._id }}
             />
             {selectedCrop?.name === 'Others' ? (
               <InputWithoutRightElement
@@ -306,7 +311,7 @@ const Season1 = ({navigation, route}) => {
               style={styles.crossButton}
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({name: ''});
+                setSelectedCategory({ name: '' });
                 setSelectedCrop({});
                 setOtherCrop('');
               }}>
@@ -317,7 +322,7 @@ const Season1 = ({navigation, route}) => {
             </TouchableOpacity>
             <CustomButton
               btnText={t('create')}
-              style={{width: '80%'}}
+              style={{ width: '80%' }}
               onPress={addCrop}
             />
           </View>
@@ -330,7 +335,7 @@ const Season1 = ({navigation, route}) => {
           setDeleteCrop('');
           setDeletePopup(toggle);
         }}
-        styleInner={[styles.savePopup, {width: '90%'}]}>
+        styleInner={[styles.savePopup, { width: '90%' }]}>
         <View style={styles.submitPopup}>
           <View style={styles.noteImage}>
             <Image
@@ -362,7 +367,7 @@ const Season1 = ({navigation, route}) => {
       </PopupModal>
       <Toast
         positionValue={30}
-        style={{height: 'auto', minHeight: 70}}
+        style={{ height: 'auto', minHeight: 70 }}
         width={300}
       />
     </View>
