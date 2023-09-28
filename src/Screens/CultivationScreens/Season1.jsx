@@ -196,10 +196,10 @@ const Season1 = ({ navigation, route }) => {
                 }}>
                 <AddAndDeleteCropButton
                   darftStyle={{
-                    borderColor: cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? 'grey' :'#e5c05e'
+                    borderColor: cultivations[0] !== undefined &&cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? 'grey' :'#e5c05e'
                   }}
                   drafted={
-                    cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? false : true
+                    cultivations[0]!==undefined && cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? false : true
                   }
                   add={false}
                   cropName={element?.name}
