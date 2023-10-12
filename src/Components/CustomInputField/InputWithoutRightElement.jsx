@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
-import { TextInput } from 'react-native-paper';
+import {TextInput} from 'react-native-paper';
 // import {TextInput} from 'react-native-paper';
 
 const InputWithoutRightElement = ({
@@ -28,7 +28,7 @@ const InputWithoutRightElement = ({
           mode="outlined"
           label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
           value={value}
-          style={[styles.textInput,style]}
+          style={[styles.textInput, style]}
           placeholder={placeholder}
           placeholderTextColor={'#333'}
           onFocus={onFocus}

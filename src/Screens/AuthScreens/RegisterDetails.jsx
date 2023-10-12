@@ -8,34 +8,25 @@ import {
   Image,
   Button,
   useWindowDimensions,
+  PermissionsAndroid,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
-import SelectDropdown from 'react-native-select-dropdown';
+import {Box, Pressable} from '@react-native-material/core';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {
-  faChevronCircleDown,
-  faChevronDown,
-  faChevronLeft,
-} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
-import {EditUser, getUser} from '../../Redux/AuthSlice';
-import axiosInstance from '../../Helper/Helper';
-import {Scale} from '../../Helper/utils';
+import {EditUser} from '../../Redux/AuthSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
-import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import {useTranslation} from 'react-i18next';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import Geolocation from 'react-native-geolocation-service';
+import {TextInput} from 'react-native-paper';
 
 // const FormData = global.FormData;
 
@@ -127,6 +118,7 @@ export default function RegisterDetails({navigation, route}) {
       // number_of_members: '',
     },
   });
+
   const [numMembers, setNumMembers] = useState(
     isEdit ? user?.number_of_members : 0,
   );
@@ -196,11 +188,59 @@ export default function RegisterDetails({navigation, route}) {
       .catch(err => console.log(err, 'err from register details'));
   };
 
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Access Required!',
+          message: 'We need to access your location for address related data',
+          // buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === 'granted') {
+        console.log('You can use Geolocation');
+        return true;
+      } else {
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const getLocation = () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      console.log('res is:', res);
+      if (res) {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log(position);
+            setValue(
+              'address',
+              `${position.coords.latitude},${position.coords.longitude}`,
+            );
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setValue('address', '');
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       dispatch(getVillage(user?.country));
       dispatch(getLandmeasurement());
-    }, [user.country]),
+    }, [user?.country]),
   );
 
   return (
@@ -430,6 +470,7 @@ export default function RegisterDetails({navigation, route}) {
                                 {name: 'Female'},
                                 {name: 'Other'},
                               ]}
+                              value={value}
                               placeholder={t('member gender')}
                               selectedValue={onChange}
                             />
@@ -446,7 +487,7 @@ export default function RegisterDetails({navigation, route}) {
                           control={control}
                           name={`members[${index}].age`}
                           render={({
-                            field: {onChange, onBlur, value, name, ref},
+                            field: {onChange, onBlur, value = '', name, ref},
                           }) => (
                             <InputWithoutRightElement
                               style={{
@@ -456,7 +497,7 @@ export default function RegisterDetails({navigation, route}) {
                               placeholder={t('member age')}
                               keyboardType={'numeric'}
                               onChangeText={onChange}
-                              value={value}
+                              value={value.toString()}
                             />
                           )}
                         />
@@ -525,12 +566,47 @@ export default function RegisterDetails({navigation, route}) {
               control={control}
               name="address"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutRightElement
-                  label={t('address')}
-                  placeholder={t('address')}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <View style={styles.textInputContainer}>
+                  <TouchableOpacity onPress={getLocation} activeOpacity={1}>
+                    <TextInput
+                      onChangeText={onChange}
+                      outlineColor="#268C43"
+                      underlineColorAndroid="transparent"
+                      activeOutlineColor="#268C43"
+                      mode="outlined"
+                      outlineStyle={{
+                        borderRadius: 10,
+                      }}
+                      label={
+                        <Text
+                          style={{
+                            fontSize: 16 / fontScale,
+                            textTransform: 'capitalize',
+                          }}>
+                          {t('address')}
+                        </Text>
+                      }
+                      value={value}
+                      style={styles.textInput}
+                      placeholder={t('address')}
+                      placeholderTextColor={'#333'}
+                      keyboardType="default"
+                      editable={false}
+                      right={
+                        <TextInput.Icon
+                          icon="crosshairs-gps"
+                          size={24}
+                          color="#268C43"
+                        />
+                        // <Image
+                        //   style={{width: 24, height: 24}}
+                        //   source={require('../../../assets/gps.svg')}
+                        //   // height={100}
+                        // />
+                      }
+                    />
+                  </TouchableOpacity>
+                </View>
               )}
             />
             {errors.address?.message ? (
@@ -759,5 +835,15 @@ const makeStyles = fontScale =>
       color: 'grey',
       marginLeft: 5,
       marginBottom: 10,
+    },
+    textInputContainer: {
+      paddingTop: 10,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    textInput: {
+      backgroundColor: '#fff',
+      fontFamily: 'ubuntu_medium',
+      fontSize: 16 / fontScale,
     },
   });
