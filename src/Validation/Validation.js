@@ -1,7 +1,7 @@
 export const validation = {
   success: {},
   error: {
-    self_grown:'Self grown is Required',
+    self_grown: 'Self grown is Required',
     land_measurement: 'Land measurement is Required',
     weight_measurement: 'Measurement is Required',
     number: 'Number is Required',
@@ -54,5 +54,6 @@ export const validation = {
     expenditure_on_inputs: 'Expenditure is required',
     month_planted: 'Month Planeted is required',
     month_harvested: 'Month harvested is required',
+    street_address: 'Street Address is required!',
   },
 };

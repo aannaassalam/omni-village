@@ -91,6 +91,7 @@ export default function RegisterDetails({navigation, route}) {
         .string()
         .required(validation?.error?.social_security_number),
       address: yup.string().required(validation?.error?.address),
+      street_address: yup.string().required(validation?.error?.street_address),
     })
     .required();
 
@@ -101,6 +102,7 @@ export default function RegisterDetails({navigation, route}) {
     control,
     formState: {errors},
     getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -115,6 +117,7 @@ export default function RegisterDetails({navigation, route}) {
       document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
+      street_address: isEdit ? user?.street_address : '',
       // number_of_members: '',
     },
   });
@@ -202,6 +205,10 @@ export default function RegisterDetails({navigation, route}) {
       );
       if (granted === 'granted') {
         console.log('You can use Geolocation');
+        navigation.navigate('MapScreen', {
+          setCoordinates: coords =>
+            setValue('address', `${coords.latitude},${coords.longitude}`),
+        });
         return true;
       } else {
         console.log('You cannot use Geolocation');
@@ -212,7 +219,7 @@ export default function RegisterDetails({navigation, route}) {
     }
   };
 
-  const getLocation = () => {
+  const getLocation = async () => {
     const result = requestLocationPermission();
     result.then(res => {
       console.log('res is:', res);
@@ -235,6 +242,8 @@ export default function RegisterDetails({navigation, route}) {
       }
     });
   };
+
+  console.log(user);
 
   useFocusEffect(
     useCallback(() => {
@@ -597,6 +606,7 @@ export default function RegisterDetails({navigation, route}) {
                           icon="crosshairs-gps"
                           size={24}
                           color="#268C43"
+                          onPress={getLocation}
                         />
                         // <Image
                         //   style={{width: 24, height: 24}}
@@ -619,6 +629,29 @@ export default function RegisterDetails({navigation, route}) {
             // height={100}
           /> */}
         </Box>
+        {Boolean(watch('address').length) && (
+          <Box style={styles.cmn_wrp}>
+            <View style={styles.login_input}>
+              <Controller
+                control={control}
+                name="street_address"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutRightElement
+                    label={t('street address')}
+                    placeholder={t('street address')}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+              {errors.street_address?.message ? (
+                <Text style={styles.error}>
+                  {errors?.street_address?.message}
+                </Text>
+              ) : null}
+            </View>
+          </Box>
+        )}
         {!isEdit && (
           <>
             <Box style={styles.file_box}>

@@ -15,6 +15,7 @@ import {useSelector} from 'react-redux';
 import Productionstack from './ProductionStack';
 import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 import ConsumptionStack from './ConsumptionStack';
+import MapScreen from '../Screens/AuthScreens/MapScreen';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,7 @@ export default function AuthStack({isLoggedIn}) {
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName={renderScreen()}>
+      {/* // initialRouteName={'MapScreen'}> */}
       <Stack.Screen name="registerdetails" component={RegisterDetails} />
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
@@ -54,12 +56,12 @@ export default function AuthStack({isLoggedIn}) {
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
       <Stack.Screen name="countryCheck" component={CountryCheck} />
-
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
+      <Stack.Screen name="MapScreen" component={MapScreen} />
     </Stack.Navigator>
   );
 }
