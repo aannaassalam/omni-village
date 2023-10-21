@@ -96,7 +96,7 @@ const Fishery = ({navigation, route}) => {
   const addingHuntingCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
       dispatch(addFisherycrop({name: otherCrop?.name})).then(res => {
-        navigation.navigate('fisheryRiverInput', {
+        navigation.navigate('fishTypeInput', {
           cropType: res?.payload?.data?.name,
           cropId: res?.payload?.data?._id,
           data: null,
@@ -177,6 +177,12 @@ const Fishery = ({navigation, route}) => {
                   // huntingcropid: 64f2ccd2b994c1b6aa39e76f
                 }>
                 <AddAndDeleteCropButton
+                  darftStyle={{
+                    borderColor: fishery[0] !== undefined &&fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                  }}
+                  drafted={
+                    fishery[0] !== undefined && fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? false : true
+                  }
                   add={false}
                   cropName={element?.name}
                   onPress={() =>

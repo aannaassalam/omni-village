@@ -8,12 +8,20 @@ import {
 } from 'react-native';
 import React from 'react';
 
-const AddAndDeleteCropButton = ({onPress, add, cropName}) => {
-  const {fontScale} = useWindowDimensions();
+const AddAndDeleteCropButton = ({ onPress, add, cropName, darftStyle, drafted }) => {
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, darftStyle]}>
       <Text style={styles.addButtonText}>{cropName}</Text>
+      {drafted ?
+        <Image
+          source={require('../../../assets/infocircle.png')}
+          style={styles.draftIcon}
+        />
+        :
+        null
+      }
       <TouchableOpacity onPress={onPress}>
         {add ? (
           <Image
@@ -58,4 +66,11 @@ const makeStyles = fontScale =>
       height: 30,
       width: 30,
     },
+    draftIcon: {
+      height: 10,
+      width: 10,
+      top: 5,
+      right: 10,
+      position: 'absolute'
+    }
   });

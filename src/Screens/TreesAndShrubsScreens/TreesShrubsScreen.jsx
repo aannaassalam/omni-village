@@ -166,6 +166,12 @@ const TreesShrubsScreen = ({navigation, route}) => {
             }}>
             <AddAndDeleteCropButton
               add={false}
+              darftStyle={{
+                borderColor: trees[0] !== undefined &&trees.find(j => j?.tree_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+              }}
+              drafted={
+                trees[0] !== undefined && trees.find(j => j?.tree_crop?.name == element?.name).status == 1 ? false :true
+              }
               cropName={element?.name}
               onPress={() =>
                 handleRemoveClick(

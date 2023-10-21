@@ -171,6 +171,12 @@ const Poultry = ({navigation, route}) => {
                 }}>
                 <AddAndDeleteCropButton
                   add={false}
+                  darftStyle={{
+                    borderColor: poultry[0] !== undefined && poultry.find(j => j?.poultry_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                  }}
+                  drafted={
+                    poultry[0] !== undefined && poultry.find(j => j?.poultry_crop?.name == element?.name).status == 1 ? false : true
+                  }
                   cropName={element?.name}
                   onPress={() =>
                     handleRemoveClick(

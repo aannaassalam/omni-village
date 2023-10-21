@@ -179,6 +179,12 @@ const FisheryRiver = ({navigation, route}) => {
                 }>
                 <AddAndDeleteCropButton
                   add={false}
+                  darftStyle={{
+                    borderColor: fishery[0] !== undefined && fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                  }}
+                  drafted={
+                    fishery[0] !== undefined && fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? false : true
+                  }
                   cropName={element?.name}
                   onPress={() =>
                     handleRemoveClick(

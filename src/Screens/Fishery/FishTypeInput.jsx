@@ -200,7 +200,7 @@ const FishTypeInput = ({navigation, route}) => {
               : 'kg',
             status: 1,
             crop_id: cropId,
-            fishery_type: 'river',
+            fishery_type: 'pond',
             pond_name: cropType,
           }),
         )
@@ -349,10 +349,7 @@ const FishTypeInput = ({navigation, route}) => {
               text2: 'Fishery added successfully!',
             }),
               setDraftpopup(false),
-              navigation.navigate('fishery', {
-                totalLand: null,
-                screenName: 'Harvested from Pond',
-              });
+              navigation.goBack()
           },
           // dispatch(getFishery('pond')),
         )
