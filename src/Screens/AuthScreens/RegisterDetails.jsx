@@ -407,7 +407,7 @@ export default function RegisterDetails({navigation, route}) {
                     onChangeText={e => {
                       onChange(e);
                       if (e !== '' && parseInt(e) !== 0)
-                        setNumMembers(parseInt(e));
+                        setNumMembers(parseInt(e) > 20 ? 20 : parseInt(e));
                     }}
                     value={value.toString() || value}
                   />
