@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   crosshair: {
     top: 'auto',
     alignSelf: 'flex-end',
-    bottom: 50,
+    bottom: 80,
     left: 'auto',
     right: 10,
   },
