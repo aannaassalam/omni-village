@@ -11,6 +11,7 @@ const InputWithoutRightElement = ({
   onFocus,
   style,
   keyboardType = 'default',
+  onEndEditing,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -33,6 +34,7 @@ const InputWithoutRightElement = ({
           placeholderTextColor={'#333'}
           onFocus={onFocus}
           keyboardType={keyboardType}
+          onEndEditing={onEndEditing}
         />
       </View>
     </View>

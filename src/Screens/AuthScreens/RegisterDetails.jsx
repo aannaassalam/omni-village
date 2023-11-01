@@ -75,7 +75,8 @@ export default function RegisterDetails({navigation, route}) {
         .required(validation?.error?.land_measurement),
       phone: yup.string().required(validation?.error?.phone),
       number_of_members: yup
-        .number().max(20, "Number of members cannot be greater than 20!")
+        .number()
+        .max(20, 'Number of members cannot be greater than 20!')
         .required(validation.error.number_of_members),
       members: yup
         .array(
@@ -103,6 +104,7 @@ export default function RegisterDetails({navigation, route}) {
     formState: {errors},
     getValues,
     watch,
+    resetField,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -176,6 +178,7 @@ export default function RegisterDetails({navigation, route}) {
       EditUser({
         data: {
           ...data,
+          number_of_members: String(data.number_of_members),
           land_measurement_symbol: landmeasurement.find(
             lm => lm.name === data.land_measurement,
           ).symbol,
@@ -204,7 +207,6 @@ export default function RegisterDetails({navigation, route}) {
         },
       );
       if (granted === 'granted') {
-        console.log('You can use Geolocation');
         navigation.navigate('MapScreen', {
           setCoordinates: coords =>
             setValue('address', `${coords.latitude},${coords.longitude}`),
@@ -222,7 +224,6 @@ export default function RegisterDetails({navigation, route}) {
   const getLocation = async () => {
     const result = requestLocationPermission();
     result.then(res => {
-      console.log('res is:', res);
       if (res) {
         Geolocation.getCurrentPosition(
           position => {
@@ -243,7 +244,9 @@ export default function RegisterDetails({navigation, route}) {
     });
   };
 
-  console.log(user);
+  console.log('======================');
+  console.log(errors, 'errors');
+  console.log('======================');
 
   useFocusEffect(
     useCallback(() => {
@@ -405,7 +408,16 @@ export default function RegisterDetails({navigation, route}) {
                     placeholder={t('number of family members')}
                     keyboardType="number-pad"
                     onChangeText={e => {
-                      onChange(e);
+                      onChange(parseInt(e, 10) || 0);
+                      console.log(e, 'E');
+                      e !== '' &&
+                        parseInt(e) !== 0 &&
+                        setValue(
+                          'members',
+                          watch('members').filter(
+                            (_, idx) => idx < parseInt(e, 10),
+                          ),
+                        );
                       if (e !== '' && parseInt(e) !== 0)
                         setNumMembers(parseInt(e) > 20 ? 20 : parseInt(e));
                     }}
