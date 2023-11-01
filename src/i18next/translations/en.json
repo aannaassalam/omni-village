@@ -256,5 +256,6 @@
   "agent": "Agent",
   "ecommerce": "Ecommerce",
   "export": "Export",
-  "street address": "Street Address"
+  "street address": "Street Address",
+  "confirm": "Confirm"
 }

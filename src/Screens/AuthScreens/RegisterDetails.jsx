@@ -75,7 +75,7 @@ export default function RegisterDetails({navigation, route}) {
         .required(validation?.error?.land_measurement),
       phone: yup.string().required(validation?.error?.phone),
       number_of_members: yup
-        .string()
+        .number().max(20, "Number of members cannot be greater than 20!")
         .required(validation.error.number_of_members),
       members: yup
         .array(
@@ -113,7 +113,7 @@ export default function RegisterDetails({navigation, route}) {
       land_measurement: isEdit ? user?.land_measurement : '',
       last_name: isEdit ? user?.last_name : '',
       members: isEdit ? user?.members : '',
-      number_of_members: isEdit ? user?.number_of_members : '',
+      number_of_members: isEdit ? parseInt(user?.number_of_members) : '',
       document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',

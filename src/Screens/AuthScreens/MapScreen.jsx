@@ -93,6 +93,11 @@ export default function MapScreen({navigation, route}) {
         }}>
         <MaterialIcons name="gps-fixed" size={30} color="#555" />
       </Pressable>
+      <View style={{position: "absolute", bottom: 15, left: 0, right: 0}}>
+      <CustomButton
+              btnText={t('confirm')}
+              onPress={() => navigation.goBack()}
+            /></View>
     </SafeAreaView>
   );
 }
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
   crosshair: {
     top: 'auto',
     alignSelf: 'flex-end',
-    bottom: 50,
+    bottom: 80,
     left: 'auto',
     right: 10,
   },
