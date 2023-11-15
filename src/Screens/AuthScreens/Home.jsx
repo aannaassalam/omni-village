@@ -1,7 +1,6 @@
 import {Box, Button, Text} from '@react-native-material/core';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   View,
@@ -15,9 +14,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
 import {getUser, logout} from '../../Redux/AuthSlice';
 import {storage} from '../../Helper/Storage';
-import StringsOfLanguages from '../../string';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export default function Home({navigation, route}) {
   const {userToken, user} = useSelector(s => s.auth);
@@ -44,7 +43,7 @@ export default function Home({navigation, route}) {
   // }, [lang, StringsOfLanguages]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <Box style={styles.container}>
           {/* <Box>

@@ -3,7 +3,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   Dimensions,
   StyleSheet,
@@ -16,7 +15,7 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 import {SelectList} from 'react-native-dropdown-select-list';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 export default CustomDropdown3 = ({
@@ -31,7 +30,7 @@ export default CustomDropdown3 = ({
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   return (
     <View style={styles.textInputContainer}>
       <View style={styles.textInputInner}>
@@ -87,7 +86,7 @@ export default CustomDropdown3 = ({
             color: '#000',
             fontSize: 14 / fontScale,
           }}
-          placeholder={t("Select Option")}
+          placeholder={t('Select Option')}
           searchPlaceholder="Search here"
           inputStyles={{
             color: '#000',

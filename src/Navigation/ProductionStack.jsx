@@ -24,7 +24,6 @@ import SellingChannel from '../Screens/Selling Channel/SellingChannel';
 import PoultryEdit from '../Screens/Poultry/PoultryEdit';
 import FisheryRiver from '../Screens/Fishery/FisheryRiver';
 import FisheryRiverInput from '../Screens/Fishery/FisheryRiverInput';
-import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 import Consumption from '../Screens/Consumption/Consumption';
 import Succsessfull from '../Screens/Successfull';
 
@@ -47,7 +46,7 @@ export default function Productionstack() {
       {/* Tress,shrubs and grassland */}
       <Stack.Screen name="treesShrubGrassland" component={TreesShrubsScreen} />
       <Stack.Screen name="type" component={Type01} />
-      <Stack.Screen name='editType' component={EditType}/>
+      <Stack.Screen name="editType" component={EditType} />
       {/* poultry stack */}
       <Stack.Screen name="poultry" component={Poultry} />
       <Stack.Screen name="poultryType" component={PoultryType} />
@@ -70,7 +69,6 @@ export default function Productionstack() {
       <Stack.Screen name="sellingChannel" component={SellingChannel} />
       {/* successfull screen */}
       <Stack.Screen name="successfull" component={Succsessfull} />
-
     </Stack.Navigator>
   );
 }

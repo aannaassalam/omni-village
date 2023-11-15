@@ -1,6 +1,6 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, {Marker, Circle} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {useFocusEffect} from '@react-navigation/native';
 import {Pressable, StyleSheet, View} from 'react-native';
@@ -21,11 +21,17 @@ export default function MapScreen({navigation, route}) {
     longitudeDelta: 0.02,
   });
   const [marker, setMarker] = useState({latitude: 0, longitude: 0});
+  const [current_location, setCurrent_location] = useState({
+    latitude: 0,
+    longitude: 0,
+    accuracy: 0,
+  });
   const map = useRef();
 
   const {t} = useTranslation();
 
-  const {setCoordinates} = route.params;
+  const {setCoordinates, my_location} = route.params;
+  console.log(my_location);
 
   useFocusEffect(
     useCallback(() => {
@@ -33,14 +39,19 @@ export default function MapScreen({navigation, route}) {
         position => {
           console.log(position);
           setRegion({
+            latitude: my_location.lat ?? position.coords.latitude,
+            longitude: my_location.lng ?? position.coords.longitude,
+            latitudeDelta: 0.003,
+            longitudeDelta: 0.003,
+          });
+          setCurrent_location({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            latitudeDelta: 0.09,
-            longitudeDelta: 0.02,
+            radius: position.coords.accuracy,
           });
           setMarker({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            latitude: my_location.lat ?? position.coords.latitude,
+            longitude: my_location.lng ?? position.coords.longitude,
           });
         },
         error => {
@@ -55,11 +66,11 @@ export default function MapScreen({navigation, route}) {
         },
         {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
       );
-    }, []),
+    }, [my_location]),
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {Boolean(Object.keys(region).length) && (
         <MapView
           region={region}
@@ -69,6 +80,11 @@ export default function MapScreen({navigation, route}) {
             setMarker(e.nativeEvent.coordinate);
             setCoordinates(e.nativeEvent.coordinate);
           }}
+          showsUserLocation
+          showsMyLocationButton={false}
+          loadingEnabled
+          mapType="satellite"
+          // customMapStyle={styles.container}
           style={styles.container}>
           <Marker
             draggable
@@ -88,10 +104,10 @@ export default function MapScreen({navigation, route}) {
       <Pressable
         style={[styles.button, styles.crosshair]}
         onPress={() => {
-          setMarker({latitude: region.latitude, longitude: region.longitude});
+          // setMarker({latitude: region.latitude, longitude: region.longitude});
           setCoordinates({
-            latitude: region.latitude,
-            longitude: region.longitude,
+            latitude: current_location.latitude,
+            longitude: current_location.longitude,
           });
           map.current.animateToRegion(region);
         }}>

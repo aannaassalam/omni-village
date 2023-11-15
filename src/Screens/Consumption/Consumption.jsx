@@ -172,10 +172,21 @@ const Consumption = ({route, navigation}) => {
                 <AddAndDeleteCropButton
                   add={false}
                   darftStyle={{
-                    borderColor: consumption[0] !== undefined && consumption?.find((i) => i?.consumption_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                    borderColor:
+                      consumption[0] !== undefined &&
+                      consumption?.find(
+                        i => i?.consumption_crop?.name == element?.name,
+                      )?.status == 1
+                        ? 'grey'
+                        : '#e5c05e',
                   }}
                   drafted={
-                    consumption[0] !== undefined && consumption?.find((i) => i?.consumption_crop?.name == element?.name).status == 1 ? false : true
+                    consumption[0] !== undefined &&
+                    consumption?.find(
+                      i => i?.consumption_crop?.name == element?.name,
+                    )?.status == 1
+                      ? false
+                      : true
                   }
                   cropName={element?.name}
                   onPress={() =>

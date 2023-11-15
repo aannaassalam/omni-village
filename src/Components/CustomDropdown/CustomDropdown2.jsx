@@ -3,7 +3,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   Dimensions,
   StyleSheet,

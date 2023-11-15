@@ -1,10 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  useWindowDimensions,
-} from 'react-native';
+import {StyleSheet, TextInput, useWindowDimensions} from 'react-native';
 import {Scale} from '../../Helper/utils';
 
 export default function InputTextComponent({

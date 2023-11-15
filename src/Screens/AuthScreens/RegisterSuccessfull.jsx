@@ -24,7 +24,7 @@ export default function RegisterSuccessfull({navigation}) {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.inner}>
           <Image

@@ -24,7 +24,7 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {Controller, useForm} from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const CultivationDashboard = ({navigation, route}) => {
@@ -32,7 +32,7 @@ const CultivationDashboard = ({navigation, route}) => {
   const styles = makeStyles(fontScale);
   // const {totalLand = 20} = route.params;
   const {userDetails} = useSelector(s => s.auth);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -109,7 +109,7 @@ const CultivationDashboard = ({navigation, route}) => {
   console.log(userDetails.sub_area.cultivation.distribution);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <CustomHeader
         backIcon={true}
         headerName={t('cultivation')}
@@ -119,13 +119,15 @@ const CultivationDashboard = ({navigation, route}) => {
       {/* land allocated and modify section */}
       <View style={styles.secondTopContainer}>
         <View style={styles.secondTopContainerInner}>
-          <Text style={[styles.acresText, {flex: 0}]}>{t('land allocated for')}</Text>
+          <Text style={[styles.acresText, {flex: 0}]}>
+            {t('land allocated for')}
+          </Text>
           <Text
             style={[
               styles.acresText,
               {color: '#000', alignSelf: 'flex-start', marginTop: 5, flex: 0},
             ]}>
-            {t("cultivation")}
+            {t('cultivation')}
           </Text>
         </View>
         <Divider style={styles.divider} />
@@ -198,7 +200,7 @@ const CultivationDashboard = ({navigation, route}) => {
               dispatch(setCultivationType(2))
                 .unwrap()
                 .then(() => {
-                  navigation.navigate('season1', { seasonName: 'Season 1' });
+                  navigation.navigate('season1', {seasonName: 'Season 1'});
                 });
             } else {
               setGobalError('No Land Allocated for Cultivated twice in a year');
@@ -252,7 +254,7 @@ const CultivationDashboard = ({navigation, route}) => {
               dispatch(setCultivationType(3))
                 .unwrap()
                 .then(() => {
-                  navigation.navigate('season1', { seasonName: 'Season 1' });
+                  navigation.navigate('season1', {seasonName: 'Season 1'});
                 });
             } else {
               setGobalError('No Land Allocated for Cultivated once in a year');

@@ -123,7 +123,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
   }, [trees]);
   // console.log("cropty", trees)
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <CustomHeader
         goBack={() => navigation.goBack()}
@@ -167,10 +167,18 @@ const TreesShrubsScreen = ({navigation, route}) => {
             <AddAndDeleteCropButton
               add={false}
               darftStyle={{
-                borderColor: trees[0] !== undefined &&trees.find(j => j?.tree_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                borderColor:
+                  trees[0] !== undefined &&
+                  trees.find(j => j?.tree_crop?.name == element?.name).status ==
+                    1
+                    ? 'grey'
+                    : '#e5c05e',
               }}
               drafted={
-                trees[0] !== undefined && trees.find(j => j?.tree_crop?.name == element?.name).status == 1 ? false :true
+                trees[0] !== undefined &&
+                trees.find(j => j?.tree_crop?.name == element?.name).status == 1
+                  ? false
+                  : true
               }
               cropName={element?.name}
               onPress={() =>

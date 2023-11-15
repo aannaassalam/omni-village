@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -108,7 +107,7 @@ export default function LoginWithOtp({navigation}) {
                       SendOTP({
                         phone: user.phone,
                         country_code: `${user?.country_code}`,
-                        type:'login'
+                        type: 'login',
                       }),
                     )
                   : null

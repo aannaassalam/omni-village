@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   Button,
   useWindowDimensions,
   PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import CustomButton from '../../Components/CustomButton/CustomButton';
@@ -114,8 +114,8 @@ export default function RegisterDetails({navigation, route}) {
       first_name: isEdit ? user?.first_name : '',
       land_measurement: isEdit ? user?.land_measurement : '',
       last_name: isEdit ? user?.last_name : '',
-      members: isEdit ? user?.members : '',
-      number_of_members: isEdit ? parseInt(user?.number_of_members) : '',
+      members: isEdit ? user?.members : [],
+      number_of_members: isEdit ? parseInt(user?.number_of_members) : 0,
       document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
@@ -195,29 +195,42 @@ export default function RegisterDetails({navigation, route}) {
   };
 
   const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Access Required!',
-          message: 'We need to access your location for address related data',
-          // buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === 'granted') {
-        navigation.navigate('MapScreen', {
-          setCoordinates: coords =>
-            setValue('address', `${coords.latitude},${coords.longitude}`),
-        });
-        return true;
-      } else {
-        console.log('You cannot use Geolocation');
+    if (Platform.OS === 'ios') {
+      Geolocation.setRNConfiguration({
+        authorizationLevel: 'whenInUse',
+      });
+
+      Geolocation.requestAuthorization();
+      return null;
+    } else if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Access Required!',
+            message: 'We need to access your location for address related data',
+            // buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === 'granted') {
+          navigation.navigate('MapScreen', {
+            setCoordinates: coords =>
+              setValue('address', `${coords.latitude},${coords.longitude}`),
+            my_location: {
+              lat: parseFloat(watch('address').split(',')[0]) || null,
+              lng: parseFloat(watch('address').split(',')[1]) || null,
+            },
+          });
+          return true;
+        } else {
+          console.log('You cannot use Geolocation');
+          return false;
+        }
+      } catch (err) {
         return false;
       }
-    } catch (err) {
-      return false;
     }
   };
 
@@ -228,10 +241,11 @@ export default function RegisterDetails({navigation, route}) {
         Geolocation.getCurrentPosition(
           position => {
             console.log(position);
-            setValue(
-              'address',
-              `${position.coords.latitude},${position.coords.longitude}`,
-            );
+            if (!watch('address').length)
+              setValue(
+                'address',
+                `${position.coords.latitude},${position.coords.longitude}`,
+              );
           },
           error => {
             // See error code charts below.
@@ -409,17 +423,18 @@ export default function RegisterDetails({navigation, route}) {
                     keyboardType="number-pad"
                     onChangeText={e => {
                       onChange(parseInt(e, 10) || 0);
-                      console.log(e, 'E');
                       e !== '' &&
-                        parseInt(e) !== 0 &&
+                        parseInt(e, 10) !== 0 &&
                         setValue(
                           'members',
-                          watch('members').filter(
+                          watch('members')?.filter(
                             (_, idx) => idx < parseInt(e, 10),
-                          ),
+                          ) || [],
                         );
-                      if (e !== '' && parseInt(e) !== 0)
-                        setNumMembers(parseInt(e) > 20 ? 20 : parseInt(e));
+                      if (e !== '' && parseInt(e, 10) !== 0)
+                        setNumMembers(
+                          parseInt(e, 10) > 20 ? 20 : parseInt(e, 10),
+                        );
                     }}
                     value={value.toString() || value}
                   />

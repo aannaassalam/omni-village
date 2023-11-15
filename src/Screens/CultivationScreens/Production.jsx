@@ -65,7 +65,7 @@ const Production = ({navigation, route}) => {
   }, [userDetails?.sub_area]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <CustomHeader
         backIcon={true}
         headerName={t('production')}
