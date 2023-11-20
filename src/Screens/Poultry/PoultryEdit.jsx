@@ -20,6 +20,7 @@ import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBo
 import Toast from 'react-native-toast-message';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const PoultryEdit = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -200,7 +201,7 @@ const PoultryEdit = ({navigation, route}) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         goBack={() => navigation.goBack()}
         headerName={cropType}
@@ -406,7 +407,7 @@ const PoultryEdit = ({navigation, route}) => {
         style={{height: 'auto', minHeight: 70}}
         width={300}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -451,7 +452,7 @@ const makeStyles = fontScale =>
     },
     processing_text: {
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       textAlign: 'left',
       color: '#000',
       marginTop: 10,
@@ -462,7 +463,7 @@ const makeStyles = fontScale =>
       paddingHorizontal: 10,
       color: '#000',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     bottomPopupbutton: {
       flexDirection: 'row',
@@ -483,7 +484,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',

@@ -33,6 +33,7 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Type01 = ({navigation, route}) => {
   const {t} = useTranslation();
@@ -113,6 +114,10 @@ const Type01 = ({navigation, route}) => {
   const [harvestedProductList, setHarvestedProductList] = useState([]);
   const [productList, setProductlist] = useState([]);
   const [age, setAge] = useState('');
+
+  const bottomSheetRef = React.useRef(null);
+  const bottomSheetRef2 = React.useRef(null);
+
   const schema = yup.object().shape({
     important_information: yup.object().shape({
       number_of_trees: yup.string().required(t('trees is required')),
@@ -404,7 +409,7 @@ const Type01 = ({navigation, route}) => {
   };
   console.log('form', watch('important_information'));
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         goBack={() => navigation.goBack()}
         headerName={cropType}
@@ -717,96 +722,102 @@ const Type01 = ({navigation, route}) => {
           />
         </View>
       </ScrollView>
-      {treeAge && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('average of tree')}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setTreeAge(!treeAge);
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.chck_container}>
-            {averageAge.map((item, indx) => {
-              return (
-                <Controller
-                  control={control}
-                  key={indx}
-                  name="important_information.avg_age_of_trees"
-                  render={({field}) => {
-                    const {onChange, value} = field;
-                    return (
-                      // <CalendarPicker
-                      //   onDateChange={onChange}
-                      //   selectedStartDate={value}
-                      // />
-                      <Checkbox
-                        name={item?.age}
-                        checked={item?.checked}
-                        checking={() => {
-                          onChange(item?.name), toggleItem(item?.age, indx);
-                        }}
-                      />
-                    );
-                  }}
-                />
-              );
-            })}
-          </View>
-        </AddBottomSheet>
-      )}
-      {harvestProdAdd && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('add harvested product')}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setHarvestProdAdd(!harvestProdAdd);
-                setFocus(!focus);
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.harvested_prod_container}>
-            <InputWithoutBorder
-              measureName={'kg'}
-              productionName={t('name of harvested product')}
-              value={productName}
-              keyboardType="default"
-              onChangeText={e => {
-                setProductName(e);
-                if (e.endsWith('\n')) {
-                  setProductName(e);
-                  setHarvestProdAdd(!harvestProdAdd);
-                  setFocus(!focus);
-                  addProduct();
-                }
-              }}
-              multiline={true}
-              notRightText={true}
-              onFocus={() => setFocus(true)}
+      <AddBottomSheet
+        modalVisible={treeAge}
+        bottomSheetRef={bottomSheetRef}
+        setModal={setTreeAge}>
+        <View style={styles.BottomTopContainer}>
+          <Text style={styles.headerText}>{t('average of tree')}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setTreeAge(!treeAge);
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/close.png')}
+              style={styles.closeIcon}
             />
-          </View>
-          <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
-            <CustomButton
-              btnText={t('submit')}
-              onPress={() => {
+          </TouchableOpacity>
+        </View>
+        <View style={styles.chck_container}>
+          {averageAge.map((item, indx) => {
+            return (
+              <Controller
+                control={control}
+                key={indx}
+                name="important_information.avg_age_of_trees"
+                render={({field}) => {
+                  const {onChange, value} = field;
+                  return (
+                    // <CalendarPicker
+                    //   onDateChange={onChange}
+                    //   selectedStartDate={value}
+                    // />
+                    <Checkbox
+                      name={item?.age}
+                      checked={item?.checked}
+                      checking={() => {
+                        onChange(item?.name), toggleItem(item?.age, indx);
+                      }}
+                    />
+                  );
+                }}
+              />
+            );
+          })}
+        </View>
+      </AddBottomSheet>
+      <AddBottomSheet
+        modalVisible={harvestProdAdd}
+        setModal={setHarvestProdAdd}
+        bottomSheetRef={bottomSheetRef2}>
+        <View style={styles.BottomTopContainer}>
+          <Text style={styles.headerText}>{t('add harvested product')}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setHarvestProdAdd(!harvestProdAdd);
+              setFocus(!focus);
+              bottomSheetRef2.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/close.png')}
+              style={styles.closeIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.harvested_prod_container}>
+          <InputWithoutBorder
+            measureName={'kg'}
+            productionName={t('name of harvested product')}
+            value={productName}
+            keyboardType="default"
+            onChangeText={e => {
+              setProductName(e);
+              if (e.endsWith('\n')) {
+                setProductName(e);
                 setHarvestProdAdd(!harvestProdAdd);
                 setFocus(!focus);
                 addProduct();
-              }}
-            />
-          </View>
-        </AddBottomSheet>
-      )}
+                bottomSheetRef2.current.close();
+              }
+            }}
+            multiline={true}
+            notRightText={true}
+            onFocus={() => setFocus(true)}
+          />
+        </View>
+        <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
+          <CustomButton
+            btnText={t('submit')}
+            onPress={() => {
+              // bottomSheetRef2.current.close();
+              setHarvestProdAdd(!harvestProdAdd);
+              setFocus(!focus);
+              addProduct();
+            }}
+          />
+        </View>
+      </AddBottomSheet>
       {/* submit popup */}
       <PopupModal
         modalVisible={savepopup}
@@ -874,7 +885,7 @@ const Type01 = ({navigation, route}) => {
         style={{height: 'auto', minHeight: 70}}
         width={300}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -935,7 +946,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',
@@ -957,7 +968,7 @@ const makeStyles = fontScale =>
       marginTop: '5%',
     },
     add_button_text: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       color: '#fff',
       alignSelf: 'center',
@@ -996,7 +1007,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',

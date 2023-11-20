@@ -27,6 +27,7 @@ const InputWithoutRightElement = ({
             borderRadius: 10,
           }}
           mode="outlined"
+          textAlignVertical="auto"
           label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
           value={value}
           style={[styles.textInput, style]}
@@ -52,7 +53,7 @@ const makeStyles = fontScale =>
     },
     textInput: {
       backgroundColor: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
     },
   });

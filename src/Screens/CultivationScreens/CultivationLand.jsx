@@ -52,7 +52,9 @@ export default function CultivationLand() {
   const {t} = useTranslation();
   return (
     <>
-      <SafeAreaView style={{flex: 1}} edges={['top', 'left', 'right']}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#fff'}}
+        edges={['top', 'left', 'right']}>
         <ScrollView contentContainerStyle={{flex: 1}}>
           <View style={styles.container}>
             <Flex style={styles.cultivate_sec}>

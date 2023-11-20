@@ -33,7 +33,7 @@ export default function Succsessfull({navigation}) {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}} edges={['top']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.inner}>
           <Image
@@ -46,7 +46,7 @@ export default function Succsessfull({navigation}) {
               fontSize: 22 / fontScale,
               color: '#263238',
               marginBottom: 15,
-              fontFamily: 'ubuntu_medium',
+              fontFamily: 'ubuntu-medium',
             }}>
             {t('successfully created')}
           </Text>
@@ -81,7 +81,7 @@ const makeStyles = fontScale =>
       textAlign: 'center',
       maxWidth: 269,
       marginHorizontal: 'auto',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       lineHeight: 15,
     },
   });

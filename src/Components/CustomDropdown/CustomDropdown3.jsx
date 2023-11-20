@@ -100,6 +100,10 @@ export default CustomDropdown3 = ({
             borderColor: '#fff',
             borderWidth: 1,
             elevation: 5,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
             backgroundColor: '#fff',
             width: '90%',
             alignSelf: 'center',
@@ -133,7 +137,7 @@ const makeStyles = fontScale =>
       marginLeft: 5,
       color: '#268C43',
       fontSize: 12 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     dropdownsRow: {
       flexDirection: 'row',
@@ -153,7 +157,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     dropdown1DropdownStyle: {
@@ -171,7 +175,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     icon_btn: {

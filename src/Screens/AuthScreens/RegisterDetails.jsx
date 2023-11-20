@@ -196,11 +196,27 @@ export default function RegisterDetails({navigation, route}) {
 
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
+      const granted = await Geolocation.requestAuthorization('whenInUse');
       Geolocation.setRNConfiguration({
+        skipPermissionRequests: false,
         authorizationLevel: 'whenInUse',
       });
 
-      Geolocation.requestAuthorization();
+      if (granted === 'granted') {
+        navigation.navigate('MapScreen', {
+          setCoordinates: coords =>
+            setValue('address', `${coords.latitude},${coords.longitude}`),
+          my_location: {
+            lat: parseFloat(watch('address').split(',')[0]) || null,
+            lng: parseFloat(watch('address').split(',')[1]) || null,
+          },
+        });
+        return true;
+      } else {
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+
       return null;
     } else if (Platform.OS === 'android') {
       try {
@@ -257,10 +273,6 @@ export default function RegisterDetails({navigation, route}) {
       }
     });
   };
-
-  console.log('======================');
-  console.log(errors, 'errors');
-  console.log('======================');
 
   useFocusEffect(
     useCallback(() => {
@@ -628,6 +640,7 @@ export default function RegisterDetails({navigation, route}) {
                       placeholderTextColor={'#333'}
                       keyboardType="default"
                       editable={false}
+                      textAlignVertical="auto"
                       right={
                         <TextInput.Icon
                           icon="crosshairs-gps"
@@ -772,7 +785,7 @@ const makeStyles = fontScale =>
       color: '#FFF',
       justifyContent: 'center',
       alignItems: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     file_box2: {
       // border: 1px solid #C6F1D3,
@@ -805,7 +818,7 @@ const makeStyles = fontScale =>
       color: '#268C43',
       fontSize: 14 / fontScale,
       marginLeft: 7,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       marginRight: 'auto',
       flex: 1,
       flexWrap: 'wrap',
@@ -823,7 +836,7 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       fontFamily: 'ubuntu',
@@ -863,7 +876,7 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
       // width: 100,
       fontSize: 10 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       color: '#263238',
     },
     line_border: {
@@ -875,7 +888,7 @@ const makeStyles = fontScale =>
       width: '64%',
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
       color: '#ff000e',
@@ -888,7 +901,7 @@ const makeStyles = fontScale =>
       marginTop: 15,
     },
     cityName: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       alignSelf: 'flex-start',
       marginTop: 5,
@@ -903,7 +916,7 @@ const makeStyles = fontScale =>
     },
     textInput: {
       backgroundColor: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
     },
   });

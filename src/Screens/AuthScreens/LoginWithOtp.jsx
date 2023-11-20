@@ -17,8 +17,11 @@ import {LoginUser, RegisterUser, SendOTP, getUser} from '../../Redux/AuthSlice';
 import OtpInput from '../../Components/OtpInputs';
 import {Scale} from '../../Helper/utils';
 import {useTranslation} from 'react-i18next';
+import {useMutation} from '@tanstack/react-query';
+import {login} from '../../functions/AuthScreens';
+import {storage} from '../../Helper/Storage';
 
-export default function LoginWithOtp({navigation}) {
+export default function LoginWithOtp({navigation, route}) {
   const {user} = useSelector(state => state.auth);
 
   const {fontScale} = useWindowDimensions();
@@ -42,29 +45,38 @@ export default function LoginWithOtp({navigation}) {
     };
   }, []);
 
+  const {
+    isPending,
+    mutate,
+    error: eror,
+  } = useMutation({
+    mutationFn: login,
+    onSuccess: data => {
+      storage.set('token', data?.data?.token);
+      storage.set('refresh_token', data?.data?.refreshToken);
+      dispatch(getUser())
+        .unwrap()
+        .then(res => {
+          if (res.data?.first_name === '-') {
+            navigation.replace('registerdetails');
+            // navigation.replace('loginsuccess');
+          } else {
+            navigation.replace('loginsuccess');
+          }
+        })
+        .catch(error => console.log(error));
+    },
+    onError: error => {
+      if (error.response.status === 401) {
+        setErr(error.response.data.message);
+      }
+      console.log(error.response.status, 'err');
+    },
+  });
+
   const FormSubmit = () => {
     if (otp.length === 4) {
-      dispatch(LoginUser({...user, otp}))
-        .unwrap()
-        .then(() => {
-          dispatch(getUser())
-            .unwrap()
-            .then(res => {
-              if (res.data?.first_name === '-') {
-                navigation.replace('registerdetails');
-                // navigation.replace('loginsuccess');
-              } else {
-                navigation.replace('loginsuccess');
-              }
-            })
-            .catch(error => console.log(error));
-        })
-        .catch(error => {
-          if (error.status === 401) {
-            setErr(error.data.message);
-          }
-          console.log(error, 'err');
-        });
+      mutate({...route.params, otp});
     } else {
       setErr(t('invalid otp'));
     }
@@ -88,14 +100,18 @@ export default function LoginWithOtp({navigation}) {
                 marginTop: 5,
                 marginLeft: 10,
                 color: '#ff000e',
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
               }}>
               {err}
             </Text>
           )}
         </View>
         <View style={styles.login_submit}>
-          <CustomButton btnText={t('confirm')} onPress={FormSubmit} />
+          <CustomButton
+            btnText={t('confirm')}
+            onPress={FormSubmit}
+            loading={isPending}
+          />
         </View>
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
@@ -138,11 +154,11 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
     },
     login_input: {
@@ -211,19 +227,19 @@ const makeStyles = fontScale =>
       color: `#268C43`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     low_green: {
       color: `#268c4387`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     normal_text: {
       color: '#36393B',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
   });

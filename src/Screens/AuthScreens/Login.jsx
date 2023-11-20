@@ -25,6 +25,8 @@ import CountryPicker, {
   CountryCode,
 } from 'react-native-country-picker-modal';
 import {useTranslation} from 'react-i18next';
+import {useMutation} from '@tanstack/react-query';
+import {sentOtp} from '../../functions/AuthScreens';
 export default function Login({navigation, route}) {
   const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
@@ -65,23 +67,42 @@ export default function Login({navigation, route}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
+  const {isPending, mutate} = useMutation({
+    mutationFn: sentOtp,
+    onSuccess: (data, variables) => {
+      navigation.navigate('loginotp', variables);
+    },
+    onError: err => {
+      console.log(err);
+      if (err.status === 400) {
+        setApi_err(err.data.message);
+      }
+      console.log(err.data.message);
+    },
+  });
+
   const FormSubmit = data => {
-    dispatch(
-      SendOTP({
-        ...data,
-        country_code: `+${selectedCountry?.callingCode[0]}`,
-        type: 'login',
-      }),
-    )
-      .unwrap()
-      .then(() => navigation.navigate('loginotp'))
-      .catch(err => {
-        console.log(err);
-        if (err.status === 400) {
-          setApi_err(err.data.message);
-        }
-        console.log(err.data.message);
-      });
+    // dispatch(
+    //   SendOTP({
+    //     ...data,
+    //     country_code: `+${selectedCountry?.callingCode[0]}`,
+    //     type: 'login',
+    //   }),
+    // )
+    //   .unwrap()
+    //   .then(() => navigation.navigate('loginotp'))
+    //   .catch(err => {
+    //     console.log(err);
+    //     if (err.status === 400) {
+    //       setApi_err(err.data.message);
+    //     }
+    //     console.log(err.data.message);
+    //   });
+    mutate({
+      ...data,
+      country_code: `+${selectedCountry?.callingCode[0]}`,
+      type: 'login',
+    });
   };
 
   return (
@@ -121,7 +142,7 @@ export default function Login({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {errors.phone.message}
               </Text>
@@ -132,7 +153,7 @@ export default function Login({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {api_err}
               </Text>
@@ -148,6 +169,7 @@ export default function Login({navigation, route}) {
             <CustomButton
               btnText={t('login')}
               onPress={handleSubmit(FormSubmit)}
+              loading={isPending}
             />
           </View>
           <CountryPicker
@@ -235,7 +257,7 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     text: {
       color: '#000',
@@ -271,7 +293,7 @@ const makeStyles = fontScale =>
       width: 100,
       fontSize: 14 / fontScale,
       color: '#5C6066',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     form_btm_text: {
       width: '100%',
@@ -300,12 +322,12 @@ const makeStyles = fontScale =>
     register_text_frst: {
       fontSize: 14 / fontScale,
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
     register_text_scnd: {
       color: '#268C43',
       fontSize: 14 / fontScale,
       marginLeft: 5,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
   });

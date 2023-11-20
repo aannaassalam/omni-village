@@ -132,7 +132,7 @@ export default function Register({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {errors.phone.message}
               </Text>
@@ -143,7 +143,7 @@ export default function Register({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {api_err}
               </Text>
@@ -240,7 +240,7 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       fontFamily: 'ubuntu',
@@ -271,7 +271,7 @@ const makeStyles = fontScale =>
       width: 100,
       fontSize: Scale(12),
       color: '#5C6066',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     form_btm_text: {
       width: '100%',
@@ -300,13 +300,13 @@ const makeStyles = fontScale =>
     register_text_frst: {
       fontSize: 14 / fontScale,
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
     register_text_scnd: {
       color: '#268C43',
       fontSize: 14 / fontScale,
       marginLeft: 5,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     text: {
       color: '#000',

@@ -69,11 +69,12 @@ const makeStyles = fontScale =>
     },
     inputRadius: {
       width: '15%',
+      paddingVertical: 14,
       textAlign: 'center',
       backgroundColor: '#fff',
       borderWidth: 1,
       borderColor: '#eee',
       fontSize: 16 / fontScale,
-      color:'#000'
+      color: '#000',
     },
   });

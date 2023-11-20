@@ -2,19 +2,19 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "assets/fonts/ubuntu_bold.ttf",
+      "path": "assets/fonts/ubuntu-bold.ttf",
       "sha1": "020aaec9cdeb59aa8ebd2e4c693527cddb2d1577"
     },
     {
-      "path": "assets/fonts/ubuntu_light.ttf",
+      "path": "assets/fonts/ubuntu-light.ttf",
       "sha1": "d060b0ff74b379dcc3d10ac2d024602af419d9f0"
     },
     {
-      "path": "assets/fonts/ubuntu_medium.ttf",
+      "path": "assets/fonts/ubuntu-medium.ttf",
       "sha1": "da662f767e6261491e20da197bd7ffbb7a7d122c"
     },
     {
-      "path": "assets/fonts/ubuntu_regular.ttf",
+      "path": "assets/fonts/ubuntu-regular.ttf",
       "sha1": "8238e55f0320c3abc74057c988367c2f25fa3727"
     }
   ]

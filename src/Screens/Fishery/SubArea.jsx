@@ -22,6 +22,7 @@ import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {getHuntingCrops} from '../../Redux/HuntingCropSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const SubArea = ({navigation, route}) => {
   const {totalLand, screenName, type, cropId, data} = route.params;
@@ -147,7 +148,7 @@ const SubArea = ({navigation, route}) => {
   }, [data]);
   // console.log("data", cropType)
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         backIcon={true}
         headerName={screenName}
@@ -265,7 +266,7 @@ const SubArea = ({navigation, route}) => {
           </View>
         </AddBottomSheet>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -288,7 +289,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

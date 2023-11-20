@@ -9,12 +9,17 @@ import 'react-native-gesture-handler';
 import {Provider} from 'react-redux';
 import {store} from './src/Store/store';
 import React from 'react';
+import {QueryClientProvider, QueryClient} from '@tanstack/react-query';
+
+export const queryClient = new QueryClient();
 
 const ProcessedApp = () => {
   return (
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </QueryClientProvider>
   );
 };
 

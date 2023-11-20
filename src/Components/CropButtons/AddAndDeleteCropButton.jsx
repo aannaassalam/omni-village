@@ -8,20 +8,24 @@ import {
 } from 'react-native';
 import React from 'react';
 
-const AddAndDeleteCropButton = ({ onPress, add, cropName, darftStyle, drafted }) => {
-  const { fontScale } = useWindowDimensions();
+const AddAndDeleteCropButton = ({
+  onPress,
+  add,
+  cropName,
+  darftStyle,
+  drafted,
+}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
     <View style={[styles.container, darftStyle]}>
       <Text style={styles.addButtonText}>{cropName}</Text>
-      {drafted ?
+      {drafted ? (
         <Image
           source={require('../../../assets/infocircle.png')}
           style={styles.draftIcon}
         />
-        :
-        null
-      }
+      ) : null}
       <TouchableOpacity onPress={onPress}>
         {add ? (
           <Image
@@ -59,7 +63,7 @@ const makeStyles = fontScale =>
       fontSize: 14 / fontScale,
       fontWeight: '500',
       alignSelf: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       textTransform: 'capitalize',
     },
     addCropIcon: {
@@ -71,6 +75,6 @@ const makeStyles = fontScale =>
       width: 10,
       top: 5,
       right: 10,
-      position: 'absolute'
-    }
+      position: 'absolute',
+    },
   });

@@ -384,7 +384,7 @@ const CultivationDashboard = ({navigation, route}) => {
           // })} */}
             <Text
               style={{
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
                 fontSize: 14 / fontScale,
                 marginTop: 5,
                 color: '#ff000e',
@@ -453,7 +453,7 @@ const makeStyles = fontScale =>
     topText: {
       fontSize: 14 / fontScale,
       color: '#576A74',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       width: '25%',
       marginLeft: 5,
     },
@@ -488,7 +488,7 @@ const makeStyles = fontScale =>
     },
     acresText: {
       alignSelf: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       color: 'green',
       fontSize: 14 / fontScale,
       flex: 1,
@@ -548,7 +548,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

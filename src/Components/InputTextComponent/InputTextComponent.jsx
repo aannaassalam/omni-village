@@ -41,7 +41,7 @@ const makeStyles = fontScale =>
       borderWidth: 1,
       fontSize: 14 / fontScale,
       color: '#263238',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
     inputSmall: {
       width: 50,
@@ -53,6 +53,6 @@ const makeStyles = fontScale =>
       textAlign: 'center',
       fontSize: 14 / fontScale,
       color: '#263238',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
   });

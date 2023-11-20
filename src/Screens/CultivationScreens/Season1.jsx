@@ -6,14 +6,14 @@ import {
   Image,
   useWindowDimensions,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { ActivityIndicator, Divider } from 'react-native-paper';
+import {ActivityIndicator, Divider} from 'react-native-paper';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   getAllCrop,
   getCrop,
@@ -27,24 +27,25 @@ import {
   setCropId,
 } from '../../Redux/CultivationSlice';
 import Toast from 'react-native-toast-message';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import PopupModal from '../../Components/Popups/PopupModal';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-const Season1 = ({ navigation, route }) => {
-  const { fontScale } = useWindowDimensions();
+const Season1 = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
   const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState({ name: '' });
+  const [selectedCategory, setSelectedCategory] = useState({name: ''});
   const [selectCrops, setSelectCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState({});
   const [deletePopup, setDeletePopup] = useState(false);
@@ -52,14 +53,18 @@ const Season1 = ({ navigation, route }) => {
   const [deleteCrop, setDeleteCrop] = useState('');
   const [globalError, setGlobalError] = useState('');
 
-  const dispatch = useDispatch();
-  const { seasonName = 'Season 1' } = route.params;
+  const bottomSheetRef = React.useRef(null);
 
-  const { userDetails } = useSelector(s => s.auth);
-  const { cultivations, cultivationType, status } = useSelector(
+  const nav = useNavigation();
+
+  const dispatch = useDispatch();
+  const {seasonName = 'Season 1'} = route.params;
+
+  const {userDetails} = useSelector(s => s.auth);
+  const {cultivations, cultivationType, status} = useSelector(
     s => s.cultivation,
   );
-  const { crops, cropCategories, addedCrop } = useSelector(s => s.crop);
+  const {crops, cropCategories, addedCrop} = useSelector(s => s.crop);
 
   useFocusEffect(
     useCallback(() => {
@@ -73,7 +78,7 @@ const Season1 = ({ navigation, route }) => {
       return () => {
         setSelectCrops([]);
         setSelectedCrop({});
-        setSelectedCategory({ name: '' });
+        setSelectedCategory({name: ''});
         setGlobalError('');
       };
     }, [cultivations]),
@@ -97,7 +102,7 @@ const Season1 = ({ navigation, route }) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        dispatch(saveCrop({ name: otherCrop, categoryId: '' }))
+        dispatch(saveCrop({name: otherCrop, categoryId: ''}))
           .unwrap()
           .then(async res => {
             setSelectCrops(prev => [...prev, res.data]);
@@ -129,6 +134,7 @@ const Season1 = ({ navigation, route }) => {
           });
         });
       }
+      bottomSheetRef.current.close();
     }
   };
 
@@ -149,27 +155,30 @@ const Season1 = ({ navigation, route }) => {
     }
   };
   return (
-    <View style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={seasonName}
-        goBack={() => navigation.goBack()}
-      />
-      <CustomDashboard first={t('production')} second={t('cultivation')} />
-      {/* top container for land allocated and modify */}
-      <View style={styles.top_container}>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>{t('land allocated')}</Text>
-        </View>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.value_text}>
-            {userDetails.sub_area.cultivation.land}{' '}
-            {userDetails.land_measurement_symbol
-              ? userDetails.land_measurement_symbol
-              : userDetails.land_measurement}
-          </Text>
-        </View>
-        {/* <Divider style={styles.divider} />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={seasonName}
+          goBack={() => navigation.goBack()}
+        />
+        <CustomDashboard first={t('production')} second={t('cultivation')} />
+        {/* top container for land allocated and modify */}
+        <View style={styles.top_container}>
+          <View style={styles.top_container_inner}>
+            <Text style={styles.land_allocated_text}>
+              {t('land allocated')}
+            </Text>
+          </View>
+          <View style={styles.top_container_inner}>
+            <Text style={styles.value_text}>
+              {userDetails.sub_area.cultivation.land}{' '}
+              {userDetails.land_measurement_symbol
+                ? userDetails.land_measurement_symbol
+                : userDetails.land_measurement}
+            </Text>
+          </View>
+          {/* <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text
             style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
@@ -177,77 +186,92 @@ const Season1 = ({ navigation, route }) => {
             Modify
           </Text>
         </View> */}
-      </View>
-      {status === 'idle' ? (
-        <>
-          {selectCrops?.map((element, i) => {
-            return (
-              <TouchableOpacity
-                style={styles.addAndDeleteButtonSection}
-                key={element._id}
-                onPress={() => {
-                  dispatch(setCropId(element._id))
-                    .unwrap()
-                    .then(() => {
-                      navigation.navigate('cropDescription', {
-                        cropName: element?.name,
-                      });
-                    });
-                }}>
-                <AddAndDeleteCropButton
-                  darftStyle={{
-                    borderColor: cultivations[0] !== undefined &&cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? 'grey' :'#e5c05e'
-                  }}
-                  drafted={
-                    cultivations[0]!==undefined && cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? false : true
-                  }
-                  add={false}
-                  cropName={element?.name}
-                  onPress={() => {
-                    setDelete_id(element.cultivation_id);
-                    setDeleteCrop(element._id);
-                    setDeletePopup(true);
-                  }}
-                />
-              </TouchableOpacity>
-            );
-          })}
-          {/* {cropType[0] === undefined ? ( */}
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            onPress={() => setCropModal(true)}>
-            <AddAndDeleteCropButton
-              add={true}
-              cropName={t('add crop')}
-              onPress={() => setCropModal(true)}
-            />
-          </TouchableOpacity>
-        </>
-      ) : (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator animating size="large" color="#268C43" />
         </View>
-      )}
-      {cropModal && (
+        {status === 'idle' ? (
+          <>
+            {selectCrops?.map((element, i) => {
+              return (
+                <TouchableOpacity
+                  style={styles.addAndDeleteButtonSection}
+                  key={element._id}
+                  onPress={() => {
+                    dispatch(setCropId(element._id))
+                      .unwrap()
+                      .then(() => {
+                        navigation.navigate('cropDescription', {
+                          cropName: element?.name,
+                        });
+                      });
+                  }}>
+                  <AddAndDeleteCropButton
+                    darftStyle={{
+                      borderColor:
+                        cultivations[0] !== undefined &&
+                        cultivations?.find(
+                          i => i?.cultivation_crop?.name == element?.name,
+                        )?.important_information?.status == 1
+                          ? 'grey'
+                          : '#e5c05e',
+                    }}
+                    drafted={
+                      cultivations[0] !== undefined &&
+                      cultivations?.find(
+                        i => i?.cultivation_crop?.name == element?.name,
+                      )?.important_information?.status == 1
+                        ? false
+                        : true
+                    }
+                    add={false}
+                    cropName={element?.name}
+                    onPress={() => {
+                      setDelete_id(element.cultivation_id);
+                      setDeleteCrop(element._id);
+                      setDeletePopup(true);
+                    }}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+            {/* {cropType[0] === undefined ? ( */}
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => setCropModal(true)}>
+              <AddAndDeleteCropButton
+                add={true}
+                cropName={t('add crop')}
+                onPress={() => setCropModal(true)}
+              />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator animating size="large" color="#268C43" />
+          </View>
+        )}
+        {/* {cropModal && ( */}
         <AddBottomSheet
           modalVisible={cropModal}
           setBottomModalVisible={toggle => {
             setCropModal(toggle);
-            setSelectedCategory({ name: '' });
+            setSelectedCategory({name: ''});
             setSelectedCrop({});
             setOtherCrop('');
+            bottomSheetRef.current.close();
           }}
-          styleInner={{ height: focusOther ? '80%' : '35%' }}>
+          setModal={setCropModal}
+          bottomSheetRef={bottomSheetRef}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>{t('add crop')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({ name: '' });
+                setSelectedCategory({name: ''});
                 setSelectedCrop({});
                 setOtherCrop('');
                 setFocusOther(false);
                 setDropdownVal('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/close.png')}
@@ -282,9 +306,9 @@ const Season1 = ({ navigation, route }) => {
                 );
                 setOtherCrop('');
               }}
-              data={[...crops, { _id: 0, name: 'Others' }]}
+              data={[...crops, {_id: 0, name: 'Others'}]}
               placeholder="Select a crop"
-              valu={{ label: selectedCrop.name, value: selectedCrop._id }}
+              valu={{label: selectedCrop.name, value: selectedCrop._id}}
             />
             {selectedCrop?.name === 'Others' ? (
               <InputWithoutRightElement
@@ -297,7 +321,7 @@ const Season1 = ({ navigation, route }) => {
             ) : null}
             <Text
               style={{
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
                 fontSize: 14 / fontScale,
                 marginTop: 5,
                 color: '#ff000e',
@@ -311,9 +335,10 @@ const Season1 = ({ navigation, route }) => {
               style={styles.crossButton}
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({ name: '' });
+                setSelectedCategory({name: ''});
                 setSelectedCrop({});
                 setOtherCrop('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/cross.png')}
@@ -322,55 +347,56 @@ const Season1 = ({ navigation, route }) => {
             </TouchableOpacity>
             <CustomButton
               btnText={t('create')}
-              style={{ width: '80%' }}
+              style={{width: '80%'}}
               onPress={addCrop}
             />
           </View>
         </AddBottomSheet>
-      )}
-      <PopupModal
-        modalVisible={deletePopup}
-        setBottomModalVisible={toggle => {
-          setDelete_id('');
-          setDeleteCrop('');
-          setDeletePopup(toggle);
-        }}
-        styleInner={[styles.savePopup, { width: '90%' }]}>
-        <View style={styles.submitPopup}>
-          <View style={styles.noteImage}>
-            <Image
-              source={require('../../../assets/note.png')}
-              style={styles.noteImage}
-            />
+        {/* // )} */}
+        <PopupModal
+          modalVisible={deletePopup}
+          setBottomModalVisible={toggle => {
+            setDelete_id('');
+            setDeleteCrop('');
+            setDeletePopup(toggle);
+          }}
+          styleInner={[styles.savePopup, {width: '90%'}]}>
+          <View style={styles.submitPopup}>
+            <View style={styles.noteImage}>
+              <Image
+                source={require('../../../assets/note.png')}
+                style={styles.noteImage}
+              />
+            </View>
+            <Text style={styles.confirmText}>{t('confirm')}</Text>
+            <Text style={styles.nextText}>
+              {t('Do you want to delete this crop?')}
+            </Text>
+            <View style={styles.bottomPopupbutton}>
+              <CustomButton
+                style={styles.submitButton}
+                btnText={t('yes delete')}
+                onPress={handleDelete}
+              />
+              <CustomButton
+                style={styles.draftButton}
+                btnText={t('no')}
+                onPress={() => {
+                  setDelete_id('');
+                  setDeleteCrop('');
+                  setDeletePopup(false);
+                }}
+              />
+            </View>
           </View>
-          <Text style={styles.confirmText}>{t('confirm')}</Text>
-          <Text style={styles.nextText}>
-            {t('Do you want to delete this crop?')}
-          </Text>
-          <View style={styles.bottomPopupbutton}>
-            <CustomButton
-              style={styles.submitButton}
-              btnText={t('yes delete')}
-              onPress={handleDelete}
-            />
-            <CustomButton
-              style={styles.draftButton}
-              btnText={t('no')}
-              onPress={() => {
-                setDelete_id('');
-                setDeleteCrop('');
-                setDeletePopup(false);
-              }}
-            />
-          </View>
-        </View>
-      </PopupModal>
-      <Toast
-        positionValue={30}
-        style={{ height: 'auto', minHeight: 70 }}
-        width={300}
-      />
-    </View>
+        </PopupModal>
+        <Toast
+          positionValue={30}
+          style={{height: 'auto', minHeight: 70}}
+          width={300}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -399,12 +425,12 @@ const makeStyles = fontScale =>
     land_allocated_text: {
       fontSize: 14 / fontScale,
       color: '#C1D8C7',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     value_text: {
       fontSize: 14 / fontScale,
       color: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     divider: {
       height: '70%',
@@ -424,7 +450,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',
@@ -485,7 +511,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',

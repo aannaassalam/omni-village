@@ -102,7 +102,7 @@ const Production = ({navigation, route}) => {
         </View>
       </View>
       {/* showcase input of used land */}
-      <ScrollView>
+      <ScrollView contentContainerStyle={{paddingBottom: 40}}>
         <>
           {Object.keys(userDetails?.sub_area).map(item => {
             return (
@@ -164,13 +164,13 @@ const makeStyles = fontScale =>
     land_allocated_text: {
       fontSize: 14 / fontScale,
       color: '#C1D8C7',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       flexWrap: 'wrap',
     },
     value_text: {
       fontSize: 14 / fontScale,
       color: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     divider: {
       height: '70%',

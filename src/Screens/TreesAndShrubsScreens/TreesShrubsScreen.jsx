@@ -40,6 +40,9 @@ const TreesShrubsScreen = ({navigation, route}) => {
   const [dropdownVal, setDropdownVal] = useState({});
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
+
+  const bottomSheetRef = React.useRef(null);
+
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
     list.splice(index, 1);
@@ -104,6 +107,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
     } else {
       addCrop();
     }
+    bottomSheetRef.current.close();
   };
   // console.log("dropdown", dropdownVal)
   const DropdownSelectedValue = data => {
@@ -169,14 +173,15 @@ const TreesShrubsScreen = ({navigation, route}) => {
               darftStyle={{
                 borderColor:
                   trees[0] !== undefined &&
-                  trees.find(j => j?.tree_crop?.name == element?.name).status ==
-                    1
+                  trees.find(j => j?.tree_crop?.name == element?.name)
+                    ?.status == 1
                     ? 'grey'
                     : '#e5c05e',
               }}
               drafted={
                 trees[0] !== undefined &&
-                trees.find(j => j?.tree_crop?.name == element?.name).status == 1
+                trees.find(j => j?.tree_crop?.name == element?.name)?.status ==
+                  1
                   ? false
                   : true
               }
@@ -203,59 +208,64 @@ const TreesShrubsScreen = ({navigation, route}) => {
           onPress={() => setCropModal(true)}
         />
       </TouchableOpacity>
-      {cropModal && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('add tree shrub')}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setCropModal(!cropModal);
-                setFocusOther(false);
-                setDropdownVal('');
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.dropdownSection}>
-            <CustomDropdown4
-              selectedValue={e => {
-                DropdownSelectedValue({name: e, _id: e.value});
-              }}
-              data={[...treeCrops, {_id: 0, name: 'Others'}]}
-              valu={dropdownVal?.name}
+      <AddBottomSheet
+        modalVisible={cropModal}
+        bottomSheetRef={bottomSheetRef}
+        setModal={setCropModal}>
+        <View style={styles.BottomTopContainer}>
+          <Text style={styles.headerText}>{t('add tree shrub')}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setCropModal(!cropModal);
+              setFocusOther(false);
+              setDropdownVal('');
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/close.png')}
+              style={styles.closeIcon}
             />
-            {dropdownVal.name?.label === 'Others' ? (
-              <InputWithoutRightElement
-                label={t('tree shrub name')}
-                placeholder={t('eg banyan')}
-                onChangeText={e => setOtherCrop({name: e, _id: 0})}
-                value={otherCrop?.name}
-                onFocus={() => setFocusOther(true)}
-              />
-            ) : null}
-          </View>
-          <View style={styles.BottomSheetButton}>
-            <TouchableOpacity
-              style={styles.crossButton}
-              onPress={() => setCropModal(!cropModal)}>
-              <Image
-                source={require('../../../assets/cross.png')}
-                style={styles.addCropIcon}
-              />
-            </TouchableOpacity>
-            <CustomButton
-              btnText={t('create')}
-              style={{width: '80%'}}
-              onPress={() => {
-                addingTreesCrop();
-              }}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dropdownSection}>
+          <CustomDropdown4
+            selectedValue={e => {
+              DropdownSelectedValue({name: e, _id: e.value});
+            }}
+            data={[...treeCrops, {_id: 0, name: 'Others'}]}
+            valu={dropdownVal?.name}
+          />
+          {dropdownVal.name?.label === 'Others' ? (
+            <InputWithoutRightElement
+              label={t('tree shrub name')}
+              placeholder={t('eg banyan')}
+              onChangeText={e => setOtherCrop({name: e, _id: 0})}
+              value={otherCrop?.name}
+              onFocus={() => setFocusOther(true)}
             />
-          </View>
-        </AddBottomSheet>
-      )}
+          ) : null}
+        </View>
+        <View style={styles.BottomSheetButton}>
+          <TouchableOpacity
+            style={styles.crossButton}
+            onPress={() => {
+              setCropModal(!cropModal);
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/cross.png')}
+              style={styles.addCropIcon}
+            />
+          </TouchableOpacity>
+          <CustomButton
+            btnText={t('create')}
+            style={{width: '80%'}}
+            onPress={() => {
+              addingTreesCrop();
+            }}
+          />
+        </View>
+      </AddBottomSheet>
     </SafeAreaView>
   );
 };
@@ -279,7 +289,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

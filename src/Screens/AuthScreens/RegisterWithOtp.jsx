@@ -78,7 +78,7 @@ export default function RegisterWithOtp({navigation}) {
                 marginTop: 5,
                 marginLeft: 10,
                 color: '#ff000e',
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
               }}>
               {err}
             </Text>
@@ -92,11 +92,15 @@ export default function RegisterWithOtp({navigation}) {
             <Text style={styles.normal_text}>{t("haven't recieved any")}</Text>
             <Pressable
               onPress={() =>
-                timer === 0 ? dispatch(SendOTP({
-                  phone: user.phone,
-                  country_code: `${user?.country_code}`,
-                  type: 'register'
-                })) : null
+                timer === 0
+                  ? dispatch(
+                      SendOTP({
+                        phone: user.phone,
+                        country_code: `${user?.country_code}`,
+                        type: 'register',
+                      }),
+                    )
+                  : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
                 {t('resend')}
@@ -124,11 +128,11 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
     },
     login_input: {
@@ -197,19 +201,19 @@ const makeStyles = fontScale =>
       color: `#268C43`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     low_green: {
       color: `#268c4387`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     normal_text: {
       color: '#36393B',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
   });

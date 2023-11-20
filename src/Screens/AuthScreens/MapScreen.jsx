@@ -71,60 +71,62 @@ export default function MapScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      {Boolean(Object.keys(region).length) && (
-        <MapView
-          region={region}
-          ref={map}
-          provider="google"
-          onPress={e => {
-            setMarker(e.nativeEvent.coordinate);
-            setCoordinates(e.nativeEvent.coordinate);
-          }}
-          showsUserLocation
-          showsMyLocationButton={false}
-          loadingEnabled
-          mapType="satellite"
-          // customMapStyle={styles.container}
-          style={styles.container}>
-          <Marker
-            draggable
-            coordinate={marker}
-            onDragEnd={e => {
+      <View style={{flex: 1}}>
+        {Boolean(Object.keys(region).length) && (
+          <MapView
+            region={region}
+            ref={map}
+            // provider="google"
+            onPress={e => {
               setMarker(e.nativeEvent.coordinate);
               setCoordinates(e.nativeEvent.coordinate);
             }}
+            showsUserLocation
+            showsMyLocationButton={false}
+            loadingEnabled
+            mapType="satellite"
+            // customMapStyle={styles.container}
+            style={styles.container}>
+            <Marker
+              draggable
+              coordinate={marker}
+              onDragEnd={e => {
+                setMarker(e.nativeEvent.coordinate);
+                setCoordinates(e.nativeEvent.coordinate);
+              }}
+            />
+          </MapView>
+        )}
+        <Pressable
+          style={[styles.button, styles.back]}
+          onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back-outline" size={30} color="#333" />
+        </Pressable>
+        <Pressable
+          style={[styles.button, styles.crosshair]}
+          onPress={() => {
+            // setMarker({latitude: region.latitude, longitude: region.longitude});
+            setCoordinates({
+              latitude: current_location.latitude,
+              longitude: current_location.longitude,
+            });
+            map.current.animateToRegion(region);
+          }}>
+          <MaterialIcons name="gps-fixed" size={30} color="#555" />
+        </Pressable>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            left: 0,
+            right: 0,
+            marginHorizontal: 20,
+          }}>
+          <CustomButton
+            btnText={t('confirm')}
+            onPress={() => navigation.goBack()}
           />
-        </MapView>
-      )}
-      <Pressable
-        style={[styles.button, styles.back]}
-        onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back-outline" size={30} color="#333" />
-      </Pressable>
-      <Pressable
-        style={[styles.button, styles.crosshair]}
-        onPress={() => {
-          // setMarker({latitude: region.latitude, longitude: region.longitude});
-          setCoordinates({
-            latitude: current_location.latitude,
-            longitude: current_location.longitude,
-          });
-          map.current.animateToRegion(region);
-        }}>
-        <MaterialIcons name="gps-fixed" size={30} color="#555" />
-      </Pressable>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          left: 0,
-          right: 0,
-          marginHorizontal: 20,
-        }}>
-        <CustomButton
-          btnText={t('confirm')}
-          onPress={() => navigation.goBack()}
-        />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -133,6 +135,7 @@ export default function MapScreen({navigation, route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   overlay: {
     position: 'absolute',
@@ -148,6 +151,10 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: '#fff',
     elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
     borderRadius: 100,
     alignSelf: 'flex-start',
   },

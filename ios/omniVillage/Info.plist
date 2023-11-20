@@ -58,6 +58,10 @@
 		<string>EvilIcons.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>AntDesign.ttf</string>
+		<string>ubuntu-bold.ttf</string>
+		<string>ubuntu-light.ttf</string>
+		<string>ubuntu-medium.ttf</string>
+		<string>ubuntu-regular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

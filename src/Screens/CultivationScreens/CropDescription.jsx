@@ -35,6 +35,7 @@ import {
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -360,7 +361,8 @@ const CropDescription = ({navigation, route}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* <View style={styles.container}> */}
       <CustomHeader
         backIcon={true}
         headerName={cropName}
@@ -596,7 +598,7 @@ const CropDescription = ({navigation, route}) => {
               </View>
               <Text
                 style={{
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                   fontSize: 14 / fontScale,
                   marginTop: 5,
                   color: '#ff000e',
@@ -979,7 +981,8 @@ const CropDescription = ({navigation, route}) => {
         style={{height: 'auto', minHeight: 70}}
         width={300}
       />
-    </View>
+      {/* </View> */}
+    </SafeAreaView>
   );
 };
 
@@ -1074,7 +1077,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',
@@ -1094,7 +1097,7 @@ const makeStyles = fontScale =>
       padding: 10,
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
       color: '#ff000e',

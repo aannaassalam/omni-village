@@ -7,7 +7,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
@@ -26,6 +26,7 @@ import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Poultry = ({navigation, route}) => {
   const {user} = useSelector(state => state.auth);
@@ -42,6 +43,9 @@ const Poultry = ({navigation, route}) => {
   const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
+
+  const bottomSheetRef = useRef(null);
+
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
     list.splice(index, 1);
@@ -104,6 +108,7 @@ const Poultry = ({navigation, route}) => {
     } else {
       addCrop();
     }
+    bottomSheetRef.current.close();
   };
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
@@ -127,87 +132,104 @@ const Poultry = ({navigation, route}) => {
   }, [poultry]);
   // console.log("poultryCrops", poultry)
   return (
-    <View style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={t('livestock feed produce')}
-        goBack={() => navigation.goBack()}
-      />
-      {/*Top Dashboard  */}
-      <CustomDashboard first={t('production')} second={t('poultry')} />
-      {/* Next Dashboard */}
-      <CustomDashboard2
-        allocatedFor={t('livestock feed produce')}
-        usedLand={totalLand}
-      />
-      {loading ? (
-        <View style={{marginTop: '60%'}}>
-          <ActivityIndicator size={'small'} color="black" />
-        </View>
-      ) : (
-        <>
-          {/* Crop adding */}
-          {cropType?.map((element, i) => {
-            return (
-              <TouchableOpacity
-                style={styles.addAndDeleteButtonSection}
-                key={i}
-                onPress={() => {
-                  let poultry_crop_id = poultry.find(
-                    j => j?.poultry_crop?.name == element?.name,
-                  );
-                  // poultry[0] !== undefined? poultry.find((i) => i?.poultry_crop?.name == element?.name) : element?.id)
-                  navigation.navigate('poultryType', {
-                    cropType: element?.name,
-                    cropId:
-                      poultry[0] !== undefined &&
-                      poultry.find(j => j?.poultry_crop?.name == element?.name)
-                        ? poultry.find(
-                            i => i?.poultry_crop?.name == element?.name,
-                          )._id
-                        : element?.id,
-                    data: poultry.find(i => i?.poultry_crop_id == element?._id),
-                  });
-                }}>
-                <AddAndDeleteCropButton
-                  add={false}
-                  darftStyle={{
-                    borderColor: poultry[0] !== undefined && poultry.find(j => j?.poultry_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
-                  }}
-                  drafted={
-                    poultry[0] !== undefined && poultry.find(j => j?.poultry_crop?.name == element?.name).status == 1 ? false : true
-                  }
-                  cropName={element?.name}
-                  onPress={() =>
-                    handleRemoveClick(
-                      poultry[0] !== undefined &&
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={t('livestock feed produce')}
+          goBack={() => navigation.goBack()}
+        />
+        {/*Top Dashboard  */}
+        <CustomDashboard first={t('production')} second={t('poultry')} />
+        {/* Next Dashboard */}
+        <CustomDashboard2
+          allocatedFor={t('livestock feed produce')}
+          usedLand={totalLand}
+        />
+        {loading ? (
+          <View style={{marginTop: '60%'}}>
+            <ActivityIndicator size={'small'} color="black" />
+          </View>
+        ) : (
+          <>
+            {/* Crop adding */}
+            {cropType?.map((element, i) => {
+              return (
+                <TouchableOpacity
+                  style={styles.addAndDeleteButtonSection}
+                  key={i}
+                  onPress={() => {
+                    let poultry_crop_id = poultry.find(
+                      j => j?.poultry_crop?.name == element?.name,
+                    );
+                    // poultry[0] !== undefined? poultry.find((i) => i?.poultry_crop?.name == element?.name) : element?.id)
+                    navigation.navigate('poultryType', {
+                      cropType: element?.name,
+                      cropId:
+                        poultry[0] !== undefined &&
                         poultry.find(
                           j => j?.poultry_crop?.name == element?.name,
                         )
-                        ? poultry.find(
-                            i => i?.poultry_crop?.name == element?.name,
-                          )._id
-                        : element?.id,
-                      i,
-                    )
-                  }
+                          ? poultry.find(
+                              i => i?.poultry_crop?.name == element?.name,
+                            )._id
+                          : element?.id,
+                      data: poultry.find(
+                        i => i?.poultry_crop_id == element?._id,
+                      ),
+                    });
+                  }}>
+                  <AddAndDeleteCropButton
+                    add={false}
+                    darftStyle={{
+                      borderColor:
+                        poultry[0] !== undefined &&
+                        poultry.find(
+                          j => j?.poultry_crop?.name == element?.name,
+                        )?.status == 1
+                          ? 'grey'
+                          : '#e5c05e',
+                    }}
+                    drafted={
+                      poultry[0] !== undefined &&
+                      poultry.find(j => j?.poultry_crop?.name == element?.name)
+                        ?.status == 1
+                        ? false
+                        : true
+                    }
+                    cropName={element?.name}
+                    onPress={() =>
+                      handleRemoveClick(
+                        poultry[0] !== undefined &&
+                          poultry.find(
+                            j => j?.poultry_crop?.name == element?.name,
+                          )
+                          ? poultry.find(
+                              i => i?.poultry_crop?.name == element?.name,
+                            )._id
+                          : element?.id,
+                        i,
+                      )
+                    }
+                  />
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => setCropModal(true)}>
+              <View style={styles.addAndDeleteButtonSection}>
+                <AddAndDeleteCropButton
+                  add={true}
+                  cropName={t('add livestock')}
+                  onPress={() => setCropModal(true)}
                 />
-              </TouchableOpacity>
-            );
-          })}
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            onPress={() => setCropModal(true)}>
-            <View style={styles.addAndDeleteButtonSection}>
-              <AddAndDeleteCropButton
-                add={true}
-                cropName={t('add livestock')}
-                onPress={() => setCropModal(true)}
-              />
-            </View>
-          </TouchableOpacity>
-          {cropModal && (
-            <AddBottomSheet>
+              </View>
+            </TouchableOpacity>
+            <AddBottomSheet
+              modalVisible={cropModal}
+              setModal={setCropModal}
+              bottomSheetRef={bottomSheetRef}>
               <View style={styles.BottomTopContainer}>
                 <Text style={styles.headerText}>{t('add livestock')}</Text>
                 <TouchableOpacity
@@ -215,6 +237,7 @@ const Poultry = ({navigation, route}) => {
                     setCropModal(!cropModal);
                     setFocusOther(false);
                     setDropdownVal('');
+                    bottomSheetRef.current.close();
                   }}>
                   <Image
                     source={require('../../../assets/close.png')}
@@ -243,7 +266,10 @@ const Poultry = ({navigation, route}) => {
               <View style={styles.BottomSheetButton}>
                 <TouchableOpacity
                   style={styles.crossButton}
-                  onPress={() => setCropModal(!cropModal)}>
+                  onPress={() => {
+                    setCropModal(!cropModal);
+                    bottomSheetRef.current.close();
+                  }}>
                   <Image
                     source={require('../../../assets/cross.png')}
                     style={styles.addCropIcon}
@@ -256,10 +282,10 @@ const Poultry = ({navigation, route}) => {
                 />
               </View>
             </AddBottomSheet>
-          )}
-        </>
-      )}
-    </View>
+          </>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -282,7 +308,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',
