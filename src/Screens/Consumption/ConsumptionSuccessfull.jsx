@@ -33,9 +33,7 @@ export default function ConsumptionSuccsessfull({navigation}) {
   }, []);
 
   return (
-    <SafeAreaView
-      style={{flex: 1, backgroundColor: '#fff'}}
-      edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}} edges={['top']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.inner}>
           <Image

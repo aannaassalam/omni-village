@@ -25,15 +25,18 @@ import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {useQuery} from '@tanstack/react-query';
+import {fetchTreeCorp} from '../../functions/Corps';
+import {fetchTree, fetchTrees} from '../../functions/TreesAndShrubsScreen';
+import {useUser} from '../../Hooks/useUser';
+import {ActivityIndicator} from 'react-native-paper';
 
 const TreesShrubsScreen = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const dispatch = useDispatch();
-  const {userDetails} = useSelector(s => s.auth);
+  const {data: userDetails} = useUser();
   const {t} = useTranslation();
-  const {treeCrops} = useSelector(state => state.treeCrop);
-  const {trees} = useSelector(state => state?.treeShrub);
   const totalLand = userDetails.sub_area.trees;
   const [cropType, setCropType] = useState([]);
   const [cropModal, setCropModal] = useState(false);
@@ -42,6 +45,15 @@ const TreesShrubsScreen = ({navigation, route}) => {
   const [focusOther, setFocusOther] = useState(false);
 
   const bottomSheetRef = React.useRef(null);
+
+  const {data: treeCrops, isLoading} = useQuery({
+    queryKey: ['treeCrop'],
+    queryFn: fetchTreeCorp,
+  });
+  const {data: trees, isLoading: isTreesLoading} = useQuery({
+    queryKey: ['trees'],
+    queryFn: fetchTrees,
+  });
 
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
@@ -52,6 +64,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
       .then(res => {})
       .catch(err => console.log('error', err));
   };
+
   const addCrop = () => {
     let ids = cropType.map(i => i?.id || i?._id);
     if (ids.includes(dropdownVal?.name?.value)) {
@@ -90,6 +103,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
       setCropModal(!cropModal);
     }
   };
+
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
       dispatch(addTreeCrops({name: otherCrop?.name})).then(res => {
@@ -109,19 +123,21 @@ const TreesShrubsScreen = ({navigation, route}) => {
     }
     bottomSheetRef.current.close();
   };
-  // console.log("dropdown", dropdownVal)
+
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
     if (data !== 'Others') {
       setFocusOther(false);
     }
   };
+
   useFocusEffect(
     useCallback(() => {
       dispatch(getTreeCrops());
       dispatch(getTree());
     }, []),
   );
+
   useEffect(() => {
     setCropType(trees?.map(i => i?.tree_crop));
   }, [trees]);
@@ -145,60 +161,67 @@ const TreesShrubsScreen = ({navigation, route}) => {
         usedLand={totalLand}
       />
       {/* Crop adding */}
-      {cropType?.map((element, i) => {
-        return (
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            key={i}
-            onPress={() => {
-              dispatch(
-                setCurrentTree(
-                  trees.find(i => i?.tree_crop_id == element?._id),
+      {isTreesLoading ? (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <ActivityIndicator animating size="large" color="#268C43" />
+        </View>
+      ) : (
+        cropType?.map((element, i) => {
+          return (
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              key={i}
+              onPress={() => {
+                dispatch(
+                  setCurrentTree(
+                    trees.find(i => i?.tree_crop_id == element?._id),
+                  ),
                 ),
-              ),
-                navigation.navigate('type', {
-                  cropType: element?.name,
-                  cropId:
+                  navigation.navigate('type', {
+                    cropType: element?.name,
+                    cropId:
+                      trees[0] !== undefined &&
+                      trees.find(j => j?.tree_crop?.name == element?.name)
+                        ? trees.find(i => i?.tree_crop?.name == element?.name)
+                            ._id
+                        : element?.id,
+                    data: trees.find(i => i?.tree_crop_id == element?._id),
+                  });
+                // dispatch(deleteTree(trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id))
+                // console.log("iddddd crop", element?._id)
+              }}>
+              <AddAndDeleteCropButton
+                add={false}
+                darftStyle={{
+                  borderColor:
                     trees[0] !== undefined &&
                     trees.find(j => j?.tree_crop?.name == element?.name)
-                      ? trees.find(i => i?.tree_crop?.name == element?.name)._id
-                      : element?.id,
-                  data: trees.find(i => i?.tree_crop_id == element?._id),
-                });
-              // dispatch(deleteTree(trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id))
-              // console.log("iddddd crop", element?._id)
-            }}>
-            <AddAndDeleteCropButton
-              add={false}
-              darftStyle={{
-                borderColor:
+                      ?.status == 1
+                      ? 'grey'
+                      : '#e5c05e',
+                }}
+                drafted={
                   trees[0] !== undefined &&
                   trees.find(j => j?.tree_crop?.name == element?.name)
                     ?.status == 1
-                    ? 'grey'
-                    : '#e5c05e',
-              }}
-              drafted={
-                trees[0] !== undefined &&
-                trees.find(j => j?.tree_crop?.name == element?.name)?.status ==
-                  1
-                  ? false
-                  : true
-              }
-              cropName={element?.name}
-              onPress={() =>
-                handleRemoveClick(
-                  trees[0] !== undefined &&
-                    trees.find(j => j?.tree_crop?.name == element?.name)
-                    ? trees.find(i => i?.tree_crop?.name == element?.name)._id
-                    : element?.id,
-                  i,
-                )
-              }
-            />
-          </TouchableOpacity>
-        );
-      })}
+                    ? false
+                    : true
+                }
+                cropName={element?.name}
+                onPress={() =>
+                  handleRemoveClick(
+                    trees[0] !== undefined &&
+                      trees.find(j => j?.tree_crop?.name == element?.name)
+                      ? trees.find(i => i?.tree_crop?.name == element?.name)._id
+                      : element?.id,
+                    i,
+                  )
+                }
+              />
+            </TouchableOpacity>
+          );
+        })
+      )}
       <TouchableOpacity
         style={styles.addAndDeleteButtonSection}
         onPress={() => setCropModal(true)}>
@@ -232,7 +255,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
             selectedValue={e => {
               DropdownSelectedValue({name: e, _id: e.value});
             }}
-            data={[...treeCrops, {_id: 0, name: 'Others'}]}
+            data={isLoading ? [] : [...treeCrops, {_id: 0, name: 'Others'}]}
             valu={dropdownVal?.name}
           />
           {dropdownVal.name?.label === 'Others' ? (

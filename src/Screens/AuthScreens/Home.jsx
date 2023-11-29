@@ -1,36 +1,27 @@
-import {Box, Button, Text} from '@react-native-material/core';
-import React, {useCallback, useEffect, useState} from 'react';
+import {Box, Text} from '@react-native-material/core';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  Image,
   ScrollView,
   StyleSheet,
-  View,
-  Image,
   TouchableOpacity,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import CustomButton from '../../Components/CustomButton/CustomButton';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
-import {getUser, logout} from '../../Redux/AuthSlice';
-import {storage} from '../../Helper/Storage';
-import {useTranslation} from 'react-i18next';
-import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import {storage} from '../../Helper/Storage';
+import {useUser} from '../../Hooks/useUser';
+import '../../i18next';
 
 export default function Home({navigation, route}) {
-  const {userToken, user} = useSelector(s => s.auth);
-  const dispatch = useDispatch();
+  const {data: user} = useUser();
   const [lang, setLang] = useState('en');
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getUser());
-    }, []),
-  );
 
   useEffect(() => {
     if (!user) {
@@ -196,7 +187,7 @@ export default function Home({navigation, route}) {
             <CustomButton
               btnText={t('logout')}
               onPress={() => {
-                dispatch(logout());
+                storage.clearAll();
                 navigation.replace('startup');
               }}
             />

@@ -1,34 +1,25 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  Pressable,
   useWindowDimensions,
 } from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {useDispatch} from 'react-redux';
-import {SendOTP} from '../../Redux/AuthSlice';
-import {TextInput} from 'react-native-gesture-handler';
-import {Scale} from '../../Helper/utils';
-import {yupResolver} from '@hookform/resolvers/yup';
+import CountryPicker from 'react-native-country-picker-modal';
 import * as yup from 'yup';
-import {Controller, useForm} from 'react-hook-form';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
-import CountryPicker, {
-  Country,
-  CountryCode,
-} from 'react-native-country-picker-modal';
-import {useTranslation} from 'react-i18next';
-import {useMutation} from '@tanstack/react-query';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {sentOtp} from '../../functions/AuthScreens';
+
 export default function Login({navigation, route}) {
-  const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
 
@@ -73,31 +64,14 @@ export default function Login({navigation, route}) {
       navigation.navigate('loginotp', variables);
     },
     onError: err => {
-      console.log(err);
-      if (err.status === 400) {
-        setApi_err(err.data.message);
+      if (err.response.status === 400) {
+        setApi_err(err.response.data.message);
       }
-      console.log(err.data.message);
+      console.log(err.response.data.message);
     },
   });
 
   const FormSubmit = data => {
-    // dispatch(
-    //   SendOTP({
-    //     ...data,
-    //     country_code: `+${selectedCountry?.callingCode[0]}`,
-    //     type: 'login',
-    //   }),
-    // )
-    //   .unwrap()
-    //   .then(() => navigation.navigate('loginotp'))
-    //   .catch(err => {
-    //     console.log(err);
-    //     if (err.status === 400) {
-    //       setApi_err(err.data.message);
-    //     }
-    //     console.log(err.data.message);
-    //   });
     mutate({
       ...data,
       country_code: `+${selectedCountry?.callingCode[0]}`,

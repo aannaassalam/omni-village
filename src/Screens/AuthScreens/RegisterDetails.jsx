@@ -27,17 +27,50 @@ import {useTranslation} from 'react-i18next';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import Geolocation from 'react-native-geolocation-service';
 import {TextInput} from 'react-native-paper';
+import {useUser} from '../../Hooks/useUser';
+import {useLandMeasurement, useVillages} from '../../Hooks/cms';
+import {useMutation} from '@tanstack/react-query';
+import {editUser} from '../../functions/AuthScreens';
 
-// const FormData = global.FormData;
+const schema = yup
+  .object()
+  .shape({
+    first_name: yup.string().required(validation?.error?.first_name),
+    last_name: yup.string().required(validation?.error?.last_name),
+    village_name: yup.string().required(validation?.error?.village_name),
+    country_name: yup.string(),
+    land_measurement: yup
+      .string()
+      .required(validation?.error?.land_measurement),
+    phone: yup.string().required(validation?.error?.phone),
+    number_of_members: yup
+      .number()
+      .max(20, 'Number of members cannot be greater than 20!')
+      .required(validation.error.number_of_members),
+    members: yup
+      .array(
+        yup.object().shape({
+          name: yup.string().required(validation.error.member_name),
+          age: yup.string().required(validation.error.member_age),
+          gender: yup.string().required(validation.error.member_gender),
+        }),
+      )
+      .required('Members is required'),
+    document_type: yup.string().required('Document Type is required!'),
+    social_security_number: yup
+      .string()
+      .required(validation?.error?.social_security_number),
+    address: yup.string().required(validation?.error?.address),
+    street_address: yup.string().required(validation?.error?.street_address),
+  })
+  .required();
 
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
-  const isEdit = route?.params?.edit || false;
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
-  const {village} = useSelector(state => state.Others);
-  const {landmeasurement} = useSelector(state => state.Others);
-  const {t} = useTranslation();
+
+  const isEdit = route?.params?.edit || false;
   const documentType = [
     {name: 'Kad Pengenalan / MyKad (Identity Card)'},
     {name: 'Pasport (Passport)'},
@@ -58,53 +91,20 @@ export default function RegisterDetails({navigation, route}) {
     }
   }, []);
 
-  const {user} = useSelector(state => state.auth);
-
+  const {data: user} = useUser();
+  const {data: landmeasurement} = useLandMeasurement();
+  const {data: village} = useVillages(user?.country);
+  const {t} = useTranslation();
   const {fontScale} = useWindowDimensions();
+
   const styles = makeStyles(fontScale);
 
-  const schema = yup
-    .object()
-    .shape({
-      first_name: yup.string().required(validation?.error?.first_name),
-      last_name: yup.string().required(validation?.error?.last_name),
-      village_name: yup.string().required(validation?.error?.village_name),
-      country_name: yup.string(),
-      land_measurement: yup
-        .string()
-        .required(validation?.error?.land_measurement),
-      phone: yup.string().required(validation?.error?.phone),
-      number_of_members: yup
-        .number()
-        .max(20, 'Number of members cannot be greater than 20!')
-        .required(validation.error.number_of_members),
-      members: yup
-        .array(
-          yup.object().shape({
-            name: yup.string().required(validation.error.member_name),
-            age: yup.string().required(validation.error.member_age),
-            gender: yup.string().required(validation.error.member_gender),
-          }),
-        )
-        .required('Members is required'),
-      document_type: yup.string().required('Document Type is required!'),
-      social_security_number: yup
-        .string()
-        .required(validation?.error?.social_security_number),
-      address: yup.string().required(validation?.error?.address),
-      street_address: yup.string().required(validation?.error?.street_address),
-    })
-    .required();
-
   const {
-    register,
     handleSubmit,
     setValue,
     control,
     formState: {errors},
-    getValues,
     watch,
-    resetField,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -115,58 +115,25 @@ export default function RegisterDetails({navigation, route}) {
       land_measurement: isEdit ? user?.land_measurement : '',
       last_name: isEdit ? user?.last_name : '',
       members: isEdit ? user?.members : [],
-      number_of_members: isEdit ? parseInt(user?.number_of_members) : 0,
+      number_of_members: isEdit ? parseInt(user?.number_of_members, 10) : 0,
       document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
       street_address: isEdit ? user?.street_address : '',
-      // number_of_members: '',
     },
   });
 
   const [numMembers, setNumMembers] = useState(
     isEdit ? user?.number_of_members : 0,
   );
-  const [familyMembers, setFamilyMembers] = useState([]);
-  const [inputVal, setInputVal] = useState('');
 
-  const handleMemberChange = value => {
-    setNumMembers(value);
-    if (value > familyMembers.length) {
-      const newMembers = Array.from(
-        {length: value - familyMembers.length},
-        (_, index) => ({
-          id: familyMembers.length + index + 1,
-          member_name: '',
-          member_gender: '',
-          member_age: '',
-        }),
-      );
-      setFamilyMembers([...familyMembers, ...newMembers]);
-    } else {
-      const updatedMembers = familyMembers.slice(0, value);
-      setFamilyMembers(updatedMembers);
-    }
-  };
-
-  const handleMemberNameChange = (index, newName, member) => {
-    const updatedNames = [...familyMembers];
-    updatedNames[index][member] = newName;
-    setFamilyMembers(updatedNames);
-  };
-
-  const [dropdownVal, setDropdownVal] = useState('');
-
-  const InputValueCallback = data => {
-    setInputVal(data);
-  };
-
-  const DropdownSelectedValue = data => {
-    // setDropdownVal(data);
-    setValue('village_name', data);
-  };
-
-  const dispatch = useDispatch();
+  const {mutate, isPending} = useMutation({
+    mutationFn: editUser,
+    onSuccess: data => {
+      isEdit ? navigation.goBack() : navigation.replace('registersuccess');
+    },
+    onError: err => console.log(err, 'Err from register details'),
+  });
 
   const FormSubmit = data => {
     if (fileResponse.length === 0 && !isEdit) {
@@ -174,24 +141,35 @@ export default function RegisterDetails({navigation, route}) {
       setFile_err('Please select a document!');
       return;
     }
-    dispatch(
-      EditUser({
-        data: {
-          ...data,
-          number_of_members: String(data.number_of_members),
-          land_measurement_symbol: landmeasurement.find(
-            lm => lm.name === data.land_measurement,
-          ).symbol,
-          edit: isEdit,
-        },
-        file: fileResponse[0] || {},
-      }),
-    )
-      .unwrap()
-      .then(res =>
-        isEdit ? navigation.goBack() : navigation.replace('registersuccess'),
-      )
-      .catch(err => console.log(err, 'err from register details'));
+
+    const _data = {
+      ...data,
+      number_of_members: String(data.number_of_members),
+      land_measurement_symbol: landmeasurement.find(
+        lm => lm.name === data.land_measurement,
+      ).symbol,
+      edit: isEdit,
+    };
+    const _file = fileResponse[0] || {};
+
+    const formData = new FormData();
+    Object.keys(_data).forEach(key => {
+      if (key === 'members') {
+        formData.append('members', JSON.stringify(_data[key]));
+      } else {
+        formData.append(key, _data[key]);
+      }
+    });
+    formData.append('address_proof', {
+      uri: _file?.uri || '',
+      type: _file?.type || '',
+      filename: _file?.name || '',
+      name: 'address_proof',
+    });
+
+    const submitable_data = _data.edit ? _data : formData;
+
+    mutate(submitable_data);
   };
 
   const requestLocationPermission = async () => {
@@ -273,13 +251,6 @@ export default function RegisterDetails({navigation, route}) {
       }
     });
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getVillage(user?.country));
-      dispatch(getLandmeasurement());
-    }, [user?.country]),
-  );
 
   return (
     <LoginWrapper no_gap>
@@ -640,7 +611,6 @@ export default function RegisterDetails({navigation, route}) {
                       placeholderTextColor={'#333'}
                       keyboardType="default"
                       editable={false}
-                      textAlignVertical="auto"
                       right={
                         <TextInput.Icon
                           icon="crosshairs-gps"
@@ -751,6 +721,7 @@ export default function RegisterDetails({navigation, route}) {
           <CustomButton
             btnText={t('submit')}
             onPress={handleSubmit(FormSubmit)}
+            loading={isPending}
           />
         </View>
       </View>
@@ -918,5 +889,6 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
       fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
+      textAlign: 'auto',
     },
   });

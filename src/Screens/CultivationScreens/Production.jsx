@@ -18,10 +18,11 @@ import {getTree} from '../../Redux/TreesSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {Wrap} from '@react-native-material/core';
+import {useUser} from '../../Hooks/useUser';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
@@ -116,6 +117,7 @@ const Production = ({navigation, route}) => {
                 }
                 progressBar={false}
                 onPress={() => goToNext(item)}
+                user={userDetails}
               />
             );
           })}

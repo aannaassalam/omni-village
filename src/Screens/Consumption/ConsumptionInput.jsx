@@ -23,6 +23,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addConsumption, editConsumption} from '../../Redux/ConsumptionSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const ConsumptionInput = ({route, navigation}) => {
   const {cropType, data, cropId, typeName} = route.params;
@@ -73,78 +74,79 @@ const ConsumptionInput = ({route, navigation}) => {
     let purchased_from_market = parseInt(data2.purchased_from_market);
     let purchased_from_neighbours = parseInt(data2.purchased_from_neighbours);
     let self_grown = parseInt(data2.self_grown);
+    // if (
+    //   watch('weight_measurement') == '' ||
+    //   watch('purchased_from_market') == '' ||
+    //   watch('purchased_from_neighbours') == '' ||
+    //   watch('self_grown') == ''
+    // ) {
+    //   console.log('hete');
+    //   setMessage(
+    //     t('All fields are required!') + '/' + 'All fields are required!',
+    //   );
+    //   Toast.show({
+    //     type: 'error',
+    //     text1: t('All fields are required!') + '/' + 'All fields are required!',
+    //   });
+    //   setSavepopup(false);
+    // } else {
     if (
-      watch('weight_measurement') == '' ||
-      watch('purchased_from_market') == '' ||
-      watch('purchased_from_neighbours') == '' ||
-      watch('self_grown') == ''
+      purchased_from_market + purchased_from_neighbours + self_grown !==
+      total
     ) {
-      console.log('hete');
+      console.log('in');
       setMessage(
-        t('All fields are required!') + '/' + 'All fields are required!',
+        t('Total amount should be equal to output') +
+          '/' +
+          'Total amount should be equal to output',
       );
       Toast.show({
         type: 'error',
-        text1: t('All fields are required!') + '/' + 'All fields are required!',
+        text1:
+          t('Total amount should be equal to output') +
+          '/' +
+          'Total amount should be equal to output',
       });
       setSavepopup(false);
     } else {
-      if (
-        purchased_from_market + purchased_from_neighbours + self_grown !==
-        total
-      ) {
-        setMessage(
-          t('Total amount should be equal to output') +
-            '/' +
-            'Total amount should be equal to output',
-        );
-        Toast.show({
-          type: 'error',
-          text1:
-            t('Total amount should be equal to output') +
-            '/' +
-            'Total amount should be equal to output',
-        });
-        setSavepopup(false);
+      if (data?._id) {
+        let formData = {
+          weight_measurement: watch('weight_measurement'),
+          consumption_id: cropId,
+          consumption_type_name: typeName,
+          total_quantity: watch('total_quantity'),
+          purchased_from_market: watch('purchased_from_market'),
+          purchased_from_neighbours: watch('purchased_from_neighbours'),
+          self_grown: watch('self_grown'),
+          status: 1,
+        };
+        dispatch(editConsumption(formData))
+          .then(res => {
+            console.log('response', res);
+            navigation.navigate('consumptionSuccessfull');
+          })
+          .catch(() => setSavepopup(false))
+          .finally(() => setSavepopup(false));
       } else {
-        if (data?._id) {
-          let formData = {
-            weight_measurement: watch('weight_measurement'),
-            consumption_id: cropId,
-            consumption_type_name: typeName,
-            total_quantity: watch('total_quantity'),
-            purchased_from_market: watch('purchased_from_market'),
-            purchased_from_neighbours: watch('purchased_from_neighbours'),
-            self_grown: watch('self_grown'),
-            status: 1,
-          };
-          dispatch(editConsumption(formData))
-            .then(res => {
-              console.log('response', res);
-              navigation.navigate('consumptionSuccessfull');
-            })
-            .catch(() => setSavepopup(false))
-            .finally(() => setSavepopup(false));
-        } else {
-          let formData = {
-            weight_measurement: watch('weight_measurement'),
-            consumption_crop_id: cropId,
-            consumption_type_name: typeName,
-            total_quantity: watch('total_quantity'),
-            purchased_from_market: watch('purchased_from_market'),
-            purchased_from_neighbours: watch('purchased_from_neighbours'),
-            self_grown: watch('self_grown'),
-            status: 1,
-          };
-          dispatch(addConsumption(formData))
-            .then(res => {
-              navigation.navigate('consumptionSuccessfull');
-            })
-            .catch(() => setSavepopup(false))
-            .finally(() => setSavepopup(false));
-        }
+        let formData = {
+          weight_measurement: watch('weight_measurement'),
+          consumption_crop_id: cropId,
+          consumption_type_name: typeName,
+          total_quantity: watch('total_quantity'),
+          purchased_from_market: watch('purchased_from_market'),
+          purchased_from_neighbours: watch('purchased_from_neighbours'),
+          self_grown: watch('self_grown'),
+          status: 1,
+        };
+        dispatch(addConsumption(formData))
+          .then(res => {
+            navigation.navigate('consumptionSuccessfull');
+          })
+          .catch(() => setSavepopup(false))
+          .finally(() => setSavepopup(false));
       }
     }
+    // }
   };
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
@@ -184,7 +186,7 @@ const ConsumptionInput = ({route, navigation}) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         goBack={() => navigation.goBack()}
         headerName={cropType}
@@ -416,7 +418,7 @@ const ConsumptionInput = ({route, navigation}) => {
           </View>
         </View>
       </PopupModal>
-    </View>
+    </SafeAreaView>
   );
 };
 

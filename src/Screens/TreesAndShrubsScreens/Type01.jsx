@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   Dimensions,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
@@ -810,7 +811,7 @@ const Type01 = ({navigation, route}) => {
           <CustomButton
             btnText={t('submit')}
             onPress={() => {
-              // bottomSheetRef2.current.close();
+              bottomSheetRef2.current.close();
               setHarvestProdAdd(!harvestProdAdd);
               setFocus(!focus);
               addProduct();

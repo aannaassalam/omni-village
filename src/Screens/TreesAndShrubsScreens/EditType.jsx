@@ -40,7 +40,14 @@ const EditType = ({navigation, route}) => {
     edit ? (data ? (edit?.processing_method == true ? 'yes' : 'no') : '') : '',
   );
   const [output, setOutput] = useState(0);
-  const [utilisationArray, setUtilisationArray] = useState([]);
+  const [utilisationArray, setUtilisationArray] = useState([
+    {name: t('self consumed'), value: 0},
+    {name: t('fed to livestock'), value: 0},
+    {name: t('sold to neighbour'), value: 0},
+    {name: t('sold for industrial use'), value: 0},
+    {name: t('wastage'), value: 0},
+    {name: t('Other(Specify if any)'), value: ''},
+  ]);
   const [others, setOthers] = useState(0);
   let findme = utilisationArray.find(
     i => i?.name == t('Other(Specify if any)'),
@@ -74,6 +81,7 @@ const EditType = ({navigation, route}) => {
       ]);
     }
   }, [edit]);
+
   const submit = () => {
     if (!data) {
       let formData = {
@@ -89,12 +97,12 @@ const EditType = ({navigation, route}) => {
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD') || '',
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
-      const totalAmount = utilisationArray.reduce(
-        (total, item) => total + item?.value,
-        0,
-      );
-      let amount = parseInt(totalAmount) + parseInt(others);
+      const totalAmount = utilisationArray.reduce((total, item) => {
+        return total + parseInt(item?.value || 0);
+      }, 0);
+      let amount = totalAmount + parseInt(others || 0);
       let out = parseInt(output);
+      console.log(totalAmount, amount, output, 'out');
       if (output == '' || output == undefined) {
         setMessage(
           t('Output cannot be empty') + '/' + 'Output cannot be empty',
@@ -128,10 +136,9 @@ const EditType = ({navigation, route}) => {
           utilisationArray[3]?.value == undefined ||
           utilisationArray[4]?.value == 0 ||
           utilisationArray[4]?.value == undefined ||
-          utilisationArray[5]?.value == 0 ||
-          utilisationArray[5]?.value == undefined ||
-          others == undefined ||
-          others == ''
+          (utilisationArray[5]?.value != '' &&
+            utilisationArray[5]?.value != undefined &&
+            (others == undefined || others == ''))
         ) {
           setMessage(
             t('All fields are required!') + '/' + 'All fields are required!',
@@ -160,12 +167,12 @@ const EditType = ({navigation, route}) => {
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
-      const totalAmount = utilisationArray.reduce(
-        (total, item) => total + item?.value,
-        0,
-      );
-      let amount = parseInt(totalAmount) + parseInt(others);
+      const totalAmount = utilisationArray.reduce((total, item) => {
+        return total + parseInt(item?.value || 0);
+      }, 0);
+      let amount = totalAmount + parseInt(others || 0);
       let out = parseInt(output);
+      console.log(amount, out, 'out');
       if (output == '' || output == undefined) {
         Toast.show({
           type: 'error',
@@ -195,10 +202,9 @@ const EditType = ({navigation, route}) => {
         utilisationArray[3]?.value == undefined ||
         utilisationArray[4]?.value == 0 ||
         utilisationArray[4]?.value == undefined ||
-        utilisationArray[5]?.value == 0 ||
-        utilisationArray[5]?.value == undefined ||
-        others == undefined ||
-        others == ''
+        (utilisationArray[5]?.value != '' &&
+          utilisationArray[5]?.value != undefined &&
+          (others == undefined || others == ''))
       ) {
         setMessage(
           t('All fields are required!') + '/' + 'All fields are required!',
@@ -242,7 +248,7 @@ const EditType = ({navigation, route}) => {
                       <InputWithoutBorder
                         measureName={'kg'}
                         productionName={item?.name}
-                        value={item?.value ? item?.value.toString() : ''}
+                        value={item?.value?.toString()}
                         keyboardType={
                           item?.name === t('Other(Specify if any)')
                             ? 'default'
@@ -264,8 +270,9 @@ const EditType = ({navigation, route}) => {
                               updatedDataArray[targetedArea].value = e;
                               setUtilisationArray(updatedDataArray);
                             } else {
-                              updatedDataArray[targetedArea].value =
-                                parseInt(e);
+                              updatedDataArray[targetedArea].value = e.length
+                                ? e
+                                : '0';
                               setUtilisationArray(updatedDataArray);
                             }
                           }

@@ -8,7 +8,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -65,7 +65,11 @@ const PoultryType = ({navigation, route}) => {
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [toggleCheckBox, setToggleCheckBox] = useState('');
+  const [productError, setProductError] = useState('');
   const dispatch = useDispatch();
+
+  const bottomSheetRef = useRef(null);
+
   const [averageAge, setAverageAge] = useState([
     {
       id: 1,
@@ -92,6 +96,7 @@ const PoultryType = ({navigation, route}) => {
       checked: false,
     },
   ]);
+
   const [harvestedProductList, setHarvestedProductList] = useState([]);
   const schema = yup.object().shape({
     important_information: yup.object().shape({
@@ -165,6 +170,7 @@ const PoultryType = ({navigation, route}) => {
     }
     console.log('erooorrrr', errors);
   }, [errors]);
+
   const submit = () => {
     console.log('i m here');
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
@@ -391,29 +397,34 @@ const PoultryType = ({navigation, route}) => {
     }
   }, [edit]);
   const addProduct = () => {
-    setHarvestedProductList([
-      ...harvestedProductList,
-      {
-        name: productName,
-        production_output: '0',
-        self_consumed: '0',
-        fed_to_livestock: '0',
-        sold_to_neighbours: '0',
-        sold_for_industrial_use: '0',
-        wastage: '0',
-        other: 'Retain',
-        other_value: '0',
-        month_harvested: moment().format('YYYY-MM-DD') || '',
-        processing_method: false,
-      },
-    ]);
-    navigation.navigate('poultryEdit', {
-      cropType: productName,
-      edit: {},
-      cropId: cropId,
-      data: data,
-    });
-    setProductName('');
+    if (productName.length > 0) {
+      setHarvestedProductList([
+        ...harvestedProductList,
+        {
+          name: productName,
+          production_output: '0',
+          self_consumed: '0',
+          fed_to_livestock: '0',
+          sold_to_neighbours: '0',
+          sold_for_industrial_use: '0',
+          wastage: '0',
+          other: 'Retain',
+          other_value: '0',
+          month_harvested: moment().format('YYYY-MM-DD') || '',
+          processing_method: false,
+        },
+      ]);
+      navigation.navigate('poultryEdit', {
+        cropType: productName,
+        edit: {},
+        cropId: cropId,
+        data: data,
+      });
+      setProductName('');
+      bottomSheetRef.current.close();
+    } else {
+      setProductError('Please enter a harvested product name');
+    }
   };
   const removeList = name => {
     let newList = harvestedProductList.filter(obj => obj.name !== name);
@@ -979,53 +990,58 @@ const PoultryType = ({navigation, route}) => {
           </View>
         </AddBottomSheet>
       )}
-      {harvestProdAdd && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('add harvested product')}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setHarvestProdAdd(!harvestProdAdd);
-                setFocus(!focus);
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.harvested_prod_container}>
-            <InputWithoutBorder
-              measureName={weight ? weight : 'kg'}
-              productionName={t('name of harvested product')}
-              value={productName}
-              keyboardType="default"
-              onChangeText={e => {
-                setProductName(e);
-                if (e.endsWith('\n')) {
-                  setProductName(e);
-                  setHarvestProdAdd(!harvestProdAdd);
-                  setFocus(!focus);
-                  addProduct();
-                }
-              }}
-              multiline={false}
-              notRightText={true}
-              onFocus={() => setFocus(true)}
+      <AddBottomSheet
+        modalVisible={harvestProdAdd}
+        setModal={setHarvestProdAdd}
+        bottomSheetRef={bottomSheetRef}>
+        <View style={styles.BottomTopContainer}>
+          <Text style={styles.headerText}>{t('add harvested product')}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setHarvestProdAdd(!harvestProdAdd);
+              setFocus(!focus);
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/close.png')}
+              style={styles.closeIcon}
             />
-          </View>
-          <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
-            <CustomButton
-              btnText={t('submit')}
-              onPress={() => {
+          </TouchableOpacity>
+        </View>
+        <View style={styles.harvested_prod_container}>
+          <InputWithoutBorder
+            measureName={weight ? weight : 'kg'}
+            productionName={t('name of harvested product')}
+            value={productName}
+            keyboardType="default"
+            onChangeText={e => {
+              setProductName(e);
+              if (e.endsWith('\n')) {
+                setProductName(e);
                 setHarvestProdAdd(!harvestProdAdd);
                 setFocus(!focus);
                 addProduct();
-              }}
-            />
-          </View>
-        </AddBottomSheet>
-      )}
+              }
+              setProductError('');
+            }}
+            multiline={false}
+            notRightText={true}
+            onFocus={() => setFocus(true)}
+          />
+          <Text style={styles.error}>{productError}</Text>
+        </View>
+        <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
+          <CustomButton
+            btnText={t('submit')}
+            onPress={() => {
+              setHarvestProdAdd(!harvestProdAdd);
+              setFocus(!focus);
+              addProduct();
+            }}
+          />
+        </View>
+      </AddBottomSheet>
+
       {/* submit popup */}
       <PopupModal
         modalVisible={savepopup}

@@ -10,9 +10,10 @@ import {Divider} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 import '../../i18next/index';
+import {useUser} from '../../Hooks/useUser';
 
 const CustomDashboard2 = ({allocatedFor, usedLand}) => {
-  const {user} = useSelector(state => state.auth);
+  const {data: user} = useUser();
   const {t} = useTranslation();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);

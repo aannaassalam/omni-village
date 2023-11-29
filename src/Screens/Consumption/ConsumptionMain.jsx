@@ -4,7 +4,6 @@ import {
   View,
   useWindowDimensions,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -14,6 +13,8 @@ import {getConsumptionType} from '../../Redux/ConsumptionTypeSlice';
 import {getConsumptionCrops} from '../../Redux/ConsumptionCropSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {ActivityIndicator} from 'react-native-paper';
 
 const ConsumptionMain = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -32,7 +33,7 @@ const ConsumptionMain = ({navigation}) => {
       .catch(() => setLoading(false));
   }, []);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         backIcon={true}
         headerName={t('consumption')}
@@ -40,7 +41,7 @@ const ConsumptionMain = ({navigation}) => {
       />
       {loading ? (
         <View style={{marginTop: '60%'}}>
-          <ActivityIndicator size={'large'} color={'#000'} />
+          <ActivityIndicator size={'large'} color={'green'} />
         </View>
       ) : (
         <ScrollView>
@@ -51,7 +52,6 @@ const ConsumptionMain = ({navigation}) => {
                 productionName={t(`${item?.name}`)}
                 progressBar={false}
                 onPress={() => {
-                  console.log('itemmmmmmmm', item?.name);
                   navigation.navigate('consumption', {
                     typeId: item?._id,
                     typeName: item?.name,
@@ -63,7 +63,7 @@ const ConsumptionMain = ({navigation}) => {
           })}
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

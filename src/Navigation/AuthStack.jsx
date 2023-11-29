@@ -15,33 +15,23 @@ import {useSelector} from 'react-redux';
 import Productionstack from './ProductionStack';
 import ConsumptionStack from './ConsumptionStack';
 import MapScreen from '../Screens/AuthScreens/MapScreen';
+import {useUser} from '../Hooks/useUser';
 
 const Stack = createStackNavigator();
 
 export default function AuthStack({isLoggedIn}) {
-  const [isToken, setIsToken] = useState(false);
-  const token = storage.getString('token');
-
-  const {user} = useSelector(state => state.auth);
-
-  useEffect(() => {
-    if (token !== undefined && token !== null) {
-      setIsToken(true);
-    } else {
-      setIsToken(false);
-    }
-  }, [token]);
+  const {data: user} = useUser();
 
   const renderScreen = useCallback(() => {
-    if (user?.first_name === '-') {
-      return 'registerdetails';
-    } else if (token === undefined || token === null) {
+    if (!user) {
       return 'startup';
+    } else if (user?.first_name === '-') {
+      return 'registerdetails';
     } else {
       // return 'registerdetails';
       return 'home';
     }
-  }, [token, user]);
+  }, [user]);
 
   return (
     <Stack.Navigator

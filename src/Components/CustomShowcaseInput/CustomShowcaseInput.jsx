@@ -15,11 +15,10 @@ const CustomShowcaseInput = ({
   productionArea,
   progressBar,
   onPress,
+  user,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-
-  const {user} = useSelector(state => state.auth);
 
   return (
     <TouchableOpacity

@@ -1,32 +1,26 @@
-import React, {useState, useEffect} from 'react';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useMutation} from '@tanstack/react-query';
+import React, {useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  Pressable,
   useWindowDimensions,
 } from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {useDispatch} from 'react-redux';
-import {SendOTP} from '../../Redux/AuthSlice';
-import axiosInstance from '../../Helper/Helper';
-import {Scale} from '../../Helper/utils';
-import {yupResolver} from '@hookform/resolvers/yup';
+import CountryPicker from 'react-native-country-picker-modal';
 import * as yup from 'yup';
-import {Controller, useForm} from 'react-hook-form';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import CountryPicker, {
-  Country,
-  CountryCode,
-} from 'react-native-country-picker-modal';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
-import {useTranslation} from 'react-i18next';
+import {Scale} from '../../Helper/utils';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import {sentOtp} from '../../functions/AuthScreens';
+
 export default function Register({navigation, route}) {
-  const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
   const [selectedCountry, setSelectedCountry] = useState({
@@ -66,24 +60,27 @@ export default function Register({navigation, route}) {
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  const {mutate, isPending} = useMutation({
+    mutationFn: sentOtp,
+    onSuccess: (data, variables) =>
+      navigation.navigate('registerotp', variables),
+    onError: err => {
+      if (err.response.status === 400) {
+        setApi_err(err.response.data.message);
+      }
+      console.log(err.response);
+    },
+  });
+
   const FormSubmit = async data => {
-    dispatch(
-      SendOTP({
-        ...data,
-        currency: selectedCountry?.currency[0],
-        country_code: `+${selectedCountry?.callingCode[0]}`,
-        country: selectedCountry?.name,
-        type: 'register',
-      }),
-    )
-      .unwrap()
-      .then(() => navigation.navigate('registerotp'))
-      .catch(err => {
-        if (err.status === 400) {
-          setApi_err(err.data.message);
-        }
-        console.log(err.data.message);
-      });
+    mutate({
+      ...data,
+      currency: selectedCountry?.currency[0],
+      country_code: `+${selectedCountry?.callingCode[0]}`,
+      country: selectedCountry?.name,
+      type: 'register',
+    });
   };
 
   return (
@@ -153,6 +150,7 @@ export default function Register({navigation, route}) {
             <CustomButton
               btnText={t('register')}
               onPress={handleSubmit(FormSubmit)}
+              loading={isPending}
             />
           </View>
         </View>

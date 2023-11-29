@@ -39,6 +39,7 @@ const AddBottomSheet = ({modalVisible, bottomSheetRef, children, setModal}) => {
           enableTouchThrough={false}
           appearsOnIndex={0}
           disappearsOnIndex={-1}
+
           // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
         />
       )}

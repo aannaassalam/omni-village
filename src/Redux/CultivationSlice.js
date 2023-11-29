@@ -47,10 +47,7 @@ export const addCultivation = createAsyncThunk(
     try {
       const res = await axiosInstance.post(
         endpoints.cultivation.addCultivation,
-        {
-          ...cultivationData,
-          crop_id: cropId,
-        },
+        cultivationData,
       );
       return {status: res.status, data: res.data};
     } catch (err) {

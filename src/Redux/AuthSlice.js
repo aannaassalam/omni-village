@@ -97,50 +97,21 @@ export const LoginUser = createAsyncThunk(
 export const EditUser = createAsyncThunk(
   'edituser',
   async ({data, file}, {rejectWithValue}) => {
-    try {
-      const formData = new FormData();
-      Object.keys(data).forEach(key => {
-        if (key === 'members') {
-          formData.append('members', JSON.stringify(data[key]));
-          // data[key].forEach((item, idx) => {
-          //   formData.append(`members[${idx}]`, JSON.stringify(item));
-          //   // formData.append(`members[${idx}].age`, item.age);
-          //   // formData.append(`members[${idx}].gender`, item.gender);
-          // });
-        } else {
-          formData.append(key, data[key]);
-        }
-      });
-      formData.append('address_proof', {
-        uri: file?.uri || '',
-        type: file?.type || '',
-        filename: file?.name || '',
-        name: 'address_proof',
-      });
-      // for (var item of formData) {
-      const submitable_data = data.edit ? data : formData;
-      // }
-      let res = await axiosInstance.post(
-        endpoints?.auth?.editUser,
-        submitable_data,
-        !data.edit && {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          transformRequest: (data, error) => {
-            return formData;
-          },
-        },
-      );
-      console.log(res, 'res');
-      return {status: res.status, data: res.data};
-    } catch (err) {
-      console.log(err, 'errpr');
-      return rejectWithValue({
-        data: err.response.data,
-        status: err.response.status,
-      });
-    }
+    // try {
+    //   // }
+    //   let res = await axiosInstance.post(
+    //     endpoints?.auth?.editUser,
+    //     submitable_data,
+    //   );
+    //   console.log(res, 'res');
+    //   return {status: res.status, data: res.data};
+    // } catch (err) {
+    //   console.log(err, 'errpr');
+    //   return rejectWithValue({
+    //     data: err.response.data,
+    //     status: err.response.status,
+    //   });
+    // }
   },
 );
 
@@ -180,11 +151,6 @@ export const LandAllocation = createAsyncThunk(
     }
   },
 );
-
-export const logout = createAsyncThunk('logout', () => {
-  storage.clearAll();
-  return true;
-});
 
 export const AuthSlice = createSlice({
   name: 'userAuth',
@@ -296,18 +262,6 @@ export const AuthSlice = createSlice({
         }
       })
       .addCase(LandAllocation.rejected, state => {
-        state.status = 'idle';
-      })
-      .addCase(logout.pending, state => {
-        state.status = 'pending';
-      })
-      .addCase(logout.fulfilled, state => {
-        state.user = {};
-        state.userDetails = {};
-        state.userToken = '';
-        state.status = 'idle';
-      })
-      .addCase(logout.rejected, state => {
         state.status = 'idle';
       });
   },

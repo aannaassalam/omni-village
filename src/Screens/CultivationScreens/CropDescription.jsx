@@ -19,7 +19,6 @@ import {validation} from '../../Validation/Validation';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import InputLikeButton from '../../Components/CustomButton/InputLikeButton';
 import moment from 'moment';
@@ -27,21 +26,22 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import CalendarPicker from 'react-native-calendar-picker';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  addCultivation,
-  editCultivation,
-  getCurrentCrop,
-} from '../../Redux/CultivationSlice';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useUser} from '../../Hooks/useUser';
+import {useMutation} from '@tanstack/react-query';
+import {
+  addCultivation,
+  editCultivation,
+} from '../../functions/CultivationScreen';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const styles = makeStyles(fontScale);
-  const {cropName} = route.params;
+  const {cropName, crop_id, cultivation} = route.params;
   const {t} = useTranslation();
   const [area, setArea] = useState('');
   const [utilisation, setUtilisation] = useState(true);
@@ -72,8 +72,6 @@ const CropDescription = ({navigation, route}) => {
     {key: 'chemical based', name: t('chemical based')},
     {key: 'none', name: t('none')},
   ];
-
-  const {currentCrop} = useSelector(s => s.cultivation);
 
   const schema = yup.object().shape({
     area_allocated: yup.string().required(t('area_allocated is required')),
@@ -133,50 +131,81 @@ const CropDescription = ({navigation, route}) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      area_allocated: String(currentCrop?.area_allocated || ''),
-      output: String(currentCrop?.output || ''),
+      area_allocated: String(cultivation?.area_allocated || ''),
+      output: String(cultivation?.output || ''),
       utilization: {
         fed_to_livestock: String(
-          currentCrop?.utilization?.fed_to_livestock || '',
+          cultivation?.utilization?.fed_to_livestock || '',
         ),
-        other: currentCrop?.utilization?.other || '',
-        other_value: currentCrop?.utilization?.other_value
-          ? String(currentCrop?.utilization?.other_value)
+        other: cultivation?.utilization?.other || '',
+        other_value: cultivation?.utilization?.other_value
+          ? String(cultivation?.utilization?.other_value)
           : '',
-        self_consumed: String(currentCrop?.utilization?.self_consumed || ''),
+        self_consumed: String(cultivation?.utilization?.self_consumed || ''),
         sold_for_industrial_use: String(
-          currentCrop?.utilization?.sold_for_industrial_use || '',
+          cultivation?.utilization?.sold_for_industrial_use || '',
         ),
         sold_to_neighbours: String(
-          currentCrop?.utilization?.sold_to_neighbours || '',
+          cultivation?.utilization?.sold_to_neighbours || '',
         ),
-        wastage: String(currentCrop?.utilization?.wastage || ''),
+        wastage: String(cultivation?.utilization?.wastage || ''),
       },
       important_information: {
         decreasing_rate: String(
-          currentCrop?.important_information?.decreasing_rate || '',
+          cultivation?.important_information?.decreasing_rate || '',
         ),
-        description: currentCrop?.important_information?.description || '',
+        description: cultivation?.important_information?.description || '',
         expenditure_on_inputs: String(
-          currentCrop?.important_information?.expenditure_on_inputs || '',
+          cultivation?.important_information?.expenditure_on_inputs || '',
         ),
         income_from_sale: String(
-          currentCrop?.important_information?.income_from_sale || '',
+          cultivation?.important_information?.income_from_sale || '',
         ),
-        soil_health: currentCrop?.important_information?.soil_health,
+        soil_health: cultivation?.important_information?.soil_health,
         type_of_fertilizer_used:
-          currentCrop?.important_information?.type_of_fertilizer_used,
+          cultivation?.important_information?.type_of_fertilizer_used,
         type_of_pesticide_used:
-          currentCrop?.important_information?.type_of_pesticide_used,
-        yeild: String(currentCrop?.important_information?.yeild || ''),
+          cultivation?.important_information?.type_of_pesticide_used,
+        yeild: String(cultivation?.important_information?.yeild || ''),
         month_harvested:
-          currentCrop?.important_information?.month_harvested || new Date(),
+          cultivation?.important_information?.month_harvested || new Date(),
         month_planted:
-          currentCrop?.important_information?.month_planted ||
+          cultivation?.important_information?.month_planted ||
           new Date(new Date().setDate(new Date().getDate() - 1)).toString(),
       },
     },
   });
+
+  const {mutate: addCultivationData, isPending: addCultivationPending} =
+    useMutation({
+      mutationFn: addCultivation,
+      onSuccess: data => {
+        console.log(data);
+        data.important_information.status === 0
+          ? navigation.goBack()
+          : navigation.navigate('successfull');
+      },
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => setSavepopup(false),
+    });
+
+  const {mutate: editCultivationData, isPending: editCultivationPending} =
+    useMutation({
+      mutationFn: editCultivation,
+      onSuccess: () => navigation.goBack(),
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => setSavepopup(false),
+    });
 
   useEffect(() => {
     setValue(
@@ -192,7 +221,6 @@ const CropDescription = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
-    console.log('errorrrrrr', currentCrop);
   }, [errors]);
 
   const onSubmit = data => {
@@ -217,72 +245,38 @@ const CropDescription = ({navigation, route}) => {
         sold_to_neighbours +
         wastage
     ) {
-      if (currentCrop._id) {
-        dispatch(
-          editCultivation({
-            ...data,
+      if (cultivation) {
+        editCultivationData({
+          ...data,
+          important_information: {
+            ...data.important_information,
             status: 1,
-            utilization: {
-              ...data.utilization,
-              other_value:
-                data.utilization.other.length > 0
-                  ? data.utilization.other_value
-                  : '',
-            },
-            cultivation_id: currentCrop._id,
-          }),
-        )
-          .unwrap()
-          .then(
-            () =>
-              Toast.show({
-                text1: 'Success',
-                text2: 'Cultivation updated successfully!',
-              }),
-            navigation.goBack(),
-          )
-          .catch(err => {
-            console.log('err', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
-          })
-          .finally(() => setSavepopup(false));
+          },
+          utilization: {
+            ...data.utilization,
+            other_value:
+              data.utilization.other.length > 0
+                ? data.utilization.other_value
+                : '',
+          },
+          cultivation_id: cultivation._id,
+        });
       } else {
-        dispatch(
-          addCultivation({
-            ...data,
+        addCultivationData({
+          ...data,
+          important_information: {
+            ...data.important_information,
             status: 1,
-            utilization: {
-              ...data.utilization,
-              other_value:
-                data.utilization.other.length > 0
-                  ? data.utilization.other_value
-                  : '',
-            },
-          }),
-        )
-          .unwrap()
-          .then(res => {
-            Toast.show({
-              text1: 'Success',
-              text2: 'Cultivation added successfully!',
-            }),
-              // navigation.goBack(),
-              navigation.navigate('successfull');
-            console.log('response', res);
-          })
-          .catch(err => {
-            console.log('err', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
-          })
-          .finally(() => setSavepopup(false));
+          },
+          utilization: {
+            ...data.utilization,
+            other_value:
+              data.utilization.other.length > 0
+                ? data.utilization.other_value
+                : '',
+          },
+          crop_id,
+        });
       }
     } else {
       setSavepopup(false);
@@ -292,11 +286,14 @@ const CropDescription = ({navigation, route}) => {
 
   const handleDraft = () => {
     const data = watch();
-    if (currentCrop._id) {
-      dispatch(
-        editCultivation({
+    if (cultivation) {
+      editCultivationData(
+        {
           ...data,
-          status: 0,
+          important_information: {
+            ...data.important_information,
+            status: 0,
+          },
           utilization: {
             ...data.utilization,
             other_value:
@@ -304,32 +301,20 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
-          cultivation_id: currentCrop._id,
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Cultivation drafted successfully!',
-            }),
-          navigation.goBack(),
-        )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setSavepopup(false));
+          cultivation_id: cultivation._id,
+        },
+        {
+          onSettled: () => setDraftpopup(false),
+        },
+      );
     } else {
-      dispatch(
-        addCultivation({
+      addCultivationData(
+        {
           ...data,
-          status: 0,
+          important_information: {
+            ...data.important_information,
+            status: 0,
+          },
           utilization: {
             ...data.utilization,
             other_value:
@@ -337,28 +322,16 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Cultivation drafted successfully!',
-            }),
-          navigation.goBack(),
-        )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setSavepopup(false));
+          crop_id,
+        },
+        {
+          onSettled: () => setDraftpopup(false),
+        },
+      );
     }
   };
+
+  console.log(savepopup, 'popup');
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -808,7 +781,7 @@ const CropDescription = ({navigation, route}) => {
                 return (
                   <InputWithoutBorder
                     measureName={`${
-                      userDetails.land_measurement_symbol
+                      userDetails?.land_measurement_symbol
                         ? userDetails.land_measurement_symbol
                         : userDetails.land_measurement
                     } / kg`}
@@ -822,19 +795,19 @@ const CropDescription = ({navigation, route}) => {
             <InputLikeButton
               text={t('Month Planted')}
               rightIcon={true}
-              onPress={() => setPopup(true)}
+              calendarPress={() => setPopup(true)}
               date={moment(watch('important_information.month_planted')).format(
-                'MMMM DD,YYYY',
+                'MMMM DD, YYYY',
               )}
             />
 
             <InputLikeButton
               text={t('month harvested')}
               rightIcon={true}
-              onPress={() => setHarvestedPopup(true)}
+              calendarPress={() => setHarvestedPopup(true)}
               date={moment(
                 watch('important_information.month_harvested'),
-              ).format('MMMM DD,YYYY')}
+              ).format('MMMM DD, YYYY')}
             />
           </View>
         ) : null}
@@ -931,6 +904,7 @@ const CropDescription = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
+              loading={addCultivationPending || editCultivationPending}
             />
             <CustomButton
               style={styles.draftButton}
@@ -964,6 +938,7 @@ const CropDescription = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
+              loading={addCultivationPending || editCultivationPending}
             />
             <CustomButton
               style={styles.draftButton}
