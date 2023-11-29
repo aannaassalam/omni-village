@@ -1,35 +1,33 @@
+import {useMutation, useQuery} from '@tanstack/react-query';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  FlatList,
+  Image,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Image,
+  View,
   useWindowDimensions,
-  Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
-import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import {ActivityIndicator} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
-import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
+import Toast from 'react-native-toast-message';
+import {useDispatch} from 'react-redux';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import {useDispatch, useSelector} from 'react-redux';
-import {addTreeCrops, getTreeCrops} from '../../Redux/TreeCropSlice';
-import {getCrops} from '../../Redux/CropSlice';
-import {deleteTree, getTree, setCurrentTree} from '../../Redux/TreesSlice';
-import {useFocusEffect} from '@react-navigation/native';
-import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
+import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import {useTranslation} from 'react-i18next';
-import '../../i18next';
-import {useQuery} from '@tanstack/react-query';
-import {fetchTreeCorp} from '../../functions/Corps';
-import {fetchTree, fetchTrees} from '../../functions/TreesAndShrubsScreen';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import PopupModal from '../../Components/Popups/PopupModal';
 import {useUser} from '../../Hooks/useUser';
-import {ActivityIndicator} from 'react-native-paper';
+import {addTreeCorp, fetchTreeCorp} from '../../functions/Corps';
+import {fetchTrees, deleteTree} from '../../functions/TreesAndShrubsScreen';
+import '../../i18next';
+import {useFocusEffect} from '@react-navigation/native';
 
 const TreesShrubsScreen = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -43,85 +41,85 @@ const TreesShrubsScreen = ({navigation, route}) => {
   const [dropdownVal, setDropdownVal] = useState({});
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
+  const [delete_id, setDelete_id] = useState('');
+  const [deletePopup, setDeletePopup] = useState(false);
+  const [globalError, setGlobalError] = useState('');
 
   const bottomSheetRef = React.useRef(null);
 
   const {data: treeCrops, isLoading} = useQuery({
     queryKey: ['treeCrop'],
     queryFn: fetchTreeCorp,
+    refetchOnWindowFocus: true,
   });
-  const {data: trees, isLoading: isTreesLoading} = useQuery({
+  const {
+    data: trees,
+    isLoading: isTreesLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ['trees'],
     queryFn: fetchTrees,
+    refetchOnWindowFocus: true,
   });
 
-  const handleRemoveClick = (id, index) => {
-    const list = [...cropType];
-    list.splice(index, 1);
-    setCropType(list);
-    dispatch(deleteTree(id))
-      .unwrap()
-      .then(res => {})
-      .catch(err => console.log('error', err));
-  };
+  useFocusEffect(
+    useCallback(() => {
+      // queryClient.invalidateQueries();
+      refetch();
+    }, []),
+  );
 
-  const addCrop = () => {
-    let ids = cropType.map(i => i?.id || i?._id);
-    if (ids.includes(dropdownVal?.name?.value)) {
-      Alert.alert('Crop Already exists');
-      setCropModal(!cropModal);
-      setFocusOther(false);
-      setDropdownVal('');
-    } else {
-      setCropType([
-        ...cropType,
-        {
-          name:
-            dropdownVal.name == 'Others'
-              ? otherCrop.name
-              : dropdownVal.name?.label,
-          id:
-            dropdownVal.name == 'Others'
-              ? otherCrop._id
-              : dropdownVal?.name?.value,
-          progress: '',
-        },
-      ]);
-      setCropModal(!cropModal);
-      setFocusOther(false);
-      setDropdownVal('');
+  const {mutate: saveCrop, isPending} = useMutation({
+    mutationFn: addTreeCorp,
+    onSuccess: data => {
+      // setCropType(prev => [...prev, data]);
+      setCropModal(false);
       setOtherCrop('');
       navigation.navigate('type', {
-        cropType: dropdownVal.name?.label,
-        cropId:
-          trees[0] !== undefined &&
-          trees.find(j => j?.tree_crop?.name == dropdownVal.name?.label)
-            ? trees.find(i => i?.tree_crop?.name == dropdownVal.name?.label)._id
-            : dropdownVal.name?.value,
-        data: trees.find(i => i?.tree_crop_id == dropdownVal.name?.label),
+        cropName: data?.name,
+        crop_id: data?._id,
       });
-      setCropModal(!cropModal);
-    }
-  };
+      bottomSheetRef.current.close();
+    },
+  });
 
-  const addingTreesCrop = () => {
-    if (dropdownVal.name?.label === 'Others') {
-      dispatch(addTreeCrops({name: otherCrop?.name})).then(res => {
-        navigation.navigate('type', {
-          cropType: res?.payload?.data?.name,
-          cropId: res?.payload?.data?._id,
-          data: null,
-        });
-      });
-      dispatch(getTreeCrops());
-      setDropdownVal([]);
-      setOtherCrop('');
-      setFocusOther(false);
-      setCropModal(!cropModal);
-    } else {
-      addCrop();
+  const {mutate: deleteTreeData, isPending: deleteTreePending} = useMutation({
+    mutationFn: deleteTree,
+    onSuccess: () => {
+      setDeletePopup(false);
+      setDelete_id('');
+      refetch();
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+  });
+
+  const addCrop = () => {
+    if (!dropdownVal.name) {
+      setGlobalError('Please Select a Corp!');
+      return;
     }
-    bottomSheetRef.current.close();
+    if (trees.find(c => c.tree_crop_id === dropdownVal._id)) {
+      setGlobalError('Crop is already added!');
+    } else {
+      if (dropdownVal.name.label === 'Others' && otherCrop.length > 0) {
+        saveCrop({name: otherCrop, categoryId: ''});
+      } else {
+        setCropModal(false);
+        setOtherCrop('');
+        navigation.navigate('type', {
+          cropName: treeCrops.find(i => i?.name === dropdownVal.name?.label)
+            .name,
+          crop_id: treeCrops.find(i => i?.name === dropdownVal.name?.label)._id,
+        });
+        bottomSheetRef.current.close();
+      }
+    }
   };
 
   const DropdownSelectedValue = data => {
@@ -131,17 +129,21 @@ const TreesShrubsScreen = ({navigation, route}) => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getTreeCrops());
-      dispatch(getTree());
-    }, []),
-  );
+  const handleDelete = () => {
+    deleteTreeData(delete_id);
+  };
 
   useEffect(() => {
-    setCropType(trees?.map(i => i?.tree_crop));
+    setCropType(
+      trees?.map(i => ({
+        name: i.tree_crop.name,
+        _id: i.tree_crop._id,
+        data: i,
+        status: i.status,
+      })),
+    );
   }, [trees]);
-  // console.log("cropty", trees)
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
@@ -160,77 +162,55 @@ const TreesShrubsScreen = ({navigation, route}) => {
         allocatedFor={t('tree shrub grassland')}
         usedLand={totalLand}
       />
-      {/* Crop adding */}
-      {isTreesLoading ? (
+
+      {!isTreesLoading ? (
+        <FlatList
+          data={cropType}
+          keyExtractor={item => item._id}
+          onRefresh={refetch}
+          refreshing={isFetching}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => {
+                navigation.navigate('type', {
+                  cropName: item?.name,
+                  crop_id: item?._id,
+                  data: item.data,
+                });
+              }}>
+              <AddAndDeleteCropButton
+                darftStyle={{
+                  borderColor: item.status === 1 ? 'grey' : '#e5c05e',
+                }}
+                drafted={item.status === 0}
+                add={false}
+                cropName={item?.name}
+                onPress={() => {
+                  setDelete_id(item.data._id);
+                  setDeletePopup(true);
+                }}
+              />
+            </TouchableOpacity>
+          )}
+          ListFooterComponent={
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => setCropModal(true)}>
+              <AddAndDeleteCropButton
+                add={true}
+                cropName={t('add tree shrub')}
+                onPress={() => setCropModal(true)}
+              />
+            </TouchableOpacity>
+          }
+        />
+      ) : (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
           <ActivityIndicator animating size="large" color="#268C43" />
         </View>
-      ) : (
-        cropType?.map((element, i) => {
-          return (
-            <TouchableOpacity
-              style={styles.addAndDeleteButtonSection}
-              key={i}
-              onPress={() => {
-                dispatch(
-                  setCurrentTree(
-                    trees.find(i => i?.tree_crop_id == element?._id),
-                  ),
-                ),
-                  navigation.navigate('type', {
-                    cropType: element?.name,
-                    cropId:
-                      trees[0] !== undefined &&
-                      trees.find(j => j?.tree_crop?.name == element?.name)
-                        ? trees.find(i => i?.tree_crop?.name == element?.name)
-                            ._id
-                        : element?.id,
-                    data: trees.find(i => i?.tree_crop_id == element?._id),
-                  });
-                // dispatch(deleteTree(trees[0] !== undefined && trees.find((j) => j?.tree_crop?.name == element?.name) ? trees.find((i) => i?.tree_crop?.name == element?.name)._id : element?.id))
-                // console.log("iddddd crop", element?._id)
-              }}>
-              <AddAndDeleteCropButton
-                add={false}
-                darftStyle={{
-                  borderColor:
-                    trees[0] !== undefined &&
-                    trees.find(j => j?.tree_crop?.name == element?.name)
-                      ?.status == 1
-                      ? 'grey'
-                      : '#e5c05e',
-                }}
-                drafted={
-                  trees[0] !== undefined &&
-                  trees.find(j => j?.tree_crop?.name == element?.name)
-                    ?.status == 1
-                    ? false
-                    : true
-                }
-                cropName={element?.name}
-                onPress={() =>
-                  handleRemoveClick(
-                    trees[0] !== undefined &&
-                      trees.find(j => j?.tree_crop?.name == element?.name)
-                      ? trees.find(i => i?.tree_crop?.name == element?.name)._id
-                      : element?.id,
-                    i,
-                  )
-                }
-              />
-            </TouchableOpacity>
-          );
-        })
       )}
-      <TouchableOpacity
-        style={styles.addAndDeleteButtonSection}
-        onPress={() => setCropModal(true)}>
-        <AddAndDeleteCropButton
-          add={true}
-          cropName={t('add tree shrub')}
-          onPress={() => setCropModal(true)}
-        />
-      </TouchableOpacity>
+      {/* Crop adding */}
       <AddBottomSheet
         modalVisible={cropModal}
         bottomSheetRef={bottomSheetRef}
@@ -241,7 +221,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
             onPress={() => {
               setCropModal(!cropModal);
               setFocusOther(false);
-              setDropdownVal('');
+              setDropdownVal({});
               bottomSheetRef.current.close();
             }}>
             <Image
@@ -262,11 +242,21 @@ const TreesShrubsScreen = ({navigation, route}) => {
             <InputWithoutRightElement
               label={t('tree shrub name')}
               placeholder={t('eg banyan')}
-              onChangeText={e => setOtherCrop({name: e, _id: 0})}
-              value={otherCrop?.name}
+              onChangeText={e => setOtherCrop(e)}
+              value={otherCrop}
               onFocus={() => setFocusOther(true)}
             />
           ) : null}
+          <Text
+            style={{
+              fontFamily: 'ubuntu-regular',
+              fontSize: 14 / fontScale,
+              marginTop: 5,
+              color: '#ff000e',
+              marginLeft: 5,
+            }}>
+            {globalError}
+          </Text>
         </View>
         <View style={styles.BottomSheetButton}>
           <TouchableOpacity
@@ -283,12 +273,47 @@ const TreesShrubsScreen = ({navigation, route}) => {
           <CustomButton
             btnText={t('create')}
             style={{width: '80%'}}
-            onPress={() => {
-              addingTreesCrop();
-            }}
+            onPress={addCrop}
+            loading={isPending}
           />
         </View>
       </AddBottomSheet>
+      <PopupModal
+        modalVisible={deletePopup}
+        setBottomModalVisible={toggle => {
+          setDelete_id('');
+          setDeletePopup(toggle);
+        }}
+        styleInner={[styles.savePopup, {width: '90%'}]}>
+        <View style={styles.submitPopup}>
+          <View style={styles.noteImage}>
+            <Image
+              source={require('../../../assets/note.png')}
+              style={styles.noteImage}
+            />
+          </View>
+          <Text style={styles.confirmText}>{t('confirm')}</Text>
+          <Text style={styles.nextText}>
+            {t('Do you want to delete this corp?')}
+          </Text>
+          <View style={styles.bottomPopupbutton}>
+            <CustomButton
+              style={styles.submitButton}
+              btnText={t('yes delete')}
+              onPress={handleDelete}
+              loading={deleteTreePending}
+            />
+            <CustomButton
+              style={styles.draftButton}
+              btnText={t('no')}
+              onPress={() => {
+                setDelete_id('');
+                setDeletePopup(false);
+              }}
+            />
+          </View>
+        </View>
+      </PopupModal>
     </SafeAreaView>
   );
 };
@@ -342,5 +367,53 @@ const makeStyles = fontScale =>
     addCropIcon: {
       height: 50,
       width: 50,
+    },
+    savePopup: {
+      justifyContent: 'center',
+      width: '97%',
+      borderRadius: 20,
+    },
+    popupButton: {
+      width: '70%',
+      alignSelf: 'center',
+    },
+    bottomPopupbutton: {
+      width: '93%',
+      flexDirection: 'row',
+      alignSelf: 'center',
+      justifyContent: 'space-between',
+      marginTop: '5%',
+    },
+    submitButton: {
+      width: '45%',
+      margin: 10,
+    },
+    draftButton: {
+      width: '45%',
+      margin: 10,
+      backgroundColor: 'grey',
+    },
+    confirmText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu-medium',
+      fontWeight: '500',
+      padding: 10,
+      textAlign: 'center',
+    },
+    nextText: {
+      alignSelf: 'center',
+      fontSize: 18 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu',
+      textAlign: 'center',
+    },
+    submitPopup: {
+      alignItems: 'center',
+      padding: 10,
+    },
+    noteImage: {
+      padding: 10,
     },
   });

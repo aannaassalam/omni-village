@@ -2,7 +2,7 @@ import {endpoints} from '../Endpoints/endpoints';
 import axiosInstance from '../Helper/Helper';
 
 export const fetchTrees = async () => {
-  const res = await axiosInstance.post(endpoints.treeShrubs.fetch_tree);
+  const res = await axiosInstance.get(endpoints.treeShrubs.fetch_tree);
   return res.data;
 };
 
@@ -17,8 +17,8 @@ export const editTree = async body => {
 };
 
 export const deleteTree = async id => {
-  const res = await axiosInstance.post(endpoints.treeShrubs.delete_trees, {
-    id,
-  });
+  const res = await axiosInstance.delete(
+    endpoints.treeShrubs.delete_trees + '/' + id,
+  );
   return res.data;
 };

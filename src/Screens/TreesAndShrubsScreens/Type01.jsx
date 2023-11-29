@@ -23,7 +23,7 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
-import {addTree, editTree, getTree} from '../../Redux/TreesSlice';
+import {getTree} from '../../Redux/TreesSlice';
 import Toast from 'react-native-toast-message';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -35,6 +35,8 @@ import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useMutation} from '@tanstack/react-query';
+import {addTree, editTree} from '../../functions/TreesAndShrubsScreen';
 
 const Type01 = ({navigation, route}) => {
   const {t} = useTranslation();
@@ -54,7 +56,7 @@ const Type01 = ({navigation, route}) => {
     {key: 'chemical based', name: t('chemical based')},
     {key: 'none', name: t('none')},
   ];
-  const {cropType, edit, cropId, data} = route.params;
+  const {cropName, edit, crop_id, data} = route.params;
   const [impInfo, setImpInfo] = useState(true);
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fontScale} = useWindowDimensions();
@@ -112,6 +114,8 @@ const Type01 = ({navigation, route}) => {
       checked: false,
     },
   ]);
+  const [globalError, setGlobalError] = useState('');
+  const [harvestedError, setHarvestedError] = useState('');
   const [harvestedProductList, setHarvestedProductList] = useState([]);
   const [productList, setProductlist] = useState([]);
   const [age, setAge] = useState('');
@@ -147,6 +151,7 @@ const Type01 = ({navigation, route}) => {
         .required(t('expenditure_on_inputs is required')),
     }),
   });
+
   useEffect(() => {
     if (data) {
       setHarvestedProductList(data?.products);
@@ -154,6 +159,7 @@ const Type01 = ({navigation, route}) => {
       setHarvestedProductList([]);
     }
   }, [data]);
+
   const {
     handleSubmit,
     setValue,
@@ -176,19 +182,48 @@ const Type01 = ({navigation, route}) => {
       },
     },
   });
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
   }, [errors]);
-  // console.log("data", errors)
+
+  const {mutate: addTreeData, isPending: isAddTreePending} = useMutation({
+    mutationFn: addTree,
+    onSuccess: _data => {
+      console.log(_data);
+      _data.status === 0
+        ? navigation.goBack()
+        : navigation.navigate('successfull');
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
+
+  const {mutate: editTreeData, isPending: isEditTreePending} = useMutation({
+    mutationFn: editTree,
+    onSuccess: () => navigation.goBack(),
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
+
   const onSubmit = data2 => {
-    console.log('hitting here');
     if (data?._id) {
-      dispatch(
-        editTree({
-          data: watch('important_information'),
-          productDetails: harvestedProductList.map(itm => {
+      if (harvestedProductList.length > 0) {
+        editTreeData({
+          ...watch('important_information'),
+          products: harvestedProductList.map(itm => {
             return {
               _id: itm?._id,
               name: itm?.name || '',
@@ -207,72 +242,33 @@ const Type01 = ({navigation, route}) => {
             };
           }),
           status: 1,
-          crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Trees updated successfully!',
-            }),
-          dispatch(getTree()),
-          // navigation.goBack(),
-          navigation.navigate('successfull'),
-          setSavepopup(false),
-          // navigation.goBack(),
-        )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => {
-          setSavepopup(false);
+          tree_id: data?._id,
         });
+      } else {
+        setGlobalError('Please add a harvested product!');
+        setSavepopup(false);
+      }
     } else {
-      dispatch(
-        addTree({
-          data: watch('important_information'),
-          productDetails: harvestedProductList,
+      if (harvestedProductList.length > 0) {
+        addTreeData({
+          ...watch('important_information'),
+          products: harvestedProductList,
           status: 1,
-          crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(res => {
-          Toast.show({
-            text1: 'Success',
-            text2: 'Trees added successfully!',
-          }),
-            dispatch(getTree()),
-            // navigation.goBack(),
-            navigation.navigate('successfull'),
-            setSavepopup(false);
-          console.log('here', res);
-        })
-        .catch(err => {
-          console.log('err at add', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setSavepopup(false));
+          tree_crop_id: crop_id,
+        });
+      } else {
+        setGlobalError('Please add a harvested product!');
+        setSavepopup(false);
+      }
     }
   };
 
   const handleDraft = () => {
     if (data?._id) {
-      dispatch(
-        editTree({
-          data: watch('important_information'),
-          productDetails: harvestedProductList.map(itm => {
+      editTreeData(
+        {
+          ...watch('important_information'),
+          products: harvestedProductList.map(itm => {
             return {
               _id: itm?._id,
               name: itm?.name || '',
@@ -291,60 +287,24 @@ const Type01 = ({navigation, route}) => {
             };
           }),
           status: 0,
-          crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Trees updated successfully!',
-            }),
-          dispatch(getTree()),
-          navigation.goBack(),
-          setDraftpopup(false),
-        )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => {
-          setDraftpopup(false), navigation.goBack();
-        });
+          tree_id: data?._id,
+        },
+        {
+          onSettled: () => setDraftpopup(false),
+        },
+      );
     } else {
-      dispatch(
-        addTree({
-          data: watch('important_information'),
-          productDetails: harvestedProductList,
+      addTreeData(
+        {
+          ...watch('important_information'),
+          products: harvestedProductList,
           status: 0,
-          crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(
-          res =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Trees added successfully!',
-            }),
-          dispatch(getTree()),
-          navigation.goBack(),
-          setDraftpopup(false),
-        )
-        .catch(err => {
-          console.log('err at add', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setDraftpopup(false));
+          tree_crop_id: crop_id,
+        },
+        {
+          onSettled: () => setDraftpopup(false),
+        },
+      );
     }
   };
   const replaceObjectById = (array, newObj) => {
@@ -353,41 +313,50 @@ const Type01 = ({navigation, route}) => {
     );
     return newArray;
   };
+
   useEffect(() => {
     if (edit) {
       const updatedArray = replaceObjectById(harvestedProductList, edit);
       setHarvestedProductList(updatedArray);
     }
   }, [edit]);
+
   const addProduct = () => {
-    setHarvestedProductList([
-      ...harvestedProductList,
-      {
-        name: productName,
-        production_output: '0',
-        self_consumed: '0',
-        fed_to_livestock: '0',
-        sold_to_neighbours: '0',
-        sold_for_industrial_use: '0',
-        wastage: '0',
-        other: 'Retain',
-        other_value: '0',
-        month_harvested: moment().format('YYYY-MM-DD') || '',
-        processing_method: false,
-      },
-    ]);
-    navigation.navigate('editType', {
-      cropType: productName,
-      edit: {},
-      cropId: cropId,
-      data: data,
-    });
-    setProductName('');
+    if (productName.length === 0) {
+      setHarvestedError('Please enter a harvested product name!');
+    } else {
+      setHarvestedProductList([
+        ...harvestedProductList,
+        {
+          name: productName,
+          production_output: '0',
+          self_consumed: '0',
+          fed_to_livestock: '0',
+          sold_to_neighbours: '0',
+          sold_for_industrial_use: '0',
+          wastage: '0',
+          other: 'Retain',
+          other_value: '0',
+          month_harvested: moment().format('YYYY-MM-DD') || '',
+          processing_method: false,
+        },
+      ]);
+      navigation.navigate('editType', {
+        cropType: productName,
+        edit: {},
+        cropId: cropId,
+        data: data,
+      });
+      setProductName('');
+      bottomSheetRef2.current.close();
+    }
   };
+
   const removeList = name => {
     let newList = harvestedProductList.filter(obj => obj.name !== name);
     setHarvestedProductList(newList);
   };
+
   const toggleItem = (value, index) => {
     setAge(value);
     const newValue = averageAge.map((checkbox, i) => {
@@ -408,12 +377,12 @@ const Type01 = ({navigation, route}) => {
     setAverageAge(newValue);
     setTreeAge(false);
   };
-  console.log('form', watch('important_information'));
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         goBack={() => navigation.goBack()}
-        headerName={cropType}
+        headerName={cropName}
         backIcon={true}
       />
       <ScrollView>
@@ -701,11 +670,24 @@ const Type01 = ({navigation, route}) => {
           </>
           <TouchableOpacity
             style={styles.add_button}
-            onPress={() => setHarvestProdAdd(true)}>
+            onPress={() => {
+              setHarvestProdAdd(true);
+              setGlobalError('');
+            }}>
             <Text style={styles.add_button_text}>{t('add')}</Text>
             <AntDesign name="plus" size={15} color="#fff" />
           </TouchableOpacity>
         </View>
+        <Text
+          style={{
+            fontFamily: 'ubuntu-regular',
+            fontSize: 14 / fontScale,
+            marginTop: 5,
+            color: '#ff000e',
+            marginLeft: 25,
+          }}>
+          {globalError}
+        </Text>
         <View style={styles.bottomPopupbutton}>
           <CustomButton
             style={styles.submitButton}
@@ -794,24 +776,33 @@ const Type01 = ({navigation, route}) => {
             keyboardType="default"
             onChangeText={e => {
               setProductName(e);
+              setHarvestedError('');
               if (e.endsWith('\n')) {
                 setProductName(e);
                 setHarvestProdAdd(!harvestProdAdd);
                 setFocus(!focus);
                 addProduct();
-                bottomSheetRef2.current.close();
               }
             }}
             multiline={true}
             notRightText={true}
             onFocus={() => setFocus(true)}
           />
+          <Text
+            style={{
+              fontFamily: 'ubuntu-regular',
+              fontSize: 14 / fontScale,
+              marginTop: 5,
+              color: '#ff000e',
+              marginLeft: 12,
+            }}>
+            {harvestedError}
+          </Text>
         </View>
         <View style={{marginTop: '15%', width: '90%', alignSelf: 'center'}}>
           <CustomButton
             btnText={t('submit')}
             onPress={() => {
-              bottomSheetRef2.current.close();
               setHarvestProdAdd(!harvestProdAdd);
               setFocus(!focus);
               addProduct();
@@ -840,12 +831,13 @@ const Type01 = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
+              loading={isAddTreePending || isEditTreePending}
             />
             <CustomButton
               style={styles.draftButton}
               btnText={t('cancel')}
               onPress={() => {
-                setSavepopup(false), navigation.goBack();
+                setSavepopup(false);
               }}
             />
           </View>
@@ -872,6 +864,7 @@ const Type01 = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
+              loading={isAddTreePending || isEditTreePending}
             />
             <CustomButton
               style={styles.draftButton}

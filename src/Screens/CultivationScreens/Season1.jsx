@@ -67,9 +67,8 @@ const Season1 = ({navigation, route}) => {
   const {mutate: saveCrop, isPending} = useMutation({
     mutationFn: addCultivationCorp,
     onSuccess: data => {
-      setSelectCrops(prev => [...prev, data]);
+      // setSelectCrops(prev => [...prev, data]);
       setCropModal(false);
-      setCropModal(!cropModal);
       setOtherCrop('');
       navigation.navigate('cropDescription', {
         cropName: data?.name,
