@@ -28,6 +28,7 @@ import Consumption from '../Screens/Consumption/Consumption';
 import Succsessfull from '../Screens/Successfull';
 import FisheryPond from '../Screens/Fishery/FisheryPond';
 import FisheryRiver2 from '../Screens/Fishery/FisheryRiver2';
+import Hunting2 from '../Screens/Hunting/Hunting2';
 
 const Stack = createStackNavigator();
 
@@ -65,7 +66,8 @@ export default function Productionstack() {
       <Stack.Screen name="fisheryRiverInput" component={FisheryRiverInput} />
 
       {/* hunting */}
-      <Stack.Screen name="hunting" component={Hunting} />
+      {/* <Stack.Screen name="hunting" component={Hunting} /> */}
+      <Stack.Screen name="hunting" component={Hunting2} />
       <Stack.Screen name="huntingType" component={HuntingType} />
       {/* storage */}
       <Stack.Screen name="storage" component={Storage} />

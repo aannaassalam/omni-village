@@ -9,29 +9,23 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import ProductDescription from '../../Components/CustomDashboard/ProductDescription';
-import Checkbox from '../../Components/Checkboxes/Checkbox';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
-import ImportantInformationHunting from '../../Components/Accordion/ImportantInformationHunting';
-import ProductionInformation from '../../Components/Accordion/ProductionInformation';
-import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion';
 import {validation} from '../../Validation/Validation';
 import Toast from 'react-native-toast-message';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {addHunting, editHunting, getHunting} from '../../Redux/HuntingSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { useMutation } from '@tanstack/react-query';
+import { addHunting, editHunting } from '../../functions/huntingScreen';
 const HuntingType = ({navigation, route}) => {
   const {cropType, data, cropId} = route.params;
   const {t} = useTranslation();
@@ -152,7 +146,37 @@ const HuntingType = ({navigation, route}) => {
     watch('important_information.number_hunted'),
     watch('utilisation_information.meat'),
   ]);
+  const { mutate: addHuntingData, isPending: isAddFisheryPending } = useMutation({
+    mutationFn: addHunting,
+    onSuccess: _data => {
+      console.log(_data, "added successfully ");
+      _data.status === 0
+        ? navigation.goBack()
+        : navigation.navigate('successfull');
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
 
+  const { mutate: editHuntingData, isPending: isEditFisheryPending } = useMutation({
+    mutationFn: editHunting,
+    onSuccess: () => {
+      console.log("edited success fully")
+      navigation.goBack()
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
   const onSubmit = data2 => {
     // console.log("here")
     let meat = parseInt(data2.utilisation_information.meat);
@@ -193,8 +217,8 @@ const HuntingType = ({navigation, route}) => {
         setSavepopup(false);
       } else {
         if (data?._id) {
-          dispatch(
-            editHunting({
+          // dispatch(
+            editHuntingData({
               number_hunted: watch('important_information.number_hunted'),
               utilisation_information: watch('utilisation_information'),
               income_from_sale: watch('income_from_sale'),
@@ -206,30 +230,10 @@ const HuntingType = ({navigation, route}) => {
               processing_method: watch('processing_method'),
               status: 1,
               crop_id: cropId,
-            }),
-          )
-            .unwrap()
-            .then(
-              () =>
-                Toast.show({
-                  text1: 'Success',
-                  text2: 'Trees updated successfully!',
-                }),
-              dispatch(getHunting()),
-              navigation.navigate('successfull'),
-            )
-            .catch(err => {
-              console.log('err', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
-              });
             })
-            .finally(() => setSavepopup(false));
         } else {
-          dispatch(
-            addHunting({
+          // dispatch(
+            addHuntingData({
               number_hunted: watch('important_information.number_hunted'),
               utilisation_information: watch('utilisation_information'),
               income_from_sale: watch('income_from_sale'),
@@ -241,27 +245,7 @@ const HuntingType = ({navigation, route}) => {
               processing_method: watch('processing_method'),
               status: 1,
               crop_id: cropId,
-            }),
-          )
-            .unwrap()
-            .then(
-              () =>
-                Toast.show({
-                  text1: 'Success',
-                  text2: 'Trees added successfully!',
-                }),
-              dispatch(getHunting()),
-              navigation.navigate('successfull'),
-            )
-            .catch(err => {
-              console.log('err at add', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
-              });
             })
-            .finally(() => setSavepopup(false));
         }
       }
     }
@@ -302,8 +286,8 @@ const HuntingType = ({navigation, route}) => {
       setDraftpopup(false);
     } else {
       if (data?._id) {
-        dispatch(
-          editHunting({
+        // dispatch(
+          editHuntingData({
             number_hunted: watch('important_information.number_hunted'),
             utilisation_information: watch('utilisation_information'),
             income_from_sale: watch('income_from_sale'),
@@ -315,30 +299,10 @@ const HuntingType = ({navigation, route}) => {
             processing_method: watch('processing_method'),
             status: 0,
             crop_id: cropId,
-          }),
-        )
-          .unwrap()
-          .then(
-            () =>
-              Toast.show({
-                text1: 'Success',
-                text2: 'Trees drafted successfully!',
-              }),
-            dispatch(getHunting()),
-            navigation.goBack(),
-          )
-          .catch(err => {
-            console.log('err', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
           })
-          .finally(() => setDraftpopup(false));
       } else {
-        dispatch(
-          addHunting({
+        // dispatch(
+          addHuntingData({
             number_hunted: watch('important_information.number_hunted'),
             utilisation_information: watch('utilisation_information'),
             income_from_sale: watch('income_from_sale'),
@@ -350,27 +314,7 @@ const HuntingType = ({navigation, route}) => {
             processing_method: watch('processing_method'),
             status: 0,
             crop_id: cropId,
-          }),
-        )
-          .unwrap()
-          .then(
-            () =>
-              Toast.show({
-                text1: 'Success',
-                text2: 'Trees drafted successfully!',
-              }),
-            dispatch(getHunting()),
-            navigation.goBack(),
-          )
-          .catch(err => {
-            console.log('err at add', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
           })
-          .finally(() => setDraftpopup(false));
       }
     }
   };
