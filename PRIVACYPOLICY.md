@@ -27,6 +27,7 @@ The list of information required by the app to continue using the app is listed 
 | Social Security Number | This is required to validate if the user logged in belongs to the same nation they just selected as their country. |
 | Address | This is required to make contact easily if user might need anytype of physical support. |
 | Address Proof | This is required to validate the social security number. |
+| SMS Log | This app collects OTP related to OmniVillage that is sent to you over SMS and uses it to enable the login or register feature, when someone is trying to login or register. |
 
  <hr style="border:1px solid gray">
 

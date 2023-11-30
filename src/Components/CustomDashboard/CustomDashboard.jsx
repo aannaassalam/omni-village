@@ -46,7 +46,7 @@ const makeStyles = fontScale =>
     topText: {
       fontSize: 14 / fontScale,
       color: '#576A74',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       // width: '25%',
       marginLeft: 5,
       textTransform: 'capitalize',

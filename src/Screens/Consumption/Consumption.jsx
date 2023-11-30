@@ -7,7 +7,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
@@ -24,6 +24,8 @@ import {useFocusEffect} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native-paper';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {addConsumptionCrops} from '../../Redux/ConsumptionCropSlice';
 
 const Consumption = ({route, navigation}) => {
   const {typeId, typeName} = route.params;
@@ -38,6 +40,9 @@ const Consumption = ({route, navigation}) => {
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
   const dispatch = useDispatch();
+
+  const bottomSheetRef = useRef(null);
+
   const {t} = useTranslation();
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
@@ -53,6 +58,7 @@ const Consumption = ({route, navigation}) => {
   const addCrop = async () => {
     let ids = cropType.map(i => i?.id || i?._id);
     if (ids.includes(dropdownVal?.name?.value)) {
+      console.log('idhar 2');
       Alert.alert('Crop Already exists');
       setCropModal(!cropModal);
       setFocusOther(false);
@@ -94,24 +100,40 @@ const Consumption = ({route, navigation}) => {
       setFocusOther(false);
       setDropdownVal('');
       setOtherCrop('');
+      bottomSheetRef.current.close();
     }
   };
-  const addingHuntingCrop = () => {
+  const addingHuntingCrop = async () => {
     if (dropdownVal.name?.label === 'Others') {
       // dispatch(addHuntingCrops({ name: otherCrop?.name }));
       // dispatch(getHuntingCrops());
-      setCropType([
-        ...cropType,
-        {
-          name: otherCrop.name,
-          id: otherCrop._id,
-          progress: '',
-        },
-      ]);
-      setCropModal(!cropModal);
-      setDropdownVal([]);
-      setOtherCrop('');
-      setFocusOther(false);
+      console.log('idhar');
+      dispatch(addConsumptionCrops({name: otherCrop.name, type_id: typeId}))
+        .unwrap()
+        .then(res => {
+          setCropType([
+            ...cropType,
+            {
+              name: res.data.name,
+              id: res.data._id,
+              progress: '',
+            },
+          ]);
+          setCropModal(!cropModal);
+          setDropdownVal([]);
+          setOtherCrop('');
+          setFocusOther(false);
+          navigation.navigate('consumptionInput', {
+            typeName: typeName,
+            cropType: res.data.name,
+            cropId: res.data._id,
+            data: consumption.find(
+              i => i?.consumption_crop_id === res.data._id,
+            ),
+          });
+          bottomSheetRef.current.close();
+        })
+        .catch(err => console.log(err));
     } else {
       addCrop();
     }
@@ -133,7 +155,7 @@ const Consumption = ({route, navigation}) => {
     setCropType(consumption.map(i => i?.consumption_crop));
   }, [consumption]);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         backIcon={true}
         headerName={t('consumption')}
@@ -172,10 +194,21 @@ const Consumption = ({route, navigation}) => {
                 <AddAndDeleteCropButton
                   add={false}
                   darftStyle={{
-                    borderColor: consumption[0] !== undefined && consumption?.find((i) => i?.consumption_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
+                    borderColor:
+                      consumption[0] !== undefined &&
+                      consumption?.find(
+                        i => i?.consumption_crop?.name == element?.name,
+                      )?.status == 1
+                        ? 'grey'
+                        : '#e5c05e',
                   }}
                   drafted={
-                    consumption[0] !== undefined && consumption?.find((i) => i?.consumption_crop?.name == element?.name).status == 1 ? false : true
+                    consumption[0] !== undefined &&
+                    consumption?.find(
+                      i => i?.consumption_crop?.name == element?.name,
+                    )?.status == 1
+                      ? false
+                      : true
                   }
                   cropName={element?.name}
                   onPress={() =>
@@ -206,56 +239,61 @@ const Consumption = ({route, navigation}) => {
           </TouchableOpacity>
         </>
       )}
-      {cropModal && (
-        <AddBottomSheet>
-          <View style={styles.BottomTopContainer}>
-            <Text style={styles.headerText}>{t('add type')}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setCropModal(!cropModal);
-                setFocusOther(false);
-                setDropdownVal('');
-              }}>
-              <Image
-                source={require('../../../assets/close.png')}
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.dropdownSection}>
-            <CustomDropdown4
-              selectedValue={e => DropdownSelectedValue({name: e, _id: e._id})}
-              data={[...consumptionCrops, {_id: 0, name: 'Others'}]}
-              valu={dropdownVal?.name}
+      <AddBottomSheet
+        modalVisible={cropModal}
+        setModal={setCropModal}
+        bottomSheetRef={bottomSheetRef}>
+        <View style={styles.BottomTopContainer}>
+          <Text style={styles.headerText}>{t('add type')}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setCropModal(!cropModal);
+              setFocusOther(false);
+              setDropdownVal('');
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/close.png')}
+              style={styles.closeIcon}
             />
-            {dropdownVal.name?.label === 'Others' ? (
-              <InputWithoutRightElement
-                label={t('consumption name')}
-                placeholder={t('eg nuts')}
-                onChangeText={e => setOtherCrop({name: e, _id: 0})}
-                value={otherCrop?.name}
-                onFocus={() => setFocusOther(true)}
-              />
-            ) : null}
-          </View>
-          <View style={styles.BottomSheetButton}>
-            <TouchableOpacity
-              style={styles.crossButton}
-              onPress={() => setCropModal(!cropModal)}>
-              <Image
-                source={require('../../../assets/cross.png')}
-                style={styles.addCropIcon}
-              />
-            </TouchableOpacity>
-            <CustomButton
-              btnText={t('create')}
-              style={{width: '80%'}}
-              onPress={() => addingHuntingCrop()}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dropdownSection}>
+          <CustomDropdown4
+            selectedValue={e => DropdownSelectedValue({name: e, _id: e._id})}
+            data={[...consumptionCrops, {_id: 0, name: 'Others'}]}
+            valu={dropdownVal?.name}
+          />
+          {dropdownVal.name?.label === 'Others' ? (
+            <InputWithoutRightElement
+              label={t('consumption name')}
+              placeholder={t('eg nuts')}
+              onChangeText={e => setOtherCrop({name: e, _id: 0})}
+              value={otherCrop?.name}
+              onFocus={() => setFocusOther(true)}
             />
-          </View>
-        </AddBottomSheet>
-      )}
-    </View>
+          ) : null}
+        </View>
+        <View style={styles.BottomSheetButton}>
+          <TouchableOpacity
+            style={styles.crossButton}
+            onPress={() => {
+              setCropModal(!cropModal);
+              bottomSheetRef.current.close();
+            }}>
+            <Image
+              source={require('../../../assets/cross.png')}
+              style={styles.addCropIcon}
+            />
+          </TouchableOpacity>
+          <CustomButton
+            btnText={t('create')}
+            style={{width: '80%'}}
+            onPress={() => addingHuntingCrop()}
+          />
+        </View>
+      </AddBottomSheet>
+    </SafeAreaView>
   );
 };
 
@@ -278,7 +316,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

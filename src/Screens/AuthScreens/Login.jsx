@@ -1,33 +1,25 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
-  SafeAreaView,
+  Image,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  Pressable,
   useWindowDimensions,
 } from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {useDispatch} from 'react-redux';
-import {SendOTP} from '../../Redux/AuthSlice';
-import {TextInput} from 'react-native-gesture-handler';
-import {Scale} from '../../Helper/utils';
-import {yupResolver} from '@hookform/resolvers/yup';
+import CountryPicker from 'react-native-country-picker-modal';
 import * as yup from 'yup';
-import {Controller, useForm} from 'react-hook-form';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
-import CountryPicker, {
-  Country,
-  CountryCode,
-} from 'react-native-country-picker-modal';
-import {useTranslation} from 'react-i18next';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import {sentOtp} from '../../functions/AuthScreens';
+
 export default function Login({navigation, route}) {
-  const dispatch = useDispatch();
   const [inputVal, setInputVal] = useState('');
   const [api_err, setApi_err] = useState('');
 
@@ -66,23 +58,25 @@ export default function Login({navigation, route}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
+  const {isPending, mutate} = useMutation({
+    mutationFn: sentOtp,
+    onSuccess: (data, variables) => {
+      navigation.navigate('loginotp', variables);
+    },
+    onError: err => {
+      if (err.response.status === 400) {
+        setApi_err(err.response.data.message);
+      }
+      console.log(err.response.data.message);
+    },
+  });
+
   const FormSubmit = data => {
-    dispatch(
-      SendOTP({
-        ...data,
-        country_code: `+${selectedCountry?.callingCode[0]}`,
-        type: 'login',
-      }),
-    )
-      .unwrap()
-      .then(() => navigation.navigate('loginotp'))
-      .catch(err => {
-        console.log(err);
-        if (err.status === 400) {
-          setApi_err(err.data.message);
-        }
-        console.log(err.data.message);
-      });
+    mutate({
+      ...data,
+      country_code: `+${selectedCountry?.callingCode[0]}`,
+      type: 'login',
+    });
   };
 
   return (
@@ -122,7 +116,7 @@ export default function Login({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {errors.phone.message}
               </Text>
@@ -133,7 +127,7 @@ export default function Login({navigation, route}) {
                   marginTop: 5,
                   marginLeft: 10,
                   color: '#ff000e',
-                  fontFamily: 'ubuntu_regular',
+                  fontFamily: 'ubuntu-regular',
                 }}>
                 {api_err}
               </Text>
@@ -149,6 +143,7 @@ export default function Login({navigation, route}) {
             <CustomButton
               btnText={t('login')}
               onPress={handleSubmit(FormSubmit)}
+              loading={isPending}
             />
           </View>
           <CountryPicker
@@ -236,7 +231,7 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     text: {
       color: '#000',
@@ -272,7 +267,7 @@ const makeStyles = fontScale =>
       width: 100,
       fontSize: 14 / fontScale,
       color: '#5C6066',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     form_btm_text: {
       width: '100%',
@@ -301,12 +296,12 @@ const makeStyles = fontScale =>
     register_text_frst: {
       fontSize: 14 / fontScale,
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
     register_text_scnd: {
       color: '#268C43',
       fontSize: 14 / fontScale,
       marginLeft: 5,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
   });

@@ -26,16 +26,17 @@ export const getConsumptionCrops = createAsyncThunk(
 );
 
 export const addConsumptionCrops = createAsyncThunk(
-  'getaddconsumptioncrop',
+  'addconsumptioncrop',
   async (arg, {rejectWithValue, dispatch}) => {
     try {
       const res = await axiosInstance.post(
         endpoints.consumtionCrop.add_consumption_crop,
         {
           name: arg.name,
+          consumption_type_id: arg.type_id,
         },
       );
-      dispatch(getHuntingCrops());
+      dispatch(getConsumptionCrops());
       return {status: res.status, data: res.data};
     } catch (err) {
       return rejectWithValue({

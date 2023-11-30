@@ -18,10 +18,11 @@ import {getTree} from '../../Redux/TreesSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {Wrap} from '@react-native-material/core';
+import {useUser} from '../../Hooks/useUser';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
@@ -65,7 +66,7 @@ const Production = ({navigation, route}) => {
   }, [userDetails?.sub_area]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <CustomHeader
         backIcon={true}
         headerName={t('production')}
@@ -102,7 +103,7 @@ const Production = ({navigation, route}) => {
         </View>
       </View>
       {/* showcase input of used land */}
-      <ScrollView>
+      <ScrollView contentContainerStyle={{paddingBottom: 40}}>
         <>
           {Object.keys(userDetails?.sub_area).map(item => {
             return (
@@ -116,6 +117,7 @@ const Production = ({navigation, route}) => {
                 }
                 progressBar={false}
                 onPress={() => goToNext(item)}
+                user={userDetails}
               />
             );
           })}
@@ -164,13 +166,13 @@ const makeStyles = fontScale =>
     land_allocated_text: {
       fontSize: 14 / fontScale,
       color: '#C1D8C7',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       flexWrap: 'wrap',
     },
     value_text: {
       fontSize: 14 / fontScale,
       color: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     divider: {
       height: '70%',

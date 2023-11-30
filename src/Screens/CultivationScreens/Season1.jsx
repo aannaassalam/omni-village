@@ -1,175 +1,176 @@
+import {useFocusEffect} from '@react-navigation/native';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import React, {useCallback, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  FlatList,
+  Image,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Image,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { ActivityIndicator, Divider } from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+import {useDispatch} from 'react-redux';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  getAllCrop,
-  getCrop,
-  getCropCategories,
-  getCrops,
-  saveCrop,
-} from '../../Redux/CropSlice';
-import {
-  deleteCultivation,
-  getCultivation,
-  setCropId,
-} from '../../Redux/CultivationSlice';
-import Toast from 'react-native-toast-message';
-import { useFocusEffect } from '@react-navigation/native';
-import PopupModal from '../../Components/Popups/PopupModal';
-import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
-import { useTranslation } from 'react-i18next';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import PopupModal from '../../Components/Popups/PopupModal';
+import {useUser} from '../../Hooks/useUser';
+import {setCropId} from '../../Redux/CultivationSlice';
+import {addCultivationCorp, fetchCultivationCorp} from '../../functions/Corps';
+import {
+  deleteCultivation,
+  fetchCultivations,
+} from '../../functions/CultivationScreen';
 import '../../i18next';
 
-const Season1 = ({ navigation, route }) => {
-  const { fontScale } = useWindowDimensions();
+const Season1 = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
-  const [cropType, setCropType] = useState([]);
+  const {t} = useTranslation();
   const [cropModal, setCropModal] = useState(false);
-  const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
-  const [focusOther, setFocusOther] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState({ name: '' });
   const [selectCrops, setSelectCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState({});
   const [deletePopup, setDeletePopup] = useState(false);
   const [delete_id, setDelete_id] = useState('');
-  const [deleteCrop, setDeleteCrop] = useState('');
   const [globalError, setGlobalError] = useState('');
 
-  const dispatch = useDispatch();
-  const { seasonName = 'Season 1' } = route.params;
+  const bottomSheetRef = React.useRef(null);
 
-  const { userDetails } = useSelector(s => s.auth);
-  const { cultivations, cultivationType, status } = useSelector(
-    s => s.cultivation,
+  const dispatch = useDispatch();
+  const {data: userDetails} = useUser();
+  const {data: crops = []} = useQuery({
+    queryKey: ['cultivation_crop'],
+    queryFn: fetchCultivationCorp,
+    refetchOnWindowFocus: true,
+  });
+  const {
+    data: cultivations,
+    isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ['cultivations'],
+    queryFn: fetchCultivations,
+    refetchOnWindowFocus: true,
+  });
+
+  const {mutate: saveCrop, isPending} = useMutation({
+    mutationFn: addCultivationCorp,
+    onSuccess: data => {
+      // setSelectCrops(prev => [...prev, data]);
+      setCropModal(false);
+      setOtherCrop('');
+      navigation.navigate('cropDescription', {
+        cropName: data?.name,
+        crop_id: data?._id,
+      });
+    },
+    onError: err => console.log(err),
+  });
+
+  const {mutate: deleteCultivationData, isPending: deleteCultivationPending} =
+    useMutation({
+      mutationFn: deleteCultivation,
+      onSuccess: () => {
+        setDeletePopup(false);
+        setDelete_id('');
+        refetch();
+      },
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+    });
+
+  const {seasonName = 'Season 1'} = route.params;
+  useFocusEffect(
+    useCallback(() => {
+      // queryClient.invalidateQueries();
+      refetch();
+    }, []),
   );
-  const { crops, cropCategories, addedCrop } = useSelector(s => s.crop);
 
   useFocusEffect(
     useCallback(() => {
       setSelectCrops(prev =>
-        cultivations.map(c => ({
+        cultivations?.map(c => ({
           name: c.cultivation_crop.name,
           _id: c.cultivation_crop._id,
-          cultivation_id: c._id,
+          cultivation: c,
+          status: c.important_information.status,
         })),
       );
       return () => {
         setSelectCrops([]);
         setSelectedCrop({});
-        setSelectedCategory({ name: '' });
         setGlobalError('');
       };
     }, [cultivations]),
   );
 
-  const handleRemoveClick = id => {
-    setSelectCrops(prev => prev.filter(el => el._id !== id));
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getCrops());
-      dispatch(getCultivation());
-    }, []),
-  );
   const addCrop = () => {
+    if (!selectedCrop.name) {
+      setGlobalError('Please Select a Corp!');
+      return;
+    }
     if (cultivations.find(c => c.crop_id === selectedCrop._id)) {
-      // setCropModal(false);
-      // setFocusOther(false);
-      // setOtherCrop('');
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        dispatch(saveCrop({ name: otherCrop, categoryId: '' }))
-          .unwrap()
-          .then(async res => {
-            setSelectCrops(prev => [...prev, res.data]);
-            setCropModal(false);
-            setCropModal(!cropModal);
-            setFocusOther(false);
-            setOtherCrop('');
-            await dispatch(setCropId(res?.data._id));
-            navigation.navigate('cropDescription', {
-              cropName: res?.data?.name,
-            });
-          })
-          .catch(err => console.log(err));
+        saveCrop({name: otherCrop, categoryId: ''});
       } else {
-        setSelectCrops(prev => [...prev, selectedCrop]);
         setCropModal(false);
-        setFocusOther(false);
         setOtherCrop('');
-        console.log(
-          'i am here bro',
-          crops.find(i => i?.name === selectedCrop.name)._id,
-        );
-        dispatch(
-          setCropId(crops.find(i => i?.name === selectedCrop.name)._id),
-        ).then(res => {
-          console.log('res say', res);
-          navigation.navigate('cropDescription', {
-            cropName: crops.find(i => i?.name === selectedCrop.name).name,
-          });
+        navigation.navigate('cropDescription', {
+          cropName: crops.find(i => i?.name === selectedCrop.name).name,
+          crop_id: crops.find(i => i?.name === selectedCrop.name)._id,
         });
       }
+      bottomSheetRef.current.close();
     }
   };
 
   const handleDelete = () => {
-    if (delete_id) {
-      dispatch(deleteCultivation(delete_id))
-        .unwrap()
-        .then(() => {
-          setDelete_id('');
-          setDeleteCrop('');
-          setDeletePopup(false);
-        })
-        .catch(err => console.log(err));
-    } else {
-      setSelectCrops(prev => prev.filter(p => p._id !== deleteCrop));
-      setDeleteCrop('');
-      setDeletePopup(false);
-    }
+    deleteCultivationData(delete_id);
   };
+
   return (
-    <View style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={seasonName}
-        goBack={() => navigation.goBack()}
-      />
-      <CustomDashboard first={t('production')} second={t('cultivation')} />
-      {/* top container for land allocated and modify */}
-      <View style={styles.top_container}>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.land_allocated_text}>{t('land allocated')}</Text>
-        </View>
-        <View style={styles.top_container_inner}>
-          <Text style={styles.value_text}>
-            {userDetails.sub_area.cultivation.land}{' '}
-            {userDetails.land_measurement_symbol
-              ? userDetails.land_measurement_symbol
-              : userDetails.land_measurement}
-          </Text>
-        </View>
-        {/* <Divider style={styles.divider} />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={seasonName}
+          goBack={() => navigation.goBack()}
+        />
+        <CustomDashboard first={t('production')} second={t('cultivation')} />
+        {/* top container for land allocated and modify */}
+        <View style={styles.top_container}>
+          <View style={styles.top_container_inner}>
+            <Text style={styles.land_allocated_text}>
+              {t('land allocated')}
+            </Text>
+          </View>
+          <View style={styles.top_container_inner}>
+            <Text style={styles.value_text}>
+              {userDetails.sub_area.cultivation.land}{' '}
+              {userDetails.land_measurement_symbol
+                ? userDetails.land_measurement_symbol
+                : userDetails.land_measurement}
+            </Text>
+          </View>
+          {/* <Divider style={styles.divider} />
         <View style={styles.top_container_inner}>
           <Text
             style={[styles.land_allocated_text, {fontSize: 14 / fontScale}]}
@@ -177,77 +178,77 @@ const Season1 = ({ navigation, route }) => {
             Modify
           </Text>
         </View> */}
-      </View>
-      {status === 'idle' ? (
-        <>
-          {selectCrops?.map((element, i) => {
-            return (
+        </View>
+        {!isLoading ? (
+          <FlatList
+            data={selectCrops}
+            keyExtractor={item => item._id}
+            onRefresh={refetch}
+            refreshing={isFetching}
+            renderItem={({item}) => (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}
-                key={element._id}
                 onPress={() => {
-                  dispatch(setCropId(element._id))
-                    .unwrap()
-                    .then(() => {
-                      navigation.navigate('cropDescription', {
-                        cropName: element?.name,
-                      });
-                    });
+                  navigation.navigate('cropDescription', {
+                    cropName: item?.name,
+                    crop_id: item?._id,
+                    cultivation: item?.cultivation,
+                  });
                 }}>
                 <AddAndDeleteCropButton
                   darftStyle={{
-                    borderColor: cultivations[0] !== undefined &&cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? 'grey' :'#e5c05e'
+                    borderColor: item.status === 1 ? 'grey' : '#e5c05e',
                   }}
-                  drafted={
-                    cultivations[0]!==undefined && cultivations?.find((i) => i?.cultivation_crop?.name == element?.name)?.important_information?.status == 1 ? false : true
-                  }
+                  drafted={item.status === 0}
                   add={false}
-                  cropName={element?.name}
+                  cropName={item?.name}
                   onPress={() => {
-                    setDelete_id(element.cultivation_id);
-                    setDeleteCrop(element._id);
+                    setDelete_id(item.cultivation._id);
                     setDeletePopup(true);
                   }}
                 />
               </TouchableOpacity>
-            );
-          })}
-          {/* {cropType[0] === undefined ? ( */}
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            onPress={() => setCropModal(true)}>
-            <AddAndDeleteCropButton
-              add={true}
-              cropName={t('add crop')}
-              onPress={() => setCropModal(true)}
-            />
-          </TouchableOpacity>
-        </>
-      ) : (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator animating size="large" color="#268C43" />
-        </View>
-      )}
-      {cropModal && (
+            )}
+            ListFooterComponent={
+              <TouchableOpacity
+                style={styles.addAndDeleteButtonSection}
+                onPress={() => setCropModal(true)}>
+                <AddAndDeleteCropButton
+                  add={true}
+                  cropName={t('add crop')}
+                  onPress={() => setCropModal(true)}
+                />
+              </TouchableOpacity>
+            }
+          />
+        ) : (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator animating size="large" color="#268C43" />
+          </View>
+        )}
+
+        {/* {cropModal && ( */}
         <AddBottomSheet
           modalVisible={cropModal}
           setBottomModalVisible={toggle => {
             setCropModal(toggle);
-            setSelectedCategory({ name: '' });
             setSelectedCrop({});
             setOtherCrop('');
+            setGlobalError('');
+            bottomSheetRef.current.close();
           }}
-          styleInner={{ height: focusOther ? '80%' : '35%' }}>
+          setModal={setCropModal}
+          bottomSheetRef={bottomSheetRef}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>{t('add crop')}</Text>
             <TouchableOpacity
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({ name: '' });
                 setSelectedCrop({});
                 setOtherCrop('');
-                setFocusOther(false);
-                setDropdownVal('');
+                setGlobalError('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/close.png')}
@@ -282,9 +283,9 @@ const Season1 = ({ navigation, route }) => {
                 );
                 setOtherCrop('');
               }}
-              data={[...crops, { _id: 0, name: 'Others' }]}
+              data={isLoading ? [] : [...crops, {_id: 0, name: 'Others'}]}
               placeholder="Select a crop"
-              valu={{ label: selectedCrop.name, value: selectedCrop._id }}
+              valu={{label: selectedCrop.name, value: selectedCrop._id}}
             />
             {selectedCrop?.name === 'Others' ? (
               <InputWithoutRightElement
@@ -292,12 +293,11 @@ const Season1 = ({ navigation, route }) => {
                 placeholder={t('crop 01')}
                 onChangeText={e => setOtherCrop(e)}
                 value={otherCrop}
-                onFocus={() => setFocusOther(true)}
               />
             ) : null}
             <Text
               style={{
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
                 fontSize: 14 / fontScale,
                 marginTop: 5,
                 color: '#ff000e',
@@ -311,9 +311,10 @@ const Season1 = ({ navigation, route }) => {
               style={styles.crossButton}
               onPress={() => {
                 setCropModal(false);
-                setSelectedCategory({ name: '' });
                 setSelectedCrop({});
                 setOtherCrop('');
+                setGlobalError('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/cross.png')}
@@ -322,55 +323,56 @@ const Season1 = ({ navigation, route }) => {
             </TouchableOpacity>
             <CustomButton
               btnText={t('create')}
-              style={{ width: '80%' }}
+              style={{width: '80%'}}
               onPress={addCrop}
+              loading={isPending}
             />
           </View>
         </AddBottomSheet>
-      )}
-      <PopupModal
-        modalVisible={deletePopup}
-        setBottomModalVisible={toggle => {
-          setDelete_id('');
-          setDeleteCrop('');
-          setDeletePopup(toggle);
-        }}
-        styleInner={[styles.savePopup, { width: '90%' }]}>
-        <View style={styles.submitPopup}>
-          <View style={styles.noteImage}>
-            <Image
-              source={require('../../../assets/note.png')}
-              style={styles.noteImage}
-            />
+        {/* // )} */}
+        <PopupModal
+          modalVisible={deletePopup}
+          setBottomModalVisible={toggle => {
+            setDelete_id('');
+            setDeletePopup(toggle);
+          }}
+          styleInner={[styles.savePopup, {width: '90%'}]}>
+          <View style={styles.submitPopup}>
+            <View style={styles.noteImage}>
+              <Image
+                source={require('../../../assets/note.png')}
+                style={styles.noteImage}
+              />
+            </View>
+            <Text style={styles.confirmText}>{t('confirm')}</Text>
+            <Text style={styles.nextText}>
+              {t('Do you want to delete this corp?')}
+            </Text>
+            <View style={styles.bottomPopupbutton}>
+              <CustomButton
+                style={styles.submitButton}
+                btnText={t('yes delete')}
+                onPress={handleDelete}
+                loading={deleteCultivationPending}
+              />
+              <CustomButton
+                style={styles.draftButton}
+                btnText={t('no')}
+                onPress={() => {
+                  setDelete_id('');
+                  setDeletePopup(false);
+                }}
+              />
+            </View>
           </View>
-          <Text style={styles.confirmText}>{t('confirm')}</Text>
-          <Text style={styles.nextText}>
-            {t('Do you want to delete this crop?')}
-          </Text>
-          <View style={styles.bottomPopupbutton}>
-            <CustomButton
-              style={styles.submitButton}
-              btnText={t('yes delete')}
-              onPress={handleDelete}
-            />
-            <CustomButton
-              style={styles.draftButton}
-              btnText={t('no')}
-              onPress={() => {
-                setDelete_id('');
-                setDeleteCrop('');
-                setDeletePopup(false);
-              }}
-            />
-          </View>
-        </View>
-      </PopupModal>
-      <Toast
-        positionValue={30}
-        style={{ height: 'auto', minHeight: 70 }}
-        width={300}
-      />
-    </View>
+        </PopupModal>
+        <Toast
+          positionValue={30}
+          style={{height: 'auto', minHeight: 70}}
+          width={300}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -399,12 +401,12 @@ const makeStyles = fontScale =>
     land_allocated_text: {
       fontSize: 14 / fontScale,
       color: '#C1D8C7',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     value_text: {
       fontSize: 14 / fontScale,
       color: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     divider: {
       height: '70%',
@@ -424,7 +426,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',
@@ -485,7 +487,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',

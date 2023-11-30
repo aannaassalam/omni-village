@@ -111,7 +111,7 @@ const makeStyles = fontScale =>
     },
     textInput: {
       backgroundColor: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
     },
   });

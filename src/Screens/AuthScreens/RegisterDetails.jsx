@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -8,45 +7,70 @@ import {
   Image,
   Button,
   useWindowDimensions,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Pressable, TextInput, Wrap} from '@react-native-material/core';
-import SelectDropdown from 'react-native-select-dropdown';
+import {Box, Pressable} from '@react-native-material/core';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
 import {Controller, useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {
-  faChevronCircleDown,
-  faChevronDown,
-  faChevronLeft,
-} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import CustomProgress from '../../Components/CustomProgress/CustomProgress';
 import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
-import {EditUser, getUser} from '../../Redux/AuthSlice';
-import axiosInstance from '../../Helper/Helper';
-import {Scale} from '../../Helper/utils';
+import {EditUser} from '../../Redux/AuthSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
-import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
 import {useTranslation} from 'react-i18next';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
+import Geolocation from 'react-native-geolocation-service';
+import {TextInput} from 'react-native-paper';
+import {useUser} from '../../Hooks/useUser';
+import {useLandMeasurement, useVillages} from '../../Hooks/cms';
+import {useMutation} from '@tanstack/react-query';
+import {editUser} from '../../functions/AuthScreens';
 
-// const FormData = global.FormData;
+const schema = yup
+  .object()
+  .shape({
+    first_name: yup.string().required(validation?.error?.first_name),
+    last_name: yup.string().required(validation?.error?.last_name),
+    village_name: yup.string().required(validation?.error?.village_name),
+    country_name: yup.string(),
+    land_measurement: yup
+      .string()
+      .required(validation?.error?.land_measurement),
+    phone: yup.string().required(validation?.error?.phone),
+    number_of_members: yup
+      .number()
+      .max(20, 'Number of members cannot be greater than 20!')
+      .required(validation.error.number_of_members),
+    members: yup
+      .array(
+        yup.object().shape({
+          name: yup.string().required(validation.error.member_name),
+          age: yup.string().required(validation.error.member_age),
+          gender: yup.string().required(validation.error.member_gender),
+        }),
+      )
+      .required('Members is required'),
+    document_type: yup.string().required('Document Type is required!'),
+    social_security_number: yup
+      .string()
+      .required(validation?.error?.social_security_number),
+    address: yup.string().required(validation?.error?.address),
+    street_address: yup.string().required(validation?.error?.street_address),
+  })
+  .required();
 
 export default function RegisterDetails({navigation, route}) {
   // const countries = ['Egypt', 'Canada', 'Australia', 'Ireland'];
-  const isEdit = route?.params?.edit || false;
   const [fileResponse, setFileResponse] = useState([]);
   const [file_err, setFile_err] = useState('');
-  const {village} = useSelector(state => state.Others);
-  const {landmeasurement} = useSelector(state => state.Others);
-  const {t} = useTranslation();
+
+  const isEdit = route?.params?.edit || false;
   const documentType = [
     {name: 'Kad Pengenalan / MyKad (Identity Card)'},
     {name: 'Pasport (Passport)'},
@@ -67,49 +91,20 @@ export default function RegisterDetails({navigation, route}) {
     }
   }, []);
 
-  const {user} = useSelector(state => state.auth);
-
+  const {data: user} = useUser();
+  const {data: landmeasurement} = useLandMeasurement();
+  const {data: village} = useVillages(user?.country);
+  const {t} = useTranslation();
   const {fontScale} = useWindowDimensions();
+
   const styles = makeStyles(fontScale);
 
-  const schema = yup
-    .object()
-    .shape({
-      first_name: yup.string().required(validation?.error?.first_name),
-      last_name: yup.string().required(validation?.error?.last_name),
-      village_name: yup.string().required(validation?.error?.village_name),
-      country_name: yup.string(),
-      land_measurement: yup
-        .string()
-        .required(validation?.error?.land_measurement),
-      phone: yup.string().required(validation?.error?.phone),
-      number_of_members: yup
-        .string()
-        .required(validation.error.number_of_members),
-      members: yup
-        .array(
-          yup.object().shape({
-            name: yup.string().required(validation.error.member_name),
-            age: yup.string().required(validation.error.member_age),
-            gender: yup.string().required(validation.error.member_gender),
-          }),
-        )
-        .required('Members is required'),
-      document_type: yup.string().required('Document Type is required!'),
-      social_security_number: yup
-        .string()
-        .required(validation?.error?.social_security_number),
-      address: yup.string().required(validation?.error?.address),
-    })
-    .required();
-
   const {
-    register,
     handleSubmit,
     setValue,
     control,
     formState: {errors},
-    getValues,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -119,57 +114,26 @@ export default function RegisterDetails({navigation, route}) {
       first_name: isEdit ? user?.first_name : '',
       land_measurement: isEdit ? user?.land_measurement : '',
       last_name: isEdit ? user?.last_name : '',
-      members: isEdit ? user?.members : '',
-      number_of_members: isEdit ? user?.number_of_members : '',
+      members: isEdit ? user?.members : [],
+      number_of_members: isEdit ? parseInt(user?.number_of_members, 10) : 0,
       document_type: isEdit ? user?.document_type : '',
       social_security_number: isEdit ? user?.social_security_number : '',
       village_name: isEdit ? user?.village_name : '',
-      // number_of_members: '',
+      street_address: isEdit ? user?.street_address : '',
     },
   });
+
   const [numMembers, setNumMembers] = useState(
     isEdit ? user?.number_of_members : 0,
   );
-  const [familyMembers, setFamilyMembers] = useState([]);
-  const [inputVal, setInputVal] = useState('');
 
-  const handleMemberChange = value => {
-    setNumMembers(value);
-    if (value > familyMembers.length) {
-      const newMembers = Array.from(
-        {length: value - familyMembers.length},
-        (_, index) => ({
-          id: familyMembers.length + index + 1,
-          member_name: '',
-          member_gender: '',
-          member_age: '',
-        }),
-      );
-      setFamilyMembers([...familyMembers, ...newMembers]);
-    } else {
-      const updatedMembers = familyMembers.slice(0, value);
-      setFamilyMembers(updatedMembers);
-    }
-  };
-
-  const handleMemberNameChange = (index, newName, member) => {
-    const updatedNames = [...familyMembers];
-    updatedNames[index][member] = newName;
-    setFamilyMembers(updatedNames);
-  };
-
-  const [dropdownVal, setDropdownVal] = useState('');
-
-  const InputValueCallback = data => {
-    setInputVal(data);
-  };
-
-  const DropdownSelectedValue = data => {
-    // setDropdownVal(data);
-    setValue('village_name', data);
-  };
-
-  const dispatch = useDispatch();
+  const {mutate, isPending} = useMutation({
+    mutationFn: editUser,
+    onSuccess: data => {
+      isEdit ? navigation.goBack() : navigation.replace('registersuccess');
+    },
+    onError: err => console.log(err, 'Err from register details'),
+  });
 
   const FormSubmit = data => {
     if (fileResponse.length === 0 && !isEdit) {
@@ -177,31 +141,116 @@ export default function RegisterDetails({navigation, route}) {
       setFile_err('Please select a document!');
       return;
     }
-    dispatch(
-      EditUser({
-        data: {
-          ...data,
-          land_measurement_symbol: landmeasurement.find(
-            lm => lm.name === data.land_measurement,
-          ).symbol,
-          edit: isEdit,
-        },
-        file: fileResponse[0] || {},
-      }),
-    )
-      .unwrap()
-      .then(res =>
-        isEdit ? navigation.goBack() : navigation.replace('registersuccess'),
-      )
-      .catch(err => console.log(err, 'err from register details'));
+
+    const _data = {
+      ...data,
+      number_of_members: String(data.number_of_members),
+      land_measurement_symbol: landmeasurement.find(
+        lm => lm.name === data.land_measurement,
+      ).symbol,
+      edit: isEdit,
+    };
+    const _file = fileResponse[0] || {};
+
+    const formData = new FormData();
+    Object.keys(_data).forEach(key => {
+      if (key === 'members') {
+        formData.append('members', JSON.stringify(_data[key]));
+      } else {
+        formData.append(key, _data[key]);
+      }
+    });
+    formData.append('address_proof', {
+      uri: _file?.uri || '',
+      type: _file?.type || '',
+      filename: _file?.name || '',
+      name: 'address_proof',
+    });
+
+    const submitable_data = _data.edit ? _data : formData;
+
+    mutate(submitable_data);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getVillage(user?.country));
-      dispatch(getLandmeasurement());
-    }, [user.country]),
-  );
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'ios') {
+      const granted = await Geolocation.requestAuthorization('whenInUse');
+      Geolocation.setRNConfiguration({
+        skipPermissionRequests: false,
+        authorizationLevel: 'whenInUse',
+      });
+
+      if (granted === 'granted') {
+        navigation.navigate('MapScreen', {
+          setCoordinates: coords =>
+            setValue('address', `${coords.latitude},${coords.longitude}`),
+          my_location: {
+            lat: parseFloat(watch('address').split(',')[0]) || null,
+            lng: parseFloat(watch('address').split(',')[1]) || null,
+          },
+        });
+        return true;
+      } else {
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+
+      return null;
+    } else if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Access Required!',
+            message: 'We need to access your location for address related data',
+            // buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === 'granted') {
+          navigation.navigate('MapScreen', {
+            setCoordinates: coords =>
+              setValue('address', `${coords.latitude},${coords.longitude}`),
+            my_location: {
+              lat: parseFloat(watch('address').split(',')[0]) || null,
+              lng: parseFloat(watch('address').split(',')[1]) || null,
+            },
+          });
+          return true;
+        } else {
+          console.log('You cannot use Geolocation');
+          return false;
+        }
+      } catch (err) {
+        return false;
+      }
+    }
+  };
+
+  const getLocation = async () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      if (res) {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log(position);
+            if (!watch('address').length)
+              setValue(
+                'address',
+                `${position.coords.latitude},${position.coords.longitude}`,
+              );
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setValue('address', '');
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+  };
 
   return (
     <LoginWrapper no_gap>
@@ -356,9 +405,19 @@ export default function RegisterDetails({navigation, route}) {
                     placeholder={t('number of family members')}
                     keyboardType="number-pad"
                     onChangeText={e => {
-                      onChange(e);
-                      if (e !== '' && parseInt(e) !== 0)
-                        setNumMembers(parseInt(e));
+                      onChange(parseInt(e, 10) || 0);
+                      e !== '' &&
+                        parseInt(e, 10) !== 0 &&
+                        setValue(
+                          'members',
+                          watch('members')?.filter(
+                            (_, idx) => idx < parseInt(e, 10),
+                          ) || [],
+                        );
+                      if (e !== '' && parseInt(e, 10) !== 0)
+                        setNumMembers(
+                          parseInt(e, 10) > 20 ? 20 : parseInt(e, 10),
+                        );
                     }}
                     value={value.toString() || value}
                   />
@@ -430,6 +489,7 @@ export default function RegisterDetails({navigation, route}) {
                                 {name: 'Female'},
                                 {name: 'Other'},
                               ]}
+                              value={value}
                               placeholder={t('member gender')}
                               selectedValue={onChange}
                             />
@@ -446,7 +506,7 @@ export default function RegisterDetails({navigation, route}) {
                           control={control}
                           name={`members[${index}].age`}
                           render={({
-                            field: {onChange, onBlur, value, name, ref},
+                            field: {onChange, onBlur, value = '', name, ref},
                           }) => (
                             <InputWithoutRightElement
                               style={{
@@ -456,7 +516,7 @@ export default function RegisterDetails({navigation, route}) {
                               placeholder={t('member age')}
                               keyboardType={'numeric'}
                               onChangeText={onChange}
-                              value={value}
+                              value={value.toString()}
                             />
                           )}
                         />
@@ -525,12 +585,48 @@ export default function RegisterDetails({navigation, route}) {
               control={control}
               name="address"
               render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutRightElement
-                  label={t('address')}
-                  placeholder={t('address')}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <View style={styles.textInputContainer}>
+                  <TouchableOpacity onPress={getLocation} activeOpacity={1}>
+                    <TextInput
+                      onChangeText={onChange}
+                      outlineColor="#268C43"
+                      underlineColorAndroid="transparent"
+                      activeOutlineColor="#268C43"
+                      mode="outlined"
+                      outlineStyle={{
+                        borderRadius: 10,
+                      }}
+                      label={
+                        <Text
+                          style={{
+                            fontSize: 16 / fontScale,
+                            textTransform: 'capitalize',
+                          }}>
+                          {t('address')}
+                        </Text>
+                      }
+                      value={value}
+                      style={styles.textInput}
+                      placeholder={t('address')}
+                      placeholderTextColor={'#333'}
+                      keyboardType="default"
+                      editable={false}
+                      right={
+                        <TextInput.Icon
+                          icon="crosshairs-gps"
+                          size={24}
+                          color="#268C43"
+                          onPress={getLocation}
+                        />
+                        // <Image
+                        //   style={{width: 24, height: 24}}
+                        //   source={require('../../../assets/gps.svg')}
+                        //   // height={100}
+                        // />
+                      }
+                    />
+                  </TouchableOpacity>
+                </View>
               )}
             />
             {errors.address?.message ? (
@@ -543,6 +639,29 @@ export default function RegisterDetails({navigation, route}) {
             // height={100}
           /> */}
         </Box>
+        {Boolean(watch('address').length) && (
+          <Box style={styles.cmn_wrp}>
+            <View style={styles.login_input}>
+              <Controller
+                control={control}
+                name="street_address"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutRightElement
+                    label={t('street address')}
+                    placeholder={t('street address')}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+              {errors.street_address?.message ? (
+                <Text style={styles.error}>
+                  {errors?.street_address?.message}
+                </Text>
+              ) : null}
+            </View>
+          </Box>
+        )}
         {!isEdit && (
           <>
             <Box style={styles.file_box}>
@@ -602,6 +721,7 @@ export default function RegisterDetails({navigation, route}) {
           <CustomButton
             btnText={t('submit')}
             onPress={handleSubmit(FormSubmit)}
+            loading={isPending}
           />
         </View>
       </View>
@@ -636,7 +756,7 @@ const makeStyles = fontScale =>
       color: '#FFF',
       justifyContent: 'center',
       alignItems: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     file_box2: {
       // border: 1px solid #C6F1D3,
@@ -669,7 +789,7 @@ const makeStyles = fontScale =>
       color: '#268C43',
       fontSize: 14 / fontScale,
       marginLeft: 7,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       marginRight: 'auto',
       flex: 1,
       flexWrap: 'wrap',
@@ -687,7 +807,7 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       fontFamily: 'ubuntu',
@@ -727,7 +847,7 @@ const makeStyles = fontScale =>
       backgroundColor: '#fff',
       // width: 100,
       fontSize: 10 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       color: '#263238',
     },
     line_border: {
@@ -739,7 +859,7 @@ const makeStyles = fontScale =>
       width: '64%',
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
       color: '#ff000e',
@@ -752,12 +872,23 @@ const makeStyles = fontScale =>
       marginTop: 15,
     },
     cityName: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       alignSelf: 'flex-start',
       marginTop: 5,
       color: 'grey',
       marginLeft: 5,
       marginBottom: 10,
+    },
+    textInputContainer: {
+      paddingTop: 10,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    textInput: {
+      backgroundColor: '#fff',
+      fontFamily: 'ubuntu-medium',
+      fontSize: 16 / fontScale,
+      textAlign: 'auto',
     },
   });

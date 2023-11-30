@@ -20,8 +20,9 @@ import {validation} from '../../Validation/Validation';
 import {useDispatch, useSelector} from 'react-redux';
 import {LandAllocation} from '../../Redux/AuthSlice';
 import {useFocusEffect} from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const landSchema = yup
   .object()
@@ -37,7 +38,7 @@ const landSchema = yup
 
 const TotalLand = ({navigation}) => {
   const {userDetails} = useSelector(s => s.auth);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [globalError, setGlobalError] = useState('');
 
   // console.log(userDetails.sub_area);
@@ -94,144 +95,145 @@ const TotalLand = ({navigation}) => {
   const styles = makeStyles(fontScale);
 
   return (
-    <ScrollView style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={t('total land')}
-        goBack={() => navigation.goBack()}
-      />
-      <View style={styles.textInputArea}>
-        {/* <CustomInputField
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={t('total land')}
+          goBack={() => navigation.goBack()}
+        />
+        <View style={styles.textInputArea}>
+          {/* <CustomInputField
           label={'Total Land area'}
           value={totalLand}
           onChangeText={e => setTotalLand(e)}
         /> */}
-        <Controller
-          control={control}
-          name="total_land"
-          render={({field: {onChange, onBlur, value, name, ref}}) => (
-            <CustomInputField
-              placeholder={'0'}
-              label={t('total land area')}
-              onChangeText={onChange}
-              value={value}
-              productionName={t('total land area')}
-            />
-          )}
-        />
-        {errors?.total_land?.message ? (
-          <Text style={styles.error}>{errors?.total_land?.message}</Text>
-        ) : null}
-      </View>
-      <ScrollView>
-        <>
-          <View style={styles.subArea}>
-            <Text style={styles.subAreaText}>{t('sub area')}</Text>
-            <Divider
-              bold={true}
-              style={styles.divider}
-              horizontalInset={true}
-            />
-          </View>
-          <View style={styles.textInputArea}>
-            <Controller
-              control={control}
-              name="cultivation"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutBorder
-                  placeholder={'0'}
-                  onChangeText={onChange}
-                  value={value}
-                  productionName={t('cultivation')}
-                />
-              )}
-            />
-            {errors?.cultivation?.message ? (
-              <Text style={styles.error}>{errors?.cultivation?.message}</Text>
-            ) : null}
-          </View>
-          <View style={styles.textInputArea}>
-            <Controller
-              control={control}
-              name="trees"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutBorder
-                  placeholder={'0'}
-                  onChangeText={onChange}
-                  value={value}
-                  productionName={t('trees')}
-                />
-              )}
-            />
-            {errors?.trees?.message ? (
-              <Text style={styles.error}>{errors?.trees?.message}</Text>
-            ) : null}
-          </View>
-          <View style={styles.textInputArea}>
-            <Controller
-              control={control}
-              name="poultry"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutBorder
-                  placeholder={'0'}
-                  onChangeText={onChange}
-                  value={value}
-                  productionName={t('poultry')}
-                />
-              )}
-            />
-            {errors?.poultry?.message ? (
-              <Text style={styles.error}>{errors?.poultry?.message}</Text>
-            ) : null}
-          </View>
+          <Controller
+            control={control}
+            name="total_land"
+            render={({field: {onChange, onBlur, value, name, ref}}) => (
+              <CustomInputField
+                placeholder={'0'}
+                label={t('total land area')}
+                onChangeText={onChange}
+                value={value}
+                productionName={t('total land area')}
+              />
+            )}
+          />
+          {errors?.total_land?.message ? (
+            <Text style={styles.error}>{errors?.total_land?.message}</Text>
+          ) : null}
+        </View>
+        <ScrollView>
+          <>
+            <View style={styles.subArea}>
+              <Text style={styles.subAreaText}>{t('sub area')}</Text>
+              <Divider
+                bold={true}
+                style={styles.divider}
+                horizontalInset={true}
+              />
+            </View>
+            <View style={styles.textInputArea}>
+              <Controller
+                control={control}
+                name="cultivation"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={t('cultivation')}
+                  />
+                )}
+              />
+              {errors?.cultivation?.message ? (
+                <Text style={styles.error}>{errors?.cultivation?.message}</Text>
+              ) : null}
+            </View>
+            <View style={styles.textInputArea}>
+              <Controller
+                control={control}
+                name="trees"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={t('trees')}
+                  />
+                )}
+              />
+              {errors?.trees?.message ? (
+                <Text style={styles.error}>{errors?.trees?.message}</Text>
+              ) : null}
+            </View>
+            <View style={styles.textInputArea}>
+              <Controller
+                control={control}
+                name="poultry"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={t('poultry')}
+                  />
+                )}
+              />
+              {errors?.poultry?.message ? (
+                <Text style={styles.error}>{errors?.poultry?.message}</Text>
+              ) : null}
+            </View>
 
-          <View style={styles.textInputArea}>
-            <Controller
-              control={control}
-              name="fishery"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutBorder
-                  placeholder={'0'}
-                  onChangeText={onChange}
-                  value={value}
-                  productionName={t('fishery')}
-                />
-              )}
-            />
-            {errors?.fishery?.message ? (
-              <Text style={styles.error}>{errors?.fishery?.message}</Text>
-            ) : null}
-          </View>
+            <View style={styles.textInputArea}>
+              <Controller
+                control={control}
+                name="fishery"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={t('fishery')}
+                  />
+                )}
+              />
+              {errors?.fishery?.message ? (
+                <Text style={styles.error}>{errors?.fishery?.message}</Text>
+              ) : null}
+            </View>
 
-          <View style={styles.textInputArea}>
-            <Controller
-              control={control}
-              name="storage"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutBorder
-                  placeholder={'0'}
-                  onChangeText={onChange}
-                  value={value}
-                  productionName={t('storage')}
-                />
-              )}
-            />
-            {errors?.storage?.message ? (
-              <Text style={styles.error}>{errors?.storage?.message}</Text>
-            ) : null}
-          </View>
-          <Text
-            style={{
-              fontFamily: 'ubuntu_regular',
-              fontSize: 14 / fontScale,
-              marginTop: 5,
-              color: '#ff000e',
-              marginLeft: 20,
-            }}>
-            {globalError}
-          </Text>
+            <View style={styles.textInputArea}>
+              <Controller
+                control={control}
+                name="storage"
+                render={({field: {onChange, onBlur, value, name, ref}}) => (
+                  <InputWithoutBorder
+                    placeholder={'0'}
+                    onChangeText={onChange}
+                    value={value}
+                    productionName={t('storage')}
+                  />
+                )}
+              />
+              {errors?.storage?.message ? (
+                <Text style={styles.error}>{errors?.storage?.message}</Text>
+              ) : null}
+            </View>
+            <Text
+              style={{
+                fontFamily: 'ubuntu-regular',
+                fontSize: 14 / fontScale,
+                marginTop: 5,
+                color: '#ff000e',
+                marginLeft: 20,
+              }}>
+              {globalError}
+            </Text>
 
-          {/* <InputWithoutBorder
+            {/* <InputWithoutBorder
                   productionName={item?.name}
                   placeholder={'0'}
                   value={item?.area}
@@ -247,17 +249,21 @@ const TotalLand = ({navigation}) => {
                   }}
                 /> */}
 
-          <View style={styles.save}>
-            <CustomButton btnText={t('save')} onPress={handleSubmit(onSave)} />
-          </View>
-        </>
+            <View style={styles.save}>
+              <CustomButton
+                btnText={t('save')}
+                onPress={handleSubmit(onSave)}
+              />
+            </View>
+          </>
+        </ScrollView>
+        <Toast
+          positionValue={30}
+          style={{height: 'auto', minHeight: 70}}
+          width={300}
+        />
       </ScrollView>
-      <Toast
-        positionValue={30}
-        style={{height: 'auto', minHeight: 70}}
-        width={300}
-      />
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -293,7 +299,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 14 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     save: {
       marginTop: '5%',
@@ -302,7 +308,7 @@ const makeStyles = fontScale =>
       marginBottom: 20,
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
       color: '#ff000e',

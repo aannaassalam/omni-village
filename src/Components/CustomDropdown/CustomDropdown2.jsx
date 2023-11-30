@@ -3,7 +3,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   Dimensions,
   StyleSheet,
@@ -174,7 +173,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     dropdown1DropdownStyle: {backgroundColor: '#fff', borderRadius: 10},
@@ -187,7 +186,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     icon_btn: {

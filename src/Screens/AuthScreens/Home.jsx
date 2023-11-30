@@ -1,37 +1,27 @@
-import {Box, Button, Text} from '@react-native-material/core';
-import React, {useCallback, useEffect, useState} from 'react';
+import {Box, Text} from '@react-native-material/core';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
-  SafeAreaView,
+  Image,
   ScrollView,
   StyleSheet,
-  View,
-  Image,
   TouchableOpacity,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import CustomButton from '../../Components/CustomButton/CustomButton';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
-import {getUser, logout} from '../../Redux/AuthSlice';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import {storage} from '../../Helper/Storage';
-import StringsOfLanguages from '../../string';
-import {useTranslation} from 'react-i18next';
+import {useUser} from '../../Hooks/useUser';
 import '../../i18next';
 
 export default function Home({navigation, route}) {
-  const {userToken, user} = useSelector(s => s.auth);
-  const dispatch = useDispatch();
+  const {data: user} = useUser();
   const [lang, setLang] = useState('en');
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getUser());
-    }, []),
-  );
 
   useEffect(() => {
     if (!user) {
@@ -44,7 +34,9 @@ export default function Home({navigation, route}) {
   // }, [lang, StringsOfLanguages]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView
+      style={{flex: 1, backgroundColor: '#fff'}}
+      edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <Box style={styles.container}>
           {/* <Box>
@@ -73,7 +65,7 @@ export default function Home({navigation, route}) {
               onPress={() =>
                 navigation.navigate('registerdetails', {edit: true})
               }>
-              <Text style={styles.usr_btn_txt}>{user.first_name}</Text>
+              <Text style={styles.usr_btn_txt}>{user?.first_name}</Text>
               <Image
                 style={styles.tinyLogo1}
                 source={require('../../../assets/edit2.png')}
@@ -81,7 +73,7 @@ export default function Home({navigation, route}) {
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
-              {user.country_code} {user.phone}
+              {user?.country_code} {user?.phone}
             </Text>
 
             <Box style={styles.user_land}>
@@ -92,10 +84,10 @@ export default function Home({navigation, route}) {
                   {t('land allocated')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt}>
-                  {user.total_land}{' '}
-                  {user.land_measurement_symbol !== '-'
-                    ? user.land_measurement_symbol
-                    : user.land_measurement}
+                  {user?.total_land}{' '}
+                  {user?.land_measurement_symbol !== '-'
+                    ? user?.land_measurement_symbol
+                    : user?.land_measurement}
                 </Text>
               </Box>
               {/* </Box> */}
@@ -113,7 +105,7 @@ export default function Home({navigation, route}) {
                   {t('used land')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
-                  {user.sub_area &&
+                  {user?.sub_area &&
                     Object.keys(user?.sub_area).reduce((prev, new_value) => {
                       console.log(user.sub_area[new_value]);
                       if (typeof user.sub_area[new_value] === 'object') {
@@ -121,9 +113,9 @@ export default function Home({navigation, route}) {
                       }
                       return prev + user.sub_area[new_value] || 0;
                     }, 0)}{' '}
-                  {user.land_measurement_symbol !== '-'
-                    ? user.land_measurement_symbol
-                    : user.land_measurement}
+                  {user?.land_measurement_symbol !== '-'
+                    ? user?.land_measurement_symbol
+                    : user?.land_measurement}
                 </Text>
               </Box>
             </Box>
@@ -195,7 +187,7 @@ export default function Home({navigation, route}) {
             <CustomButton
               btnText={t('logout')}
               onPress={() => {
-                dispatch(logout());
+                storage.clearAll();
                 navigation.replace('startup');
               }}
             />
@@ -270,17 +262,17 @@ const makeStyles = fontScale =>
       fontSize: 12 / fontScale,
       color: '#263238',
       marginBottom: 5,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
     land_txt: {
       color: '#268C43',
       fontSize: 12 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     land_txt2: {
       color: '#E5C05E',
       fontSize: 12 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
 
     home_box: {

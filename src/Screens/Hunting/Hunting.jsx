@@ -7,7 +7,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
@@ -25,6 +25,7 @@ import CustomDrodown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Hunting = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -38,6 +39,9 @@ const Hunting = ({navigation}) => {
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
   const dispatch = useDispatch();
+
+  const bottomSheetRef = useRef(null);
+
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
     list.splice(index, 1);
@@ -106,6 +110,7 @@ const Hunting = ({navigation}) => {
     } else {
       addCrop();
     }
+    bottomSheetRef.current.close();
   };
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
@@ -126,66 +131,80 @@ const Hunting = ({navigation}) => {
   }, [hunting]);
   // console.log("hunting", hunting)
   return (
-    <View style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={'Hunting'}
-        goBack={() => navigation.goBack()}
-      />
-      {/*Top Dashboard  */}
-      <CustomDashboard first={t('production')} second={t('hunting')} />
-      {/* Crop adding */}
-      {cropType?.map((element, i) => {
-        return (
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            key={i}
-            onPress={() =>
-              navigation.navigate('huntingType', {
-                cropType: element?.name,
-                cropId:
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={'Hunting'}
+          goBack={() => navigation.goBack()}
+        />
+        {/*Top Dashboard  */}
+        <CustomDashboard first={t('production')} second={t('hunting')} />
+        {/* Crop adding */}
+        {cropType?.map((element, i) => {
+          return (
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              key={i}
+              onPress={() =>
+                navigation.navigate('huntingType', {
+                  cropType: element?.name,
+                  cropId:
+                    hunting[0] !== undefined &&
+                    hunting.find(j => j?.hunting_crop?.name == element?.name)
+                      ? hunting.find(
+                          i => i?.hunting_crop?.name == element?.name,
+                        )._id
+                      : element?.id,
+                  data: hunting.find(i => i?.hunting_crop_id == element?._id),
+                })
+              }>
+              <AddAndDeleteCropButton
+                add={false}
+                darftStyle={{
+                  borderColor:
+                    hunting[0] !== undefined &&
+                    hunting.find(j => j?.hunting_crop?.name == element?.name)
+                      ?.status == 1
+                      ? 'grey'
+                      : '#e5c05e',
+                }}
+                drafted={
                   hunting[0] !== undefined &&
                   hunting.find(j => j?.hunting_crop?.name == element?.name)
-                    ? hunting.find(i => i?.hunting_crop?.name == element?.name)
-                        ._id
-                    : element?.id,
-                data: hunting.find(i => i?.hunting_crop_id == element?._id),
-              })
-            }>
-            <AddAndDeleteCropButton
-              add={false}
-              darftStyle={{
-                borderColor: hunting[0] !== undefined && hunting.find(j => j?.hunting_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
-              }}
-              drafted={
-                hunting[0] !== undefined && hunting.find(j => j?.hunting_crop?.name == element?.name).status == 1 ? false : true
-              }
-              cropName={element?.name}
-              onPress={() =>
-                handleRemoveClick(
-                  hunting[0] !== undefined &&
-                    hunting.find(j => j?.hunting_crop?.name == element?.name)
-                    ? hunting.find(i => i?.hunting_crop?.name == element?.name)
-                        ._id
-                    : element?.id,
-                  i,
-                )
-              }
-            />
-          </TouchableOpacity>
-        );
-      })}
-      <TouchableOpacity
-        onPress={() => setCropModal(true)}
-        style={styles.addAndDeleteButtonSection}>
-        <AddAndDeleteCropButton
-          add={true}
-          cropName={t('select type')}
+                    ?.status == 1
+                    ? false
+                    : true
+                }
+                cropName={element?.name}
+                onPress={() =>
+                  handleRemoveClick(
+                    hunting[0] !== undefined &&
+                      hunting.find(j => j?.hunting_crop?.name == element?.name)
+                      ? hunting.find(
+                          i => i?.hunting_crop?.name == element?.name,
+                        )._id
+                      : element?.id,
+                    i,
+                  )
+                }
+              />
+            </TouchableOpacity>
+          );
+        })}
+        <TouchableOpacity
           onPress={() => setCropModal(true)}
-        />
-      </TouchableOpacity>
-      {cropModal && (
-        <AddBottomSheet>
+          style={styles.addAndDeleteButtonSection}>
+          <AddAndDeleteCropButton
+            add={true}
+            cropName={t('select type')}
+            onPress={() => setCropModal(true)}
+          />
+        </TouchableOpacity>
+        <AddBottomSheet
+          modalVisible={cropModal}
+          setModal={setCropModal}
+          bottomSheetRef={bottomSheetRef}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>{t('add hunting livestock')}</Text>
             <TouchableOpacity
@@ -193,6 +212,7 @@ const Hunting = ({navigation}) => {
                 setCropModal(!cropModal);
                 setFocusOther(false);
                 setDropdownVal('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/close.png')}
@@ -224,7 +244,10 @@ const Hunting = ({navigation}) => {
           <View style={styles.BottomSheetButton}>
             <TouchableOpacity
               style={styles.crossButton}
-              onPress={() => setCropModal(!cropModal)}>
+              onPress={() => {
+                setCropModal(!cropModal);
+                bottomSheetRef.current.close();
+              }}>
               <Image
                 source={require('../../../assets/cross.png')}
                 style={styles.addCropIcon}
@@ -237,8 +260,8 @@ const Hunting = ({navigation}) => {
             />
           </View>
         </AddBottomSheet>
-      )}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -261,7 +284,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

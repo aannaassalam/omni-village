@@ -15,11 +15,10 @@ const CustomShowcaseInput = ({
   productionArea,
   progressBar,
   onPress,
+  user,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-
-  const {user} = useSelector(state => state.auth);
 
   return (
     <TouchableOpacity
@@ -93,13 +92,13 @@ const makeStyles = fontScale =>
     productionName: {
       fontSize: 16 / fontScale,
       color: '#333',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       textTransform: 'capitalize',
     },
     productionArea: {
       color: 'green',
       fontSize: 16 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     progressSection: {
       paddingHorizontal: 10,
@@ -111,7 +110,7 @@ const makeStyles = fontScale =>
     progressText: {
       alignSelf: 'center',
       fontSize: 16 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       color: 'green',
       padding: 5,
     },

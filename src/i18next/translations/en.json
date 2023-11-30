@@ -43,7 +43,7 @@
   "remove": "Remove",
   "submit": "Submit",
   "total land area": "Total Land Area",
-  "total land": "jumlah tanah",
+  "total land": "Total Land",
   "trees": "Trees/Shrubs",
   "sub area": "Sub area",
   "select type": "Select Type",
@@ -255,5 +255,7 @@
   "local market": "Local market",
   "agent": "Agent",
   "ecommerce": "Ecommerce",
-  "export": "Export"
+  "export": "Export",
+  "street address": "Street Address",
+  "confirm": "Confirm"
 }

@@ -8,13 +8,12 @@ import {
   ScrollView,
 } from 'react-native';
 
-const AddBottomSheet = ({children}) => {
+const AddBottomSheet = ({modalVisible, bottomSheetRef, children, setModal}) => {
   // Creates a reference to the DOM element that we can interact with
-  const bottomSheetRef = React.useRef(null);
 
   // Setting the points to which we want the bottom sheet to be set to
   // Using '-30' here so that it is not seen when it is not presented
-  const snapPoints = React.useMemo(() => ['35%', '90%'], []);
+  const snapPoints = React.useMemo(() => ['35%', '50%'], []);
 
   // Callback function that gets called when the bottom sheet changes
   const handleSheetChanges = React.useCallback(index => {
@@ -22,13 +21,16 @@ const AddBottomSheet = ({children}) => {
   }, []);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      index={0} // Hide the bottom sheet when we first load our component
+      index={modalVisible ? 0 : -1} // Hide the bottom sheet when we first load our component
       snapPoints={snapPoints}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
+      enablePanDownToClose
+      onClose={() => setModal(false)}
       backdropComponent={props => (
         <BottomSheetBackdrop
           {...props}
@@ -37,10 +39,18 @@ const AddBottomSheet = ({children}) => {
           enableTouchThrough={false}
           appearsOnIndex={0}
           disappearsOnIndex={-1}
+
           // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
         />
       )}
-      style={{elevation: 10, borderRadius: 10}}
+      style={{
+        elevation: 10,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 3},
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+      }}
       onChange={handleSheetChanges}>
       <View style={{justifyContent: 'center'}}>{children}</View>
     </BottomSheet>

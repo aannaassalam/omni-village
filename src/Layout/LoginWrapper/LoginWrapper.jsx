@@ -43,7 +43,9 @@ const styles = StyleSheet.create({
 
 export default function LoginWrapper({children, no_gap}) {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView
+      style={{flex: 1, backgroundColor: '#fff'}}
+      edges={['top', 'left', 'right']}>
       <KeyboardAwareScrollView
         behavior="padding"
         keyboardShouldPersistTaps="handled"

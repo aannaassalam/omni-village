@@ -34,6 +34,7 @@ import {getFishFeed} from '../../Redux/OthersSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
   const [impInfo, setImpInfo] = useState(true);
@@ -349,7 +350,7 @@ const FishTypeInput = ({navigation, route}) => {
               text2: 'Fishery added successfully!',
             }),
               setDraftpopup(false),
-              navigation.goBack()
+              navigation.goBack();
           },
           // dispatch(getFishery('pond')),
         )
@@ -368,7 +369,7 @@ const FishTypeInput = ({navigation, route}) => {
   // console.log('data', data);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
         goBack={() => navigation.goBack()}
         headerName={
@@ -1014,7 +1015,7 @@ const FishTypeInput = ({navigation, route}) => {
           </View>
         </PopupModal>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -1032,7 +1033,7 @@ const makeStyles = fontScale =>
       width: '95%',
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       // marginTop: 5,
       color: '#ff000e',
@@ -1078,7 +1079,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',
@@ -1100,7 +1101,7 @@ const makeStyles = fontScale =>
       marginTop: '5%',
     },
     add_button_text: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       color: '#fff',
       alignSelf: 'center',
@@ -1138,7 +1139,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',
@@ -1164,7 +1165,7 @@ const makeStyles = fontScale =>
     },
     processing_text: {
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       textAlign: 'left',
       color: '#000',
       marginTop: 10,
@@ -1175,7 +1176,7 @@ const makeStyles = fontScale =>
       paddingHorizontal: 10,
       color: '#000',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     impContainer: {
       width: '100%',

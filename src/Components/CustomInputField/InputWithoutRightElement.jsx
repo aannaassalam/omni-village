@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
-import { TextInput } from 'react-native-paper';
+import {TextInput} from 'react-native-paper';
 // import {TextInput} from 'react-native-paper';
 
 const InputWithoutRightElement = ({
@@ -11,6 +11,7 @@ const InputWithoutRightElement = ({
   onFocus,
   style,
   keyboardType = 'default',
+  onEndEditing,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -26,13 +27,15 @@ const InputWithoutRightElement = ({
             borderRadius: 10,
           }}
           mode="outlined"
+          textAlignVertical="auto"
           label={<Text style={{fontSize: 16 / fontScale}}>{label}</Text>}
           value={value}
-          style={[styles.textInput,style]}
+          style={[styles.textInput, style]}
           placeholder={placeholder}
           placeholderTextColor={'#333'}
           onFocus={onFocus}
           keyboardType={keyboardType}
+          onEndEditing={onEndEditing}
         />
       </View>
     </View>
@@ -50,7 +53,7 @@ const makeStyles = fontScale =>
     },
     textInput: {
       backgroundColor: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
     },
   });

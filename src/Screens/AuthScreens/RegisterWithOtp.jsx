@@ -1,29 +1,23 @@
+import {Box, Flex} from '@react-native-material/core';
+import {useMutation} from '@tanstack/react-query';
 import React, {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
-  SafeAreaView,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  Image,
-  Linking,
-  Pressable,
   useWindowDimensions,
 } from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Flex} from '@react-native-material/core';
-import {useDispatch, useSelector} from 'react-redux';
-import {RegisterUser, SendOTP} from '../../Redux/AuthSlice';
 import OtpInput from '../../Components/OtpInputs';
-import {Scale} from '../../Helper/utils';
-import {useTranslation} from 'react-i18next';
+import {useUser} from '../../Hooks/useUser';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import {register, sentOtp} from '../../functions/AuthScreens';
 
-export default function RegisterWithOtp({navigation}) {
-  const {user} = useSelector(state => state.auth);
+export default function RegisterWithOtp({navigation, route}) {
+  const {data: user} = useUser();
 
-  const dispatch = useDispatch();
   const {t} = useTranslation();
 
   const [timer, setTimer] = useState(30);
@@ -33,6 +27,27 @@ export default function RegisterWithOtp({navigation}) {
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+
+  const {mutate, isPending} = useMutation({
+    mutationFn: register,
+    onSuccess: data => navigation.replace('registerdetails', {edit: false}),
+    onError: error => {
+      if (error.response.status === 401) {
+        setErr(error.response.data.message);
+      }
+      console.log(error.response, 'err');
+    },
+  });
+
+  const {isPending: isOTPPending, mutate: resendOtp} = useMutation({
+    mutationFn: sentOtp,
+    onError: error => {
+      if (error.response.status === 400) {
+        setErr(error.response.data.message);
+      }
+      console.log(error.response);
+    },
+  });
 
   useEffect(() => {
     const interval = setInterval(
@@ -47,15 +62,7 @@ export default function RegisterWithOtp({navigation}) {
 
   const FormSubmit = () => {
     if (otp.current.length === 4) {
-      dispatch(RegisterUser({...user, otp: otp.current}))
-        .unwrap()
-        .then(() => navigation.replace('registerdetails', {edit: false}))
-        .catch(error => {
-          if (error.status === 401) {
-            setErr(error.data.message);
-          }
-          console.log(error, 'err');
-        });
+      mutate({...route.params, otp: otp.current});
     } else {
       setErr(t('invalid otp'));
     }
@@ -67,7 +74,8 @@ export default function RegisterWithOtp({navigation}) {
         <View style={styles.form_head}>
           <Text style={styles.LoginHead}>Register</Text>
           <Text style={styles.subtitle}>
-            {t('enter otp recieved in')} {`XXX${user?.phone?.slice(-2)}`}
+            {t('enter otp recieved in')}{' '}
+            {`XXX${route.params?.phone?.slice(-2)}`}
           </Text>
         </View>
         <View style={styles.login_input}>
@@ -78,25 +86,31 @@ export default function RegisterWithOtp({navigation}) {
                 marginTop: 5,
                 marginLeft: 10,
                 color: '#ff000e',
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
               }}>
               {err}
             </Text>
           )}
         </View>
         <View style={styles.login_submit}>
-          <CustomButton btnText={t('confirm')} onPress={FormSubmit} />
+          <CustomButton
+            btnText={t('confirm')}
+            onPress={FormSubmit}
+            loading={isPending}
+          />
         </View>
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
             <Text style={styles.normal_text}>{t("haven't recieved any")}</Text>
             <Pressable
               onPress={() =>
-                timer === 0 ? dispatch(SendOTP({
-                  phone: user.phone,
-                  country_code: `${user?.country_code}`,
-                  type: 'register'
-                })) : null
+                timer === 0
+                  ? resendOtp({
+                      phone: route.params.phone,
+                      country_code: `${route.params?.country_code}`,
+                      type: 'register',
+                    })
+                  : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
                 {t('resend')}
@@ -124,11 +138,11 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
     },
     login_input: {
@@ -197,19 +211,19 @@ const makeStyles = fontScale =>
       color: `#268C43`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     low_green: {
       color: `#268c4387`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     normal_text: {
       color: '#36393B',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
   });

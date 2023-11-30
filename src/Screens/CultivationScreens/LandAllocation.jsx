@@ -15,13 +15,13 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import {useDispatch} from 'react-redux';
 import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
 import Toast, {BaseToast} from 'react-native-toast-message';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 const LandAllocation = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const {totalLand} = 20;
   const [cultivation, setCultivation] = useState([
     {name: t('cultivated once in a year'), area: 0},
@@ -128,7 +128,7 @@ const LandAllocation = ({navigation, route}) => {
             name="once"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName={t("cultivated once in a year")}
+                productionName={t('cultivated once in a year')}
                 // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
@@ -140,7 +140,7 @@ const LandAllocation = ({navigation, route}) => {
             name="twice"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName={t("cultivated twice in a year")}
+                productionName={t('cultivated twice in a year')}
                 // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
@@ -152,7 +152,7 @@ const LandAllocation = ({navigation, route}) => {
             name="thrice"
             render={({field: {onChange, onBlur, value, name, ref}}) => (
               <InputWithoutBorder
-                productionName={t("cultivated thrice in a year")}
+                productionName={t('cultivated thrice in a year')}
                 // placeholder={'0'}
                 value={value}
                 onChangeText={onChange}
@@ -194,7 +194,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
     },
     error: {
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
       marginTop: 5,
       color: '#ff000e',

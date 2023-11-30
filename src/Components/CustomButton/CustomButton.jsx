@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  SafeAreaView,
+  ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -22,19 +22,29 @@ const makeStyles = fontScale =>
       paddingHorizontal: 20,
     },
     cmn_btn_text: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 14 / fontScale,
       color: '#FFF',
     },
   });
 
-export default function CustomButton({btnText, onPress, style}) {
+export default function CustomButton({
+  btnText,
+  onPress,
+  style,
+  loading = false,
+}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   return (
-    <TouchableOpacity style={[styles.cmn_btn, style]} onPress={onPress}>
-      <Text style={styles.cmn_btn_text}>{btnText}</Text>
+    <TouchableOpacity
+      style={[styles.cmn_btn, style]}
+      onPress={onPress}
+      disabled={loading}>
+      <Text style={styles.cmn_btn_text}>
+        {loading ? <ActivityIndicator color="#fff" /> : btnText}
+      </Text>
     </TouchableOpacity>
   );
 }

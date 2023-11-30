@@ -1,26 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-  Linking,
-  useWindowDimensions,
-} from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import InputTextComponent from '../../Components/InputTextComponent/InputTextComponent';
-import CustomButton from '../../Components/CustomButton/CustomButton';
 import {Box, Flex, Pressable} from '@react-native-material/core';
-import {useDispatch, useSelector} from 'react-redux';
-import {LoginUser, RegisterUser, SendOTP, getUser} from '../../Redux/AuthSlice';
-import OtpInput from '../../Components/OtpInputs';
-import {Scale} from '../../Helper/utils';
+import {useMutation} from '@tanstack/react-query';
+import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import OtpInput from '../../Components/OtpInputs';
+import {storage} from '../../Helper/Storage';
+import {useUser} from '../../Hooks/useUser';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import {login, sentOtp} from '../../functions/AuthScreens';
 
-export default function LoginWithOtp({navigation}) {
-  const {user} = useSelector(state => state.auth);
+export default function LoginWithOtp({navigation, route}) {
+  const {data: user} = useUser();
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -29,8 +20,6 @@ export default function LoginWithOtp({navigation}) {
   const [timer, setTimer] = useState(30);
   const [otp, setOtp] = useState('');
   const [err, setErr] = useState('');
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const interval = setInterval(
@@ -43,29 +32,39 @@ export default function LoginWithOtp({navigation}) {
     };
   }, []);
 
+  const {isPending, mutate} = useMutation({
+    mutationFn: login,
+    onSuccess: data => {
+      storage.set('token', data?.data?.token);
+      storage.set('refresh_token', data?.data?.refreshToken);
+      if (user?.first_name === '-') {
+        navigation.replace('registerdetails');
+        // navigation.replace('loginsuccess');
+      } else {
+        navigation.replace('loginsuccess');
+      }
+    },
+    onError: error => {
+      if (error.response.status === 401) {
+        setErr(error.response.data.message);
+      }
+      console.log(error.response.status, 'err');
+    },
+  });
+
+  const {isPending: isOTPPending, mutate: resendOtp} = useMutation({
+    mutationFn: sentOtp,
+    onError: error => {
+      if (error.response.status === 400) {
+        setErr(error.response.data.message);
+      }
+      console.log(error.response);
+    },
+  });
+
   const FormSubmit = () => {
     if (otp.length === 4) {
-      dispatch(LoginUser({...user, otp}))
-        .unwrap()
-        .then(() => {
-          dispatch(getUser())
-            .unwrap()
-            .then(res => {
-              if (res.data?.first_name === '-') {
-                navigation.replace('registerdetails');
-                // navigation.replace('loginsuccess');
-              } else {
-                navigation.replace('loginsuccess');
-              }
-            })
-            .catch(error => console.log(error));
-        })
-        .catch(error => {
-          if (error.status === 401) {
-            setErr(error.data.message);
-          }
-          console.log(error, 'err');
-        });
+      mutate({...route.params, otp});
     } else {
       setErr(t('invalid otp'));
     }
@@ -78,7 +77,7 @@ export default function LoginWithOtp({navigation}) {
           <Text style={styles.LoginHead}>Login</Text>
           <Text style={styles.subtitle}>
             {t('enter otp recieved in')}{' '}
-            {`XXX${user?.phone?.toString()?.slice(-2)}`}
+            {`XXX${route.params.phone?.toString()?.slice(-2)}`}
           </Text>
         </View>
         <View style={styles.login_input}>
@@ -89,14 +88,18 @@ export default function LoginWithOtp({navigation}) {
                 marginTop: 5,
                 marginLeft: 10,
                 color: '#ff000e',
-                fontFamily: 'ubuntu_regular',
+                fontFamily: 'ubuntu-regular',
               }}>
               {err}
             </Text>
           )}
         </View>
         <View style={styles.login_submit}>
-          <CustomButton btnText={t('confirm')} onPress={FormSubmit} />
+          <CustomButton
+            btnText={t('confirm')}
+            onPress={FormSubmit}
+            loading={isPending}
+          />
         </View>
         <Box style={styles.resend_sec}>
           <Flex style={styles.resend_text}>
@@ -104,13 +107,11 @@ export default function LoginWithOtp({navigation}) {
             <Pressable
               onPress={() =>
                 timer === 0
-                  ? dispatch(
-                      SendOTP({
-                        phone: user.phone,
-                        country_code: `${user?.country_code}`,
-                        type:'login'
-                      }),
-                    )
+                  ? resendOtp({
+                      phone: route.params.phone,
+                      country_code: `${route.params?.country_code}`,
+                      type: 'login',
+                    })
                   : null
               }>
               <Text style={[timer === 0 ? styles.green : styles.low_green]}>
@@ -139,11 +140,11 @@ const makeStyles = fontScale =>
       fontSize: 22 / fontScale,
       marginBottom: 10,
       textAlign: 'center',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     subtitle: {
       color: '#36393B',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       fontSize: 14 / fontScale,
     },
     login_input: {
@@ -212,19 +213,19 @@ const makeStyles = fontScale =>
       color: `#268C43`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     low_green: {
       color: `#268c4387`,
       fontSize: 14 / fontScale,
       marginLeft: 6,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       lineHeight: 13,
     },
     normal_text: {
       color: '#36393B',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
     },
   });

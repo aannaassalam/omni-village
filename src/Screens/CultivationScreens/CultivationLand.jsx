@@ -1,8 +1,9 @@
 import {Button, Text, Box, Flex} from '@react-native-material/core';
 import React from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
-import { useTranslation } from 'react-i18next';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   cultivate_sec: {
@@ -48,10 +49,12 @@ const styles = StyleSheet.create({
 });
 
 export default function CultivationLand() {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   return (
     <>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#fff'}}
+        edges={['top', 'left', 'right']}>
         <ScrollView contentContainerStyle={{flex: 1}}>
           <View style={styles.container}>
             <Flex style={styles.cultivate_sec}>

@@ -44,7 +44,7 @@ const CustomInputField = ({
                   ? user.land_measurement_symbol
                   : user.land_measurement
               }
-              textStyle={{color: '#000', fontFamily: 'ubuntu_medium'}}
+              textStyle={{color: '#000', fontFamily: 'ubuntu-medium'}}
             />
           }
           keyboardType={keyboardType}
@@ -69,7 +69,7 @@ const makeStyles = fontScale =>
     },
     textInput: {
       backgroundColor: '#fff',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: 'red',
     },

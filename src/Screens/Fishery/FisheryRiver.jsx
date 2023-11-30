@@ -7,7 +7,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
@@ -27,6 +27,7 @@ import {getFeed, getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
 import CustomDropdown4 from '../../Components/CustomDropdown/CustomDropdown4';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const FisheryRiver = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,9 @@ const FisheryRiver = ({navigation, route}) => {
   const [dropdownVal, setDropdownVal] = useState('');
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
+
+  const bottomSheetRef = useRef(null);
+
   const dispatch = useDispatch();
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
@@ -110,6 +114,7 @@ const FisheryRiver = ({navigation, route}) => {
     } else {
       addCrop();
     }
+    bottomSheetRef.current.close();
   };
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
@@ -132,90 +137,103 @@ const FisheryRiver = ({navigation, route}) => {
     }, []),
   );
   return (
-    <View style={styles.container}>
-      <CustomHeader
-        backIcon={true}
-        headerName={t('harvested from river')}
-        goBack={() => navigation.goBack()}
-      />
-      {/*Top Dashboard  */}
-      <CustomDashboard
-        first={t('production')}
-        second={t('fishery')}
-        third={t('harvested from river')}
-      />
-      {loading ? (
-        <View style={{marginTop: '70%'}}>
-          <ActivityIndicator animating size="large" color="#268C43" />
-        </View>
-      ) : (
-        <>
-          {/* Crop adding */}
-          {cropType?.map((element, i) => {
-            return (
-              <TouchableOpacity
-                style={styles.addAndDeleteButtonSection}
-                i
-                key={i}
-                onPress={
-                  () =>
-                    navigation.navigate('fisheryRiverInput', {
-                      cropType: element?.name,
-                      cropId:
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container}>
+        <CustomHeader
+          backIcon={true}
+          headerName={t('harvested from river')}
+          goBack={() => navigation.goBack()}
+        />
+        {/*Top Dashboard  */}
+        <CustomDashboard
+          first={t('production')}
+          second={t('fishery')}
+          third={t('harvested from river')}
+        />
+        {loading ? (
+          <View style={{marginTop: '70%'}}>
+            <ActivityIndicator animating size="large" color="#268C43" />
+          </View>
+        ) : (
+          <>
+            {/* Crop adding */}
+            {cropType?.map((element, i) => {
+              return (
+                <TouchableOpacity
+                  style={styles.addAndDeleteButtonSection}
+                  i
+                  key={i}
+                  onPress={
+                    () =>
+                      navigation.navigate('fisheryRiverInput', {
+                        cropType: element?.name,
+                        cropId:
+                          fishery[0] !== undefined &&
+                          fishery.find(
+                            j => j?.fishery_crop?.name == element?.name,
+                          )
+                            ? fishery.find(
+                                i => i?.fishery_crop?.name == element?.name,
+                              )._id
+                            : element?.id,
+                        data: fishery.find(
+                          i => i?.fishery_crop_id == element?._id,
+                        ),
+                      })
+                    //             huntingid:64f2ead3b994c1b6aa39e802
+                    // huntingcropid: 64f2ccd2b994c1b6aa39e76f
+                  }>
+                  <AddAndDeleteCropButton
+                    add={false}
+                    darftStyle={{
+                      borderColor:
                         fishery[0] !== undefined &&
                         fishery.find(
                           j => j?.fishery_crop?.name == element?.name,
-                        )
+                        )?.status == 1
+                          ? 'grey'
+                          : '#e5c05e',
+                    }}
+                    drafted={
+                      fishery[0] !== undefined &&
+                      fishery.find(j => j?.fishery_crop?.name == element?.name)
+                        ?.status == 1
+                        ? false
+                        : true
+                    }
+                    cropName={element?.name}
+                    onPress={() =>
+                      handleRemoveClick(
+                        fishery[0] !== undefined &&
+                          fishery.find(
+                            j => j?.fishery_crop?.name == element?.name,
+                          )
                           ? fishery.find(
                               i => i?.fishery_crop?.name == element?.name,
                             )._id
                           : element?.id,
-                      data: fishery.find(
-                        i => i?.fishery_crop_id == element?._id,
-                      ),
-                    })
-                  //             huntingid:64f2ead3b994c1b6aa39e802
-                  // huntingcropid: 64f2ccd2b994c1b6aa39e76f
-                }>
-                <AddAndDeleteCropButton
-                  add={false}
-                  darftStyle={{
-                    borderColor: fishery[0] !== undefined && fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? 'grey' : '#e5c05e'
-                  }}
-                  drafted={
-                    fishery[0] !== undefined && fishery.find(j => j?.fishery_crop?.name == element?.name).status == 1 ? false : true
-                  }
-                  cropName={element?.name}
-                  onPress={() =>
-                    handleRemoveClick(
-                      fishery[0] !== undefined &&
-                        fishery.find(
-                          j => j?.fishery_crop?.name == element?.name,
-                        )
-                        ? fishery.find(
-                            i => i?.fishery_crop?.name == element?.name,
-                          )._id
-                        : element?.id,
-                      i,
-                    )
-                  }
-                />
-              </TouchableOpacity>
-            );
-          })}
-          <TouchableOpacity
-            style={styles.addAndDeleteButtonSection}
-            onPress={() => setCropModal(true)}>
-            <AddAndDeleteCropButton
-              add={true}
-              cropName={t('add fish')}
-              onPress={() => setCropModal(true)}
-            />
-          </TouchableOpacity>
-        </>
-      )}
-      {cropModal && (
-        <AddBottomSheet>
+                        i,
+                      )
+                    }
+                  />
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => setCropModal(true)}>
+              <AddAndDeleteCropButton
+                add={true}
+                cropName={t('add fish')}
+                onPress={() => setCropModal(true)}
+              />
+            </TouchableOpacity>
+          </>
+        )}
+        <AddBottomSheet
+          modalVisible={cropModal}
+          setModal={setCropModal}
+          bottomSheetRef={bottomSheetRef}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>{t('add fish')}</Text>
             <TouchableOpacity
@@ -223,6 +241,7 @@ const FisheryRiver = ({navigation, route}) => {
                 setCropModal(!cropModal);
                 setFocusOther(false);
                 setDropdownVal('');
+                bottomSheetRef.current.close();
               }}>
               <Image
                 source={require('../../../assets/close.png')}
@@ -254,7 +273,10 @@ const FisheryRiver = ({navigation, route}) => {
           <View style={styles.BottomSheetButton}>
             <TouchableOpacity
               style={styles.crossButton}
-              onPress={() => setCropModal(!cropModal)}>
+              onPress={() => {
+                setCropModal(!cropModal);
+                bottomSheetRef.current.close();
+              }}>
               <Image
                 source={require('../../../assets/cross.png')}
                 style={styles.addCropIcon}
@@ -267,8 +289,8 @@ const FisheryRiver = ({navigation, route}) => {
             />
           </View>
         </AddBottomSheet>
-      )}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -291,7 +313,7 @@ const makeStyles = fontScale =>
       flexDirection: 'row',
     },
     headerText: {
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontSize: 16 / fontScale,
       color: '#000',
       alignSelf: 'center',

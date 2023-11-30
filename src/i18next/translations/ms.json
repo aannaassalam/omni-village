@@ -255,5 +255,7 @@
   "local market": "Pasaran tempatan",
   "agent": "Ejen",
   "ecommerce": "Dagang",
-  "export": "Eksport"
+  "export": "Eksport",
+  "street address": "Alamat Jalan",
+  "confirm": "mengesahkan"
 }

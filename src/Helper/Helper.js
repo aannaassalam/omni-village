@@ -2,8 +2,8 @@ import axios from 'axios';
 import {storage} from './Storage';
 
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
-let adminUrl = 'https://omnivillage.azurewebsites.net/api';
-// let adminUrl = 'http://192.168.0.101:5000/api';
+let adminUrl = 'https://omnivillage-server-360ba1f0adb3.herokuapp.com/api';
+// let adminUrl = 'http://192.168.0.101:5100/api';
 
 export const baseURL = adminUrl;
 

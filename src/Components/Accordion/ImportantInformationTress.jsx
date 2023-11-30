@@ -1,13 +1,24 @@
-import {StyleSheet, Text, TouchableHighlight, View, useWindowDimensions} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import React, {useState} from 'react';
 import CustomDropdown3 from '../CustomDropdown/CustomDropdown3';
-import {averageTreeAge, fertilisers, pesticides, soilHealth} from '../../MockData/Mockdata';
+import {
+  averageTreeAge,
+  fertilisers,
+  pesticides,
+  soilHealth,
+} from '../../MockData/Mockdata';
 import {Divider} from 'react-native-paper';
 import InputWithoutBorder from '../CustomInputField/InputWithoutBorder';
 import InputLikeButton from '../CustomButton/InputLikeButton';
 import InputWithoutRightElement from '../CustomInputField/InputWithoutRightElement';
 
-const ImportantInformationTress = ({ treeAgePress }) => {
+const ImportantInformationTress = ({treeAgePress}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [soilHeal, setSoilHeal] = useState('');
@@ -32,11 +43,11 @@ const ImportantInformationTress = ({ treeAgePress }) => {
         notRightText={true}
       />
       <TouchableHighlight onPress={treeAgePress}>
-      <CustomDropdown3
-        data={averageTreeAge}
-        selectedValue={e => setPesti(e)}
-        infoName={'Average age of the tree'}
-      />
+        <CustomDropdown3
+          data={averageTreeAge}
+          selectedValue={e => setPesti(e)}
+          infoName={'Average age of the tree'}
+        />
       </TouchableHighlight>
       <CustomDropdown3
         data={soilHealth}
@@ -138,7 +149,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       fontSize: 18 / fontScale,
       color: '#000',
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       fontWeight: '500',
       padding: 10,
       textAlign: 'center',

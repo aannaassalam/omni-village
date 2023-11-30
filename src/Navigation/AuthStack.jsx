@@ -13,53 +13,43 @@ import {CheckToken} from '../Helper/CheckToken';
 import {storage} from '../Helper/Storage';
 import {useSelector} from 'react-redux';
 import Productionstack from './ProductionStack';
-import CountryCheck from '../Screens/AuthScreens/CountryCheck';
 import ConsumptionStack from './ConsumptionStack';
+import MapScreen from '../Screens/AuthScreens/MapScreen';
+import {useUser} from '../Hooks/useUser';
 
 const Stack = createStackNavigator();
 
 export default function AuthStack({isLoggedIn}) {
-  const [isToken, setIsToken] = useState(false);
-  const token = storage.getString('token');
-
-  const {user} = useSelector(state => state.auth);
-
-  useEffect(() => {
-    if (token !== undefined && token !== null) {
-      setIsToken(true);
-    } else {
-      setIsToken(false);
-    }
-  }, [token]);
+  const {data: user} = useUser();
 
   const renderScreen = useCallback(() => {
-    if (user?.first_name === '-') {
-      return 'registerdetails';
-    } else if (token === undefined || token === null) {
+    if (!user) {
       return 'startup';
+    } else if (user?.first_name === '-') {
+      return 'registerdetails';
     } else {
       // return 'registerdetails';
       return 'home';
     }
-  }, [token, user]);
+  }, [user]);
 
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName={renderScreen()}>
+      {/* // initialRouteName={'MapScreen'}> */}
       <Stack.Screen name="registerdetails" component={RegisterDetails} />
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
       <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
-      <Stack.Screen name="countryCheck" component={CountryCheck} />
-
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
+      <Stack.Screen name="MapScreen" component={MapScreen} />
     </Stack.Navigator>
   );
 }

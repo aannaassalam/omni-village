@@ -97,6 +97,7 @@ const makeStyles = fontScale =>
       color: '#333',
       fontSize: 14 / fontScale,
       fontWeight: '500',
+      paddingVertical: 14,
       // backgroundColor: 'red',
     },
     textInputInner: {
@@ -120,7 +121,7 @@ const makeStyles = fontScale =>
       fontSize: 12 / fontScale,
       marginBottom: -10,
       marginTop: 10,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
       textTransform: 'capitalize',
     },
     divider: {

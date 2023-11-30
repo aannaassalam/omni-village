@@ -24,7 +24,9 @@ export default function RegisterSuccessfull({navigation}) {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView
+      style={{flex: 1, backgroundColor: '#fff'}}
+      edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.inner}>
           <Image
@@ -37,7 +39,7 @@ export default function RegisterSuccessfull({navigation}) {
               fontSize: 22 / fontScale,
               color: '#263238',
               marginBottom: 15,
-              fontFamily: 'ubuntu_medium',
+              fontFamily: 'ubuntu-medium',
             }}>
             {t('successfully registered')}
           </Text>
@@ -72,7 +74,7 @@ const makeStyles = fontScale =>
       textAlign: 'center',
       maxWidth: 269,
       marginHorizontal: 'auto',
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       lineHeight: 15,
     },
   });

@@ -3,7 +3,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   StatusBar,
   Dimensions,
   StyleSheet,
@@ -16,7 +15,7 @@ const {width} = Dimensions.get('window');
 import SelectDropdown from 'react-native-select-dropdown';
 import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
 import {SelectList} from 'react-native-dropdown-select-list';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import '../../i18next';
 
 export default CustomDropdown3 = ({
@@ -31,7 +30,7 @@ export default CustomDropdown3 = ({
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   return (
     <View style={styles.textInputContainer}>
       <View style={styles.textInputInner}>
@@ -87,7 +86,7 @@ export default CustomDropdown3 = ({
             color: '#000',
             fontSize: 14 / fontScale,
           }}
-          placeholder={t("Select Option")}
+          placeholder={t('Select Option')}
           searchPlaceholder="Search here"
           inputStyles={{
             color: '#000',
@@ -101,6 +100,10 @@ export default CustomDropdown3 = ({
             borderColor: '#fff',
             borderWidth: 1,
             elevation: 5,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 2},
+            shadowOpacity: 0.3,
+            shadowRadius: 2,
             backgroundColor: '#fff',
             width: '90%',
             alignSelf: 'center',
@@ -134,7 +137,7 @@ const makeStyles = fontScale =>
       marginLeft: 5,
       color: '#268C43',
       fontSize: 12 / fontScale,
-      fontFamily: 'ubuntu_medium',
+      fontFamily: 'ubuntu-medium',
     },
     dropdownsRow: {
       flexDirection: 'row',
@@ -154,7 +157,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     dropdown1DropdownStyle: {
@@ -172,7 +175,7 @@ const makeStyles = fontScale =>
       color: '#263238',
       textAlign: 'left',
       fontSize: 14 / fontScale,
-      fontFamily: 'ubuntu_regular',
+      fontFamily: 'ubuntu-regular',
       textTransform: 'capitalize',
     },
     icon_btn: {
