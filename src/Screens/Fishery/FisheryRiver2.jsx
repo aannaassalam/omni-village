@@ -30,7 +30,7 @@ import '../../i18next';
 import { useFocusEffect } from '@react-navigation/native';
 import { deleteFishery, fetchFishery } from '../../functions/fisheryScreen';
 
-const FisheryPond = ({ navigation, route }) => {
+const FisheryRiver2 = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const dispatch = useDispatch();
@@ -60,32 +60,30 @@ const FisheryPond = ({ navigation, route }) => {
         isFetching,
     } = useQuery({
         queryKey: ['fishery'],
-        queryFn: ()=>fetchFishery('pond'),
+        queryFn: ()=>fetchFishery('river'),
         refetchOnWindowFocus: true,
     });
-
     useFocusEffect(
         useCallback(() => {
             // queryClient.invalidateQueries();
-            refetch();
+            refetch('pond');
         }, []),
     );
 
     const { mutate: saveCrop, isPending } = useMutation({
         mutationFn: addFisheryCorp,
         onSuccess: data => {
-            console.log("crop name ", data)
             // setCropType(prev => [...prev, data]);
             setCropModal(false);
             setOtherCrop('');
-            navigation.navigate('fishTypeInput', {
+            navigation.navigate('fisheryRiverInput', {
                 cropType: data?.name,
                 cropId: data?._id,
                 data: null
             });
             bottomSheetRef.current.close();
         },
-        onError: (error) =>{
+        onError: (error) => {
             setGlobalError('Crop is already added!');
             console.log("error of save crop", error)
         }
@@ -119,7 +117,7 @@ const FisheryPond = ({ navigation, route }) => {
             } else {
                 setCropModal(false);
                 setOtherCrop('');
-                navigation.navigate('fishTypeInput', {
+                navigation.navigate('fisheryRiverInput', {
                     cropType: fisheryCrops.find(i => i?.name === dropdownVal.name?.label)
                         .name,
                     cropId: fisheryCrops.find(i => i?.name === dropdownVal.name?.label)._id,
@@ -156,14 +154,14 @@ const FisheryPond = ({ navigation, route }) => {
             {/* Header */}
             <CustomHeader
                 backIcon={true}
-                headerName={t('harvested from pond')}
+                headerName={t('harvested from river')}
                 goBack={() => navigation.goBack()}
             />
             {/*Top Dashboard  */}
             <CustomDashboard
                 first={t('production')}
                 second={t('fishery')}
-                third={t('harvested from pond')}
+                third={t('harvested from river')}
             />
 
             {!isFisheryLoading ? (
@@ -176,7 +174,7 @@ const FisheryPond = ({ navigation, route }) => {
                         <TouchableOpacity
                             style={styles.addAndDeleteButtonSection}
                             onPress={() => {
-                                navigation.navigate('fishTypeInput', {
+                                navigation.navigate('fisheryRiverInput', {
                                     cropType: item?.name,
                                     cropId: item?.data?._id,
                                     data: item.data,
@@ -321,7 +319,7 @@ const FisheryPond = ({ navigation, route }) => {
     );
 };
 
-export default FisheryPond;
+export default FisheryRiver2;
 
 const makeStyles = fontScale =>
     StyleSheet.create({

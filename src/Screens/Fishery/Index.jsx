@@ -17,6 +17,7 @@ import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2'
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { getFishFeed, getMeasurement } from '../../Redux/OthersSlice';
 
 const Index = ({navigation, route}) => {
   // const { totalLand } = route.params;
@@ -28,9 +29,10 @@ const Index = ({navigation, route}) => {
   useFocusEffect(
     useCallback(() => {
       dispatch(getFisheryCrops());
+      dispatch(getFishFeed())
+      dispatch(getMeasurement())
     }, []),
   );
-  console.log("fishery", user)
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>

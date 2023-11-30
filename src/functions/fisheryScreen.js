@@ -31,7 +31,6 @@ export const editFishery = async body => {
     status: body?.status,
     fishery_id: body?.crop_id,
     fishery_type: body?.fishery_type,
-    pond_name: body?.pond_name,
   });
   return res.data;
 };
