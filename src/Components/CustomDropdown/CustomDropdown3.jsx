@@ -31,6 +31,7 @@ export default CustomDropdown3 = ({
   const styles = makeStyles(fontScale);
   const cropType = ['Wheat', 'Barley', 'Paddy', 'Rice', 'Dal', 'Others'];
   const {t} = useTranslation();
+
   return (
     <View style={styles.textInputContainer}>
       <View style={styles.textInputInner}>
@@ -93,6 +94,7 @@ export default CustomDropdown3 = ({
             fontSize: 14 / fontScale,
           }}
           search
+          notFoundText="No data found"
           boxStyles={[styles.boxStyle, style]}
           dropdownItemStyles={[styles.dropdownstyle]}
           dropdownStyles={{

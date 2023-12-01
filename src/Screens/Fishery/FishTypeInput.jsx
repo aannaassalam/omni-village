@@ -1,40 +1,35 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import React, {useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
 import {
+  Dimensions,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import ImportantInformationTress from '../../Components/Accordion/ImportantInformationTress';
 import {Divider} from 'react-native-paper';
-import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import ProductDescription from '../../Components/CustomDashboard/ProductDescription';
-import Checkbox from '../../Components/Checkboxes/Checkbox';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import PopupModal from '../../Components/Popups/PopupModal';
-import ImportantInformationPoultry from '../../Components/Accordion/ImportantInformationPoultry';
-import ProductionInformation from '../../Components/Accordion/ProductionInformation';
-import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion';
 import Toast from 'react-native-toast-message';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
-import {validation} from '../../Validation/Validation';
+import * as yup from 'yup';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import {addFishery, editFishery, getFishery} from '../../Redux/FisherySlice';
-import {Others} from '../../MockData/Mockdata';
-import {getFishFeed} from '../../Redux/OthersSlice';
-import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
+import Checkbox from '../../Components/Checkboxes/Checkbox';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import PopupModal from '../../Components/Popups/PopupModal';
+import {validation} from '../../Validation/Validation';
+// import {addFishery, editFishery, getFishery} from '../../Redux/FisherySlice';
+import {useMutation} from '@tanstack/react-query';
 import {useTranslation} from 'react-i18next';
-import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
+import {addFishery, editFishery} from '../../functions/fisheryScreen';
+import '../../i18next';
+
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
   const [impInfo, setImpInfo] = useState(true);
@@ -165,9 +160,40 @@ const FishTypeInput = ({navigation, route}) => {
     }
     console.log('error', errors);
   }, [errors]);
+  const {mutate: addFisheryData, isPending: isAddFisheryPending} = useMutation({
+    mutationFn: addFishery,
+    onSuccess: _data => {
+      console.log(_data, 'added successfully ');
+      _data.status === 0
+        ? navigation.goBack()
+        : navigation.navigate('successfull');
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
 
+  const {mutate: editFisheryData, isPending: isEditFisheryPending} =
+    useMutation({
+      mutationFn: editFishery,
+      onSuccess: () => {
+        console.log('edited success fully');
+        navigation.goBack();
+      },
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => setSavepopup(false),
+    });
   const onSubmit = data2 => {
-    console.log(data2);
+    // console.log(data2);
     if (
       data2.important_information.type_of_feed === '' ||
       data2.utilisation_information.expenditure_on_inputs === '' ||
@@ -191,71 +217,28 @@ const FishTypeInput = ({navigation, route}) => {
         });
     } else {
       if (data?._id) {
-        dispatch(
-          editFishery({
-            important_information: watch('important_information'),
-            utilisation_information: watch('utilisation_information'),
-            processing_method: watch('processing_method'),
-            weight_measurement: watch('weight_measurement')
-              ? watch('weight_measurement')
-              : 'kg',
-            status: 1,
-            crop_id: cropId,
-            fishery_type: 'pond',
-            pond_name: cropType,
-          }),
-        )
-          .unwrap()
-          .then(
-            () =>
-              Toast.show({
-                text1: 'Success',
-                text2: 'Fishery updated successfully!',
-              }),
-            dispatch(getFishery('pond')),
-            // navigation.goBack(),
-            navigation.navigate('successfull'),
-          )
-          .catch(err => {
-            console.log('err', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
-          })
-          .finally(() => {
-            setSavepopup(false);
-          });
+        // dispatch(
+        editFisheryData({
+          important_information: watch('important_information'),
+          utilisation_information: watch('utilisation_information'),
+          processing_method: watch('processing_method'),
+          weight_measurement: watch('weight_measurement')
+            ? watch('weight_measurement')
+            : 'kg',
+          status: 1,
+          crop_id: cropId,
+          fishery_type: 'pond',
+          pond_name: cropType,
+        });
       } else {
-        dispatch(
-          addFishery({
-            ...data2,
-            status: 1,
-            crop_id: cropId,
-            fishery_type: 'pond',
-            pond_name: type,
-          }),
-        )
-          .unwrap()
-          .then(() => {
-            Toast.show({
-              text1: 'Success',
-              text2: 'Fishery added successfully!',
-            }),
-              setSavepopup(false),
-              // navigation.goBack()
-              navigation.navigate('successfull');
-          })
-          .catch(err => {
-            console.log('err at add', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Error Occurred',
-              text2: 'Something Went wrong, Please try again later!',
-            });
-          })
-          .finally(() => setSavepopup(false));
+        // dispatch(
+        addFisheryData({
+          ...data2,
+          status: 1,
+          crop_id: cropId,
+          fishery_type: 'pond',
+          pond_name: type,
+        });
       }
     }
   };
@@ -291,78 +274,35 @@ const FishTypeInput = ({navigation, route}) => {
     watch('important_information.number_of_fishes'),
     watch('utilisation_information.production_output'),
   ]);
-  // console.log("watch import", watch('important_information'))
-  // console.log("watch personal", watch('utilisation_information'))
+
   const handleDraft = () => {
+    console.log('data id', data?._id);
     if (data?._id) {
-      dispatch(
-        editFishery({
-          important_information: watch('important_information'),
-          utilisation_information: watch('utilisation_information'),
-          processing_method: watch('processing_method'),
-          weight_measurement: watch('weight_measurement')
-            ? watch('weight_measurement')
-            : 'kg',
-          status: 0,
-          crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(() => {
-          Toast.show({
-            text1: 'Success',
-            text2: 'Fishery drafted successfully!',
-          }),
-            dispatch(getFishery()),
-            navigation.goBack();
-        })
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => {
-          setDraftpopup(false), navigation.goBack();
-        });
+      // dispatch(
+      editFisheryData({
+        important_information: watch('important_information'),
+        utilisation_information: watch('utilisation_information'),
+        processing_method: watch('processing_method'),
+        weight_measurement: watch('weight_measurement')
+          ? watch('weight_measurement')
+          : 'kg',
+        status: 0,
+        crop_id: cropId,
+      });
     } else {
-      dispatch(
-        addFishery({
-          important_information: watch('important_information'),
-          utilisation_information: watch('utilisation_information'),
-          processing_method: watch('processing_method'),
-          weight_measurement: watch('weight_measurement')
-            ? watch('weight_measurement')
-            : 'kg',
-          status: 0,
-          crop_id: cropId,
-          fishery_type: 'pond',
-          pond_name: type,
-        }),
-      )
-        .unwrap()
-        .then(
-          () => {
-            Toast.show({
-              text1: 'Success',
-              text2: 'Fishery added successfully!',
-            }),
-              setDraftpopup(false),
-              navigation.goBack();
-          },
-          // dispatch(getFishery('pond')),
-        )
-        .catch(err => {
-          console.log('err at add', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setDraftpopup(false));
+      // dispatch(
+      addFisheryData({
+        important_information: watch('important_information'),
+        utilisation_information: watch('utilisation_information'),
+        processing_method: watch('processing_method'),
+        weight_measurement: watch('weight_measurement')
+          ? watch('weight_measurement')
+          : 'kg',
+        status: 0,
+        crop_id: cropId,
+        fishery_type: 'pond',
+        pond_name: type,
+      });
     }
   };
 

@@ -136,6 +136,7 @@ const FisheryRiver = ({navigation, route}) => {
       dispatch(getMeasurement());
     }, []),
   );
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>

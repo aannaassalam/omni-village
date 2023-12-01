@@ -33,7 +33,7 @@ import {
 } from '../../MockData/Mockdata';
 import moment from 'moment';
 import {validation} from '../../Validation/Validation';
-import {addPoultry, editPoultry, getPoultry} from '../../Redux/PoultrySlice';
+import {getPoultry} from '../../Redux/PoultrySlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import {getMeasurement} from '../../Redux/OthersSlice';
@@ -41,6 +41,10 @@ import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import PoultryProductDescription from '../../Components/CustomDashboard/PoultryProductDescription';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useMeasurement} from '../../Hooks/cms';
+import {useUser} from '../../Hooks/useUser';
+import {useMutation} from '@tanstack/react-query';
+import {addPoultry, editPoultry} from '../../functions/poultryScreen';
 
 const PoultryType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -50,10 +54,10 @@ const PoultryType = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
-  const {measurement} = useSelector(state => state.Others);
+  const {data: measurement} = useMeasurement();
   const {feed} = useSelector(state => state.Others);
   const [message, setMessage] = useState('');
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
   const [treeAge, setTreeAge] = useState(false);
@@ -125,6 +129,41 @@ const PoultryType = ({navigation, route}) => {
       .required(t('expenditure_on_inputs is required')),
     steroids: yup.string().required(t('Steroids is Required')),
   });
+
+  const {mutate: addPoultryData, isPending: isAddPoultryPending} = useMutation({
+    mutationFn: addPoultry,
+    onSuccess: _data =>
+      _data.status === 0
+        ? navigation.goBack()
+        : navigation.navigate('successfull'),
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => {
+      setSavepopup(false);
+      setDraftpopup(false);
+    },
+  });
+
+  const {mutate: editPoultryData, isPending: isEditPoultryPending} =
+    useMutation({
+      mutationFn: editPoultry,
+      onSuccess: () => navigation.goBack(),
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => {
+        setSavepopup(false);
+        setDraftpopup(false);
+      },
+    });
+
   useEffect(() => {
     if (data) {
       setHarvestedProductList(data?.products);
@@ -135,8 +174,6 @@ const PoultryType = ({navigation, route}) => {
   // console.log("poultry data", data)
   const {
     handleSubmit,
-    setValue,
-    getValues,
     watch,
     control,
     formState: {errors},
@@ -164,6 +201,7 @@ const PoultryType = ({navigation, route}) => {
       steroids: Boolean(data?.steroids || false),
     },
   });
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
@@ -172,7 +210,6 @@ const PoultryType = ({navigation, route}) => {
   }, [errors]);
 
   const submit = () => {
-    console.log('i m here');
     let total_feed = parseInt(watch('utilisation_information.total_feed'));
     let self_produced = parseInt(
       watch('utilisation_information.self_produced'),
@@ -183,128 +220,28 @@ const PoultryType = ({navigation, route}) => {
     );
     let other_value = parseInt(watch('utilisation_information.other_value'));
     if (
-      watch('important_information.type_of_feed') == '' ||
-      watch('expenditure_on_inputs') == '' ||
-      watch('income_from_sale') == '' ||
-      watch('important_information.avg_age_of_live_stocks') == 0
+      self_produced + neighbours + purchased_from_market + other_value >
+      total_feed
     ) {
-      setMessage('Input all fields');
+      setMessage('Total amount cannot be greater than output');
       Toast.show({
         type: 'error',
-        text1: 'Input all fields',
+        text1: 'Total amount cannot be greater than output',
       });
       setSavepopup(false);
+    } else if (harvestedProductList.length === 0) {
+      setMessage('Please add harvested products');
+      setSavepopup(false);
     } else {
-      if (
-        self_produced + neighbours + purchased_from_market + other_value >
-        total_feed
-      ) {
-        setMessage('Total amount cannot be greater than output');
-        Toast.show({
-          type: 'error',
-          text1: 'Total amount cannot be greater than output',
-        });
-        setSavepopup(false);
-      } else {
-        if (data?._id) {
-          dispatch(
-            editPoultry({
-              important_information: watch('important_information'),
-              utilisation_information: watch('utilisation_information'),
-              income_from_sale: watch('income_from_sale'),
-              expenditure_on_inputs: watch('expenditure_on_inputs'),
-              steroids: watch('steroids'),
-              crop_id: cropId,
-              productDetails: harvestedProductList.map(itm => {
-                return {
-                  _id: itm?._id,
-                  name: itm?.name || '',
-                  production_output: itm?.production_output,
-                  self_consumed: itm?.self_consumed,
-                  fed_to_livestock: itm?.fed_to_livestock,
-                  sold_to_neighbours: itm?.sold_to_neighbours,
-                  sold_for_industrial_use: itm?.sold_for_industrial_use,
-                  wastage: itm?.wastage,
-                  other: itm?.other,
-                  other_value: itm?.other_value,
-                  month_harvested: moment(itm?.month_harvested).format(
-                    'YYYY-MM-DD',
-                  ),
-                  processing_method: itm?.processing_method,
-                };
-              }),
-              status: 1,
-            }),
-          )
-            .unwrap()
-            .then(
-              () =>
-                Toast.show({
-                  text1: 'Success',
-                  text2: 'Poultry updated successfully!',
-                }),
-              dispatch(getPoultry()),
-              navigation.navigate('successfull'),
-              // navigation.goBack(),
-            )
-            .catch(err => {
-              console.log('err', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
-              });
-            })
-            .finally(() => {
-              setSavepopup(false);
-            });
-        } else {
-          dispatch(
-            addPoultry({
-              important_information: watch('important_information'),
-              utilisation_information: watch('utilisation_information'),
-              income_from_sale: watch('income_from_sale'),
-              expenditure_on_inputs: watch('expenditure_on_inputs'),
-              steroids: watch('steroids'),
-              productDetails: harvestedProductList,
-              status: 1,
-              crop_id: cropId,
-            }),
-          )
-            .unwrap()
-            .then(
-              () =>
-                Toast.show({
-                  text1: 'Success',
-                  text2: 'Poultry added successfully!',
-                }),
-              dispatch(getPoultry()),
-              navigation.navigate('successfull'),
-            )
-            .catch(err => {
-              console.log('err at add', err);
-              Toast.show({
-                type: 'error',
-                text1: 'Error Occurred',
-                text2: 'Something Went wrong, Please try again later!',
-              });
-            })
-            .finally(() => setSavepopup(false));
-        }
-      }
-    }
-  };
-
-  const handleDraft = () => {
-    if (data?._id) {
-      dispatch(
-        editPoultry({
+      if (data?._id) {
+        console.log(data?._id, 'pol');
+        editPoultryData({
           important_information: watch('important_information'),
           utilisation_information: watch('utilisation_information'),
           income_from_sale: watch('income_from_sale'),
           expenditure_on_inputs: watch('expenditure_on_inputs'),
           steroids: watch('steroids'),
-          crop_id: cropId,
+          crop_id: data?._id,
           productDetails: harvestedProductList.map(itm => {
             return {
               _id: itm?._id,
@@ -323,72 +260,71 @@ const PoultryType = ({navigation, route}) => {
               processing_method: itm?.processing_method,
             };
           }),
-          status: 0,
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Poultry updated successfully!',
-            }),
-          dispatch(getPoultry()),
-          setDraftpopup(false),
-          navigation.goBack(),
-        )
-        .catch(err => {
-          console.log('err', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => {
-          setDraftpopup(false), navigation.goBack();
+          status: 1,
         });
-    } else {
-      dispatch(
-        addPoultry({
+      } else {
+        addPoultryData({
           important_information: watch('important_information'),
           utilisation_information: watch('utilisation_information'),
           income_from_sale: watch('income_from_sale'),
           expenditure_on_inputs: watch('expenditure_on_inputs'),
           steroids: watch('steroids'),
           productDetails: harvestedProductList,
-          status: 0,
+          status: 1,
           crop_id: cropId,
-        }),
-      )
-        .unwrap()
-        .then(
-          () =>
-            Toast.show({
-              text1: 'Success',
-              text2: 'Poultry added successfully!',
-            }),
-          dispatch(getPoultry()),
-          setDraftpopup(false),
-          navigation.goBack(),
-        )
-        .catch(err => {
-          console.log('err at add', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Error Occurred',
-            text2: 'Something Went wrong, Please try again later!',
-          });
-        })
-        .finally(() => setDraftpopup(false));
+        });
+      }
     }
   };
+
+  const handleDraft = () => {
+    if (data?._id) {
+      editPoultryData({
+        important_information: watch('important_information'),
+        utilisation_information: watch('utilisation_information'),
+        income_from_sale: watch('income_from_sale'),
+        expenditure_on_inputs: watch('expenditure_on_inputs'),
+        steroids: watch('steroids'),
+        crop_id: data._id,
+        productDetails: harvestedProductList.map(itm => {
+          return {
+            _id: itm?._id,
+            name: itm?.name || '',
+            production_output: itm?.production_output,
+            self_consumed: itm?.self_consumed,
+            fed_to_livestock: itm?.fed_to_livestock,
+            sold_to_neighbours: itm?.sold_to_neighbours,
+            sold_for_industrial_use: itm?.sold_for_industrial_use,
+            wastage: itm?.wastage,
+            other: itm?.other,
+            other_value: itm?.other_value,
+            month_harvested: moment(itm?.month_harvested).format('YYYY-MM-DD'),
+            processing_method: itm?.processing_method,
+          };
+        }),
+        status: 0,
+      });
+    } else {
+      addPoultryData({
+        important_information: watch('important_information'),
+        utilisation_information: watch('utilisation_information'),
+        income_from_sale: watch('income_from_sale'),
+        expenditure_on_inputs: watch('expenditure_on_inputs'),
+        steroids: watch('steroids'),
+        productDetails: harvestedProductList,
+        status: 0,
+        crop_id: cropId,
+      });
+    }
+  };
+
   const replaceObjectById = (array, newObj) => {
     const newArray = array.map(obj =>
       obj.name === newObj.name ? newObj : obj,
     );
     return newArray;
   };
+
   useEffect(() => {
     if (edit) {
       const updatedArray = replaceObjectById(harvestedProductList, edit);
@@ -396,6 +332,7 @@ const PoultryType = ({navigation, route}) => {
       // console.log("check", updatedArray)
     }
   }, [edit]);
+
   const addProduct = () => {
     if (productName.length > 0) {
       setHarvestedProductList([
@@ -450,9 +387,9 @@ const PoultryType = ({navigation, route}) => {
     setAverageAge(newValue);
     setTreeAge(false);
   };
-  useEffect(() => {
-    dispatch(getMeasurement());
-  }, []);
+
+  console.log(feed, 'feed');
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
@@ -542,7 +479,7 @@ const PoultryType = ({navigation, route}) => {
                     <CustomDropdown3
                       data={[...feed, {id: 0, name: 'Others'}]}
                       selectedValue={onChange}
-                      value={value == 1 ? 'others' : value}
+                      value={value === 1 ? 'others' : value}
                       defaultVal={{key: value, value: value}}
                       infoName={t('type of feed')}
                     />
@@ -927,7 +864,10 @@ const PoultryType = ({navigation, route}) => {
             </>
             <TouchableOpacity
               style={styles.add_button}
-              onPress={() => setHarvestProdAdd(true)}>
+              onPress={() => {
+                setHarvestProdAdd(true);
+                setMessage('');
+              }}>
               <Text style={styles.add_button_text}>{t('add')}</Text>
               <AntDesign name="plus" size={15} color="#fff" />
             </TouchableOpacity>
@@ -1063,13 +1003,13 @@ const PoultryType = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('submit')}
               onPress={handleSubmit(submit)}
-              // onPress={()=>{}}
+              loading={isAddPoultryPending || isEditPoultryPending}
             />
             <CustomButton
               style={styles.draftButton}
               btnText={t('cancel')}
               onPress={() => {
-                setSavepopup(false), navigation.goBack();
+                setSavepopup(false);
               }}
             />
           </View>
@@ -1096,6 +1036,7 @@ const PoultryType = ({navigation, route}) => {
               style={styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
+              loading={isAddPoultryPending || isEditPoultryPending}
             />
             <CustomButton
               style={styles.draftButton}

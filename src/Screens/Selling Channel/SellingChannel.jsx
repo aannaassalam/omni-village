@@ -5,6 +5,8 @@ import {
   useWindowDimensions,
   TouchableOpacity,
   Image,
+  Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
@@ -13,14 +15,17 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
 import {getSellingChannelMethod} from '../../Redux/SellingChannelMethodSlice';
-import {
-  addSellingChannel,
-  editSellingChannel,
-  getSellingChannel,
-} from '../../Redux/SellingChannelSlice';
+import {getSellingChannel} from '../../Redux/SellingChannelSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {fetchSellingChannelMethods} from '../../functions/Corps';
+import {
+  addSellingChannel,
+  editSellingChannel,
+  fetchSellingChannels,
+} from '../../functions/SellingChannelScreen';
 
 const SellingChannel = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -52,49 +57,55 @@ const SellingChannel = ({navigation}) => {
       value: t('none'),
     },
   ]);
-  const {sellingChannelMethod} = useSelector(
-    state => state.sellingChannelMethod,
-  );
-  const {sellingChannel} = useSelector(state => state.sellingChannel);
+
+  const {
+    data: sellingChannel,
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ['selling_channel'],
+    queryFn: fetchSellingChannels,
+  });
+
   const styles = makeStyles(fontScale);
-  let idMatch = sellingChannel;
   const [toggleCheckBox, setToggleCheckBox] = useState(
-    idMatch?.selling_channel_names ? idMatch?.selling_channel_names : [],
+    sellingChannel?.selling_channel_names
+      ? sellingChannel?.selling_channel_names
+      : [],
   );
-  const dispatch = useDispatch();
-  const [averageAge, setAverageAge] = useState([]);
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getSellingChannelMethod());
-      dispatch(getSellingChannel()).then(res => {
-        // console.log("sellingchannel", res?.payload?.data?.selling_channel_names)
-      });
-    }, []),
-  );
+
   useEffect(() => {
-    setAverageAge(sellingChannelMethod);
-    setToggleCheckBox(
-      sellingChannel?.selling_channel_names
-        ? sellingChannel?.selling_channel_names
-        : [],
-    );
-  }, [sellingChannelMethod, sellingChannel]);
+    if (!isLoading) {
+      setToggleCheckBox(sellingChannel?.selling_channel_names || []);
+    }
+  }, [isLoading, sellingChannel?.selling_channel_names]);
+
+  const {
+    mutate: editSellingChannelData,
+    isPending: isEditSellingChannelPending,
+  } = useMutation({
+    mutationFn: editSellingChannel,
+    onSuccess: () => navigation.goBack(),
+  });
+
+  const {mutate: addSellingChannelData, isPending: isAddSellingChannelPending} =
+    useMutation({
+      mutationFn: addSellingChannel,
+      onSuccess: () => navigation.goBack(),
+    });
+
   const save = () => {
-    if (idMatch?.selling_channel_names) {
+    if (sellingChannel?.selling_channel_names) {
       let formData = {
         selling_channel_id: sellingChannel?._id,
         selling_channel_names: toggleCheckBox,
       };
-      dispatch(editSellingChannel(formData)).then(res => {
-        navigation.goBack();
-      });
+      editSellingChannelData(formData);
     } else {
-      dispatch(addSellingChannel(toggleCheckBox)).then(res => {
-        // console.log("ressss adding0", res)
-        navigation.goBack();
-      });
+      addSellingChannelData(toggleCheckBox);
     }
   };
+
   const addRemoveId = name => {
     if (toggleCheckBox.includes(name)) {
       setToggleCheckBox(toggleCheckBox.filter(item => item !== name));
@@ -102,6 +113,7 @@ const SellingChannel = ({navigation}) => {
       setToggleCheckBox([...toggleCheckBox, name]);
     }
   };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>
@@ -114,31 +126,45 @@ const SellingChannel = ({navigation}) => {
           first={t('production')}
           second={t('selling channel')}
         />
-        {channelMethod.map(item => {
-          return (
-            <View key={item._id} style={styles.mainContainer}>
-              <Text style={[styles.text, {fontSize: 14 / fontScale}]}>
-                {item?.value}
-              </Text>
-              <TouchableOpacity
-                onPress={() => addRemoveId(item?.name.toLowerCase())}>
-                {toggleCheckBox.includes(item?.name.toLowerCase()) ? (
-                  <Image
-                    source={require('../../../assets/checked.png')}
-                    style={{height: 30, width: 30}}
-                  />
-                ) : (
-                  <Image
-                    source={require('../../../assets/unchecked.png')}
-                    style={{height: 30, width: 30}}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
-          );
-        })}
+        {isLoading || isFetching ? (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator animating size="large" color="#268C43" />
+          </View>
+        ) : (
+          channelMethod.map(item => {
+            return (
+              <Pressable
+                onPress={() => addRemoveId(item?.name.toLowerCase())}
+                key={item.id}
+                style={styles.mainContainer}>
+                <Text style={[styles.text, {fontSize: 14 / fontScale}]}>
+                  {item?.value}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => addRemoveId(item?.name.toLowerCase())}>
+                  {toggleCheckBox.includes(item?.name.toLowerCase()) ? (
+                    <Image
+                      source={require('../../../assets/checked.png')}
+                      style={{height: 30, width: 30}}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../../../assets/unchecked.png')}
+                      style={{height: 30, width: 30}}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Pressable>
+            );
+          })
+        )}
         <View style={styles.buttonContainer}>
-          <CustomButton btnText={t('save')} onPress={() => save()} />
+          <CustomButton
+            btnText={t('save')}
+            onPress={save}
+            loading={isAddSellingChannelPending || isEditSellingChannelPending}
+          />
         </View>
       </View>
     </SafeAreaView>

@@ -162,25 +162,22 @@ const Fishery = ({navigation, route}) => {
                 <TouchableOpacity
                   style={styles.addAndDeleteButtonSection}
                   kdy={i}
-                  onPress={
-                    () =>
-                      navigation.navigate('fishTypeInput', {
-                        cropType: element?.name,
-                        cropId:
-                          fishery[0] !== undefined &&
-                          fishery.find(
-                            j => j?.fishery_crop?.name == element?.name,
-                          )
-                            ? fishery.find(
-                                i => i?.fishery_crop?.name == element?.name,
-                              )._id
-                            : element?.id,
-                        data: fishery.find(
-                          i => i?.fishery_crop_id == element?._id,
-                        ),
-                      })
-                    //             huntingid:64f2ead3b994c1b6aa39e802
-                    // huntingcropid: 64f2ccd2b994c1b6aa39e76f
+                  onPress={() =>
+                    navigation.navigate('fishTypeInput', {
+                      cropType: element?.name,
+                      cropId:
+                        fishery[0] !== undefined &&
+                        fishery.find(
+                          j => j?.fishery_crop?.name == element?.name,
+                        )
+                          ? fishery.find(
+                              i => i?.fishery_crop?.name == element?.name,
+                            )._id
+                          : element?.id,
+                      data: fishery.find(
+                        i => i?.fishery_crop_id == element?._id,
+                      ),
+                    })
                   }>
                   <AddAndDeleteCropButton
                     darftStyle={{

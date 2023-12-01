@@ -31,12 +31,11 @@ export const editFishery = async body => {
     status: body?.status,
     fishery_id: body?.crop_id,
     fishery_type: body?.fishery_type,
-    pond_name: body?.pond_name,
   });
   return res.data;
 };
 
-export const deleteConsumption = async id => {
+export const deleteFishery = async id => {
   const res = await axiosInstance.delete(
     endpoints.fishery.delete_fishery + `/${id}`,
   );

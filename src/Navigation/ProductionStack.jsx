@@ -26,6 +26,9 @@ import FisheryRiver from '../Screens/Fishery/FisheryRiver';
 import FisheryRiverInput from '../Screens/Fishery/FisheryRiverInput';
 import Consumption from '../Screens/Consumption/Consumption';
 import Succsessfull from '../Screens/Successfull';
+import FisheryPond from '../Screens/Fishery/FisheryPond';
+import FisheryRiver2 from '../Screens/Fishery/FisheryRiver2';
+import Hunting2 from '../Screens/Hunting/Hunting2';
 
 const Stack = createStackNavigator();
 
@@ -54,14 +57,17 @@ export default function Productionstack() {
 
       {/* fishery  */}
       <Stack.Screen name="fisheryIndex" component={Index} />
-      <Stack.Screen name="fishery" component={Fishery} />
+      {/* <Stack.Screen name="fishery" component={Fishery} /> */}
+      <Stack.Screen name="fishery" component={FisheryPond} />
       <Stack.Screen name="subArea" component={SubArea} />
       <Stack.Screen name="fishTypeInput" component={FishTypeInput} />
-      <Stack.Screen name="fisheryRiver" component={FisheryRiver} />
+      {/* <Stack.Screen name="fisheryRiver" component={FisheryRiver} /> */}
+      <Stack.Screen name="fisheryRiver" component={FisheryRiver2} />
       <Stack.Screen name="fisheryRiverInput" component={FisheryRiverInput} />
 
       {/* hunting */}
-      <Stack.Screen name="hunting" component={Hunting} />
+      {/* <Stack.Screen name="hunting" component={Hunting} /> */}
+      <Stack.Screen name="hunting" component={Hunting2} />
       <Stack.Screen name="huntingType" component={HuntingType} />
       {/* storage */}
       <Stack.Screen name="storage" component={Storage} />

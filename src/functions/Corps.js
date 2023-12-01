@@ -70,6 +70,7 @@ export const fetchStorageMethod = async () => {
   const res = await axiosInstance.get(
     endpoints.storageMethod.get_storage_method,
   );
+  console.log(res.data, 'data');
   return res.data;
 };
 
@@ -88,5 +89,17 @@ export const fetchTreeCorp = async () => {
 
 export const addTreeCorp = async body => {
   const res = await axiosInstance.post(endpoints.treeCrop.add_tree_crop, body);
+  return res.data;
+};
+
+export const fetchSellingChannelMethods = async () => {
+  const res = await axiosInstance.get(
+    endpoints.sellingChannelMethod.get_selling_channel_method,
+  );
+  return res.data;
+};
+
+export const fetchFeed = async () => {
+  const res = await axiosInstance.get(endpoints.measurement.feed);
   return res.data;
 };

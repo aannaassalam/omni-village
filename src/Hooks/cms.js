@@ -27,3 +27,27 @@ export const useVillages = village => {
     refetchOnWindowFocus: true,
   });
 };
+
+export const useMeasurement = () => {
+  return useQuery({
+    queryKey: ['weight measurement'],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        endpoints.measurement.get_measurement,
+      );
+      return res.data;
+    },
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const useFeed = () => {
+  return useQuery({
+    queryKey: ['feed'],
+    queryFn: async () => {
+      const res = await axiosInstance.get(endpoints.measurement.feed);
+      return res.data;
+    },
+    refetchOnWindowFocus: true,
+  });
+};

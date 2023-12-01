@@ -87,11 +87,12 @@ const PoultryEdit = ({navigation, route}) => {
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
       const totalAmount = utilisationArray.reduce(
-        (total, item) => total + item?.value,
+        (total, item) => total + parseInt(item?.value || 0),
         0,
       );
-      let amount = parseInt(totalAmount) + parseInt(others);
+      let amount = parseInt(totalAmount) + parseInt(others || 0);
       let out = parseInt(output);
+      console.log(amount, out, 'oop');
       if (output == '' || output == undefined) {
         setMessage(
           t('Output cannot be empty') + '/' + 'Output cannot be empty',
@@ -121,7 +122,10 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[2]?.value == 0 ||
         utilisationArray[2]?.value == undefined ||
         utilisationArray[3]?.value == 0 ||
-        utilisationArray[3]?.value == undefined
+        utilisationArray[3]?.value == undefined ||
+        (utilisationArray[4]?.value != '' &&
+          utilisationArray[4]?.value != undefined &&
+          (others == undefined || others == ''))
       ) {
         setMessage(
           t('All fields are required!') + '/' + 'All fields are required!',
@@ -150,11 +154,12 @@ const PoultryEdit = ({navigation, route}) => {
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
       const totalAmounts = utilisationArray.reduce(
-        (total, item) => total + item?.value,
+        (total, item) => total + parseInt(item?.value || 0),
         0,
       );
-      let amounts = parseInt(totalAmounts) + parseInt(others);
+      let amounts = parseInt(totalAmounts) + parseInt(others || 0);
       let outs = parseInt(output);
+      console.log(amounts, outs, 'oop');
       if (output == '' || output == undefined) {
         setMessage(
           t('Output cannot be empty') + '/' + 'Output cannot be empty',
@@ -185,8 +190,9 @@ const PoultryEdit = ({navigation, route}) => {
         utilisationArray[2]?.value == undefined ||
         utilisationArray[3]?.value == 0 ||
         utilisationArray[3]?.value == undefined ||
-        utilisationArray[4]?.value == 0 ||
-        utilisationArray[4]?.value == undefined
+        (utilisationArray[4]?.value != '' &&
+          utilisationArray[4]?.value != undefined &&
+          (others == undefined || others == ''))
       ) {
         setMessage(
           t('All fields are required!') + '/' + 'All fields are required!',

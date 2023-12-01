@@ -1,41 +1,51 @@
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
-  StyleSheet,
-  Text,
-  View,
-  useWindowDimensions,
   Dimensions,
-  ScrollView,
-  TouchableOpacity,
   Image,
   SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Divider} from 'react-native-paper';
-import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import {useDispatch, useSelector} from 'react-redux';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import CustomDashboard2 from '../../Components/CustomDashboard/CustomDashboard2';
-import InputWithStorage from '../../Components/CustomInputField/InputWithStorage';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import CustomDropdown2 from '../../Components/CustomDropdown/CustomDropdown2';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
-import {
-  addStorageMethod,
-  getStorageMethod,
-} from '../../Redux/StorageMethodSlice';
-import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import {addStorage, editStorage, getStorage} from '../../Redux/StorageSlice';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-import {useTranslation} from 'react-i18next';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import InputWithStorage from '../../Components/CustomInputField/InputWithStorage';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import '../../i18next';
+import {useUser} from '../../Hooks/useUser';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {
+  addStorage,
+  editStorage,
+  fetchStorages,
+} from '../../functions/storageScreen';
+import {addStorageMethod, fetchStorageMethod} from '../../functions/Corps';
 
 const Storage = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {storageMethod} = useSelector(state => state.storageMethod);
-  const {storage} = useSelector(state => state.storage);
-  const {user} = useSelector(state => state.auth);
+  const {data: user} = useUser();
+  const {data: storageMethod, isMethodLoading} = useQuery({
+    queryKey: ['storage_method'],
+    queryFn: fetchStorageMethod,
+    refetchOnWindowFocus: true,
+  });
+
+  const {data: storage, isLoading} = useQuery({
+    queryKey: ['storage'],
+    queryFn: fetchStorages,
+  });
   const {t} = useTranslation();
   const [storageList, setStorageList] = useState([
     {
@@ -78,13 +88,40 @@ const Storage = ({navigation}) => {
   const [storageItem, setStorageItem] = useState(null);
   const [storageId, setStorageId] = useState('');
   const [cropModal, setCropModal] = useState(false);
-  const [dropdownVal, setDropdownVal] = useState('');
+  const [dropdownVal, setDropdownVal] = useState({});
   const [otherCrop, setOtherCrop] = useState('');
   const [focusOther, setFocusOther] = useState(false);
   const [cropType, setCropType] = useState('');
   const [loading, setLoading] = useState(false);
 
   const bottomSheetRef = useRef(null);
+
+  const {
+    mutate: addingStorageMethodData,
+    isPending: isAddingStorageMethodPending,
+  } = useMutation({
+    mutationFn: addStorageMethod,
+    onSuccess: data =>
+      setCropType(prev => [
+        ...prev,
+        {
+          name: data.name,
+          id: data._id,
+          progress: '',
+        },
+      ]),
+  });
+
+  const {mutate: addStorageData, isPending: isAddStoragePending} = useMutation({
+    mutationFn: addStorage,
+    onSuccess: () => navigation.goBack(),
+  });
+
+  const {mutate: editStorageData, isPending: isEditStoragePending} =
+    useMutation({
+      mutationFn: editStorage,
+      onSuccess: () => navigation.goBack(),
+    });
 
   const updateItemById = (indx, newName, stockId) => {
     const objectIndex = storageList.findIndex((item, index) => index === indx);
@@ -96,6 +133,7 @@ const Storage = ({navigation}) => {
     newData[objectIndex].storage_method_id = stockId;
     setStorageList(newData);
   };
+
   const updateValueById = (indx, value) => {
     const objectIndex = storageList.findIndex((item, index) => index === indx);
     if (objectIndex === -1) {
@@ -105,72 +143,66 @@ const Storage = ({navigation}) => {
     newData[objectIndex].stock_quantity = value;
     setStorageList(newData);
   };
+
   const addCrop = (index, name, stockId) => {
     setCropType([
       ...cropType,
       {
-        name: dropdownVal.name == 'Others' ? otherCrop.name : dropdownVal.name,
-        id: dropdownVal.name == 'Others' ? otherCrop._id : dropdownVal._id,
+        name: dropdownVal.name === 'Others' ? otherCrop.name : dropdownVal.name,
+        id: dropdownVal.name === 'Others' ? otherCrop._id : dropdownVal._id,
         progress: '',
       },
     ]);
     updateItemById(index, name, stockId);
     setCropModal(!cropModal);
     setFocusOther(false);
-    setDropdownVal('');
+    setDropdownVal(null);
     setOtherCrop('');
   };
+
   const addingCrop = (index, name, stockId) => {
     if (dropdownVal.name === 'Others') {
-      dispatch(addStorageMethod({name: otherCrop?.name})).then(res => {
-        console.log('ress', res);
-      });
-      dispatch(getStorageMethod());
-      setDropdownVal([]);
+      addingStorageMethodData({name: otherCrop?.name});
+      setDropdownVal({});
       setOtherCrop('');
     } else {
       addCrop(index, name, stockId);
     }
     bottomSheetRef.current.close();
   };
+
   const DropdownSelectedValue = data => {
     setDropdownVal(data);
-    console.log('data', data);
     if (data !== 'Others') {
       setFocusOther(false);
     }
   };
-  const dispatch = useDispatch();
 
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      dispatch(getStorageMethod());
-      dispatch(getStorage()).then(res => {
-        setLoading(false);
-        console.log(res);
-        if (res?.payload?.data[0] == undefined) {
-          return;
-        } else {
-          setStorageId(res?.payload?.data[0]?._id);
-          setStorageList(
-            res?.payload?.data.map(i => {
-              console.log('first', i.stock_quantity);
-              return {
-                storage_id: i?._id,
-                stock_name: i?.stock_name,
-                stock_value: t(i?.stock_name),
-                stock_quantity: i?.stock_quantity,
-                storage_method_name: i?.storage_method_name,
-                storage_name: i?.storage_name,
-                storage_method_id: i?.storage_method_id,
-              };
-            }),
-          );
-        }
-      });
+      if (storage?.[0] === undefined) {
+        return;
+      } else {
+        setStorageId(storage?.[0]?._id);
+        setStorageList(
+          storage?.map(i => {
+            return {
+              storage_id: i?._id,
+              stock_name: i?.stock_name,
+              stock_value: t(i?.stock_name),
+              stock_quantity: i?.stock_quantity,
+              storage_method_name: i?.storage_method_name,
+              storage_name: i?.storage_name,
+              storage_method_id: i?.storage_method_id,
+            };
+          }),
+        );
+      }
     }, []),
   );
+
+  console.log(storage, 'list');
 
   const onContinue = () => {
     if (storageId) {
@@ -181,27 +213,19 @@ const Storage = ({navigation}) => {
           stock_quantity: parseInt(i?.stock_quantity),
         };
       });
-      dispatch(editStorage(formData))
-        .unwrap()
-        .then(res => {
-          navigation.goBack();
-        });
+      editStorageData(formData);
     } else {
       let formData = storageList.map(i => {
         return {
-          storage_method_name: i?.storage_method_name,
           stock_name: i?.stock_name,
+          storage_method_name: i?.storage_method_name,
           stock_quantity: parseInt(i?.stock_quantity),
         };
       });
-      dispatch(addStorage(formData))
-        .unwrap()
-        .then(res => {
-          navigation.goBack();
-        });
+      addStorageData(formData);
     }
   };
-  // console.log('storage method', storageList);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>
@@ -211,7 +235,7 @@ const Storage = ({navigation}) => {
           goBack={() => navigation.goBack()}
         />
         <ScrollView>
-          {loading ? (
+          {isMethodLoading ? (
             <View style={{padding: 50, marginTop: '80%'}}>
               <ActivityIndicator
                 size={'small'}
@@ -259,6 +283,7 @@ const Storage = ({navigation}) => {
                 <CustomButton
                   btnText={'Continue'}
                   onPress={() => onContinue()}
+                  loading={isAddStoragePending || isEditStoragePending}
                 />
               </View>
             </>
@@ -275,7 +300,7 @@ const Storage = ({navigation}) => {
               onPress={() => {
                 setCropModal(!cropModal);
                 setFocusOther(false);
-                setDropdownVal('');
+                setDropdownVal({});
                 bottomSheetRef.current.close();
               }}>
               <Image
@@ -293,8 +318,8 @@ const Storage = ({navigation}) => {
               selectedValue={e => {
                 DropdownSelectedValue({
                   name: e,
-                  _id: storageMethod[storageItem?.storage_method_name]?.find(
-                    cp => cp.name == e,
+                  _id: storageMethod?.[storageItem?.storage_name]?.find(
+                    cp => cp.name === e,
                   )?._id,
                   // _id: storageItem?.stock_name.includes('grain' || 'Grains')
                   //   ? storageMethod?.grain.find(cp => cp.name === e)?._id
@@ -305,10 +330,10 @@ const Storage = ({navigation}) => {
                   //       : storageMethod?.grain.find(cp => cp.name === e)?._id,
                 });
               }}
-              data={storageMethod[storageItem?.storage_method_name]}
-              valu={dropdownVal?.name?.name}
+              data={storageMethod?.[storageItem?.storage_name]}
+              defaultVal={{key: '', value: dropdownVal?.name?.name}}
             />
-            {dropdownVal.name === 'Others' ? (
+            {dropdownVal?.name === 'Others' ? (
               <InputWithoutRightElement
                 label={'Storage Name'}
                 placeholder={'Eg: Racks'}
@@ -323,6 +348,7 @@ const Storage = ({navigation}) => {
               style={styles.crossButton}
               onPress={() => {
                 setCropModal(!cropModal);
+                setDropdownVal({});
                 bottomSheetRef.current.close();
               }}>
               <Image
@@ -336,10 +362,10 @@ const Storage = ({navigation}) => {
               onPress={() =>
                 addingCrop(
                   storageItem?.index,
-                  dropdownVal.name == 'Others'
+                  dropdownVal.name === 'Others'
                     ? otherCrop.name
                     : dropdownVal.name,
-                  dropdownVal.name == 'Others'
+                  dropdownVal.name === 'Others'
                     ? otherCrop._id
                     : dropdownVal._id,
                 )
@@ -353,6 +379,7 @@ const Storage = ({navigation}) => {
 };
 
 export default Storage;
+
 const width = Dimensions.get('window').width;
 const makeStyles = fontScale =>
   StyleSheet.create({
