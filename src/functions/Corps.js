@@ -1,9 +1,9 @@
 import {endpoints} from '../Endpoints/endpoints';
 import axiosInstance from '../Helper/Helper';
 
-export const fetchConsumptionCorp = async () => {
+export const fetchConsumptionCorp = async (id) => {
   const res = await axiosInstance.get(
-    endpoints.consumtionCrop.get_consumption_crop,
+    endpoints.consumtionCrop.get_consumption_crop + `${id}`,
   );
   return res.data;
 };

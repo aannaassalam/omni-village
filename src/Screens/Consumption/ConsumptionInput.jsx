@@ -20,10 +20,12 @@ import PopupModal from '../../Components/Popups/PopupModal';
 import {Divider} from 'react-native-paper';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {useDispatch, useSelector} from 'react-redux';
-import {addConsumption, editConsumption} from '../../Redux/ConsumptionSlice';
+// import {addConsumption, editConsumption} from '../../Redux/ConsumptionSlice';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { addConsumption, editConsumption } from '../../functions/consumptionScreen';
+import { useMutation } from '@tanstack/react-query';
 
 const ConsumptionInput = ({route, navigation}) => {
   const {cropType, data, cropId, typeName} = route.params;
@@ -68,28 +70,42 @@ const ConsumptionInput = ({route, navigation}) => {
       self_grown: String(data?.self_grown || ''),
     },
   });
+  const { mutate: addConsumptionData, isPending: isAddFisheryPending } = useMutation({
+    mutationFn: addConsumption,
+    onSuccess: _data => {
+      console.log(_data, "added successfully ");
+      _data.status === 0
+        ? navigation.goBack()
+        : navigation.navigate('consumptionSuccessfull');
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
 
+  const { mutate: editConsumptionData, isPending: isEditFisheryPending } = useMutation({
+    mutationFn: editConsumption,
+    onSuccess: () => {
+      console.log("edited success fully")
+      navigation.goBack()
+    },
+    onError: () =>
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      }),
+    onSettled: () => setSavepopup(false),
+  });
   const onSubmit = data2 => {
     let total = parseInt(data2.total_quantity);
     let purchased_from_market = parseInt(data2.purchased_from_market);
     let purchased_from_neighbours = parseInt(data2.purchased_from_neighbours);
     let self_grown = parseInt(data2.self_grown);
-    // if (
-    //   watch('weight_measurement') == '' ||
-    //   watch('purchased_from_market') == '' ||
-    //   watch('purchased_from_neighbours') == '' ||
-    //   watch('self_grown') == ''
-    // ) {
-    //   console.log('hete');
-    //   setMessage(
-    //     t('All fields are required!') + '/' + 'All fields are required!',
-    //   );
-    //   Toast.show({
-    //     type: 'error',
-    //     text1: t('All fields are required!') + '/' + 'All fields are required!',
-    //   });
-    //   setSavepopup(false);
-    // } else {
     if (
       purchased_from_market + purchased_from_neighbours + self_grown !==
       total
@@ -120,13 +136,7 @@ const ConsumptionInput = ({route, navigation}) => {
           self_grown: watch('self_grown'),
           status: 1,
         };
-        dispatch(editConsumption(formData))
-          .then(res => {
-            console.log('response', res);
-            navigation.navigate('consumptionSuccessfull');
-          })
-          .catch(() => setSavepopup(false))
-          .finally(() => setSavepopup(false));
+        editConsumptionData(formData)
       } else {
         let formData = {
           weight_measurement: watch('weight_measurement'),
@@ -138,12 +148,7 @@ const ConsumptionInput = ({route, navigation}) => {
           self_grown: watch('self_grown'),
           status: 1,
         };
-        dispatch(addConsumption(formData))
-          .then(res => {
-            navigation.navigate('consumptionSuccessfull');
-          })
-          .catch(() => setSavepopup(false))
-          .finally(() => setSavepopup(false));
+        addConsumptionData(formData)
       }
     }
     // }
@@ -165,9 +170,7 @@ const ConsumptionInput = ({route, navigation}) => {
         self_grown: watch('self_grown'),
         status: 0,
       };
-      dispatch(editConsumption(formData)).then(res => {
-        navigation.navigate('consumptionSuccessfull');
-      });
+      editConsumptionData(formData)
     } else {
       let formData = {
         weight_measurement: watch('weight_measurement'),
@@ -179,10 +182,7 @@ const ConsumptionInput = ({route, navigation}) => {
         self_grown: watch('self_grown'),
         status: 0,
       };
-      dispatch(addConsumption(formData)).then(res => {
-        // navigation.goBack()
-        navigation.navigate('consumptionSuccessfull');
-      });
+      addConsumptionData(formData)
     }
   };
   return (
