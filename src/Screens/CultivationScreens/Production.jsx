@@ -1,24 +1,19 @@
+import React, {useMemo} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  Dimensions,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  ScrollView,
-  Dimensions,
   useWindowDimensions,
 } from 'react-native';
 import {Divider} from 'react-native-paper';
-import React, {useMemo, useState} from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
-import {getTree} from '../../Redux/TreesSlice';
-import {useTranslation} from 'react-i18next';
-import '../../i18next';
-import {Wrap} from '@react-native-material/core';
 import {useUser} from '../../Hooks/useUser';
+import '../../i18next';
 
 const Production = ({navigation, route}) => {
   // const {totalLand, usedLand, data} = route.params;
@@ -26,8 +21,6 @@ const Production = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
-  const dispatch = useDispatch();
-  const {user} = useSelector(s => s.auth);
 
   const goToNext = name => {
     if (name === 'cultivation') {

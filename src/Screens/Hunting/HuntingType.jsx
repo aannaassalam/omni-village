@@ -26,6 +26,7 @@ import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useMutation} from '@tanstack/react-query';
 import {addHunting, editHunting} from '../../functions/huntingScreen';
+import {useUser} from '../../Hooks/useUser';
 
 const HuntingType = ({navigation, route}) => {
   const {cropType, data, cropId} = route.params;
@@ -36,7 +37,7 @@ const HuntingType = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const {measurement} = useSelector(state => state.Others);
   const [weight, setWeight] = useState('');
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const styles = makeStyles(fontScale);
   const [income, setIncome] = useState('');
   const [expenditure, setExpenditure] = useState('');
@@ -147,7 +148,7 @@ const HuntingType = ({navigation, route}) => {
     watch('important_information.number_hunted'),
     watch('utilisation_information.meat'),
   ]);
-  const {mutate: addHuntingData, isPending: isAddFisheryPending} = useMutation({
+  const {mutate: addHuntingData, isPending: isAddHuntingPending} = useMutation({
     mutationFn: addHunting,
     onSuccess: _data => {
       console.log(_data, 'added successfully ');
@@ -164,7 +165,7 @@ const HuntingType = ({navigation, route}) => {
     onSettled: () => setSavepopup(false),
   });
 
-  const {mutate: editHuntingData, isPending: isEditFisheryPending} =
+  const {mutate: editHuntingData, isPending: isEditHuntingPending} =
     useMutation({
       mutationFn: editHunting,
       onSuccess: () => {
@@ -781,6 +782,7 @@ const HuntingType = ({navigation, route}) => {
                 style={styles.submitButton}
                 btnText={t('submit')}
                 onPress={handleSubmit(onSubmit)}
+                loading={isAddHuntingPending || isEditHuntingPending}
               />
               <CustomButton
                 style={styles.draftButton}
@@ -813,6 +815,7 @@ const HuntingType = ({navigation, route}) => {
                 style={styles.submitButton}
                 btnText={t('save')}
                 onPress={handleDraft}
+                loading={isAddHuntingPending || isEditHuntingPending}
               />
               <CustomButton
                 style={styles.draftButton}

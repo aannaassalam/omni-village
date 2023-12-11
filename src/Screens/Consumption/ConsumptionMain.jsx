@@ -15,23 +15,19 @@ import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ActivityIndicator} from 'react-native-paper';
+import {useQuery} from '@tanstack/react-query';
+import {fetchConsumptionTypes} from '../../functions/consumptionScreen';
 
 const ConsumptionMain = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const [loading, setLoading] = useState(false);
-  const {consumptionType} = useSelector(state => state.consumptionType);
+  const {data: consumptionType, isLoading} = useQuery({
+    queryKey: ['consumption_type'],
+    queryFn: fetchConsumptionTypes,
+  });
   const dispatch = useDispatch();
   const {t} = useTranslation();
 
-  useEffect(() => {
-    setLoading(true);
-    dispatch(getConsumptionType())
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
@@ -39,7 +35,7 @@ const ConsumptionMain = ({navigation}) => {
         headerName={t('consumption')}
         goBack={() => navigation.goBack()}
       />
-      {loading ? (
+      {isLoading ? (
         <View style={{marginTop: '60%'}}>
           <ActivityIndicator size={'large'} color={'green'} />
         </View>
@@ -55,8 +51,7 @@ const ConsumptionMain = ({navigation}) => {
                   navigation.navigate('consumption', {
                     typeId: item?._id,
                     typeName: item?.name,
-                  }),
-                    dispatch(getConsumptionCrops(item?._id));
+                  });
                 }}
               />
             );

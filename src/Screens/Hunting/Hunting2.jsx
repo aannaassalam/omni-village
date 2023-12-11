@@ -114,7 +114,7 @@ const Hunting2 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (dropdownVal.name.label === 'Others' && otherCrop.length > 0) {
-        saveCrop({name: otherCrop, categoryId: ''});
+        saveCrop({name: otherCrop, country: [userDetails.country]});
       } else {
         setCropModal(false);
         setOtherCrop('');

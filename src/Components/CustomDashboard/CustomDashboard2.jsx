@@ -1,16 +1,15 @@
+import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  Dimensions,
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
-  Dimensions,
 } from 'react-native';
-import React from 'react';
 import {Divider} from 'react-native-paper';
-import {useSelector} from 'react-redux';
-import {useTranslation} from 'react-i18next';
-import '../../i18next/index';
 import {useUser} from '../../Hooks/useUser';
+import '../../i18next/index';
 
 const CustomDashboard2 = ({allocatedFor, usedLand}) => {
   const {data: user} = useUser();

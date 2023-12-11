@@ -28,6 +28,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {addFishery, editFishery} from '../../functions/fisheryScreen';
 import '../../i18next';
+import {useUser} from '../../Hooks/useUser';
+import {useMeasurement} from '../../Hooks/cms';
 
 const FisheryRiverInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
@@ -35,8 +37,8 @@ const FisheryRiverInput = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const [productionInfo, setProductionInfo] = useState(true);
   const {fishFeed} = useSelector(state => state.Others);
-  const {measurement} = useSelector(state => state.Others);
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: measurement} = useMeasurement();
+  const {data: userDetails} = useUser();
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
@@ -885,6 +887,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                   // setSavepopup(false), navigation.goBack();
                   handleSubmit(onSubmit)
                 }
+                loading={isAddFisheryPending || isEditFisheryPending}
               />
               <CustomButton
                 style={styles.draftButton}
@@ -917,6 +920,7 @@ const FisheryRiverInput = ({navigation, route}) => {
                 style={styles.submitButton}
                 btnText={t('save')}
                 onPress={handleDraft}
+                loading={isEditFisheryPending || isAddFisheryPending}
               />
               <CustomButton
                 style={styles.draftButton}

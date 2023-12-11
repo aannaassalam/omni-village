@@ -1,14 +1,13 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
-  TouchableOpacity,
 } from 'react-native';
-import React from 'react';
 import {Divider} from 'react-native-paper';
 import * as Progress from 'react-native-progress';
-import {useSelector} from 'react-redux';
 
 const CustomShowcaseInput = ({
   productionName,

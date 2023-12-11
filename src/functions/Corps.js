@@ -1,29 +1,32 @@
 import {endpoints} from '../Endpoints/endpoints';
 import axiosInstance from '../Helper/Helper';
+import {USER_PREFERRED_LANGUAGE} from '../i18next';
 
-export const fetchConsumptionCorp = async (id) => {
+export const fetchConsumptionCorp = async id => {
   const res = await axiosInstance.get(
     endpoints.consumtionCrop.get_consumption_crop + `${id}`,
   );
   return res.data;
 };
 
-export const addConsumptionCorp = async body => {
-  const res = await axiosInstance.post(
-    endpoints.consumtionCrop.add_consumption_crop,
-    body,
-  );
-  return res.data;
-};
+// export const addConsumptionCorp = async body => {
+//   const res = await axiosInstance.post(
+//     endpoints.consumtionCrop.add_consumption_crop,
+//     body,
+//   );
+//   return res.data;
+// };
 
 export const fetchCultivationCorp = async () => {
-  console.log('HIT');
-  const res = await axiosInstance.post(endpoints.crop.getCrop);
+  const res = await axiosInstance.get(endpoints.crop.getCrop);
   return res.data;
 };
 
 export const addCultivationCorp = async body => {
-  const res = await axiosInstance.post(endpoints.crop.addCrop, body);
+  const res = await axiosInstance.post(endpoints.crop.addCrop, {
+    ...body,
+    name: {en: body.name},
+  });
   return res.data;
 };
 
@@ -33,10 +36,10 @@ export const fetchFisheryCorp = async () => {
 };
 
 export const addFisheryCorp = async body => {
-  const res = await axiosInstance.post(
-    endpoints.fisheryCrop.add_fishery_crop,
-    body,
-  );
+  const res = await axiosInstance.post(endpoints.fisheryCrop.add_fishery_crop, {
+    ...body,
+    name: {en: body.name},
+  });
   return res.data;
 };
 
@@ -46,10 +49,10 @@ export const fetchHuntingCorp = async () => {
 };
 
 export const addHuntingCorp = async body => {
-  const res = await axiosInstance.post(
-    endpoints.huntingCrop.add_hunting_crop,
-    body,
-  );
+  const res = await axiosInstance.post(endpoints.huntingCrop.add_hunting_crop, {
+    ...body,
+    name: {en: body.name},
+  });
   return res.data;
 };
 
@@ -59,10 +62,10 @@ export const fetchPoultryCorp = async () => {
 };
 
 export const addPoultryCorp = async body => {
-  const res = await axiosInstance.post(
-    endpoints.poultryCrop.add_poultry_crop,
-    body,
-  );
+  const res = await axiosInstance.post(endpoints.poultryCrop.add_poultry_crop, {
+    ...body,
+    name: {en: body.name},
+  });
   return res.data;
 };
 
@@ -88,7 +91,10 @@ export const fetchTreeCorp = async () => {
 };
 
 export const addTreeCorp = async body => {
-  const res = await axiosInstance.post(endpoints.treeCrop.add_tree_crop, body);
+  const res = await axiosInstance.post(endpoints.treeCrop.add_tree_crop, {
+    ...body,
+    name: {en: body.name},
+  });
   return res.data;
 };
 

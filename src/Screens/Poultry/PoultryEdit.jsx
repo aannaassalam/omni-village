@@ -86,13 +86,14 @@ const PoultryEdit = ({navigation, route}) => {
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
-      const totalAmount = utilisationArray.reduce(
-        (total, item) => total + parseInt(item?.value || 0),
-        0,
-      );
+      const totalAmount = utilisationArray.reduce((total, item) => {
+        if (item.name.includes('Other')) {
+          return total;
+        }
+        return total + parseInt(item?.value || 0);
+      }, 0);
       let amount = parseInt(totalAmount) + parseInt(others || 0);
       let out = parseInt(output);
-      console.log(amount, out, 'oop');
       if (output == '' || output == undefined) {
         setMessage(
           t('Output cannot be empty') + '/' + 'Output cannot be empty',
@@ -153,10 +154,12 @@ const PoultryEdit = ({navigation, route}) => {
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
-      const totalAmounts = utilisationArray.reduce(
-        (total, item) => total + parseInt(item?.value || 0),
-        0,
-      );
+      const totalAmounts = utilisationArray.reduce((total, item) => {
+        if (item.name.includes('Other')) {
+          return total;
+        }
+        return total + parseInt(item?.value || 0);
+      }, 0);
       let amounts = parseInt(totalAmounts) + parseInt(others || 0);
       let outs = parseInt(output);
       console.log(amounts, outs, 'oop');

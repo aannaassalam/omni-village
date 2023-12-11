@@ -1,36 +1,32 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Box, Pressable} from '@react-native-material/core';
+import {useMutation} from '@tanstack/react-query';
+import React, {useCallback, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
+  Image,
+  PermissionsAndroid,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-  Button,
   useWindowDimensions,
-  PermissionsAndroid,
-  Platform,
 } from 'react-native';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {Box, Pressable} from '@react-native-material/core';
-import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import DocumentPicker, {types} from 'react-native-document-picker';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {validation} from '../../Validation/Validation';
-import {useDispatch, useSelector} from 'react-redux';
-import {EditUser} from '../../Redux/AuthSlice';
-import {useFocusEffect} from '@react-navigation/native';
-import {getLandmeasurement, getVillage} from '../../Redux/OthersSlice';
-import {useTranslation} from 'react-i18next';
-import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import Geolocation from 'react-native-geolocation-service';
 import {TextInput} from 'react-native-paper';
-import {useUser} from '../../Hooks/useUser';
+import * as yup from 'yup';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
+import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import {useLandMeasurement, useVillages} from '../../Hooks/cms';
-import {useMutation} from '@tanstack/react-query';
+import {useUser} from '../../Hooks/useUser';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import {validation} from '../../Validation/Validation';
 import {editUser} from '../../functions/AuthScreens';
+import {storage} from '../../Helper/Storage';
 
 const schema = yup
   .object()
@@ -130,6 +126,7 @@ export default function RegisterDetails({navigation, route}) {
   const {mutate, isPending} = useMutation({
     mutationFn: editUser,
     onSuccess: data => {
+      storage.set('user', JSON.stringify(data));
       isEdit ? navigation.goBack() : navigation.replace('registersuccess');
     },
     onError: err => console.log(err, 'Err from register details'),

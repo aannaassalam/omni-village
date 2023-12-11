@@ -37,6 +37,7 @@ import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useMutation} from '@tanstack/react-query';
 import {addTree, editTree} from '../../functions/TreesAndShrubsScreen';
+import {useUser} from '../../Hooks/useUser';
 
 const Type01 = ({navigation, route}) => {
   const {t} = useTranslation();
@@ -61,7 +62,7 @@ const Type01 = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: userDetails} = useUser();
   const [treeAge, setTreeAge] = useState(false);
   const [harvestProdAdd, setHarvestProdAdd] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -344,7 +345,7 @@ const Type01 = ({navigation, route}) => {
       navigation.navigate('editType', {
         cropType: productName,
         edit: {},
-        cropId: cropId,
+        cropId: crop_id,
         data: data,
       });
       setProductName('');
@@ -656,7 +657,7 @@ const Type01 = ({navigation, route}) => {
                             navigation.navigate('editType', {
                               cropType: item?.name,
                               edit: item,
-                              cropId: cropId,
+                              cropId: crop_id,
                               data: data,
                             })
                           }

@@ -11,6 +11,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckToken} from '../../Helper/CheckToken';
 import {StackActions, NavigationAction} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
+import {useUser} from '../../Hooks/useUser';
+import {storage} from '../../Helper/Storage';
 
 export default function LoginSuccessfull({navigation}) {
   const {fontScale} = useWindowDimensions();
@@ -18,13 +20,11 @@ export default function LoginSuccessfull({navigation}) {
 
   const {t} = useTranslation();
 
-  // const resetAction = StackActions.reset({
-  //   index: 0,
-  //   actions: [NavigationAction('navigate', {routeName: 'hone'})],
-  // });
+  const {data: user} = useUser();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
+      storage.set('user', JSON.stringify(user));
       navigation.replace('home');
     }, 3000);
     return () => clearTimeout(timeout);

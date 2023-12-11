@@ -10,14 +10,19 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {CheckToken} from '../../Helper/CheckToken';
 import {useTranslation} from 'react-i18next';
+import {useUser} from '../../Hooks/useUser';
+import {storage} from '../../Helper/Storage';
 
 export default function RegisterSuccessfull({navigation}) {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
 
+  const {data: user} = useUser();
+
   useEffect(() => {
     const timeout = setTimeout(() => {
+      storage.set('user', JSON.stringify(user));
       navigation.replace('home');
     }, 3000);
     return () => clearTimeout(timeout);

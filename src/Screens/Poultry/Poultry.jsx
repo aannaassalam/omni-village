@@ -52,7 +52,7 @@ const Poultry = ({navigation, route}) => {
   const [delete_id, setDelete_id] = useState('');
   const [globalError, setGlobalError] = useState('');
 
-  const {data: poultryCrops, isLoading: isPoultryCropLoading} = useQuery({
+  const {data: poultryCrops = [], isLoading: isPoultryCropLoading} = useQuery({
     queryKey: ['poultry_crop'],
     queryFn: fetchPoultryCorp,
   });
@@ -68,19 +68,28 @@ const Poultry = ({navigation, route}) => {
   });
 
   const {mutate, isPending} = useMutation({
-    mutationKey: addPoultryCorp,
-    onSuccess: data =>
+    mutationFn: addPoultryCorp,
+    onSuccess: data => {
       navigation.navigate('poultryType', {
         cropType: data?.name,
         cropId: data?._id,
         data: null,
-      }),
-    onError: () =>
+      });
+      bottomSheetRef.current.close();
+    },
+    onError: err => {
+      console.log(err);
       Toast.show({
         type: 'error',
         text1: 'Error Occurred',
         text2: 'Something Went wrong, Please try again later!',
-      }),
+      });
+    },
+    onSettled: () => {
+      setDropdownVal({});
+      setCropModal(!cropModal);
+      setOtherCrop('');
+    },
   });
 
   const {mutate: deletePoultryData, isPending: isDeletePoultryPending} =
@@ -100,8 +109,6 @@ const Poultry = ({navigation, route}) => {
     });
 
   const bottomSheetRef = useRef(null);
-
-  console.log(poultryCrops, 'poultry');
 
   const handleRemoveClick = (id, index) => {
     const list = [...cropType];
@@ -129,7 +136,6 @@ const Poultry = ({navigation, route}) => {
       //     progress: '',
       //   },
       // ]);
-      console.log(dropdownVal, 'fgd');
       navigation.navigate('poultryType', {
         cropType: dropdownVal.name?.label,
         cropId: dropdownVal.name?.value,
@@ -138,21 +144,18 @@ const Poultry = ({navigation, route}) => {
         ),
       });
       setCropModal(!cropModal);
-      setDropdownVal('');
+      setDropdownVal({});
       setOtherCrop('');
+      bottomSheetRef.current.close();
     }
   };
 
   const addingTreesCrop = () => {
     if (dropdownVal.name?.label === 'Others') {
-      mutate({name: otherCrop?.name});
-      setDropdownVal([]);
-      setCropModal(!cropModal);
-      setOtherCrop('');
+      mutate({name: otherCrop?.name, country: [user.country]});
     } else {
       addCrop();
     }
-    bottomSheetRef.current.close();
   };
 
   const DropdownSelectedValue = data => {
@@ -161,6 +164,7 @@ const Poultry = ({navigation, route}) => {
       setFocusOther(false);
     }
   };
+
   useFocusEffect(
     useCallback(() => {
       refetch();
@@ -339,6 +343,7 @@ const Poultry = ({navigation, route}) => {
               btnText={t('create')}
               style={{width: '80%'}}
               onPress={addingTreesCrop}
+              loading={isPending}
             />
           </View>
         </AddBottomSheet>

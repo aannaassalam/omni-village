@@ -5,9 +5,9 @@ import {storage} from '../Helper/Storage';
 
 export const useUser = () => {
   const token = storage.getString('token');
-  console.log(token);
+  // console.log(token, 'token');
   return useQuery({
-    queryKey: ['user', token],
+    queryKey: ['user'],
     queryFn: async () => {
       const res = await axiosInstance.get(endpoints.auth.getUser);
       return res.data;

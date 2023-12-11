@@ -49,7 +49,7 @@ const FisheryRiver2 = ({navigation, route}) => {
   const {data: fisheryCrops, isLoading} = useQuery({
     queryKey: ['fisheryCrop'],
     queryFn: fetchFisheryCorp,
-    refetchOnWindowFocus: true,
+    // refetchOnWindowFocus: true,
   });
   const {
     data: fishery,
@@ -64,7 +64,7 @@ const FisheryRiver2 = ({navigation, route}) => {
   useFocusEffect(
     useCallback(() => {
       // queryClient.invalidateQueries();
-      refetch('pond');
+      refetch();
     }, []),
   );
 
@@ -72,8 +72,6 @@ const FisheryRiver2 = ({navigation, route}) => {
     mutationFn: addFisheryCorp,
     onSuccess: data => {
       // setCropType(prev => [...prev, data]);
-      setCropModal(false);
-      setOtherCrop('');
       navigation.navigate('fisheryRiverInput', {
         cropType: data?.name,
         cropId: data?._id,
@@ -84,6 +82,11 @@ const FisheryRiver2 = ({navigation, route}) => {
     onError: error => {
       setGlobalError('Crop is already added!');
       console.log('error of save crop', error);
+    },
+    onSettled: () => {
+      setCropModal(false);
+      setOtherCrop('');
+      setDropdownVal({});
     },
   });
 
@@ -113,8 +116,9 @@ const FisheryRiver2 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (dropdownVal.name.label === 'Others' && otherCrop.length > 0) {
-        saveCrop({name: otherCrop, categoryId: ''});
+        saveCrop({name: otherCrop, country: [userDetails.country]});
       } else {
+        setDropdownVal({});
         setCropModal(false);
         setOtherCrop('');
         navigation.navigate('fisheryRiverInput', {

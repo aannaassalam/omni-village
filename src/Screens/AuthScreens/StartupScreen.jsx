@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {CheckToken} from '../../Helper/CheckToken';
 import {useTranslation} from 'react-i18next';
+import {storage} from '../../Helper/Storage';
 
 export default function StartupScreen({navigation, route}) {
   const {t} = useTranslation();

@@ -23,11 +23,8 @@ export const editCultivation = async body => {
 };
 
 export const deleteCultivation = async id => {
-  const res = await axiosInstance.post(
-    endpoints.cultivation.deleteCultivation,
-    {
-      id,
-    },
+  const res = await axiosInstance.delete(
+    `${endpoints.cultivation.deleteCultivation}/${id}`,
   );
   return res.data;
 };

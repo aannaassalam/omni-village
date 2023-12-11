@@ -1,13 +1,13 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
-  View,
   TextInput,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import React from 'react';
 import {Divider} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useUser} from '../../Hooks/useUser';
 // import {TextInput} from 'react-native-paper';
 
 const InputWithoutBorder = ({
@@ -23,7 +23,7 @@ const InputWithoutBorder = ({
   editable = true,
   keyboardType = 'number-pad',
 }) => {
-  const {user} = useSelector(state => state.auth);
+  const {data: user} = useUser();
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);

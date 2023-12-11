@@ -31,6 +31,7 @@ import {
   fetchCultivations,
 } from '../../functions/CultivationScreen';
 import '../../i18next';
+import {USER_PREFERRED_LANGUAGE} from '../../i18next';
 
 const Season1 = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -46,7 +47,6 @@ const Season1 = ({navigation, route}) => {
 
   const bottomSheetRef = React.useRef(null);
 
-  const dispatch = useDispatch();
   const {data: userDetails} = useUser();
   const {data: crops = []} = useQuery({
     queryKey: ['cultivation_crop'],
@@ -109,7 +109,7 @@ const Season1 = ({navigation, route}) => {
           name: c.cultivation_crop.name,
           _id: c.cultivation_crop._id,
           cultivation: c,
-          status: c.important_information.status,
+          status: c.status,
         })),
       );
       return () => {
@@ -129,7 +129,7 @@ const Season1 = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (selectedCrop.name === 'Others' && otherCrop.length > 0) {
-        saveCrop({name: otherCrop, categoryId: ''});
+        saveCrop({name: otherCrop, country: [userDetails.country]});
       } else {
         setCropModal(false);
         setOtherCrop('');

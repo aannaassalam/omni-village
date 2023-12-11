@@ -16,7 +16,6 @@ export const addPoultry = async body => {
     steroids: body?.steroids,
     status: body?.status,
     products: body?.productDetails,
-    status: body?.status,
     poultry_crop_id: body?.crop_id,
   });
   return res.data;

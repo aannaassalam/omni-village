@@ -1,28 +1,28 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
 } from 'react-native';
-import React, {useCallback, useState} from 'react';
-import Toast from 'react-native-toast-message';
 import {Divider} from 'react-native-paper';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+import {useDispatch} from 'react-redux';
+import * as yup from 'yup';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {Controller, useForm} from 'react-hook-form';
-import {validation} from '../../Validation/Validation';
-import {useDispatch, useSelector} from 'react-redux';
+import {useUser} from '../../Hooks/useUser';
 import {LandAllocation} from '../../Redux/AuthSlice';
-import {useFocusEffect} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
+import {validation} from '../../Validation/Validation';
 import '../../i18next';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const landSchema = yup
   .object()
@@ -37,7 +37,7 @@ const landSchema = yup
   .required();
 
 const TotalLand = ({navigation}) => {
-  const {userDetails} = useSelector(s => s.auth);
+  const {data: userDetails} = useUser();
   const {t} = useTranslation();
   const [globalError, setGlobalError] = useState('');
 

@@ -913,6 +913,7 @@ const FishTypeInput = ({navigation, route}) => {
                   // setSavepopup(false), navigation.goBack();
                   handleSubmit(onSubmit)
                 }
+                loading={isAddFisheryPending || isEditFisheryPending}
               />
               <CustomButton
                 style={styles.draftButton}
@@ -945,6 +946,7 @@ const FishTypeInput = ({navigation, route}) => {
                 style={styles.submitButton}
                 btnText={t('save')}
                 onPress={handleDraft}
+                loading={isAddFisheryPending || isEditFisheryPending}
               />
               <CustomButton
                 style={styles.draftButton}

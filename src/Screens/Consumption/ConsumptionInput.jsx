@@ -1,43 +1,43 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import React, {useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
 import {
+  Dimensions,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   useWindowDimensions,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {validation} from '../../Validation/Validation';
-import Toast from 'react-native-toast-message';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import PopupModal from '../../Components/Popups/PopupModal';
 import {Divider} from 'react-native-paper';
+import Toast from 'react-native-toast-message';
+import * as yup from 'yup';
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import {useDispatch, useSelector} from 'react-redux';
+import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import PopupModal from '../../Components/Popups/PopupModal';
 // import {addConsumption, editConsumption} from '../../Redux/ConsumptionSlice';
+import {useMutation} from '@tanstack/react-query';
 import {useTranslation} from 'react-i18next';
-import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import { addConsumption, editConsumption } from '../../functions/consumptionScreen';
-import { useMutation } from '@tanstack/react-query';
+import {useMeasurement} from '../../Hooks/cms';
+import {
+  addConsumption,
+  editConsumption,
+} from '../../functions/consumptionScreen';
+import '../../i18next';
 
 const ConsumptionInput = ({route, navigation}) => {
   const {cropType, data, cropId, typeName} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {measurement} = useSelector(state => state.Others);
-  const {userDetails} = useSelector(state => state.auth);
+  const {data: measurement} = useMeasurement();
   const [impInfo, setImpInfo] = useState(true);
   const [savepopup, setSavepopup] = useState(false);
   const [message, setMessage] = useState('');
   const [draftpopup, setDraftpopup] = useState(false);
-  const dispatch = useDispatch();
   const {t} = useTranslation();
 
   const schema = yup.object().shape({
@@ -70,37 +70,41 @@ const ConsumptionInput = ({route, navigation}) => {
       self_grown: String(data?.self_grown || ''),
     },
   });
-  const { mutate: addConsumptionData, isPending: isAddFisheryPending } = useMutation({
-    mutationFn: addConsumption,
-    onSuccess: _data => {
-      console.log(_data, "added successfully ");
-      _data.status === 0
-        ? navigation.goBack()
-        : navigation.navigate('consumptionSuccessfull');
-    },
-    onError: () =>
-      Toast.show({
-        type: 'error',
-        text1: 'Error Occurred',
-        text2: 'Something Went wrong, Please try again later!',
-      }),
-    onSettled: () => setSavepopup(false),
-  });
 
-  const { mutate: editConsumptionData, isPending: isEditFisheryPending } = useMutation({
-    mutationFn: editConsumption,
-    onSuccess: () => {
-      console.log("edited success fully")
-      navigation.goBack()
-    },
-    onError: () =>
-      Toast.show({
-        type: 'error',
-        text1: 'Error Occurred',
-        text2: 'Something Went wrong, Please try again later!',
-      }),
-    onSettled: () => setSavepopup(false),
-  });
+  const {mutate: addConsumptionData, isPending: isAddFisheryPending} =
+    useMutation({
+      mutationFn: addConsumption,
+      onSuccess: _data => {
+        console.log(_data, 'added successfully ');
+        _data.status === 0
+          ? navigation.goBack()
+          : navigation.navigate('consumptionSuccessfull');
+      },
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => setSavepopup(false),
+    });
+
+  const {mutate: editConsumptionData, isPending: isEditFisheryPending} =
+    useMutation({
+      mutationFn: editConsumption,
+      onSuccess: () => {
+        console.log('edited success fully');
+        navigation.goBack();
+      },
+      onError: () =>
+        Toast.show({
+          type: 'error',
+          text1: 'Error Occurred',
+          text2: 'Something Went wrong, Please try again later!',
+        }),
+      onSettled: () => setSavepopup(false),
+    });
+
   const onSubmit = data2 => {
     let total = parseInt(data2.total_quantity);
     let purchased_from_market = parseInt(data2.purchased_from_market);
@@ -110,7 +114,6 @@ const ConsumptionInput = ({route, navigation}) => {
       purchased_from_market + purchased_from_neighbours + self_grown !==
       total
     ) {
-      console.log('in');
       setMessage(
         t('Total amount should be equal to output') +
           '/' +
@@ -136,7 +139,7 @@ const ConsumptionInput = ({route, navigation}) => {
           self_grown: watch('self_grown'),
           status: 1,
         };
-        editConsumptionData(formData)
+        editConsumptionData(formData);
       } else {
         let formData = {
           weight_measurement: watch('weight_measurement'),
@@ -148,7 +151,7 @@ const ConsumptionInput = ({route, navigation}) => {
           self_grown: watch('self_grown'),
           status: 1,
         };
-        addConsumptionData(formData)
+        addConsumptionData(formData);
       }
     }
     // }
@@ -158,6 +161,7 @@ const ConsumptionInput = ({route, navigation}) => {
       setSavepopup(false);
     }
   }, [errors]);
+
   const handleDraft = () => {
     if (data?._id) {
       let formData = {
@@ -170,7 +174,7 @@ const ConsumptionInput = ({route, navigation}) => {
         self_grown: watch('self_grown'),
         status: 0,
       };
-      editConsumptionData(formData)
+      editConsumptionData(formData);
     } else {
       let formData = {
         weight_measurement: watch('weight_measurement'),
@@ -182,9 +186,10 @@ const ConsumptionInput = ({route, navigation}) => {
         self_grown: watch('self_grown'),
         status: 0,
       };
-      addConsumptionData(formData)
+      addConsumptionData(formData);
     }
   };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <CustomHeader
@@ -379,6 +384,7 @@ const ConsumptionInput = ({route, navigation}) => {
               style={styles.submitButton}
               btnText={t('submit')}
               onPress={handleSubmit(onSubmit)}
+              loading={isAddFisheryPending || isEditFisheryPending}
             />
             <CustomButton
               style={styles.draftButton}
@@ -409,6 +415,7 @@ const ConsumptionInput = ({route, navigation}) => {
               style={styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
+              loading={isAddFisheryPending || isEditFisheryPending}
             />
             <CustomButton
               style={styles.draftButton}

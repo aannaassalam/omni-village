@@ -98,11 +98,13 @@ const EditType = ({navigation, route}) => {
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
       const totalAmount = utilisationArray.reduce((total, item) => {
+        if (item.name.includes('Other')) {
+          return total;
+        }
         return total + parseInt(item?.value || 0);
       }, 0);
       let amount = totalAmount + parseInt(others || 0);
       let out = parseInt(output);
-      console.log(totalAmount, amount, output, 'out');
       if (output == '' || output == undefined) {
         setMessage(
           t('Output cannot be empty') + '/' + 'Output cannot be empty',
@@ -167,12 +169,15 @@ const EditType = ({navigation, route}) => {
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
       };
+      console.log(utilisationArray);
       const totalAmount = utilisationArray.reduce((total, item) => {
+        if (item.name.includes('Other')) {
+          return total;
+        }
         return total + parseInt(item?.value || 0);
       }, 0);
       let amount = totalAmount + parseInt(others || 0);
       let out = parseInt(output);
-      console.log(amount, out, 'out');
       if (output == '' || output == undefined) {
         Toast.show({
           type: 'error',

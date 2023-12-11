@@ -18,10 +18,11 @@ import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {getFishFeed, getMeasurement} from '../../Redux/OthersSlice';
+import {useUser} from '../../Hooks/useUser';
 
 const Index = ({navigation, route}) => {
   // const { totalLand } = route.params;
-  const {user} = useSelector(state => state.auth);
+  const {data: user} = useUser();
   const {fontScale} = useWindowDimensions();
   const dispatch = useDispatch();
   const {t} = useTranslation();
@@ -44,7 +45,7 @@ const Index = ({navigation, route}) => {
         <CustomDashboard first={t('production')} second={t('fishery')} />
         <CustomDashboard2
           allocatedFor={t('fishery')}
-          usedLand={user.sub_area ? user?.sub.fishery : null}
+          usedLand={user.sub_area ? user?.sub_area.fishery : null}
         />
         <View style={styles.optionsContainer}>
           {/* Harvested From Pond */}

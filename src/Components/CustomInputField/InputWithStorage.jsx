@@ -1,15 +1,15 @@
+import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   StyleSheet,
   Text,
-  View,
   TextInput,
-  useWindowDimensions,
   TouchableOpacity,
+  View,
+  useWindowDimensions,
 } from 'react-native';
-import React from 'react';
 import {Divider} from 'react-native-paper';
-import {useSelector} from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import {useUser} from '../../Hooks/useUser';
 import '../../i18next';
 // import {TextInput} from 'react-native-paper';
 
@@ -31,8 +31,8 @@ const InputWithStorage = ({
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
-  const {userDetails} = useSelector(state => state.auth);
-  const { t } = useTranslation();
+  const {data: userDetails} = useUser();
+  const {t} = useTranslation();
   return (
     <View>
       <View style={[styles.textInputContainer]}>

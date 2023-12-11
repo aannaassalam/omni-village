@@ -1,27 +1,22 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import React, {useCallback, useEffect, useState} from 'react';
-import Login from '../Screens/AuthScreens/Login';
-import LoginWithOtp from '../Screens/AuthScreens/LoginWithOtp';
-import Register from '../Screens/AuthScreens/Register';
-import LoginSuccessfull from '../Screens/AuthScreens/LoginSuccessfull';
-import RegisterSuccessfull from '../Screens/AuthScreens/RegisterSuccessfull';
-import StartupScreen from '../Screens/AuthScreens/StartupScreen';
-import RegisterDetails from '../Screens/AuthScreens/RegisterDetails';
-import RegisterWithOtp from '../Screens/AuthScreens/RegisterWithOtp';
-import Home from '../Screens/AuthScreens/Home';
-import {CheckToken} from '../Helper/CheckToken';
-import {storage} from '../Helper/Storage';
-import {useSelector} from 'react-redux';
-import Productionstack from './ProductionStack';
-import ConsumptionStack from './ConsumptionStack';
-import MapScreen from '../Screens/AuthScreens/MapScreen';
+import React, {useCallback} from 'react';
 import {useUser} from '../Hooks/useUser';
+import Home from '../Screens/AuthScreens/Home';
+import Login from '../Screens/AuthScreens/Login';
+import LoginSuccessfull from '../Screens/AuthScreens/LoginSuccessfull';
+import LoginWithOtp from '../Screens/AuthScreens/LoginWithOtp';
+import MapScreen from '../Screens/AuthScreens/MapScreen';
+import Register from '../Screens/AuthScreens/Register';
+import RegisterDetails from '../Screens/AuthScreens/RegisterDetails';
+import RegisterSuccessfull from '../Screens/AuthScreens/RegisterSuccessfull';
+import RegisterWithOtp from '../Screens/AuthScreens/RegisterWithOtp';
+import StartupScreen from '../Screens/AuthScreens/StartupScreen';
+import ConsumptionStack from './ConsumptionStack';
+import Productionstack from './ProductionStack';
 
 const Stack = createStackNavigator();
 
-export default function AuthStack({isLoggedIn}) {
-  const {data: user} = useUser();
-
+export default function AuthStack({user}) {
   const renderScreen = useCallback(() => {
     if (!user) {
       return 'startup';
@@ -37,7 +32,6 @@ export default function AuthStack({isLoggedIn}) {
     <Stack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName={renderScreen()}>
-      {/* // initialRouteName={'MapScreen'}> */}
       <Stack.Screen name="registerdetails" component={RegisterDetails} />
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />

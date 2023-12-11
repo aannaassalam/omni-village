@@ -1,37 +1,36 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import {Box} from '@react-native-material/core';
+import React, {useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
-  StyleSheet,
-  View,
   Image,
-  TouchableOpacity,
+  StyleSheet,
   Text,
-  Modal,
+  TouchableOpacity,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {Divider} from 'react-native-paper';
-import {Box, Button} from '@react-native-material/core';
-import CustomButton from '../../Components/CustomButton/CustomButton';
-import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
-import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
-import {BlurView} from '@react-native-community/blur';
-import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
-import {setCultivationType, setSeason} from '../../Redux/CultivationSlice';
-import * as yup from 'yup';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {Controller, useForm} from 'react-hook-form';
 import Toast from 'react-native-toast-message';
+import {useDispatch} from 'react-redux';
+import * as yup from 'yup';
+import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
+import {useUser} from '../../Hooks/useUser';
 import {cultivationLandAllocation, getUser} from '../../Redux/AuthSlice';
-import {useTranslation} from 'react-i18next';
+import {setCultivationType, setSeason} from '../../Redux/CultivationSlice';
 import '../../i18next';
 
 const CultivationDashboard = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   // const {totalLand = 20} = route.params;
-  const {userDetails} = useSelector(s => s.auth);
+  const {data: userDetails} = useUser();
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const [modify, setModify] = useState(false);
@@ -75,7 +74,6 @@ const CultivationDashboard = ({navigation, route}) => {
 
   const onSave = async data => {
     try {
-      console.log(data, 'asd');
       await schema.validate(data);
       dispatch(cultivationLandAllocation(data))
         .unwrap()

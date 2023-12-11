@@ -1,41 +1,38 @@
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useMutation} from '@tanstack/react-query';
+import moment from 'moment';
+import React, {useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {
+  Dimensions,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  ScrollView,
-  Dimensions,
+  View,
   useWindowDimensions,
 } from 'react-native';
-import React, {useEffect, useMemo, useState} from 'react';
+import CalendarPicker from 'react-native-calendar-picker';
+import {Divider} from 'react-native-paper';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import {useDispatch} from 'react-redux';
+import * as yup from 'yup';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import InputLikeButton from '../../Components/CustomButton/InputLikeButton';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
-import {Divider} from 'react-native-paper';
-import UtilisationAccordion from '../../Components/Accordion/UtilisationAccordion';
-import ImportantInformation from '../../Components/Accordion/ImportantInformation';
-import * as yup from 'yup';
-import {validation} from '../../Validation/Validation';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
-import {Controller, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
-import InputLikeButton from '../../Components/CustomButton/InputLikeButton';
-import moment from 'moment';
-import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
-import CalendarPicker from 'react-native-calendar-picker';
-import {useDispatch, useSelector} from 'react-redux';
-import {Toast} from 'react-native-toast-message/lib/src/Toast';
-import {useTranslation} from 'react-i18next';
-import '../../i18next';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useUser} from '../../Hooks/useUser';
-import {useMutation} from '@tanstack/react-query';
 import {
   addCultivation,
   editCultivation,
 } from '../../functions/CultivationScreen';
+import '../../i18next';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -181,7 +178,7 @@ const CropDescription = ({navigation, route}) => {
       mutationFn: addCultivation,
       onSuccess: data => {
         console.log(data);
-        data.important_information.status === 0
+        data.status === 0
           ? navigation.goBack()
           : navigation.navigate('successfull');
       },
@@ -250,7 +247,6 @@ const CropDescription = ({navigation, route}) => {
           ...data,
           important_information: {
             ...data.important_information,
-            status: 1,
           },
           utilization: {
             ...data.utilization,
@@ -259,6 +255,7 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
+          status: 1,
           cultivation_id: cultivation._id,
         });
       } else {
@@ -266,7 +263,6 @@ const CropDescription = ({navigation, route}) => {
           ...data,
           important_information: {
             ...data.important_information,
-            status: 1,
           },
           utilization: {
             ...data.utilization,
@@ -275,6 +271,7 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
+          status: 1,
           crop_id,
         });
       }
@@ -292,7 +289,6 @@ const CropDescription = ({navigation, route}) => {
           ...data,
           important_information: {
             ...data.important_information,
-            status: 0,
           },
           utilization: {
             ...data.utilization,
@@ -301,6 +297,7 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
+          status: 0,
           cultivation_id: cultivation._id,
         },
         {
@@ -313,7 +310,6 @@ const CropDescription = ({navigation, route}) => {
           ...data,
           important_information: {
             ...data.important_information,
-            status: 0,
           },
           utilization: {
             ...data.utilization,
@@ -322,6 +318,7 @@ const CropDescription = ({navigation, route}) => {
                 ? data.utilization.other_value
                 : '',
           },
+          status: 0,
           crop_id,
         },
         {

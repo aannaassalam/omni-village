@@ -47,11 +47,12 @@ const TreesShrubsScreen = ({navigation, route}) => {
 
   const bottomSheetRef = React.useRef(null);
 
-  const {data: treeCrops, isLoading} = useQuery({
+  const {data: treeCrops = [], isLoading} = useQuery({
     queryKey: ['treeCrop'],
     queryFn: fetchTreeCorp,
     refetchOnWindowFocus: true,
   });
+
   const {
     data: trees,
     isLoading: isTreesLoading,
@@ -108,7 +109,7 @@ const TreesShrubsScreen = ({navigation, route}) => {
       setGlobalError('Crop is already added!');
     } else {
       if (dropdownVal.name.label === 'Others' && otherCrop.length > 0) {
-        saveCrop({name: otherCrop, categoryId: ''});
+        saveCrop({name: otherCrop, country: [userDetails.country]});
       } else {
         setCropModal(false);
         setOtherCrop('');

@@ -1,7 +1,7 @@
-import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import React from 'react';
+import {StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import {TextInput} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useUser} from '../../Hooks/useUser';
 
 const CustomInputField = ({
   label,
@@ -13,7 +13,7 @@ const CustomInputField = ({
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
-  const {user} = useSelector(state => state.auth);
+  const {data: user} = useUser();
 
   return (
     <View style={styles.textInputContainer}>

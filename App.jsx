@@ -16,12 +16,9 @@ import './src/i18next';
 function App() {
   const {data: user, error, isLoading} = useUser();
 
-  // const user_details = useSelector((s)=>s.auth)
-
-  // console.log(user_details,"user_details_app")
-
   useEffect(() => {
     if (error) {
+      console.log(error, 'error');
       storage.clearAll();
     }
   }, [error]);
@@ -29,7 +26,7 @@ function App() {
   return (
     <SplashScreen isAppReady={!isLoading}>
       <NavigationContainer>
-        <AuthStack isLoggedIn={!!user} />
+        <AuthStack user={user} />
         {/* <RegisterSuccessfull /> */}
         {/* <CultivationLand /> */}
         {/* <CultivationThrice/> */}
