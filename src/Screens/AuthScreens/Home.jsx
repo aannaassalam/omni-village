@@ -1,7 +1,8 @@
 import {Box, Text} from '@react-native-material/core';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -36,17 +37,34 @@ export default function Home({navigation, route}) {
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
 
+  const data_available = useMemo(() => user, [user]);
+
   useEffect(() => {
-    if (!user) {
+    if (!data_available) {
       navigation.replace('startup');
     }
-  }, [user]);
+  }, [data_available, navigation]);
 
-  console.log(user, 'USER');
+  console.log(user);
 
   // useEffect(() => {
   //   StringsOfLanguages.setLanguage(lang);
   // }, [lang, StringsOfLanguages]);
+
+  if (!user) {
+    console.log('HOPE');
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#fff',
+        }}>
+        <ActivityIndicator color="#268C43" size={16} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -61,8 +79,8 @@ export default function Home({navigation, route}) {
           <Box style={styles.user}>
             <Box style={styles.user_name}>
               <Text variant="h2" style={styles.user_name_txt}>
-                {user?.['first_name']?.charAt(0)}
-                {user?.['last_name']?.charAt(0)}
+                {user?.first_name?.charAt(0)}
+                {user?.last_name?.charAt(0)}
               </Text>
             </Box>
             <AnimatedCircularProgress
@@ -80,7 +98,7 @@ export default function Home({navigation, route}) {
               onPress={() =>
                 navigation.navigate('registerdetails', {edit: true})
               }>
-              <Text style={styles.usr_btn_txt}>{user?.['first_name']}</Text>
+              <Text style={styles.usr_btn_txt}>{user?.first_name}</Text>
               <Image
                 style={styles.tinyLogo1}
                 source={require('../../../assets/edit2.png')}
@@ -88,7 +106,7 @@ export default function Home({navigation, route}) {
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
-              {user?.['country_code']} {user?.['phone']}
+              {user?.country_code} {user?.phone}
             </Text>
 
             <Box style={styles.user_land}>
@@ -99,10 +117,10 @@ export default function Home({navigation, route}) {
                   {t('land allocated')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt}>
-                  {user?.['total_land']}{' '}
-                  {user?.['land_measurement_symbol'] !== '-'
-                    ? user?.['land_measurement_symbol']
-                    : user?.['land_measurement']}
+                  {user?.total_land}{' '}
+                  {user?.land_measurement_symbol !== '-'
+                    ? user?.land_measurement_symbol
+                    : user?.land_measurement}
                 </Text>
               </Box>
               {/* </Box> */}
@@ -120,19 +138,16 @@ export default function Home({navigation, route}) {
                   {t('used land')}
                 </Text>
                 <Text variant="body1" style={styles.land_txt2}>
-                  {user?.['sub_area'] &&
-                    Object.keys(user?.['sub_area']).reduce(
-                      (prev, new_value) => {
-                        if (typeof user?.['sub_area'][new_value] === 'object') {
-                          return prev + user?.['sub_area'][new_value].land || 0;
-                        }
-                        return prev + user?.['sub_area'][new_value] || 0;
-                      },
-                      0,
-                    )}{' '}
-                  {user?.['land_measurement_symbol'] !== '-'
-                    ? user?.['land_measurement_symbol']
-                    : user?.['land_measurement']}
+                  {user?.sub_area &&
+                    Object.keys(user?.sub_area).reduce((prev, new_value) => {
+                      if (typeof user?.sub_area[new_value] === 'object') {
+                        return prev + user?.sub_area[new_value].land || 0;
+                      }
+                      return prev + user?.sub_area[new_value] || 0;
+                    }, 0)}{' '}
+                  {user?.land_measurement_symbol !== '-'
+                    ? user?.land_measurement_symbol
+                    : user?.land_measurement}
                 </Text>
               </Box>
             </Box>
@@ -140,7 +155,7 @@ export default function Home({navigation, route}) {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('ProductionStack', {
-                screen: user?.['total_land'] > 0 ? 'production' : 'totalLand',
+                screen: user?.total_land > 0 ? 'production' : 'totalLand',
               })
             }>
             <Box style={styles.home_box}>

@@ -11,7 +11,13 @@ import {store} from './src/Store/store';
 import React from 'react';
 import {QueryClientProvider, QueryClient} from '@tanstack/react-query';
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: true,
+    },
+  },
+});
 
 const ProcessedApp = () => {
   return (

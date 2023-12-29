@@ -73,7 +73,6 @@ export const fetchStorageMethod = async () => {
   const res = await axiosInstance.get(
     endpoints.storageMethod.get_storage_method,
   );
-  console.log(res.data, 'data');
   return res.data;
 };
 

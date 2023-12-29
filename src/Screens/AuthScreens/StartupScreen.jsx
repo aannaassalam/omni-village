@@ -34,6 +34,8 @@ export default function StartupScreen({navigation, route}) {
     },
   ];
 
+  console.log(storage.getString('user'));
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const {fontScale} = useWindowDimensions();

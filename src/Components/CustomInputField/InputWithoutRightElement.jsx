@@ -12,6 +12,7 @@ const InputWithoutRightElement = ({
   style,
   keyboardType = 'default',
   onEndEditing,
+  editable = true,
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -36,6 +37,7 @@ const InputWithoutRightElement = ({
           onFocus={onFocus}
           keyboardType={keyboardType}
           onEndEditing={onEndEditing}
+          editable={editable}
         />
       </View>
     </View>

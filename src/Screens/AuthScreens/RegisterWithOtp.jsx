@@ -14,6 +14,7 @@ import OtpInput from '../../Components/OtpInputs';
 import {useUser} from '../../Hooks/useUser';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {register, sentOtp} from '../../functions/AuthScreens';
+import {storage} from '../../Helper/Storage';
 
 export default function RegisterWithOtp({navigation, route}) {
   const {data: user} = useUser();
@@ -30,7 +31,11 @@ export default function RegisterWithOtp({navigation, route}) {
 
   const {mutate, isPending} = useMutation({
     mutationFn: register,
-    onSuccess: data => navigation.replace('registerdetails', {edit: false}),
+    onSuccess: data => {
+      storage.set('token', data.token);
+      storage.set('refresh_token', data?.refreshToken);
+      navigation.replace('registerdetails', {edit: false});
+    },
     onError: error => {
       if (error.response.status === 401) {
         setErr(error.response.data.message);

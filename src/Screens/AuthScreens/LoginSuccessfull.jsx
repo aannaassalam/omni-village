@@ -20,15 +20,17 @@ export default function LoginSuccessfull({navigation}) {
 
   const {t} = useTranslation();
 
-  const {data: user} = useUser();
+  const {data: user, isLoading} = useUser();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      storage.set('user', JSON.stringify(user));
-      navigation.replace('home');
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, []);
+    if (!isLoading) {
+      const timeout = setTimeout(() => {
+        storage.set('user', JSON.stringify(user));
+        navigation.replace('home');
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading]);
 
   return (
     <SafeAreaView

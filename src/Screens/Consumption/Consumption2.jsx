@@ -179,6 +179,7 @@ const Consumption2 = ({navigation, route}) => {
                 navigation.navigate('consumptionInput', {
                   cropType: item?.name,
                   typeName: typeName,
+                  type_id: typeId,
                   cropId: item?.data?._id,
                   data: item.data,
                 });

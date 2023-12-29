@@ -9,6 +9,7 @@ import {storage} from '../../Helper/Storage';
 import {useUser} from '../../Hooks/useUser';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {login, sentOtp} from '../../functions/AuthScreens';
+import {queryClient} from '../../..';
 
 export default function LoginWithOtp({navigation, route}) {
   const {data: user} = useUser();
@@ -37,6 +38,7 @@ export default function LoginWithOtp({navigation, route}) {
     onSuccess: data => {
       storage.set('token', data?.data?.token);
       storage.set('refresh_token', data?.data?.refreshToken);
+      queryClient.invalidateQueries();
       if (user?.first_name === '-') {
         navigation.replace('registerdetails');
         // navigation.replace('loginsuccess');

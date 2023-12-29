@@ -30,7 +30,7 @@ import {
 import '../../i18next';
 
 const ConsumptionInput = ({route, navigation}) => {
-  const {cropType, data, cropId, typeName} = route.params;
+  const {cropType, data, cropId, typeName, type_id} = route.params;
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {data: measurement} = useMeasurement();
@@ -145,6 +145,7 @@ const ConsumptionInput = ({route, navigation}) => {
           weight_measurement: watch('weight_measurement'),
           consumption_crop_id: cropId,
           consumption_type_name: typeName,
+          consumption_type_id: type_id,
           total_quantity: watch('total_quantity'),
           purchased_from_market: watch('purchased_from_market'),
           purchased_from_neighbours: watch('purchased_from_neighbours'),

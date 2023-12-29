@@ -3,8 +3,8 @@ import {storage} from './Storage';
 import {USER_PREFERRED_LANGUAGE} from '../i18next';
 
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
-// let adminUrl = 'https://omnivillage-server-360ba1f0adb3.herokuapp.com/api';
-let adminUrl = 'http://192.168.0.100:5100/api';
+let adminUrl = 'https://omnivillage-server-360ba1f0adb3.herokuapp.com/api';
+// let adminUrl = 'http://192.168.0.106:5100/api';
 
 export const baseURL = adminUrl;
 

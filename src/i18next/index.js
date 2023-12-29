@@ -15,8 +15,6 @@ export const USER_PREFERRED_LANGUAGE = RNLocalize.getLocales()[0].languageCode;
 
 const MODULE_TYPE = 'languageDetector';
 
-console.log(USER_PREFERRED_LANGUAGE);
-
 const LANGUAGE_DETECTOR = {
   async: true,
   cacheUserLanguage: () => {},

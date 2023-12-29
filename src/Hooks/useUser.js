@@ -14,5 +14,7 @@ export const useUser = () => {
     },
     enabled: !!token,
     refetchOnWindowFocus: true,
+    staleTime: 0,
+    // gcTime: 0,
   });
 };

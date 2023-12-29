@@ -1,7 +1,7 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {Box, Pressable} from '@react-native-material/core';
 import {useMutation} from '@tanstack/react-query';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {
@@ -27,6 +27,7 @@ import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {validation} from '../../Validation/Validation';
 import {editUser} from '../../functions/AuthScreens';
 import {storage} from '../../Helper/Storage';
+import {queryClient} from '../../..';
 
 const schema = yup
   .object()
@@ -101,10 +102,11 @@ export default function RegisterDetails({navigation, route}) {
     control,
     formState: {errors},
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      phone: user?.phone || '',
+      phone: user?.phone,
       country_name: user?.country,
       address: isEdit ? user?.address : '',
       first_name: isEdit ? user?.first_name : '',
@@ -119,6 +121,26 @@ export default function RegisterDetails({navigation, route}) {
     },
   });
 
+  useEffect(() => {
+    if (user) {
+      reset({
+        phone: user?.phone ?? '',
+        country_name: user?.country ?? '',
+        address: user?.address.replace('-', '') ?? '',
+        first_name: user?.first_name.replace('-', '') ?? '',
+        land_measurement: user?.land_measurement.replace('-', '') ?? '',
+        last_name: user?.last_name.replace('-', '') ?? '',
+        members: user?.members ?? [],
+        number_of_members: parseInt(user?.number_of_members, 10) ?? 0,
+        document_type: user?.document_type.replace('-', '') ?? '',
+        social_security_number:
+          user?.social_security_number.replace('-', '') ?? '',
+        village_name: user?.village_name.replace('-', '') ?? '',
+        street_address: user?.street_address.replace('-', '') ?? '',
+      });
+    }
+  }, [user]);
+
   const [numMembers, setNumMembers] = useState(
     isEdit ? user?.number_of_members : 0,
   );
@@ -126,10 +148,12 @@ export default function RegisterDetails({navigation, route}) {
   const {mutate, isPending} = useMutation({
     mutationFn: editUser,
     onSuccess: data => {
-      storage.set('user', JSON.stringify(data));
+      // storage.set('user', JSON.stringify(data));
+      queryClient.invalidateQueries();
       isEdit ? navigation.goBack() : navigation.replace('registersuccess');
     },
-    onError: err => console.log(err, 'Err from register details'),
+    onError: err =>
+      console.log(err.code, err.name, err.stack, 'Err from register details'),
   });
 
   const FormSubmit = data => {
@@ -164,9 +188,11 @@ export default function RegisterDetails({navigation, route}) {
       name: 'address_proof',
     });
 
+    Object.entries(formData).forEach(item => console.log(item[0], item[1]));
+
     const submitable_data = _data.edit ? _data : formData;
 
-    mutate(submitable_data);
+    mutate({data: submitable_data, edit: _data.edit});
   };
 
   const requestLocationPermission = async () => {
@@ -301,15 +327,18 @@ export default function RegisterDetails({navigation, route}) {
             <Controller
               control={control}
               name="phone"
-              render={({field: {onChange, onBlur, value, name, ref}}) => (
-                <InputWithoutRightElement
-                  label={t('phone no')}
-                  placeholder={t('phone no')}
-                  onChangeText={onChange}
-                  value={value.toString() || value}
-                  editable={false}
-                />
-              )}
+              render={({field: {onChange, onBlur, value, name, ref}}) => {
+                console.log(value, 'value');
+                return (
+                  <InputWithoutRightElement
+                    label={t('phone no')}
+                    placeholder={t('phone no')}
+                    onChangeText={onChange}
+                    value={user?.phone.toString()}
+                    editable={false}
+                  />
+                );
+              }}
             />
             {errors?.phone?.message ? (
               <Text style={styles.error}>{errors?.phone?.message}</Text>

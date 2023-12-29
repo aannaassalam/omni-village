@@ -82,6 +82,8 @@ const EditType = ({navigation, route}) => {
     }
   }, [edit]);
 
+  console.log(cropId);
+
   const submit = () => {
     if (!data) {
       let formData = {
@@ -96,6 +98,7 @@ const EditType = ({navigation, route}) => {
         other_value: others || '',
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD') || '',
         processing_method: toggleCheckBox === 'yes' ? true : false,
+        tree_crop_id: cropId,
       };
       const totalAmount = utilisationArray.reduce((total, item) => {
         if (item.name.includes('Other')) {
@@ -148,7 +151,7 @@ const EditType = ({navigation, route}) => {
         } else {
           navigation.navigate('type', {
             edit: formData,
-            cropId: cropId,
+            crop_id: cropId,
             data: data,
           });
         }
@@ -168,6 +171,7 @@ const EditType = ({navigation, route}) => {
         other_value: others,
         month_harvested: moment(harvestedDate).format('YYYY-MM-DD'),
         processing_method: toggleCheckBox === 'yes' ? true : false,
+        tree_crop_id: cropId,
       };
       console.log(utilisationArray);
       const totalAmount = utilisationArray.reduce((total, item) => {
@@ -217,7 +221,7 @@ const EditType = ({navigation, route}) => {
       } else {
         navigation.navigate('type', {
           edit: formData,
-          cropId: cropId,
+          crop_id: cropId,
           data: data,
         });
       }

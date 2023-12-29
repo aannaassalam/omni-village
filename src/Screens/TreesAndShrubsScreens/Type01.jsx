@@ -240,6 +240,7 @@ const Type01 = ({navigation, route}) => {
                 'YYYY-MM-DD',
               ),
               processing_method: itm?.processing_method,
+              tree_crop_id: crop_id,
             };
           }),
           status: 1,
@@ -251,6 +252,7 @@ const Type01 = ({navigation, route}) => {
       }
     } else {
       if (harvestedProductList.length > 0) {
+        console.log('tree_crop_id', crop_id);
         addTreeData({
           ...watch('important_information'),
           products: harvestedProductList,
@@ -263,6 +265,8 @@ const Type01 = ({navigation, route}) => {
       }
     }
   };
+
+  console.log(harvestedProductList);
 
   const handleDraft = () => {
     if (data?._id) {
@@ -285,6 +289,7 @@ const Type01 = ({navigation, route}) => {
                 'YYYY-MM-DD',
               ),
               processing_method: itm?.processing_method,
+              tree_crop_id: crop_id,
             };
           }),
           status: 0,
@@ -348,8 +353,9 @@ const Type01 = ({navigation, route}) => {
         cropId: crop_id,
         data: data,
       });
-      setProductName('');
+      setHarvestProdAdd(false);
       bottomSheetRef2.current.close();
+      setProductName('');
     }
   };
 

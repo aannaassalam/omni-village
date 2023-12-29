@@ -17,6 +17,17 @@ export const register = async body => {
 };
 
 export const editUser = async body => {
-  const res = await axiosInstance.post(endpoints.auth.editUser, body);
+  const res = await axiosInstance.post(
+    endpoints.auth.editUser,
+    body.data,
+    !body.edit && {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data, error) => {
+        return body.data;
+      },
+    },
+  );
   return res?.data;
 };
