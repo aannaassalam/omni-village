@@ -48,11 +48,14 @@ const Season1 = ({navigation, route}) => {
   const bottomSheetRef = React.useRef(null);
 
   const {data: userDetails} = useUser();
-  const {data: crops = []} = useQuery({
+  const {data: crops = [], isLoading: isCropLoading} = useQuery({
     queryKey: ['cultivation_crop'],
     queryFn: fetchCultivationCorp,
     refetchOnWindowFocus: true,
   });
+
+  console.log(crops, isCropLoading);
+
   const {
     data: cultivations,
     isLoading,
@@ -179,12 +182,13 @@ const Season1 = ({navigation, route}) => {
           </Text>
         </View> */}
         </View>
-        {!isLoading ? (
+        {!isLoading && !isCropLoading ? (
           <FlatList
             data={selectCrops}
             keyExtractor={item => item._id}
             onRefresh={refetch}
             refreshing={isFetching}
+            contentContainerStyle={{paddingBottom: 50}}
             renderItem={({item}) => (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}

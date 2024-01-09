@@ -149,6 +149,12 @@ const Hunting2 = ({navigation, route}) => {
         status: i.status,
       })),
     );
+
+    return () => {
+      setCropType([]);
+      setDropdownVal({});
+      setGlobalError('');
+    };
   }, [hunting]);
 
   return (
@@ -168,6 +174,7 @@ const Hunting2 = ({navigation, route}) => {
           keyExtractor={item => item._id}
           onRefresh={refetch}
           refreshing={isFetching}
+          contentContainerStyle={{paddingBottom: 50}}
           renderItem={({item}) => (
             <TouchableOpacity
               style={styles.addAndDeleteButtonSection}

@@ -22,18 +22,22 @@ const InputWithoutBorder = ({
   multiline,
   editable = true,
   keyboardType = 'number-pad',
+  editableColorChange = false,
 }) => {
   const {data: user} = useUser();
 
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   return (
-    <View>
+    <View pointerEvents={editableColorChange ? 'none' : 'auto'}>
       <View style={[styles.textInputContainer]}>
         <View
           style={[
             styles.textInputInner,
-            {backgroundColor: editable == false ? '#cacaca' : '#fff'},
+            {
+              backgroundColor:
+                editable == false && !editableColorChange ? '#cacaca' : '#fff',
+            },
           ]}>
           <View
             style={[
@@ -119,7 +123,7 @@ const makeStyles = fontScale =>
     cultivationText: {
       color: 'green',
       fontSize: 12 / fontScale,
-      marginBottom: -10,
+      marginBottom: 2,
       marginTop: 10,
       fontFamily: 'ubuntu-medium',
       textTransform: 'capitalize',

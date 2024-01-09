@@ -1,5 +1,5 @@
 import {Box, Text} from '@react-native-material/core';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
@@ -19,6 +19,7 @@ import {prefetchQuery} from '@tanstack/react-query';
 import '../../i18next';
 import axiosInstance from '../../Helper/Helper';
 import {endpoints} from '../../Endpoints/endpoints';
+import {useFocusEffect} from '@react-navigation/native';
 
 // function prefetchUser() {
 //   prefetchQuery({
@@ -31,11 +32,13 @@ import {endpoints} from '../../Endpoints/endpoints';
 // }
 
 export default function Home({navigation, route}) {
-  const user = JSON.parse(storage.getString('user') ?? '{}');
+  // const user = JSON.parse(storage.getString('user') ?? '{}');
   const [lang, setLang] = useState('en');
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
+
+  const {data: user, isLoading} = useUser();
 
   const data_available = useMemo(() => user, [user]);
 
@@ -45,14 +48,19 @@ export default function Home({navigation, route}) {
     }
   }, [data_available, navigation]);
 
-  console.log(user);
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     storage.set('user', JSON.stringify(user_data));
+  //   }, [user_data]),
+  // );
+
+  console.log(user, 'USERRRR');
 
   // useEffect(() => {
   //   StringsOfLanguages.setLanguage(lang);
   // }, [lang, StringsOfLanguages]);
 
-  if (!user) {
-    console.log('HOPE');
+  if (isLoading) {
     return (
       <View
         style={{
@@ -100,7 +108,7 @@ export default function Home({navigation, route}) {
               }>
               <Text style={styles.usr_btn_txt}>{user?.first_name}</Text>
               <Image
-                style={styles.tinyLogo1}
+                style={[styles.tinyLogo1, {width: 16, height: 16}]}
                 source={require('../../../assets/edit2.png')}
                 // height={100}
               />
@@ -366,6 +374,11 @@ const makeStyles = fontScale =>
 
       height: 80,
       width: 80,
+    },
+
+    tinyLogo1: {
+      width: 30,
+      height: 30,
     },
 
     container: {

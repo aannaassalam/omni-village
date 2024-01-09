@@ -40,7 +40,7 @@ const ConsumptionMain = ({navigation}) => {
           <ActivityIndicator size={'large'} color={'green'} />
         </View>
       ) : (
-        <ScrollView>
+        <ScrollView contentContainerStyle={{paddingBottom: 20}}>
           {consumptionType.map((item, indx) => {
             return (
               <CustomShowcaseInput

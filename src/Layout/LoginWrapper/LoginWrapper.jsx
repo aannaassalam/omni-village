@@ -47,7 +47,7 @@ export default function LoginWrapper({children, no_gap}) {
       style={{flex: 1, backgroundColor: '#fff'}}
       edges={['top', 'left', 'right']}>
       <KeyboardAwareScrollView
-        behavior="padding"
+        // behavior="padding"
         keyboardShouldPersistTaps="handled"
         // contentContainerStyle={[!no_gap && {flex: 1}]}
         // style={[no_gap && {flex: 1}]}>

@@ -2,6 +2,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   SafeAreaView,
@@ -12,7 +13,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import {ActivityIndicator, Divider} from 'react-native-paper';
+import {Divider} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomButton from '../../Components/CustomButton/CustomButton';
@@ -31,6 +32,7 @@ import {
   fetchStorages,
 } from '../../functions/storageScreen';
 import {addStorageMethod, fetchStorageMethod} from '../../functions/Corps';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const Storage = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
@@ -115,6 +117,7 @@ const Storage = ({navigation}) => {
   const {mutate: addStorageData, isPending: isAddStoragePending} = useMutation({
     mutationFn: addStorage,
     onSuccess: () => navigation.goBack(),
+    onError: err => console.log(err),
   });
 
   const {mutate: editStorageData, isPending: isEditStoragePending} =
@@ -156,7 +159,7 @@ const Storage = ({navigation}) => {
     updateItemById(index, name, stockId);
     setCropModal(!cropModal);
     setFocusOther(false);
-    setDropdownVal(null);
+    setDropdownVal({});
     setOtherCrop('');
   };
 
@@ -199,10 +202,16 @@ const Storage = ({navigation}) => {
           }),
         );
       }
-    }, []),
+
+      return () => {
+        setStorageList([]);
+        setStorageId('');
+        // setGlobalError('');
+      };
+    }, [storage, t]),
   );
 
-  console.log(storage, 'list');
+  console.log(JSON.stringify(storageList, null, 2), 'list');
 
   const onContinue = () => {
     if (storageId) {
@@ -210,7 +219,8 @@ const Storage = ({navigation}) => {
         return {
           storage_id: i?.storage_id,
           storage_method_name: i?.storage_method_name,
-          stock_quantity: parseInt(i?.stock_quantity),
+          storage_method_id: i?.storage_method_id,
+          stock_quantity: i?.stock_quantity,
         };
       });
       editStorageData(formData);
@@ -219,7 +229,8 @@ const Storage = ({navigation}) => {
         return {
           stock_name: i?.stock_name,
           storage_method_name: i?.storage_method_name,
-          stock_quantity: parseInt(i?.stock_quantity),
+          storage_method_id: i?.storage_method_id,
+          stock_quantity: i?.stock_quantity,
         };
       });
       addStorageData(formData);
@@ -234,12 +245,15 @@ const Storage = ({navigation}) => {
           headerName={t('storage')}
           goBack={() => navigation.goBack()}
         />
-        <ScrollView>
-          {isMethodLoading ? (
+        <KeyboardAwareScrollView
+          style={{flex: 1}}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{paddingBottom: 20}}>
+          {isMethodLoading || isLoading ? (
             <View style={{padding: 50, marginTop: '80%'}}>
               <ActivityIndicator
                 size={'small'}
-                color="black"
+                color="green"
                 animating={true}
               />
             </View>
@@ -288,7 +302,7 @@ const Storage = ({navigation}) => {
               </View>
             </>
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <AddBottomSheet
           modalVisible={cropModal}
           setModal={setCropModal}

@@ -71,25 +71,25 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (4.1.0):
-    - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
-    - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
-    - Google-Maps-iOS-Utils/GeometryUtils (= 4.1.0)
-    - Google-Maps-iOS-Utils/Heatmap (= 4.1.0)
-    - Google-Maps-iOS-Utils/QuadTree (= 4.1.0)
-    - GoogleMaps
-  - Google-Maps-iOS-Utils/Clustering (4.1.0):
+  - Google-Maps-iOS-Utils (4.2.2):
+    - Google-Maps-iOS-Utils/Clustering (= 4.2.2)
+    - Google-Maps-iOS-Utils/Geometry (= 4.2.2)
+    - Google-Maps-iOS-Utils/GeometryUtils (= 4.2.2)
+    - Google-Maps-iOS-Utils/Heatmap (= 4.2.2)
+    - Google-Maps-iOS-Utils/QuadTree (= 4.2.2)
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Clustering (4.2.2):
     - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps
-  - Google-Maps-iOS-Utils/Geometry (4.1.0):
-    - GoogleMaps
-  - Google-Maps-iOS-Utils/GeometryUtils (4.1.0):
-    - GoogleMaps
-  - Google-Maps-iOS-Utils/Heatmap (4.1.0):
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Geometry (4.2.2):
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/GeometryUtils (4.2.2):
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Heatmap (4.2.2):
     - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps
-  - Google-Maps-iOS-Utils/QuadTree (4.1.0):
-    - GoogleMaps
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/QuadTree (4.2.2):
+    - GoogleMaps (~> 7.3)
   - GoogleMaps (7.4.0):
     - GoogleMaps/Maps (= 7.4.0)
   - GoogleMaps/Base (7.4.0)
@@ -99,9 +99,9 @@ PODS:
     - hermes-engine/Pre-built (= 0.72.2)
   - hermes-engine/Pre-built (0.72.2)
   - libevent (2.1.12)
-  - MMKV (1.3.1):
-    - MMKVCore (~> 1.3.1)
-  - MMKVCore (1.3.1)
+  - MMKV (1.3.2):
+    - MMKVCore (~> 1.3.2)
+  - MMKVCore (1.3.2)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -405,20 +405,20 @@ PODS:
     - glog
   - react-native-blur (4.3.2):
     - React-Core
-  - react-native-document-picker (9.0.1):
+  - react-native-document-picker (9.1.0):
     - React-Core
   - react-native-geolocation-service (5.3.1):
     - React
-  - react-native-google-maps (1.8.0):
-    - Google-Maps-iOS-Utils (= 4.1.0)
+  - react-native-google-maps (1.9.1):
+    - Google-Maps-iOS-Utils (= 4.2.2)
     - GoogleMaps (= 7.4.0)
     - React-Core
-  - react-native-maps (1.8.0):
+  - react-native-maps (1.9.1):
     - React-Core
-  - react-native-mmkv (2.10.1):
+  - react-native-mmkv (2.11.0):
     - MMKV (>= 1.2.13)
     - React-Core
-  - react-native-safe-area-context (4.7.1):
+  - react-native-safe-area-context (4.8.2):
     - React-Core
   - React-NativeModulesApple (0.72.2):
     - hermes-engine
@@ -535,45 +535,22 @@ PODS:
   - RNCCheckbox (0.5.16):
     - BEMCheckBox (~> 1.4)
     - React-Core
-  - RNGestureHandler (2.12.1):
+  - RNGestureHandler (2.14.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - RNLocalize (3.0.2):
+  - RNLocalize (3.0.4):
     - React-Core
-  - RNReanimated (3.4.2):
-    - DoubleConversion
-    - FBLazyVector
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
+  - RNReanimated (3.6.1):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTAppDelegate
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
     - ReactCommon/turbomodule/core
-    - Yoga
-  - RNScreens (3.24.0):
+  - RNScreens (3.29.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-RCTImage
-  - RNSVG (13.12.0):
+  - RNSVG (13.14.0):
     - React-Core
-  - RNVectorIcons (10.0.0):
+  - RNVectorIcons (10.0.3):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
@@ -606,7 +583,6 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.182.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.182.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - Google-Maps-iOS-Utils (from `https://github.com/Simon-TechForm/google-maps-ios-utils.git`, branch `feat/support-apple-silicon`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
   - OpenSSL-Universal (= 1.1.1100)
@@ -674,6 +650,7 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - FlipperKit
     - fmt
+    - Google-Maps-iOS-Utils
     - GoogleMaps
     - libevent
     - MMKV
@@ -693,9 +670,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
-  Google-Maps-iOS-Utils:
-    :branch: feat/support-apple-silicon
-    :git: https://github.com/Simon-TechForm/google-maps-ios-utils.git
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77
@@ -796,11 +770,6 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
-CHECKOUT OPTIONS:
-  Google-Maps-iOS-Utils:
-    :commit: 35d05d1eeb65682c1b271f4f3760d814fd946aa1
-    :git: https://github.com/Simon-TechForm/google-maps-ios-utils.git
-
 SPEC CHECKSUMS:
   BEMCheckBox: 5ba6e37ade3d3657b36caecc35c8b75c6c2b1a4e
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
@@ -818,12 +787,12 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  Google-Maps-iOS-Utils: d3fdfd57db799771418f06189e33981597553aa8
+  Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   hermes-engine: 3f42310d66bcbc814b3771b79ad8d5a3f8df3df1
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  MMKV: 5a07930c70c70b86cd87761a42c8f3836fb681d7
-  MMKVCore: e50135dbd33235b6ab390635991bab437ab873c0
+  MMKV: f21593c0af4b3f2a0ceb8f820f28bb639ea22bb7
+  MMKVCore: 31b4cb83f8266467eef20a35b6d78e409a11060d
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 40bf5271b434eae17c4f950abde576fb25d77d3a
@@ -841,12 +810,12 @@ SPEC CHECKSUMS:
   React-jsinspector: 36bb3067723df92b7ea564a28ee61a2282a696bc
   React-logger: 48a3629a61899735cbfa9f0b8c5cd44cb1561952
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
-  react-native-document-picker: 2b8f18667caee73a96708a82b284a4f40b30a156
+  react-native-document-picker: b4f4a23b73f864ce17965b284c0757648993805b
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
-  react-native-google-maps: 356b9d01da0920be13e4c4dc83673b30e8a22c16
-  react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
-  react-native-mmkv: dea675cf9697ad35940f1687e98e133e1358ef9f
-  react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2
+  react-native-google-maps: 5e3af3d3bd16a9936a44be5be47ced7dbd45029b
+  react-native-maps: 4f45622710094c3603b262279c40026750579b1f
+  react-native-mmkv: e97c0c79403fb94577e5d902ab1ebd42b0715b43
+  react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   React-NativeModulesApple: 5dfdf09b36ffad0c08f401e86569b8f170a0035d
   React-perflogger: e7006abd30efeebef143702550063ca3415e267a
   React-RCTActionSheet: 017232a203ef82e42e54b15673e26489c2797745
@@ -866,16 +835,16 @@ SPEC CHECKSUMS:
   ReactCommon: 77382645a088a81de55c24bde19c5a2805d891c3
   ReactNativeLocalization: fb171138cdc80d5d0d4f20243d2fc82c2b3cc48f
   RNCCheckbox: 75255b03e604bbcc26411eb31c4cbe3e3865f538
-  RNGestureHandler: c0d04458598fcb26052494ae23dda8f8f5162b13
-  RNLocalize: dbea38dcb344bf80ff18a1757b1becf11f70cae4
-  RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
-  RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
-  RNSVG: 6d07f8f8f246c85e3e16e0bcfc0d047db0c48496
-  RNVectorIcons: 8b5bb0fa61d54cd2020af4f24a51841ce365c7e9
+  RNGestureHandler: 32a01c29ecc9bb0b5bf7bc0a33547f61b4dc2741
+  RNLocalize: 1ce4263770515f53d3de442ce7657b3661b16a37
+  RNReanimated: fdbaa9c964bbab7fac50c90862b6cc5f041679b9
+  RNScreens: 3c5b9f4a9dcde752466854b6109b79c0e205dad3
+  RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNVectorIcons: 64e6a523ac30a3241efa9baf1ffbcc5e76ff747a
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: c79810ea24a2a73b7f39174e78d60f4e28261f33
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: f4cd67c7d3a83a7f1610a8cff8964d4cfaedaf0c
+PODFILE CHECKSUM: c9d8b7a2c4f50fb0c8f4c87c484c2c0635213670
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.14.3

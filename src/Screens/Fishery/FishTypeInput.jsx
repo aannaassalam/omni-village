@@ -29,6 +29,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {addFishery, editFishery} from '../../functions/fisheryScreen';
 import '../../i18next';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
@@ -317,7 +318,10 @@ const FishTypeInput = ({navigation, route}) => {
         }
         backIcon={true}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
@@ -956,7 +960,7 @@ const FishTypeInput = ({navigation, route}) => {
             </View>
           </View>
         </PopupModal>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

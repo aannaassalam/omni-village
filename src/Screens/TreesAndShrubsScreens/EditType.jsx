@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-message';
 import {useTranslation} from 'react-i18next';
 import '../../i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const EditType = ({navigation, route}) => {
   const {cropType, edit, cropId, data} = route.params;
@@ -133,13 +134,13 @@ const EditType = ({navigation, route}) => {
         } else if (
           utilisationArray[0]?.value == 0 ||
           utilisationArray[0]?.value == undefined ||
-          utilisationArray[1]?.value == 0 ||
+          utilisationArray[1]?.value == '' ||
           utilisationArray[1]?.value == undefined ||
-          utilisationArray[2]?.value == 0 ||
+          utilisationArray[2]?.value == '' ||
           utilisationArray[2]?.value == undefined ||
-          utilisationArray[3]?.value == 0 ||
+          utilisationArray[3]?.value == '' ||
           utilisationArray[3]?.value == undefined ||
-          utilisationArray[4]?.value == 0 ||
+          utilisationArray[4]?.value == '' ||
           utilisationArray[4]?.value == undefined ||
           (utilisationArray[5]?.value != '' &&
             utilisationArray[5]?.value != undefined &&
@@ -203,13 +204,13 @@ const EditType = ({navigation, route}) => {
       } else if (
         utilisationArray[0]?.value == 0 ||
         utilisationArray[0]?.value == undefined ||
-        utilisationArray[1]?.value == 0 ||
+        utilisationArray[1]?.value == '' ||
         utilisationArray[1]?.value == undefined ||
-        utilisationArray[2]?.value == 0 ||
+        utilisationArray[2]?.value == '' ||
         utilisationArray[2]?.value == undefined ||
-        utilisationArray[3]?.value == 0 ||
+        utilisationArray[3]?.value == '' ||
         utilisationArray[3]?.value == undefined ||
-        utilisationArray[4]?.value == 0 ||
+        utilisationArray[4]?.value == '' ||
         utilisationArray[4]?.value == undefined ||
         (utilisationArray[5]?.value != '' &&
           utilisationArray[5]?.value != undefined &&
@@ -235,7 +236,10 @@ const EditType = ({navigation, route}) => {
         headerName={cropType}
         backIcon={true}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
         <View style={[styles.utilisation_container, {marginTop: 10}]}>
           <View style={styles.container}>
             <InputWithoutBorder
@@ -372,7 +376,7 @@ const EditType = ({navigation, route}) => {
             onPress={() => { setDraftpopup(true) }}
           /> */}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
       {/* harvest popup */}
       <PopupModal
         modalVisible={harvestedPopup}

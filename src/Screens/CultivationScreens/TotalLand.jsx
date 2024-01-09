@@ -1,5 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
 import {useFocusEffect} from '@react-navigation/native';
+import {useMutation} from '@tanstack/react-query';
 import React, {useCallback, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
@@ -13,15 +14,14 @@ import {
 import {Divider} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import {useDispatch} from 'react-redux';
 import * as yup from 'yup';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomInputField from '../../Components/CustomInputField/CustomInputField';
 import InputWithoutBorder from '../../Components/CustomInputField/InputWithoutBorder';
 import {useUser} from '../../Hooks/useUser';
-import {LandAllocation} from '../../Redux/AuthSlice';
 import {validation} from '../../Validation/Validation';
+import {saveLand} from '../../functions/AuthScreens';
 import '../../i18next';
 
 const landSchema = yup
@@ -48,6 +48,12 @@ const TotalLand = ({navigation}) => {
     }, []),
   );
 
+  const {mutate, isPending} = useMutation({
+    mutationFn: saveLand,
+    onSuccess: () => navigation.replace('production'),
+    onError: err => console.log(err),
+  });
+
   const {
     handleSubmit,
     setValue,
@@ -66,8 +72,6 @@ const TotalLand = ({navigation}) => {
     },
   });
 
-  const dispatch = useDispatch();
-
   const onSave = data => {
     let sumofAreas = Object.keys(data).reduce((accumulator, currentObject) => {
       if (currentObject !== 'total_land') {
@@ -83,12 +87,8 @@ const TotalLand = ({navigation}) => {
       //   text2: 'Your sub area acres are greater than total land area',
       // });
     } else {
-      dispatch(LandAllocation(data))
-        .unwrap()
-        .then(() => {
-          navigation.replace('production');
-        })
-        .catch(err => console.log(err));
+      console.log('HERE?');
+      mutate(data);
     }
   };
   const {fontScale} = useWindowDimensions();
@@ -118,6 +118,7 @@ const TotalLand = ({navigation}) => {
                 onChangeText={onChange}
                 value={value}
                 productionName={t('total land area')}
+                keyboardType="numeric"
               />
             )}
           />
@@ -145,6 +146,7 @@ const TotalLand = ({navigation}) => {
                     onChangeText={onChange}
                     value={value}
                     productionName={t('cultivation')}
+                    keyboardType="numeric"
                   />
                 )}
               />
@@ -162,6 +164,7 @@ const TotalLand = ({navigation}) => {
                     onChangeText={onChange}
                     value={value}
                     productionName={t('trees')}
+                    keyboardType="numeric"
                   />
                 )}
               />
@@ -179,6 +182,7 @@ const TotalLand = ({navigation}) => {
                     onChangeText={onChange}
                     value={value}
                     productionName={t('poultry')}
+                    keyboardType="numeric"
                   />
                 )}
               />
@@ -197,6 +201,7 @@ const TotalLand = ({navigation}) => {
                     onChangeText={onChange}
                     value={value}
                     productionName={t('fishery')}
+                    keyboardType="numeric"
                   />
                 )}
               />
@@ -215,6 +220,7 @@ const TotalLand = ({navigation}) => {
                     onChangeText={onChange}
                     value={value}
                     productionName={t('storage')}
+                    keyboardType="numeric"
                   />
                 )}
               />
@@ -253,6 +259,7 @@ const TotalLand = ({navigation}) => {
               <CustomButton
                 btnText={t('save')}
                 onPress={handleSubmit(onSave)}
+                loading={isPending}
               />
             </View>
           </>

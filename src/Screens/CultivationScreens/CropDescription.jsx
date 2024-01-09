@@ -33,6 +33,7 @@ import {
   editCultivation,
 } from '../../functions/CultivationScreen';
 import '../../i18next';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const CropDescription = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
@@ -182,13 +183,18 @@ const CropDescription = ({navigation, route}) => {
           ? navigation.goBack()
           : navigation.navigate('successfull');
       },
-      onError: () =>
+      onError: () => {
+        console.log('err');
         Toast.show({
           type: 'error',
           text1: 'Error Occurred',
           text2: 'Something Went wrong, Please try again later!',
-        }),
-      onSettled: () => setSavepopup(false),
+        });
+      },
+      onSettled: () => {
+        console.log('settled');
+        setSavepopup(false);
+      },
     });
 
   const {mutate: editCultivationData, isPending: editCultivationPending} =
@@ -281,6 +287,8 @@ const CropDescription = ({navigation, route}) => {
     }
   };
 
+  console.log(globalError);
+
   const handleDraft = () => {
     const data = watch();
     if (cultivation) {
@@ -338,7 +346,10 @@ const CropDescription = ({navigation, route}) => {
         headerName={cropName}
         goBack={() => navigation.goBack()}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.textInputArea}>
           <Controller
             control={control}
@@ -566,7 +577,7 @@ const CropDescription = ({navigation, route}) => {
                   </View>
                 </View>
               </View>
-              <Text
+              {/* <Text
                 style={{
                   fontFamily: 'ubuntu-regular',
                   fontSize: 14 / fontScale,
@@ -575,8 +586,18 @@ const CropDescription = ({navigation, route}) => {
                   marginLeft: 5,
                 }}>
                 {globalError}
-              </Text>
+              </Text> */}
             </View>
+            <Text
+              style={{
+                fontFamily: 'ubuntu-regular',
+                fontSize: 14 / fontScale,
+                marginTop: 5,
+                color: '#ff000e',
+                marginLeft: 5,
+              }}>
+              {globalError}
+            </Text>
             {/* </>
             );
           })} */}
@@ -777,11 +798,11 @@ const CropDescription = ({navigation, route}) => {
                 const {value} = field;
                 return (
                   <InputWithoutBorder
-                    measureName={`${
+                    measureName={`kg / ${
                       userDetails?.land_measurement_symbol
                         ? userDetails.land_measurement_symbol
                         : userDetails.land_measurement
-                    } / kg`}
+                    }`}
                     productionName={t('yields')}
                     value={value}
                     editable={false}
@@ -826,7 +847,7 @@ const CropDescription = ({navigation, route}) => {
             }}
           />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* planted popup */}
       <PopupModal

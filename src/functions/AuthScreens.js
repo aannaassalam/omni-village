@@ -31,3 +31,8 @@ export const editUser = async body => {
   );
   return res?.data;
 };
+
+export const saveLand = async body => {
+  let res = await axiosInstance?.post(endpoints?.auth?.landAllocation, body);
+  return res?.data;
+};

@@ -392,7 +392,7 @@ const Type01 = ({navigation, route}) => {
         headerName={cropName}
         backIcon={true}
       />
-      <ScrollView>
+      <ScrollView contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
@@ -446,7 +446,11 @@ const Type01 = ({navigation, route}) => {
                 render={({field}) => {
                   const {onChange, value} = field;
                   return (
-                    <TouchableHighlight onPress={() => setTreeAge(true)}>
+                    <TouchableHighlight
+                      onPress={() => setTreeAge(true)}
+                      // activeOpacity={0}
+                      underlayColor={'transparent'}
+                      style={{backgroundColor: 'transparent'}}>
                       <InputWithoutBorder
                         measureName={'kg'}
                         productionName={t('average of tree')}
@@ -454,6 +458,7 @@ const Type01 = ({navigation, route}) => {
                         onChangeText={onChange}
                         notRightText={true}
                         editable={false}
+                        editableColorChange
                         placeholder={t('Select Average age of tree')}
                       />
                     </TouchableHighlight>
@@ -715,7 +720,11 @@ const Type01 = ({navigation, route}) => {
       <AddBottomSheet
         modalVisible={treeAge}
         bottomSheetRef={bottomSheetRef}
-        setModal={setTreeAge}>
+        setModal={setTreeAge}
+        onPress={() => {
+          bottomSheetRef.current.close();
+          setTreeAge(false);
+        }}>
         <View style={styles.BottomTopContainer}>
           <Text style={styles.headerText}>{t('average of tree')}</Text>
           <TouchableOpacity
@@ -729,7 +738,9 @@ const Type01 = ({navigation, route}) => {
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.chck_container}>
+        <ScrollView
+          style={styles.chck_container}
+          contentContainerStyle={{paddingBottom: 50}}>
           {averageAge.map((item, indx) => {
             return (
               <Controller
@@ -755,7 +766,7 @@ const Type01 = ({navigation, route}) => {
               />
             );
           })}
-        </View>
+        </ScrollView>
       </AddBottomSheet>
       <AddBottomSheet
         modalVisible={harvestProdAdd}
@@ -956,6 +967,7 @@ const makeStyles = fontScale =>
     chck_container: {
       alignSelf: 'center',
       width: '90%',
+      // flex: 1,
     },
     add_button: {
       width: 'auto',

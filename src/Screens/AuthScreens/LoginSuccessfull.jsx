@@ -30,7 +30,7 @@ export default function LoginSuccessfull({navigation}) {
       }, 3000);
       return () => clearTimeout(timeout);
     }
-  }, [isLoading]);
+  }, [isLoading, navigation, user]);
 
   return (
     <SafeAreaView

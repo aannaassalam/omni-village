@@ -101,7 +101,7 @@ export default function Login({navigation, route}) {
                     setApi_err('');
                   }}
                   value={value}
-                  keyboardType="number-pad"
+                  keyboardType="phone-pad"
                   countryCode={
                     selectedCountry !== null
                       ? '+' + selectedCountry?.callingCode[0]

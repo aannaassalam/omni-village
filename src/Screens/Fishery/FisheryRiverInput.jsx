@@ -30,6 +30,7 @@ import {addFishery, editFishery} from '../../functions/fisheryScreen';
 import '../../i18next';
 import {useUser} from '../../Hooks/useUser';
 import {useMeasurement} from '../../Hooks/cms';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const FisheryRiverInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
@@ -338,7 +339,10 @@ const FisheryRiverInput = ({navigation, route}) => {
         headerName={cropType}
         backIcon={true}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
@@ -930,7 +934,7 @@ const FisheryRiverInput = ({navigation, route}) => {
             </View>
           </View>
         </PopupModal>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

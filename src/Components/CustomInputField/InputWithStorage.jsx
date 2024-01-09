@@ -72,7 +72,7 @@ const InputWithStorage = ({
               <Text
                 style={[
                   styles.cultivationText,
-                  {marginTop: 0, marginBottom: 0},
+                  {marginTop: 0, marginBottom: 4, fontSize: 12 / fontScale},
                 ]}>
                 {t('storage method')}
               </Text>
@@ -106,6 +106,7 @@ const makeStyles = fontScale =>
       color: '#000',
       fontSize: 16 / fontScale,
       fontWeight: '500',
+      flex: 1,
       // backgroundColor: 'red',
     },
     textInputInner: {
@@ -152,6 +153,7 @@ const makeStyles = fontScale =>
       paddingVertical: 5,
       backgroundColor: '#F1F7F3',
       margin: 10,
+      marginVertical: 7,
       marginRight: 15,
       borderRadius: 7,
       flex: 0.7,

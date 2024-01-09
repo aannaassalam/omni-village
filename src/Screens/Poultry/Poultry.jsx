@@ -180,8 +180,10 @@ const Poultry = ({navigation, route}) => {
         status: c.status,
       })),
     );
+
     return () => {
       setCropType([]);
+      setDropdownVal({});
       setGlobalError('');
     };
   }, [poultry]);
@@ -215,6 +217,7 @@ const Poultry = ({navigation, route}) => {
             keyExtractor={item => item._id}
             onRefresh={refetch}
             refreshing={isFetching}
+            contentContainerStyle={{paddingBottom: 50}}
             renderItem={({item}) => (
               <TouchableOpacity
                 style={styles.addAndDeleteButtonSection}

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Divider} from 'react-native-paper';
@@ -27,6 +28,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useMutation} from '@tanstack/react-query';
 import {addHunting, editHunting} from '../../functions/huntingScreen';
 import {useUser} from '../../Hooks/useUser';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const HuntingType = ({navigation, route}) => {
   const {cropType, data, cropId} = route.params;
@@ -328,7 +330,15 @@ const HuntingType = ({navigation, route}) => {
         headerName={cropType}
         backIcon={true}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
+        {/* <KeyboardAvoidingView
+          style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}
+          // enabled
+          behavior="position"
+          keyboardVerticalOffset={50}> */}
         <View style={styles.textInputArea}>
           {/* important information section */}
           <View style={styles.subArea}>
@@ -825,7 +835,8 @@ const HuntingType = ({navigation, route}) => {
             </View>
           </View>
         </PopupModal>
-      </ScrollView>
+        {/* </KeyboardAvoidingView> */}
+      </KeyboardAwareScrollView>
       {/* <Toast
                 positionValue={30}
                 style={{ height: 'auto', minHeight: 70 }}

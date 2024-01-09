@@ -26,6 +26,7 @@ export default function MapScreen({navigation, route}) {
     longitude: 0,
     accuracy: 0,
   });
+  const [loading, setLoading] = useState(true);
   const map = useRef();
 
   const {t} = useTranslation();
@@ -69,6 +70,10 @@ export default function MapScreen({navigation, route}) {
     }, [my_location]),
   );
 
+  if (map.current) {
+    console.log(Object.keys(map.current.state));
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={{flex: 1}}>
@@ -84,6 +89,10 @@ export default function MapScreen({navigation, route}) {
             showsUserLocation
             showsMyLocationButton={false}
             loadingEnabled
+            // onMapLoaded={() => {
+            //   console.log('____LOading');
+            //   setLoading(false);
+            // }}
             mapType="satellite"
             // customMapStyle={styles.container}
             style={styles.container}>
@@ -97,36 +106,40 @@ export default function MapScreen({navigation, route}) {
             />
           </MapView>
         )}
-        <Pressable
-          style={[styles.button, styles.back]}
-          onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back-outline" size={30} color="#333" />
-        </Pressable>
-        <Pressable
-          style={[styles.button, styles.crosshair]}
-          onPress={() => {
-            // setMarker({latitude: region.latitude, longitude: region.longitude});
-            setCoordinates({
-              latitude: current_location.latitude,
-              longitude: current_location.longitude,
-            });
-            map.current.animateToRegion(region);
-          }}>
-          <MaterialIcons name="gps-fixed" size={30} color="#555" />
-        </Pressable>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            left: 0,
-            right: 0,
-            marginHorizontal: 20,
-          }}>
-          <CustomButton
-            btnText={t('confirm')}
-            onPress={() => navigation.goBack()}
-          />
-        </View>
+        {map.current?.state?.isReady && (
+          <>
+            <Pressable
+              style={[styles.button, styles.back]}
+              onPress={() => navigation.goBack()}>
+              <Icon name="arrow-back-outline" size={30} color="#333" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.crosshair]}
+              onPress={() => {
+                // setMarker({latitude: region.latitude, longitude: region.longitude});
+                setCoordinates({
+                  latitude: current_location.latitude,
+                  longitude: current_location.longitude,
+                });
+                map.current.animateToRegion(region);
+              }}>
+              <MaterialIcons name="gps-fixed" size={30} color="#555" />
+            </Pressable>
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 20,
+                left: 0,
+                right: 0,
+                marginHorizontal: 20,
+              }}>
+              <CustomButton
+                btnText={t('confirm')}
+                onPress={() => navigation.goBack()}
+              />
+            </View>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );

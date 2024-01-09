@@ -28,9 +28,11 @@ import {
   editConsumption,
 } from '../../functions/consumptionScreen';
 import '../../i18next';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const ConsumptionInput = ({route, navigation}) => {
   const {cropType, data, cropId, typeName, type_id} = route.params;
+  console.log(type_id, 'type');
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {data: measurement} = useMeasurement();
@@ -106,10 +108,12 @@ const ConsumptionInput = ({route, navigation}) => {
     });
 
   const onSubmit = data2 => {
-    let total = parseInt(data2.total_quantity);
-    let purchased_from_market = parseInt(data2.purchased_from_market);
-    let purchased_from_neighbours = parseInt(data2.purchased_from_neighbours);
-    let self_grown = parseInt(data2.self_grown);
+    let total = parseInt(data2.total_quantity || 0);
+    let purchased_from_market = parseInt(data2.purchased_from_market || 0);
+    let purchased_from_neighbours = parseInt(
+      data2.purchased_from_neighbours || 0,
+    );
+    let self_grown = parseInt(data2.self_grown || 0);
     if (
       purchased_from_market + purchased_from_neighbours + self_grown !==
       total
@@ -198,7 +202,10 @@ const ConsumptionInput = ({route, navigation}) => {
         headerName={cropType}
         backIcon={true}
       />
-      <ScrollView>
+      <KeyboardAwareScrollView
+        style={{flex: 1}}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.subArea}>
           <Text style={styles.subAreaText}>{t('consumption information')}</Text>
           <Divider
@@ -348,7 +355,7 @@ const ConsumptionInput = ({route, navigation}) => {
             </View>
           </View>
         ) : null}
-      </ScrollView>
+      </KeyboardAwareScrollView>
       {message && <Text style={styles.error}>{message}</Text>}
       <View style={styles.bottomPopupbutton}>
         <CustomButton

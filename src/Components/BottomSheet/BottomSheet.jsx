@@ -8,7 +8,13 @@ import {
   ScrollView,
 } from 'react-native';
 
-const AddBottomSheet = ({modalVisible, bottomSheetRef, children, setModal}) => {
+const AddBottomSheet = ({
+  modalVisible,
+  bottomSheetRef,
+  children,
+  setModal,
+  onPress = null,
+}) => {
   // Creates a reference to the DOM element that we can interact with
 
   // Setting the points to which we want the bottom sheet to be set to
@@ -39,6 +45,7 @@ const AddBottomSheet = ({modalVisible, bottomSheetRef, children, setModal}) => {
           enableTouchThrough={false}
           appearsOnIndex={0}
           disappearsOnIndex={-1}
+          onPress={onPress}
 
           // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
         />

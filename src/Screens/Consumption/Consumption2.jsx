@@ -48,6 +48,8 @@ const Consumption2 = ({navigation, route}) => {
   const [deletePopup, setDeletePopup] = useState(false);
   const [globalError, setGlobalError] = useState('');
 
+  console.log(typeId, 'typeId');
+
   const bottomSheetRef = React.useRef(null);
 
   const {data: consumptionCrop = [], isLoading} = useQuery({
@@ -128,6 +130,7 @@ const Consumption2 = ({navigation, route}) => {
           typeName: typeName,
           cropId: consumptionCrop.find(i => i?.name === dropdownVal.name?.label)
             ._id,
+          type_id: typeId,
         });
         bottomSheetRef.current.close();
       }
@@ -153,6 +156,12 @@ const Consumption2 = ({navigation, route}) => {
         status: i.status,
       })),
     );
+
+    return () => {
+      setCropType([]);
+      setDropdownVal({});
+      setGlobalError('');
+    };
   }, [consumption]);
 
   return (
@@ -172,6 +181,7 @@ const Consumption2 = ({navigation, route}) => {
           keyExtractor={item => item._id}
           onRefresh={refetch}
           refreshing={isFetching}
+          contentContainerStyle={{paddingBottom: 50}}
           renderItem={({item}) => (
             <TouchableOpacity
               style={styles.addAndDeleteButtonSection}
