@@ -29,6 +29,7 @@ import {
 } from '../../functions/consumptionScreen';
 import '../../i18next';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 
 const ConsumptionInput = ({route, navigation}) => {
   const {cropType, data, cropId, typeName, type_id} = route.params;
@@ -55,6 +56,7 @@ const ConsumptionInput = ({route, navigation}) => {
       .string()
       .required(t('weight_measurement is required')),
   });
+
   const {
     handleSubmit,
     setValue,
@@ -161,6 +163,7 @@ const ConsumptionInput = ({route, navigation}) => {
     }
     // }
   };
+
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
@@ -557,6 +560,7 @@ const makeStyles = fontScale =>
       alignSelf: 'center',
       justifyContent: 'space-between',
       marginTop: '5%',
+      paddingBottom: 20,
     },
     submitButton: {
       width: '45%',

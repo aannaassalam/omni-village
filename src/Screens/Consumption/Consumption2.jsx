@@ -3,6 +3,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
@@ -11,7 +12,6 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import {ActivityIndicator} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import {useDispatch} from 'react-redux';
@@ -48,8 +48,6 @@ const Consumption2 = ({navigation, route}) => {
   const [deletePopup, setDeletePopup] = useState(false);
   const [globalError, setGlobalError] = useState('');
 
-  console.log(typeId, 'typeId');
-
   const bottomSheetRef = React.useRef(null);
 
   const {data: consumptionCrop = [], isLoading} = useQuery({
@@ -58,14 +56,16 @@ const Consumption2 = ({navigation, route}) => {
     refetchOnWindowFocus: true,
   });
   const {
-    data: consumption,
+    data: consumption = [],
     isLoading: isConsumptionLoading,
     refetch,
     isFetching,
+    error,
   } = useQuery({
-    queryKey: ['consumption'],
+    queryKey: [typeName],
     queryFn: () => fetchConsumptions(typeName),
-    refetchOnWindowFocus: true,
+    // refetchOnWindowFocus: true,
+    // staleTime: 0,
   });
 
   useFocusEffect(
@@ -74,6 +74,7 @@ const Consumption2 = ({navigation, route}) => {
       refetch();
     }, []),
   );
+
   const {mutate: saveCrop, isPending} = useMutation({
     mutationFn: addConsumptionCorp,
     onSuccess: data => {
@@ -147,22 +148,25 @@ const Consumption2 = ({navigation, route}) => {
   const handleDelete = () => {
     deleteConsumptionData(delete_id);
   };
+
   useEffect(() => {
-    setCropType(
-      consumption?.map(i => ({
-        name: i.consumption_crop.name,
-        _id: i.consumption_crop._id,
-        data: i,
-        status: i.status,
-      })),
-    );
+    if (!isConsumptionLoading && !isFetching) {
+      setCropType(
+        consumption?.map(i => ({
+          name: i.consumption_crop.name,
+          _id: i.consumption_crop._id,
+          data: i,
+          status: i.status,
+        })),
+      );
+    }
 
     return () => {
       setCropType([]);
       setDropdownVal({});
       setGlobalError('');
     };
-  }, [consumption]);
+  }, [consumption, isConsumptionLoading, isFetching]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -180,7 +184,7 @@ const Consumption2 = ({navigation, route}) => {
           data={cropType}
           keyExtractor={item => item._id}
           onRefresh={refetch}
-          refreshing={isFetching}
+          refreshing={isFetching || isConsumptionLoading}
           contentContainerStyle={{paddingBottom: 50}}
           renderItem={({item}) => (
             <TouchableOpacity

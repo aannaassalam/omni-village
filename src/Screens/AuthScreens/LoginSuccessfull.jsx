@@ -23,13 +23,14 @@ export default function LoginSuccessfull({navigation}) {
   const {data: user, isLoading} = useUser();
 
   useEffect(() => {
+    let timeout;
     if (!isLoading) {
-      const timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         storage.set('user', JSON.stringify(user));
         navigation.replace('home');
       }, 3000);
-      return () => clearTimeout(timeout);
     }
+    return () => clearTimeout(timeout);
   }, [isLoading, navigation, user]);
 
   return (
