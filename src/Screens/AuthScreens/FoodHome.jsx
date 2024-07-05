@@ -1,165 +1,39 @@
 import {Box, Text} from '@react-native-material/core';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {
-  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
   useWindowDimensions,
+  View,
 } from 'react-native';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {storage} from '../../Helper/Storage';
-import {useUser} from '../../Hooks/useUser';
-import {prefetchQuery} from '@tanstack/react-query';
 import '../../i18next';
-import axiosInstance from '../../Helper/Helper';
-import {endpoints} from '../../Endpoints/endpoints';
-import {useFocusEffect} from '@react-navigation/native';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import { useUser } from '../../Hooks/useUser';
 
-// function prefetchUser() {
-//   prefetchQuery({
-//     queryKey: ['user'],
-//     queryFn: async () => {
-//       const res = await axiosInstance.get(endpoints.auth.getUser);
-//       return res.data;
-//     },
-//   });
-// }
-
-export default function Home({navigation, route}) {
-  // const user = JSON.parse(storage.getString('user') ?? '{}');
-  const [lang, setLang] = useState('en');
-  const {fontScale} = useWindowDimensions();
+export default function FoodHome({navigation, route}) {
+  const {fontScale} = useWindowDimensions()
   const styles = makeStyles(fontScale);
-  const {t} = useTranslation();
-
-  const {data: user, isLoading} = useUser();
-
-  const data_available = useMemo(() => user, [user]);
-
-  useEffect(() => {
-    if (!data_available) {
-      navigation.replace('startup');
-    }
-  }, [data_available, navigation]);
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     storage.set('user', JSON.stringify(user_data));
-  //   }, [user_data]),
-  // );
-
-  console.log(user, 'USERRRR');
-
-  // useEffect(() => {
-  //   StringsOfLanguages.setLanguage(lang);
-  // }, [lang, StringsOfLanguages]);
-
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#fff',
-        }}>
-        <ActivityIndicator color="#268C43" size={16} />
-      </View>
-    );
-  }
+  const {t} = useTranslation()
+  const { data: user, isLoading } = useUser();
 
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: '#fff'}}
       edges={['top', 'left', 'right']}>
-      <ScrollView contentContainerStyle={{flex: 1}}>
+      <CustomHeader
+        backIcon={true}
+        headerName={'Food Category'}
+        goBack={() => navigation.goBack()}
+      />
+      <ScrollView contentContainerStyle={{flex: 1,paddingTop: 20}}>
         <Box style={styles.container}>
-          {/* <Box>
-            <Text variant="h2">Hello from {route?.name}</Text>
-          </Box> */}
-
-          <Box style={styles.user}>
-            <Box style={styles.user_name}>
-              <Text variant="h2" style={styles.user_name_txt}>
-                {user?.first_name?.charAt(0)}
-                {user?.last_name?.charAt(0)}
-              </Text>
-            </Box>
-            <AnimatedCircularProgress
-              size={105}
-              width={4}
-              fill={30}
-              tintColor="#000000"
-              // onAnimationComplete={() => console.log('onAnimationComplete')}
-              backgroundColor="#ECECEC"
-              style={styles.circular}
-            />
-
-            <TouchableOpacity
-              style={styles.usr_btn}
-              onPress={() =>
-                navigation.navigate('registerdetails', {edit: true})
-              }>
-              <Text style={styles.usr_btn_txt}>{user?.first_name}</Text>
-              <Image
-                style={[styles.tinyLogo1, {width: 16, height: 16}]}
-                source={require('../../../assets/edit2.png')}
-                // height={100}
-              />
-            </TouchableOpacity>
-            <Text variant="body1" style={styles.phone}>
-              {user?.country_code} {user?.phone}
-            </Text>
-
-            <Box style={styles.user_land}>
-              {/* <Box style={styles.usr_land_lft}> */}
-              <Box style={styles.usr_land}>
-                <Text variant="body1" style={styles.usr_txt}>
-                  {/* Land allocated */}
-                  {t('land allocated')}
-                </Text>
-                <Text variant="body1" style={styles.land_txt}>
-                  {user?.total_land}{' '}
-                  {user?.land_measurement_symbol !== '-'
-                    ? user?.land_measurement_symbol
-                    : user?.land_measurement}
-                </Text>
-              </Box>
-              {/* </Box> */}
-              <Box
-                // h={30}
-                w={3}
-                style={{
-                  backgroundColor: '#dddddd99',
-                  // marginRight: 40,
-                }}
-              />
-              <Box style={[styles.usr_land, {paddingLeft: 17}]}>
-                <Text variant="body1" style={styles.usr_txt}>
-                  {/* Used land */}
-                  {t('used land')}
-                </Text>
-                <Text variant="body1" style={styles.land_txt2}>
-                  {user?.sub_area &&
-                    Object.keys(user?.sub_area).reduce((prev, new_value) => {
-                      if (typeof user?.sub_area[new_value] === 'object') {
-                        return prev + user?.sub_area[new_value].land || 0;
-                      }
-                      return prev + user?.sub_area[new_value] || 0;
-                    }, 0)}{' '}
-                  {user?.land_measurement_symbol !== '-'
-                    ? user?.land_measurement_symbol
-                    : user?.land_measurement}
-                </Text>
-              </Box>
-            </Box>
-          </Box>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('ProductionStack', {
@@ -216,22 +90,6 @@ export default function Home({navigation, route}) {
               </Box>
             </Box>
           </TouchableOpacity>
-          {/* <TouchableOpacity onPress={() => setLang('en')}>
-            <Text>Italian</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setLang('it')}>
-            <Text>English</Text>
-          </TouchableOpacity> */}
-          {/* <Text onPress={()=>navigation.navigate("countryCheck")}>Country Check</Text> */}
-          <View style={{marginTop: 'auto', marginBottom: 20}}>
-            <CustomButton
-              btnText={t('logout')}
-              onPress={() => {
-                storage.clearAll();
-                navigation.replace('startup');
-              }}
-            />
-          </View>
         </Box>
       </ScrollView>
     </SafeAreaView>

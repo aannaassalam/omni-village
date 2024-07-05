@@ -1,7 +1,7 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useCallback} from 'react';
 import {useUser} from '../Hooks/useUser';
-import Home from '../Screens/AuthScreens/Home';
+import FoodHome from '../Screens/AuthScreens/FoodHome';
 import Login from '../Screens/AuthScreens/Login';
 import LoginSuccessfull from '../Screens/AuthScreens/LoginSuccessfull';
 import LoginWithOtp from '../Screens/AuthScreens/LoginWithOtp';
@@ -13,6 +13,8 @@ import RegisterWithOtp from '../Screens/AuthScreens/RegisterWithOtp';
 import StartupScreen from '../Screens/AuthScreens/StartupScreen';
 import ConsumptionStack from './ConsumptionStack';
 import Productionstack from './ProductionStack';
+import Home from '../Screens/Home';
+import Demographic from '../Screens/DemographicInfo/Demographic';
 
 const Stack = createStackNavigator();
 
@@ -41,9 +43,11 @@ export default function AuthStack({user}) {
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
+      <Stack.Screen name="foodHome" component={FoodHome} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
       <Stack.Screen name="MapScreen" component={MapScreen} />
+      <Stack.Screen name="demographic" component={Demographic} />
     </Stack.Navigator>
   );
 }
