@@ -15,3 +15,10 @@ export const averageTreeAge = [
   { key: 0, name: 'Less than a year' },
 ];
 export const Others = [{ key: 0, name: 'Others' }]
+
+export const diet = [
+  { key: 'Predominantly vegetarian', name: 'Predominantly vegetarian' },
+  { key: 'Predominantly non veg', name: 'Predominantly non veg' },
+  { key: 'Balanced', name: 'Balanced' },
+  { key: 'Vegan', name: 'Vegan' }
+]

@@ -23,6 +23,7 @@ const InputWithoutBorder = ({
   editable = true,
   keyboardType = 'number-pad',
   editableColorChange = false,
+  containerStyle
 }) => {
   const {data: user} = useUser();
 
@@ -30,7 +31,7 @@ const InputWithoutBorder = ({
   const styles = makeStyles(fontScale);
   return (
     <View pointerEvents={editableColorChange ? 'none' : 'auto'}>
-      <View style={[styles.textInputContainer]}>
+      <View style={[styles.textInputContainer, containerStyle]}>
         <View
           style={[
             styles.textInputInner,
@@ -106,8 +107,8 @@ const makeStyles = fontScale =>
     },
     textInputInner: {
       backgroundColor: '#fff',
-      borderColor: '#268C43',
-      borderWidth: 0.5,
+      borderColor: '#c6f1d3',
+      borderWidth: 1,
       borderRadius: 10,
     },
     textInput: {

@@ -25,6 +25,7 @@ export default CustomDropdown3 = ({
   data,
   infoName,
   style,
+  containerStyle,
   value,
 }) => {
   const {fontScale} = useWindowDimensions();
@@ -33,7 +34,7 @@ export default CustomDropdown3 = ({
   const {t} = useTranslation();
 
   return (
-    <View style={styles.textInputContainer}>
+    <View style={[styles.textInputContainer,containerStyle]}>
       <View style={styles.textInputInner}>
         <Text style={styles.infoName}>{infoName}</Text>
         {/* <SelectDropdown
@@ -116,7 +117,6 @@ export default CustomDropdown3 = ({
     </View>
   );
 };
-
 const makeStyles = fontScale =>
   StyleSheet.create({
     textInputContainer: {
@@ -128,8 +128,8 @@ const makeStyles = fontScale =>
     },
     textInputInner: {
       backgroundColor: '#fff',
-      borderColor: '#268C43',
-      borderWidth: 0.5,
+      borderColor: '#c6f1d3',
+      borderWidth: 1,
       borderRadius: 10,
       paddingRight: 5,
       paddingVertical: 5,
