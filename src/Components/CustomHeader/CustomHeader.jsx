@@ -33,7 +33,7 @@ const CustomHeader = ({headerName, backIcon, goBack, rightIcon}) => {
             {headerName}
           </Text>
         </View>
-        {rightIcon ? {rightIcon} : <View />}
+        {rightIcon ? {rightIcon} : <View style={{width: 30, backgroundColor:'yellow'}}/>}
       </View>
     </View>
   );
@@ -49,7 +49,7 @@ const makeStyles = fontScale =>
       margin: '4%',
     },
     header: {
-      justifyContent: 'center',
+      justifyContent: 'space-between',
       alignItems: 'center',
       flexDirection: 'row',
     },
@@ -61,10 +61,11 @@ const makeStyles = fontScale =>
       fontSize: 18 / fontScale,
       fontFamily: 'ubuntu-medium',
       textTransform: 'capitalize',
-      width: 220,
+      // width: 220,
+      // backgroundColor: 'red'
     },
     backButton: {
-      position: 'absolute',
+      // position: 'absolute',
       // top: 0,
       left: 0,
       height: 30,

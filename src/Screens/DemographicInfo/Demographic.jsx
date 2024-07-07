@@ -924,16 +924,16 @@ const Demographic = ({ navigation }) => {
       <PopupModal
         modalVisible={savePopup}
         setBottomModalVisible={setSavepopup}
-        styleInner={[styles.savePopup, { width: '90%' }]}>
-        <View style={styles.submitPopup}>
-          <View style={styles.noteImage}>
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        <View style={Styles.submitPopup}>
+          <View style={Styles.noteImage}>
             <Image
               source={require('../../../assets/note.png')}
-              style={styles.noteImage}
+              style={Styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>{t('confirm')}</Text>
-          <Text style={styles.nextText}>
+          <Text style={Styles.confirmText}>{t('confirm')}</Text>
+          <Text style={Styles.nextText}>
             {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={Styles.bottomPopupbutton}>
@@ -957,16 +957,16 @@ const Demographic = ({ navigation }) => {
       <PopupModal
         modalVisible={draftPopup}
         setBottomModalVisible={setDraftpopup}
-        styleInner={[styles.savePopup, { width: '90%' }]}>
-        <View style={styles.submitPopup}>
-          <View style={styles.noteImage}>
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        <View style={Styles.submitPopup}>
+          <View style={Styles.noteImage}>
             <Image
               source={require('../../../assets/note.png')}
-              style={styles.noteImage}
+              style={Styles.noteImage}
             />
           </View>
-          <Text style={styles.confirmText}>{t('save as draft')}</Text>
-          <Text style={styles.nextText}>
+          <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+          <Text style={Styles.nextText}>
             {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
           </Text>
           <View style={Styles.bottomPopupbutton}>
@@ -1027,37 +1027,5 @@ const makeStyles = fontScale => StyleSheet.create({
     marginLeft: 20,
     marginBottom: 5,
     marginTop: 5,
-  },
-  savePopup: {
-    justifyContent: 'center',
-    width: '97%',
-    borderRadius: 20,
-  },
-  popupButton: {
-    width: '70%',
-    alignSelf: 'center',
-  },
-  confirmText: {
-    alignSelf: 'center',
-    fontSize: 18 / fontScale,
-    color: '#000',
-    fontFamily: fontFamilyMedium,
-    fontWeight: '500',
-    padding: 10,
-    textAlign: 'center',
-  },
-  nextText: {
-    alignSelf: 'center',
-    fontSize: 18 / fontScale,
-    color: '#000',
-    fontFamily: fontFamilyMedium,
-    textAlign: 'center',
-  },
-  submitPopup: {
-    alignItems: 'center',
-    padding: 10,
-  },
-  noteImage: {
-    padding: 10,
   },
 })

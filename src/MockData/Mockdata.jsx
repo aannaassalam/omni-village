@@ -22,3 +22,18 @@ export const diet = [
   { key: 'Balanced', name: 'Balanced' },
   { key: 'Vegan', name: 'Vegan' }
 ]
+
+export const land_pupose = [
+  { key: 'Community Infra Housing Agroforestry', name: 'Community Infra Housing Agroforestry' },
+  {
+    key: ' Farming Commercial Fish Pond & Poultry Forest', name: ' Farming Commercial Fish Pond & Poultry Forest' },
+  { key: 'Natural Reserve Grasslands', name: 'Natural Reserve Grasslands' },
+  { key: 'Others', name: 'Others' }
+]
+
+export const urgency = [
+  {key:'within 1 year', name: 'within 1 year'},
+  {key: 'within 2-5 years', name: 'within 2-5 years'},
+  {key: 'within 5-10 years', name: 'within 5-10 years'},
+  {key: 'after 10 years', name: 'after 10 years'}
+]

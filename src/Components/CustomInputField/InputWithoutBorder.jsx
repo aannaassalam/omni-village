@@ -5,6 +5,7 @@ import {
   TextInput,
   View,
   useWindowDimensions,
+  Platform
 } from 'react-native';
 import {Divider} from 'react-native-paper';
 import {useUser} from '../../Hooks/useUser';
@@ -102,8 +103,10 @@ const makeStyles = fontScale =>
       color: '#333',
       fontSize: 14 / fontScale,
       fontWeight: '500',
-      paddingVertical: 14,
+      paddingVertical: Platform.OS=="ios"?14:0,
       // backgroundColor: 'red',
+      height: 30,
+      marginBottom: Platform.OS == "ios"?0:10
     },
     textInputInner: {
       backgroundColor: '#fff',
