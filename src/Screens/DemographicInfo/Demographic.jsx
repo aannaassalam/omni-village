@@ -15,9 +15,14 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import { diet } from '../../MockData/Mockdata';
 import { useTranslation } from 'react-i18next';
 import PopupModal from '../../Components/Popups/PopupModal';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { addDemographic, getDemographic } from '../../functions/demographic';
+import { editDemographic } from './../../functions/demographic';
+import Toast from 'react-native-toast-message';
+import { ActivityIndicator } from 'react-native-paper';
 
 const data = {
-  maritalStatus: 'Single',
+  marital_status: 'Single',
   diet: 'Predominantly vegetarian',
   height: '',
   weight: '',
@@ -25,19 +30,19 @@ const data = {
   reading: '',
   writing: '',
   occupation: '',
-  yearlyIncome: '',
-  bankAccount: false,
-  savings: false,
-  chronicDiseases: '',
+  yearly_income: '',
+  bank_account: false,
+  savings_investment: false,
+  chronic_diseases: '',
   handicap: false,
-  mentalEmotional: '',
+  mental_emotional: '',
   habits: [],
   education: '',
-  educationSeekingToGain: false,
-  skillset: [],
+  education_seeking_to_gain: false,
+  skillsets: [],
   hobbies: [],
-  skillsSeekingToLearn: [],
-  hobbiesSeekingToAdopt: [],
+  skills_seeking_to_learn: [],
+  hobbies_seeking_to_adopt: [],
   aspiration: '',
   unfulfilled: '',
   wishes: ''
@@ -49,93 +54,211 @@ const Demographic = ({ navigation }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const { t } = useTranslation()
   const user = useUser()
+  const { data: demograData, isFetching, isLoading, refetch } = useQuery({
+    queryKey: ['demographicData'],
+    queryFn: getDemographic,
+  })
+  const { mutate: addDemographicData, isLoading: isDemographicAddLoading } = useMutation({
+    mutationFn: (data) => addDemographic(data),
+    onSuccess: (_data) => {
+      console.log("_dataa", _data)
+      refetch(),
+      navigation.goBack()
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      })
+    },
+    onSettled: () => { setSavepopup(false), setDraftpopup(false) },
+  })
+
+  const { mutate: editDemographicData, isLoading: isDemographicEditLoading } = useMutation({
+    mutationFn: (data) => editDemographic(data),
+    onSuccess: (_data) => {
+      console.log("_dataa", _data)
+      refetch()
+      navigation.goBack()
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        text1: 'Error Occurred',
+        text2: 'Something Went wrong, Please try again later!',
+      })
+    },
+    onSettled: () => { setSavepopup(false), setDraftpopup(false) },
+  })
   const schema = yup.object().shape({
-    maritalStatus: yup.string().required('Required'),
+    marital_status: yup.string().required('Required'),
     diet: yup.string().required('Required'),
     height: yup.string().required('Required'),
     speaking: yup.string().required('Required'),
     reading: yup.string().required('Required'),
     writing: yup.string().required('Required'),
     occupation: yup.string().required('Required'),
-    yearlyIncome: yup.string().required('Required'),
-    bankAccount: yup.string().required('Required'),
-    savings: yup.string().required('Required'),
-    chronicDisease: yup.string().required('Required'),
+    yearly_income: yup.string().required('Required'),
+    bank_account: yup.string().required('Required'),
+    savings_investment: yup.string().required('Required'),
+    chronic_diseases: yup.string().required('Required'),
     handicap: yup.string().required('Required'),
-    mentalEmotional: yup.string().required('Required'),
-    habits: yup.array()
-      .of(yup.string().required('habits is required'))
-      .min(1, 'At least one habit is required')
-      .max(10, 'No more than 10 habits are allowed'),
+    mental_emotional: yup.string().required('Required'),
+    habits: yup.array().required('Required'),
     education: yup.string().required('Required'),
-    educationSeekingToGain: yup.string().required('Required'),
-    skillset: yup.array()
-      .of(yup.string().required('skillsets is required'))
-      .min(1, 'At least one skillset is required')
-      .max(10, 'No more than 10 habits are allowed'),
-    hobbies: yup.array()
-      .of(yup.string().required('hobbies is required'))
-      .min(1, 'At least one hobbie is required')
-      .max(10, 'No more than 10 hobbies are allowed'),
-    skillsSeekingToLearn: yup.array()
-      .of(yup.string().required('skills seeking to learn is required'))
-      .min(1, 'At least one skills seeking to learn is required')
-      .max(10, 'No more than 10 habits are allowed'),
-    hobbiesSeekingToAdopt: yup.array()
-      .of(yup.string().required('hobbies seeking to adopt is required'))
-      .min(1, 'At least one hobbie seeking to adopt is required')
-      .max(10, 'No more than 10 hobbies seeking to adopt are allowed'),
+    education_seeking_to_gain: yup.string().required('Required'),
+    skillsets: yup.array().required('Required'),
+    hobbies: yup.array().required('Required'),
+    skills_seeking_to_learn: yup.array().required('Required'),
+    hobbies_seeking_to_adopt: yup.array().required('Required'),
     aspiration: yup.string(),
     unfulfilled: yup.string(),
     wishes: yup.string().required('Required'),
-
   })
   const {
     handleSubmit,
     watch,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      maritalStatus: String(data.maritalStatus || ''),
-      diet: String(data.diet || ''),
-      height: String(data.height || ''),
-      weight: String(data.weight || ''),
-      speaking: String(data.speaking || ''),
-      reading: String(data.reading || ''),
-      writing: String(data.writing || ''),
-      occupation: String(data.occupation || ''),
-      yearlyIncome: String(data.yearlyIncome || ''),
-      bankAccount: Boolean(data.bankAccount || false),
-      savings: Boolean(data.savings || false),
-      chronicDiseases: String(data.chronicDiseases || ''),
-      handicap: Boolean(data.handicap || false),
-      mentalEmotional: String(data.mentalEmotional || ''),
-      habits: Array(data.habits.length > 0 && data.habits || ''),
-      education: String(data.education || ''),
-      educationSeekingToGain: Boolean(data.educationSeekingToGain || false),
-      skillset: Array(data.skillset.length > 0 && data.skillset || ''),
-      hobbies: Array(data.hobbies.length > 0 && data.hobbies || ''),
-      skillsSeekingToLearn: Array(data.skillsSeekingToLearn.length > 0 && data.skillsSeekingToLearn || ''),
-      hobbiesSeekingToAdopt: Array(data.hobbiesSeekingToAdopt.length > 0 && data.hobbiesSeekingToAdopt.length || ''),
-      aspiration: String(data.aspiration || ''),
-      unfulfilled: String(data.unfulfilled || ''),
-      wishes: String(data.wishes || ''),
+      marital_status: String(demograData?.data?.marital_status || ''),
+      diet: String(demograData?.data?.diet || ''),
+      height: String(demograData?.data?.height || ''),
+      weight: String(demograData?.data?.weight || ''),
+      speaking: String(demograData?.data?.speaking || ''),
+      reading: String(demograData?.data?.reading || ''),
+      writing: String(demograData?.data?.writing || ''),
+      occupation: String(demograData?.data?.occupation || ''),
+      yearly_income: String(demograData?.data?.yearly_income || ''),
+      bank_account: Boolean(demograData?.data?.bank_account || false),
+      savings_investment: Boolean(demograData?.data?.savings_investment || false),
+      chronic_diseases: String(demograData?.data?.chronic_diseases || ''),
+      handicap: Boolean(demograData?.data?.handicap || false),
+      mental_emotional: String(demograData?.data?.mental_emotional || ''),
+      habits: demograData?.data?.habits?.length > 0 && demograData?.data?.habits || null,
+      education: String(demograData?.data?.education || ''),
+      education_seeking_to_gain: Boolean(demograData?.data?.education_seeking_to_gain || false),
+      skillsets: demograData?.data?.skillsets?.length > 0 && demograData?.data?.skillsets || null,
+      hobbies: demograData?.data?.hobbies?.length > 0 && demograData?.data?.hobbies || null,
+      skills_seeking_to_learn: demograData?.data?.skills_seeking_to_learn?.length > 0 && demograData?.data?.skills_seeking_to_learn || null,
+      hobbies_seeking_to_adopt: demograData?.data?.hobbies_seeking_to_adopt?.length > 0 && demograData?.data?.hobbies_seeking_to_adopt || null,
+      aspiration: String(demograData?.data?.aspiration || ''),
+      unfulfilled: String(demograData?.data?.unfulfilled || ''),
+      wishes: String(demograData?.data?.wishes || ''),
     }
   })
   const onSubmit = (data) => {
-    setSavepopup(false)
+    if (demograData?.data?._id) {
+      editDemographicData({ ...data, status: 1 })
+    } else {
+      addDemographicData({ ...data, status: 1 })
+    }
   }
-  const handleDraft = (data) => {
-    setDraftpopup(false)
+  const handleDraft = () => {
+    if (demograData?.data?._id) {
+      editDemographicData({
+        marital_status: watch('marital_status'),
+        diet: watch('diet'),
+        height: watch('height'),
+        weight: watch('weight'),
+        speaking: watch('speaking'),
+        reading: watch('reading'),
+        writing: watch('writing'),
+        occupation: watch('occupation'),
+        yearly_income: watch('yearly_income'),
+        bank_account: watch('bank_account'),
+        savings_investment: watch('savings_investment'),
+        chronic_diseases: watch('chronic_diseases'),
+        handicap: watch('handicap'),
+        mental_emotional: watch('mental_emotional'),
+        habits: watch('habits'),
+        education: watch('education'),
+        education_seeking_to_gain: watch('education_seeking_to_gain'),
+        skillsets: watch('skillsets'),
+        hobbies: watch('hobbies'),
+        skills_seeking_to_learn: watch('skills_seeking_to_learn'),
+        hobbies_seeking_to_adopt: watch('hobbies_seeking_to_adopt'),
+        aspiration: watch('aspiration'),
+        unfulfilled: watch('unfulfilled'),
+        wishes: watch('wishes'),
+        status: 0
+      })
+    } else {
+      addDemographicData({
+        marital_status: watch('marital_status'),
+        diet: watch('diet'),
+        height: watch('height'),
+        weight: watch('weight'),
+        speaking: watch('speaking'),
+        reading: watch('reading'),
+        writing: watch('writing'),
+        occupation: watch('occupation'),
+        yearly_income: watch('yearly_income'),
+        bank_account: watch('bank_account'),
+        savings_investment: watch('savings_investment'),
+        chronic_diseases: watch('chronic_diseases'),
+        handicap: watch('handicap'),
+        mental_emotional: watch('mental_emotional'),
+        habits: watch('habits'),
+        education: watch('education'),
+        education_seeking_to_gain: watch('education_seeking_to_gain'),
+        skillsets: watch('skillsets'),
+        hobbies: watch('hobbies'),
+        skills_seeking_to_learn: watch('skills_seeking_to_learn'),
+        hobbies_seeking_to_adopt: watch('hobbies_seeking_to_adopt'),
+        aspiration: watch('aspiration'),
+        unfulfilled: watch('unfulfilled'),
+        wishes: watch('wishes'),
+        status: 0
+      })
+    }
   }
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
   }, [errors]);
+  useEffect(() => {
+    if (demograData?.data) {
+      reset({
+        marital_status: String(demograData?.data?.marital_status || ''),
+        diet: String(demograData?.data?.diet || ''),
+        height: String(demograData?.data?.height || ''),
+        weight: String(demograData?.data?.weight || ''),
+        speaking: String(demograData?.data?.speaking || ''),
+        reading: String(demograData?.data?.reading || ''),
+        writing: String(demograData?.data?.writing || ''),
+        occupation: String(demograData?.data?.occupation || ''),
+        yearly_income: String(demograData?.data?.yearly_income || ''),
+        bank_account: Boolean(demograData?.data?.bank_account || false),
+        savings_investment: Boolean(demograData?.data?.savings_investment || false),
+        chronic_diseases: String(demograData?.data?.chronic_diseases || ''),
+        handicap: Boolean(demograData?.data?.handicap || false),
+        mental_emotional: String(demograData?.data?.mental_emotional || ''),
+        habits: demograData?.data?.habits?.length > 0 && demograData?.data?.habits || null,
+        education: String(demograData?.data?.education || ''),
+        education_seeking_to_gain: Boolean(demograData?.data?.education_seeking_to_gain || false),
+        skillsets: demograData?.data?.skillsets?.length > 0 && demograData?.data?.skillsets || null,
+        hobbies: demograData?.data?.hobbies?.length > 0 && demograData?.data?.hobbies || null,
+        skills_seeking_to_learn: demograData?.data?.skills_seeking_to_learn?.length > 0 && demograData?.data?.skills_seeking_to_learn || null,
+        hobbies_seeking_to_adopt: demograData?.data?.hobbies_seeking_to_adopt?.length > 0 && demograData?.data?.hobbies_seeking_to_adopt || null,
+        aspiration: String(demograData?.data?.aspiration || ''),
+        unfulfilled: String(demograData?.data?.unfulfilled || ''),
+        wishes: String(demograData?.data?.wishes || ''),
+      })
+    }
+  }, [demograData, reset])
+  if (isLoading) {
+    return <View style={{ flex: 1, justifyContent: 'center' }}>
+      <ActivityIndicator size={'large'} color='#000' />
+    </View>
+  }
+  // console.log("watchhhhh", watch('habits'))
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -149,7 +272,7 @@ const Demographic = ({ navigation }) => {
           <Text style={styles.item_header_txt}>Select marital status</Text>
           <View style={styles.item_container}>
             <Controller
-              name="maritalStatus"
+              name="marital_status"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -172,7 +295,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Single</Text>
             <Controller
-              name="maritalStatus"
+              name="marital_status"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -195,9 +318,9 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Married</Text>
           </View>
-          {errors?.maritalStatus?.message ? (
+          {errors?.marital_status?.message ? (
             <Text style={styles.error}>
-              {errors?.maritalStatus?.message}
+              {errors?.marital_status?.message}
             </Text>
           ) : null}
           {/* Diet */}
@@ -360,7 +483,7 @@ const Demographic = ({ navigation }) => {
           {/* Yearly income */}
           <Controller
             control={control}
-            name="yearlyIncome"
+            name="yearly_income"
             render={({ field }) => {
               const { onChange, value } = field;
               return (
@@ -375,16 +498,16 @@ const Demographic = ({ navigation }) => {
               );
             }}
           />
-          {errors?.reading?.message ? (
+          {errors?.yearly_income?.message ? (
             <Text style={styles.error}>
-              {errors?.reading?.message}
+              {errors?.yearly_income?.message}
             </Text>
           ) : null}
           {/* Bank Account */}
           <Text style={styles.item_header_txt}>Do you have a bank account ?</Text>
           <View style={styles.item_container}>
             <Controller
-              name="bankAccount"
+              name="bank_account"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -407,7 +530,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Yes</Text>
             <Controller
-              name="bankAccount"
+              name="bank_account"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -430,16 +553,16 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>No</Text>
           </View>
-          {errors?.bankAccount?.message ? (
+          {errors?.bank_account?.message ? (
             <Text style={styles.error}>
-              {errors?.bankAccount?.message}
+              {errors?.bank_account?.message}
             </Text>
           ) : null}
           {/* Savings/Investments */}
           <Text style={styles.item_header_txt}>Do you have a savings/investment ?</Text>
           <View style={styles.item_container}>
             <Controller
-              name="savings"
+              name="savings_investment"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -462,7 +585,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Yes</Text>
             <Controller
-              name="savings"
+              name="savings_investment"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -485,15 +608,15 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>No</Text>
           </View>
-          {errors?.savings?.message ? (
+          {errors?.savings_investment?.message ? (
             <Text style={styles.error}>
-              {errors?.savings?.message}
+              {errors?.savings_investment?.message}
             </Text>
           ) : null}
           {/* Chronic disease */}
           <Controller
             control={control}
-            name="chronicDisease"
+            name="chronic_diseases"
             render={({ field }) => {
               const { onChange, value } = field;
               return (
@@ -508,9 +631,9 @@ const Demographic = ({ navigation }) => {
               );
             }}
           />
-          {errors?.chronicDisease?.message ? (
+          {errors?.chronic_diseases?.message ? (
             <Text style={styles.error}>
-              {errors?.chronicDisease?.message}
+              {errors?.chronic_diseases?.message}
             </Text>
           ) : null}
           {/* Handicap */}
@@ -572,7 +695,7 @@ const Demographic = ({ navigation }) => {
           <Text style={styles.item_header_txt}>Select mental and emotional stability</Text>
           <View style={styles.item_container}>
             <Controller
-              name="mentalEmotional"
+              name="mental_emotional"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -595,7 +718,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Good</Text>
             <Controller
-              name="mentalEmotional"
+              name="mental_emotional"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -618,7 +741,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Average</Text>
             <Controller
-              name="mentalEmotional"
+              name="mental_emotional"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -641,9 +764,9 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Poor</Text>
           </View>
-          {errors?.mentalEmotional?.message ? (
+          {errors?.mental_emotional?.message ? (
             <Text style={styles.error}>
-              {errors?.mentalEmotional?.message}
+              {errors?.mental_emotional?.message}
             </Text>
           ) : null}
           {/* Habits */}
@@ -652,13 +775,13 @@ const Demographic = ({ navigation }) => {
             name="habits"
             render={({ field }) => {
               const { onChange, value } = field;
+              console.log("value", value)
               return (
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                   data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                  selectedValue={onChange}
-                  value={value}
-                  defaultVal={{ key: value, value: value }}
+                  setSelectedd={onChange}
+                  selectedd={value?.length>=0? value: []}
                   infoName={'Habits'}
                 />
               );
@@ -696,7 +819,7 @@ const Demographic = ({ navigation }) => {
           <Text style={styles.item_header_txt}>Are you willing to seek education further?</Text>
           <View style={styles.item_container}>
             <Controller
-              name="educationSeekingToGain"
+              name="education_seeking_to_gain"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -719,7 +842,7 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>Yes</Text>
             <Controller
-              name="educationSeekingToGain"
+              name="education_seeking_to_gain"
               control={control}
               render={({ field }) => {
                 const { onChange, value } = field;
@@ -742,32 +865,31 @@ const Demographic = ({ navigation }) => {
             />
             <Text style={styles.option_text}>No</Text>
           </View>
-          {errors?.educationSeekingToGain?.message ? (
+          {errors?.education_seeking_to_gain?.message ? (
             <Text style={styles.error}>
-              {errors?.educationSeekingToGain?.message}
+              {errors?.education_seeking_to_gain?.message}
             </Text>
           ) : null}
           {/* Skillset */}
           <Controller
             control={control}
-            name="skillset"
+            name="skillsets"
             render={({ field }) => {
               const { onChange, value } = field;
               return (
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                   data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                  selectedValue={onChange}
-                  value={value}
-                  defaultVal={{ key: value, value: value }}
+                  setSelectedd={onChange}
+                  selectedd={value?.length >= 0 ? value : []}
                   infoName={'Skillset'}
                 />
               );
             }}
           />
-          {errors?.skillset && errors?.skillset[0]?.message || errors?.skillset?.message ? (
+          {errors?.skillsets && errors?.skillsets[0]?.message || errors?.skillsets?.message ? (
             <Text style={styles.error}>
-              {errors?.skillset[0]?.message || errors?.skillset?.message}
+              {errors?.skillsets[0]?.message || errors?.skillsets?.message}
             </Text>
           ) : null}
           {/* Hobbies */}
@@ -780,9 +902,8 @@ const Demographic = ({ navigation }) => {
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                   data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                  selectedValue={onChange}
-                  value={value}
-                  defaultVal={{ key: value, value: value }}
+                  setSelectedd={onChange}
+                  selectedd={value?.length >= 0 ? value : []}
                   infoName={'Hobbies'}
                 />
               );
@@ -796,47 +917,45 @@ const Demographic = ({ navigation }) => {
           {/* Skills seeking to learn */}
           <Controller
             control={control}
-            name="skillsSeekingToLearn"
+            name="skills_seeking_to_learn"
             render={({ field }) => {
               const { onChange, value } = field;
               return (
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                   data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                  selectedValue={onChange}
-                  value={value}
-                  defaultVal={{ key: value, value: value }}
+                  setSelectedd={onChange}
+                  selectedd={value?.length >= 0 ? value : []}
                   infoName={'Skills seeking to learn'}
                 />
               );
             }}
           />
-          {errors?.skillsSeekingToLearn && errors?.skillsSeekingToLearn[0]?.message || errors?.skillsSeekingToLearn?.message ? (
+          {errors?.skills_seeking_to_learn && errors?.skills_seeking_to_learn[0]?.message || errors?.skills_seeking_to_learn?.message ? (
             <Text style={styles.error}>
-              {errors?.skillsSeekingToLearn[0]?.message || errors?.skillsSeekingToLearn?.message}
+              {errors?.skills_seeking_to_learn[0]?.message || errors?.skills_seeking_to_learn?.message}
             </Text>
           ) : null}
           {/* hobbies seeking to adopt */}
           <Controller
             control={control}
-            name="hobbiesSeekingToAdopt"
+            name="hobbies_seeking_to_adopt"
             render={({ field }) => {
               const { onChange, value } = field;
               return (
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                   data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                  selectedValue={onChange}
-                  value={value}
-                  defaultVal={{ key: value, value: value }}
+                  setSelectedd={onChange}
+                  selectedd={value?.length >= 0 ? value : []}
                   infoName={'Hobbies seeking to adopt'}
                 />
               );
             }}
           />
-          {errors?.hobbiesSeekingToAdopt && errors?.hobbiesSeekingToAdopt[0]?.message || errors?.hobbiesSeekingToAdopt?.message ? (
+          {errors?.hobbies_seeking_to_adopt && errors?.hobbies_seeking_to_adopt[0]?.message || errors?.hobbies_seeking_to_adopt?.message ? (
             <Text style={styles.error}>
-              {errors?.hobbiesSeekingToAdopt[0]?.message || errors?.hobbiesSeekingToAdopt?.message}
+              {errors?.hobbies_seeking_to_adopt[0]?.message || errors?.hobbies_seeking_to_adopt?.message}
             </Text>
           ) : null}
           {/* Aspiration */}

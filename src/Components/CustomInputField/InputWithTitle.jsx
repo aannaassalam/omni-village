@@ -40,6 +40,7 @@ const makeStyles = fontScale => StyleSheet.create({
         color: primaryColor,
         paddingTop:10,
         paddingVertical: 4,
+        paddingHorizontal:2
     },
     input_txt:{
         fontSize: 14/fontScale,
@@ -48,6 +49,6 @@ const makeStyles = fontScale => StyleSheet.create({
         height: 30,
         textAlignVertical: 'top',
         color:'#000',
-        paddingHorizontal: -2,
+        paddingHorizontal: 8,
     }
 })

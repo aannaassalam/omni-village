@@ -321,9 +321,8 @@ const LandholdingUsage = ({ navigation }) => {
                                 <MultiselectDropdown
                                     containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
                                     data={[{ key: 'Cricket', name: 'Cricket' }, { key: 'Football', name: 'Football' }, { key: 'Story Books', name: 'Story Books' }]}
-                                    selectedValue={onChange}
-                                    value={value}
-                                    defaultVal={{ key: value, value: value }}
+                                    setSelectedd={onChange}
+                                    selectedd={value?.length>=0?value:[]}
                                     infoName={'Purpose utilised for'}
                                 />
                             );

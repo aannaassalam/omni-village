@@ -103,4 +103,9 @@ export const endpoints = {
     edit_consumtion: '/consumption/edit_consumption',
     delete_consumption: '/consumption/delete_consumption',
   },
+  demographic: {
+    add_demographic: '/demographic/add_demographic_info',
+    edit_demographic: '/demographic/update_demographic_info_by_id',
+    get_demographic: '/demographic/get_demographic_info_by_id',
+  },
 };
