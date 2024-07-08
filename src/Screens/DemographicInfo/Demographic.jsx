@@ -105,13 +105,13 @@ const Demographic = ({ navigation }) => {
     chronic_diseases: yup.string().required('Required'),
     handicap: yup.string().required('Required'),
     mental_emotional: yup.string().required('Required'),
-    habits: yup.array().required('Required'),
+    habits: yup.array().min(2, 'You must have at least 2 habits').required('Required'),
     education: yup.string().required('Required'),
     education_seeking_to_gain: yup.string().required('Required'),
-    skillsets: yup.array().required('Required'),
-    hobbies: yup.array().required('Required'),
-    skills_seeking_to_learn: yup.array().required('Required'),
-    hobbies_seeking_to_adopt: yup.array().required('Required'),
+    skillsets: yup.array().min(2, 'You must have at least 2 skillsets').required('Required'),
+    hobbies: yup.array().min(2, 'You must have at least 2 hobbies').required('Required'),
+    skills_seeking_to_learn: yup.array().min(2, 'You must have at least 2 skills seeking to learn').required('Required'),
+    hobbies_seeking_to_adopt: yup.array().min(2, 'You must have at least 2 hobbies seeking to adopt').required('Required'),
     aspiration: yup.string(),
     unfulfilled: yup.string(),
     wishes: yup.string().required('Required'),
@@ -775,7 +775,6 @@ const Demographic = ({ navigation }) => {
             name="habits"
             render={({ field }) => {
               const { onChange, value } = field;
-              console.log("value", value)
               return (
                 <MultiselectDropdown
                   containerStyle={{ width: width / 1.12, marginTop: '5%', paddingTop: 0 }}
