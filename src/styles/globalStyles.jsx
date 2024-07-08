@@ -66,5 +66,16 @@ export const Styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: '#ebeced'
     },
-    dividerRowContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '92%', gap: 6, alignSelf: 'center' }
+    dividerRowContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '92%', gap: 6, alignSelf: 'center' },
+    yearPickerBtn: {
+        paddingTop: 5,
+        marginTop: 10,
+        width: '95%',
+        alignSelf: 'center',
+        backgroundColor: 'red',
+        backgroundColor: '#fff',
+        borderColor: '#c6f1d3',
+        borderWidth: 1,
+        borderRadius: 10,
+    }
 })

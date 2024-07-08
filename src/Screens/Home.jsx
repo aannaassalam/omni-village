@@ -55,7 +55,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: 'Housing',
-      navigation: 'housing',
+      navigation: 'housing', // FIX ME- housing
       image: require('../../assets/housing.png'),
     },
     {

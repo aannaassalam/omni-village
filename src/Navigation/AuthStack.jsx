@@ -16,6 +16,7 @@ import Productionstack from './ProductionStack';
 import Home from '../Screens/Home';
 import Demographic from '../Screens/DemographicInfo/Demographic';
 import LandholdingUsage from '../Screens/Landholding & Usage Mapping/LandholdingUsage';
+import Housing from '../Screens/Housing/Housing';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ export default function AuthStack({user}) {
       <Stack.Screen name="MapScreen" component={MapScreen} />
       <Stack.Screen name="demographic" component={Demographic} />
       <Stack.Screen name='landholdingUsage' component={LandholdingUsage}/>
+      <Stack.Screen name='housing' component={Housing} />
     </Stack.Navigator>
   );
 }
