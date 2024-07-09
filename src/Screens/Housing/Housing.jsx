@@ -827,6 +827,7 @@ const Housing = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
+            </ScrollView>
                 <View style={Styles.bottomPopupbutton}>
                     <CustomButton
                         style={Styles.submitButton}
@@ -843,7 +844,6 @@ const Housing = ({ navigation }) => {
                         }}
                     />
                 </View>
-            </ScrollView>
             {/* Preview image */}
             <PopupModal
                 modalVisible={previewImage}
