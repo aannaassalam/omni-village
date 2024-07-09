@@ -50,7 +50,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: 'Landholding & Usage mapping',
-      navigation: '', // FIX ME - landholdingUsage
+      navigation: 'landholdingUsage', // FIX ME - landholdingUsage
       image: require('../../assets/landhold.png'),
     },
     {
