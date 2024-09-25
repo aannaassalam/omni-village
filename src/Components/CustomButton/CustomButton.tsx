@@ -7,6 +7,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { width } from '../../styles/globalStyles';
 
 const makeStyles = (fontScale:any) =>
   StyleSheet.create({
@@ -14,11 +15,11 @@ const makeStyles = (fontScale:any) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-
       borderRadius: 10,
       backgroundColor: '#268C43',
       height: 50,
       paddingHorizontal: 20,
+      width: width/1.2
     },
     cmn_btn_text: {
       fontFamily: 'ubuntu-medium',

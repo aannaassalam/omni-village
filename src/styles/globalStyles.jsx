@@ -1,7 +1,36 @@
 import { Dimensions, StyleSheet, useWindowDimensions } from "react-native";
 import { fontFamilyMedium, fontFamilyRegular } from "./fontStyle";
-const { width, fontScale } = Dimensions.get('window')
+import { light_grey, primary } from "./colors";
+export const { width, fontScale } = Dimensions.get('window')
 export const Styles = StyleSheet.create({
+    mainContainer:{
+        flex: 1,
+        paddingHorizontal: 32,
+        paddingVertical: 2
+    },
+    fieldLabel: {
+        fontFamily: fontFamilyMedium,
+        fontSize: 13 / fontScale,
+        color: primary,
+        marginBottom: 8,
+        marginTop: 16,
+    },
+    twoFieldsContainer: {
+        flexDirection: 'row',
+        gap: 16,
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    bottomBtn:{
+        position:'absolute',
+        bottom:0,
+        width:'100%',
+        backgroundColor:'white',
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+        alignItems:'center',
+        alignSelf:'center'
+    },
     bottomPopupbutton: {
         flexDirection: 'row',
         alignSelf: 'center',
@@ -22,8 +51,6 @@ export const Styles = StyleSheet.create({
         fontFamily: fontFamilyRegular,
         fontSize: 14 / fontScale,
         color: '#ff000e',
-        marginLeft: 20,
-        marginBottom: 5,
         marginTop: 5,
     },
     savePopup: {
