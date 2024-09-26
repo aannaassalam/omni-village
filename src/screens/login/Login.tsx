@@ -109,7 +109,7 @@ const makeStyles = (fontScale: any) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f4f4f4',
+      backgroundColor: '#fff',
     },
     logo: {
       width: '60%',

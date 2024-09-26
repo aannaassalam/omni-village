@@ -9,6 +9,7 @@ import {
   View,
   Platform,
   PermissionsAndroid,
+  Image,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useFormik} from 'formik';
@@ -30,13 +31,17 @@ const SignUp = ({navigation}: {navigation: any}) => {
   const styles = makeStyles(fontScale);
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState('+91');
+  const [fileSelected, setFileSelected] = useState('');
   const [collapsible, setCollapsible] = useState({
     personalInfoVisible: true,
     registrationInfo: false,
     familyVisible: false,
     attachmentsVisible: false,
   });
-  const [documents, setDocuments] = useState({address_proof: null});
+  const [documents, setDocuments] = useState({
+    address_proof: null,
+    field_officer_document: null,
+  });
   const [dropdown, setDropdown] = useState({
     gender: false,
     maritalStatus: false,
@@ -59,19 +64,25 @@ const SignUp = ({navigation}: {navigation: any}) => {
       value: 'Lesen Memandu (Driving Licence)',
     },
   ];
-  const handleDocumentSelection = useCallback(async () => {
+  const handleDocumentSelection = async (document_name: any) => {
     try {
       const response = await DocumentPicker.pick({
         presentationStyle: 'fullScreen',
         type: [types.images],
         allowMultiSelection: false,
       });
-      console.log('responseeee', response);
-      setDocuments({...documents, address_proof: response[0]});
+      console.log('filsss', fileSelected);
+      if (document_name === 'address_proof') {
+        console.log('hereree');
+        setDocuments({...documents, address_proof: response[0]});
+      } else if (document_name === 'field_officer_document') {
+        console.log('first');
+        setDocuments({...documents, field_officer_document: response[0]});
+      }
     } catch (err) {
       console.warn(err);
     }
-  }, []);
+  };
   let signupSchema = Yup.object().shape({
     first_name: Yup.string().required('First Name is required'),
     last_name: Yup.string().required('Last Name is required'),
@@ -100,6 +111,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
     ),
     address: Yup.string().required('Address is required'),
     street_address: Yup.string().required('Street Address is required'),
+    village_governing_body: Yup.boolean().required(
+      'Village governing body required',
+    ),
   });
   const {
     handleChange,
@@ -124,6 +138,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
       document_type: '',
       social_security_number: '',
       village_name: '',
+      village_governing_body: false,
       street_address: '',
     },
     validationSchema: signupSchema,
@@ -135,7 +150,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
       ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
     },
   });
-  const openCollapsible = async () => {
+  const openCollapsible = useCallback(async () => {
+    console.log('errorrrrr', errors);
     const keysToCheck = [
       'first_name',
       'last_name',
@@ -160,14 +176,15 @@ const SignUp = ({navigation}: {navigation: any}) => {
       personalInfoVisible: !!hasPersonalKey,
       registrationInfo: !!hasRegisterKey,
       familyVisible: !!hasFamilyKey,
-      attachmentsVisible: documents?.address_proof == null ? true : false,
+      attachmentsVisible:
+        documents?.address_proof == null ||
+        (values?.village_governing_body &&
+          documents?.field_officer_document == null)
+          ? true
+          : false,
     });
-    if(documents?.address_proof==null){
-        return;
-    }else{
-        handleSubmit();
-    }
-  };
+    handleSubmit();
+  }, [errors]);
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
       const granted = await Geolocation.requestAuthorization('whenInUse');
@@ -332,6 +349,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   phone={() => setShow(true)}
                   countryCode={countryCode}
                   label={'Phone Number'}
+                  keyboardType="numeric"
                 />
                 {touched?.phone && errors?.phone && (
                   <Text style={Styles.error}>{String(errors?.phone)}</Text>
@@ -473,9 +491,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   registrationInfo: !collapsible.registrationInfo,
                 })
               }>
-              <Text style={styles.collapsibleHeaderText}>
-                Registration Info
-              </Text>
+              <Text style={styles.collapsibleHeaderText}>Household Info</Text>
               <AntDesign
                 name={collapsible.registrationInfo ? 'up' : 'down'}
                 size={20}
@@ -578,6 +594,45 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     {String(errors?.document_type)}
                   </Text>
                 )}
+                <Text style={[Styles.fieldLabel]}>
+                  Are you part Village Governing body?
+                </Text>
+                <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setValues({
+                        ...values,
+                        village_governing_body: !values?.village_governing_body,
+                      })
+                    }>
+                    <Image
+                      source={
+                        values?.village_governing_body === true
+                          ? require('../../../assets/checked.png')
+                          : require('../../../assets/unchecked.png')
+                      }
+                      style={{height: 22, width: 22}}
+                    />
+                  </TouchableOpacity>
+                  <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setValues({
+                        ...values,
+                        village_governing_body: !values?.village_governing_body,
+                      })
+                    }>
+                    <Image
+                      source={
+                        values?.village_governing_body === false
+                          ? require('../../../assets/checked.png')
+                          : require('../../../assets/unchecked.png')
+                      }
+                      style={{height: 22, width: 22}}
+                    />
+                  </TouchableOpacity>
+                  <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+                </View>
               </View>
             )}
             <TouchableOpacity
@@ -603,63 +658,129 @@ const SignUp = ({navigation}: {navigation: any}) => {
               />
             </TouchableOpacity>
             {collapsible.attachmentsVisible && (
-              <View style={[styles.middleContainer]}>
-                <Text
-                  style={[
-                    styles.subheading,
-                    {marginBottom: 20, color: primary},
-                  ]}>
-                  Address Proof
-                </Text>
-                <TouchableOpacity
-                  style={[
-                    styles.addFileButton,
-                    {
-                      justifyContent:
-                        documents?.address_proof == null
-                          ? 'center'
-                          : 'space-between',
-                    },
-                  ]}
-                  onPress={() => {
-                    if (documents.address_proof == null) {
-                      handleDocumentSelection();
-                    } else {
-                      setDocuments({...documents, address_proof: null});
-                    }
-                  }}>
-                  {documents?.address_proof == null ? (
-                    <>
-                      <AntDesign name="upload" size={18} color={primary} />
-                      <Text style={styles.butnText}>Add File</Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={[
-                          Styles.fieldLabel,
-                          {marginBottom: 0, marginTop: 0, width: width / 1.6},
-                        ]}>
-                        {documents?.address_proof?.name || ''}
-                      </Text>
-                      <AntDesign
-                        name="close"
-                        size={18}
-                        color={primary}
-                        onPress={() =>
-                          setDocuments({...documents, address_proof: ''})
+              <View>
+                <View style={[styles.middleContainer]}>
+                  <Text
+                    style={[
+                      styles.subheading,
+                      {marginBottom: 20, color: primary},
+                    ]}>
+                    Address Proof
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      styles.addFileButton,
+                      {
+                        justifyContent:
+                          documents?.address_proof == null
+                            ? 'center'
+                            : 'space-between',
+                      },
+                    ]}
+                    onPress={() => {
+                      if (documents.address_proof == null) {
+                        handleDocumentSelection('address_proof');
+                      } else {
+                        setDocuments({...documents, address_proof: null});
+                      }
+                    }}>
+                    {documents?.address_proof == null ? (
+                      <>
+                        <AntDesign name="upload" size={18} color={primary} />
+                        <Text style={styles.butnText}>Add File</Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={[
+                            Styles.fieldLabel,
+                            {marginBottom: 0, marginTop: 0, width: width / 1.6},
+                          ]}>
+                          {documents?.address_proof?.name || ''}
+                        </Text>
+                        <AntDesign
+                          name="close"
+                          size={18}
+                          color={primary}
+                          onPress={() =>
+                            setDocuments({...documents, address_proof: null})
+                          }
+                        />
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {values?.village_governing_body ? (
+                  <View style={[styles.middleContainer]}>
+                    <Text
+                      style={[
+                        styles.subheading,
+                        {marginBottom: 20, color: primary},
+                      ]}>
+                      Field officer document Proof
+                    </Text>
+                    <TouchableOpacity
+                      style={[
+                        styles.addFileButton,
+                        {
+                          justifyContent:
+                            documents?.field_officer_document == null
+                              ? 'center'
+                              : 'space-between',
+                        },
+                      ]}
+                      onPress={() => {
+                        if (documents.field_officer_document == null) {
+                          handleDocumentSelection('field_officer_document');
+                        } else {
+                          setDocuments({
+                            ...documents,
+                            field_officer_document: null,
+                          });
                         }
-                      />
-                    </>
-                  )}
-                </TouchableOpacity>
+                      }}>
+                      {documents?.field_officer_document == null ? (
+                        <>
+                          <AntDesign name="upload" size={18} color={primary} />
+                          <Text style={styles.butnText}>Add File</Text>
+                        </>
+                      ) : (
+                        <>
+                          <Text
+                            style={[
+                              Styles.fieldLabel,
+                              {
+                                marginBottom: 0,
+                                marginTop: 0,
+                                width: width / 1.6,
+                              },
+                            ]}>
+                            {documents?.field_officer_document?.name || ''}
+                          </Text>
+                          <AntDesign
+                            name="close"
+                            size={18}
+                            color={primary}
+                            onPress={() =>
+                              setDocuments({
+                                ...documents,
+                                field_officer_document: null,
+                              })
+                            }
+                          />
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
               </View>
             )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <View style={[Styles.bottomBtn, {elevation: 5}]}>
-        <CustomButton onPress={openCollapsible} btnText={'SignUp'} />
+      <View style={[Styles.bottomBtn]}>
+        {/* <CustomButton onPress={openCollapsible} btnText={'SignUp'} /> */}
+        <CustomButton onPress={()=>navigation.navigate('verifyOtp',{mobile: values?.mobile})} btnText={'SignUp'} />
       </View>
       <CountryPicker
         show={show}

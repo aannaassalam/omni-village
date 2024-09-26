@@ -26,6 +26,7 @@ export const Styles = StyleSheet.create({
         bottom:0,
         width:'100%',
         backgroundColor:'white',
+        elevation: 5,
         paddingVertical: 30,
         paddingHorizontal: 20,
         alignItems:'center',

@@ -5,12 +5,12 @@ import { primary } from '../../styles/colors';
 import { fontFamilyBold } from '../../styles/fontStyle';
 import { useNavigation } from '@react-navigation/native';
 
-const StackHeader = ({title}:{title:any}) => {
+const StackHeader = ({title, style}:{title:any, style?:any}) => {
     const {fontScale} = useWindowDimensions()
     const styles = makeStyles(fontScale)
     const navigation = useNavigation()
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,style]}>
       <TouchableOpacity onPress={()=>navigation.goBack()}>
         <AntDesign name={'left'} color={primary} size={24}/>
       </TouchableOpacity>

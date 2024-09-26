@@ -10,6 +10,7 @@ import DetailSlider from '../screens/onboarding/DetailSlider';
 import SignUp from '../screens/login/SignUp';
 import StackHeader from '../Components/CustomHeader/StackHeader';
 import MapScreen from '../screens/login/MapScreen';
+import VerifyOtp from '../screens/login/VerifyOtp';
 const Stack = createStackNavigator();
 
 const LoginStack = () => {
@@ -36,6 +37,14 @@ const LoginStack = () => {
         component={MapScreen}
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="verifyOtp"
+        component={VerifyOtp}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Verify OTP'} />,
         }}
       />
     </Stack.Navigator>
