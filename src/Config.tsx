@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {WithSplashScreen} from './screens/onboarding/Splash';
 import {useDispatch, useSelector} from 'react-redux';
 import LoginStack from './navigation/LoginStack';
-import HomeStack from './navigation/HomeStack';
+import DrawerNavigation from './navigation/DrawerNavigation';
 
 const Config = ({token}:{token:any}) => {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -15,7 +15,7 @@ const Config = ({token}:{token:any}) => {
   return (
     <WithSplashScreen isAppReady={isAppReady}>
       <NavigationContainer>
-       {authState?.isLoggedIn?<HomeStack/>:<LoginStack/>}
+       {authState?.isLoggedIn?<DrawerNavigation/>:<LoginStack/>}
       </NavigationContainer>
     </WithSplashScreen>
   );

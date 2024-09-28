@@ -8,11 +8,14 @@ import {CountryPicker} from 'react-native-country-codes-picker';
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux'
+import { reqSuccess } from '../../redux/auth/actions'
 
 const Login = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions()
   const styles = makeStyles(fontScale)
   const [show,setShow]=useState(false)
+  const dispatch=useDispatch()
   const [countryCode, setCountryCode]=useState('+91')
    let loginSchema = Yup.object().shape({
      phone: Yup.string()
@@ -33,7 +36,7 @@ const Login = ({navigation}:{navigation:any}) => {
      },
      validationSchema: loginSchema,
      onSubmit: async (values: any) => {
-       
+      dispatch(reqSuccess())
      },
    });
   return (

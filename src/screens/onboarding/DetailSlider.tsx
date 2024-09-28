@@ -19,6 +19,7 @@ import {
 } from '../../styles/colors';
 import {useDispatch} from 'react-redux';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import { reqSuccess } from '../../redux/auth/actions';
 
 const images = [
   {

@@ -148,6 +148,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
       // Reset form after successful registration
       resetForm();
       ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
+      navigation.navigate('verifyOtp',{mobile: values?.phone})
     },
   });
   const openCollapsible = useCallback(async () => {
@@ -779,8 +780,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        {/* <CustomButton onPress={openCollapsible} btnText={'SignUp'} /> */}
-        <CustomButton onPress={()=>navigation.navigate('verifyOtp',{mobile: values?.mobile})} btnText={'SignUp'} />
+        <CustomButton onPress={openCollapsible} btnText={'SignUp'} />
+        {/* <CustomButton onPress={()=>navigation.navigate('verifyOtp',{mobile: values?.mobile})} btnText={'SignUp'} /> */}
       </View>
       <CountryPicker
         show={show}

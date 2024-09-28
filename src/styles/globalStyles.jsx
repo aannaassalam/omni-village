@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet, useWindowDimensions } from "react-native";
 import { fontFamilyMedium, fontFamilyRegular } from "./fontStyle";
 import { light_grey, primary } from "./colors";
-export const { width, fontScale } = Dimensions.get('window')
+export const { width, fontScale,height } = Dimensions.get('window')
 export const Styles = StyleSheet.create({
     mainContainer:{
         flex: 1,

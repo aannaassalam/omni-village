@@ -10,29 +10,32 @@ import {
 } from '../../styles/fontStyle';
 import {dark_grey, light_grey, primary} from '../../styles/colors';
 import AlertModal from '../../Components/Popups/AlertModal';
+import {useDispatch} from 'react-redux';
+import {reqSuccess} from '../../redux/auth/actions';
 const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {mobile} = route.params;
   const [code, setCode] = useState('');
-  const [verified,setVerified] = useState(false)
-  const [timer,setTimer] = useState(30)
+  const [verified, setVerified] = useState(false);
+  const dispatch = useDispatch();
+  const [timer, setTimer] = useState(30);
   useEffect(() => {
-		const interval = setInterval(
-			() => setTimer(prev => (prev > 0 ? prev - 1 : 0)),
-			1000,
-		);
+    const interval = setInterval(
+      () => setTimer(prev => (prev > 0 ? prev - 1 : 0)),
+      1000,
+    );
 
-		return () => {
-			clearInterval(interval);
-		};
-	}, []);
-    const onResend = () => {
-      let data = {
-        token: '',
-      };
-      setTimer(30);
+    return () => {
+      clearInterval(interval);
     };
+  }, []);
+  const onResend = () => {
+    let data = {
+      token: '',
+    };
+    setTimer(30);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.loginContainer}>
@@ -77,9 +80,7 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
           {timer == 0 ? (
             <Text>Resend</Text>
           ) : (
-            <Text>
-              00:{timer < 10 ? '0' + timer : timer}
-            </Text>
+            <Text>00:{timer < 10 ? '0' + timer : timer}</Text>
           )}
         </Text>
       </View>
@@ -95,10 +96,11 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
         visible={verified}
         onSubmit={() => {
           setVerified(false);
+          dispatch(reqSuccess());
         }}
         successModal={true}
         confirmText={'Continue'}
-        comments={'Please move forward to add your profile'}
+        comments={'Please move forward to add your data'}
         title={'Successfully Verified'}
       />
     </View>
