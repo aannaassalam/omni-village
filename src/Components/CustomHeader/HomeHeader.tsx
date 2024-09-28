@@ -36,19 +36,6 @@ const HomeHeader = () => {
           />
         </View>
       </View>
-      {/* <Ionicons
-        name="notifications-outline"
-        color={white}
-        size={28}
-        style={styles.menu_icon}
-        onPress={() => {navigation.navigate('notification')}}
-      /> */}
-      <Image
-        source={{
-          uri: '',
-        }}
-        style={styles.profile_image}
-      />
     </View>
   );
 };

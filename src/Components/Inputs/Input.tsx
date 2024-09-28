@@ -33,7 +33,8 @@ interface InputProps {
   isDate?: Boolean;
   isKM?: Boolean;
   isRight?: any;
-  topLabel?:any
+  topLabel?: any;
+  onBlur?:any
 }
 
 const Input = ({
@@ -63,7 +64,8 @@ const Input = ({
   isRupee,
   isDate,
   isRight,
-  topLabel
+  topLabel,
+  onBlur,
 }: InputProps) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -129,11 +131,12 @@ const Input = ({
               const {contentSize} = event.nativeEvent;
               setBoxHeight(contentSize.height);
             }}
+            onBlur={onBlur}
             keyboardType={keyboardType}
             onChangeText={onChangeText}
             value={value}
             onFocus={onFocus}
-            editable={isDate || isClock  ? false : editable}
+            editable={isDate || isClock ? false : editable}
             multiline={multiline}
             numberOfLines={multiline ? numberOfLines : undefined}
             placeholder={placeholder}

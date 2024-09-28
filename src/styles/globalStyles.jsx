@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, useWindowDimensions } from "react-native";
 import { fontFamilyMedium, fontFamilyRegular } from "./fontStyle";
-import { light_grey, primary } from "./colors";
+import { borderColor, light_grey, primary } from "./colors";
 export const { width, fontScale,height } = Dimensions.get('window')
 export const Styles = StyleSheet.create({
     mainContainer:{
@@ -20,6 +20,9 @@ export const Styles = StyleSheet.create({
         gap: 16,
         alignItems: 'center',
         marginTop: 16,
+    },
+    divider:{
+        marginVertical: 16
     },
     bottomBtn:{
         position:'absolute',
@@ -88,11 +91,17 @@ export const Styles = StyleSheet.create({
     },
     verticalLine: {
         alignSelf: 'center',
-        height: '100%',
-        marginTop: 12,
-        width: '1%',
+        height:35,
+        width: '4%',
         borderRadius: 10,
-        backgroundColor: '#ebeced'
+        backgroundColor: borderColor
+    },
+    horizontalLine: {
+        alignSelf: 'center',
+        height: '3%',
+        width: '100%',
+        borderRadius: 10,
+        backgroundColor: borderColor
     },
     dividerRowContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '92%', gap: 6, alignSelf: 'center' },
     yearPickerBtn: {

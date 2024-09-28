@@ -34,7 +34,7 @@ const Login = ({navigation}:{navigation:any}) => {
      initialValues: {
        phone: '',
      },
-     validationSchema: loginSchema,
+    //  validationSchema: loginSchema,
      onSubmit: async (values: any) => {
       dispatch(reqSuccess())
      },

@@ -1,10 +1,11 @@
-import {SafeAreaView, useColorScheme, useWindowDimensions } from 'react-native';
+import {SafeAreaView, StatusBar, useColorScheme, useWindowDimensions } from 'react-native';
 import React from 'react';
 import Config from './src/Config';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { primary } from './src/styles/colors';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -24,6 +25,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView style={backgroundStyle}>
+      <StatusBar backgroundColor={primary}/>
         <Provider store={store}>
           <Config />
         </Provider>
