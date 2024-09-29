@@ -8,17 +8,17 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {Styles, width} from '../../../styles/globalStyles';
+import {Styles, width} from '../../../../styles/globalStyles';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
-import Input from '../../../Components/Inputs/Input';
+import Input from '../../../../Components/Inputs/Input';
 import {KeyboardAvoidingView} from 'react-native';
 import {Divider} from 'react-native-paper';
-import {dark_grey} from '../../../styles/colors';
-import CustomButton from '../../../Components/CustomButton/CustomButton';
-import AcresElement from '../../../Components/ui/AcresElement';
+import {dark_grey, white} from '../../../../styles/colors';
+import CustomButton from '../../../../Components/CustomButton/CustomButton';
+import AcresElement from '../../../../Components/ui/AcresElement';
 
-const TotalLand = () => {
+const TotalLand = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [isFocused, setIsFocused] = useState(false);
@@ -40,6 +40,9 @@ const TotalLand = () => {
       fishery: Yup.number()
         .required('Fishery is required')
         .typeError('Fishery must be a number'),
+      hunting: Yup.number()
+        .required('Hunting is required')
+        .typeError('Hunting must be a number'),
       storage: Yup.number()
         .required('Storage is required')
         .typeError('Storage must be a number'),
@@ -55,10 +58,11 @@ const TotalLand = () => {
           fishery,
           trees_shrubs_grassland,
           storage,
+          hunting
         } = values;
 
         const totalAllocatedLand =
-          cultivation + poultry + fishery + trees_shrubs_grassland + storage;
+          hunting+cultivation + poultry + fishery + trees_shrubs_grassland + storage;
 
         // Validate that the total allocated land does not exceed total land
         if (totalAllocatedLand > total_land) {
@@ -87,18 +91,20 @@ const TotalLand = () => {
       fishery: 0,
       trees_shrubs_grassland: 0,
       storage: 0,
+      hunting:0
     },
-    validationSchema: land_schema,
+    // validationSchema: land_schema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
+      navigation.navigate('production')
     },
   });
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS == 'android' ? 'height' : 'position'}
-        keyboardVerticalOffset={80}>
-        <ScrollView>
+        keyboardVerticalOffset={120}>
+        <ScrollView contentContainerStyle={{paddingBottom: 120}}>
           <View style={Styles.mainContainer}>
             <Input
               onChangeText={handleChange('total_land')}
@@ -181,6 +187,21 @@ const TotalLand = () => {
             {touched?.fishery && errors?.fishery && (
               <Text style={Styles.error}>{String(errors?.fishery)}</Text>
             )}
+
+            <Input
+              onChangeText={handleChange('hunting')}
+              value={String(values?.hunting)}
+              placeholder="Enter hunting"
+              fullLength={true}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              label={'Hunting'}
+              keyboardType="numeric"
+              isRight={<AcresElement title={'acres'} />}
+            />
+            {touched?.hunting && errors?.hunting && (
+              <Text style={Styles.error}>{String(errors?.hunting)}</Text>
+            )}
             <Input
               onChangeText={handleChange('storage')}
               value={String(values?.storage)}
@@ -211,5 +232,6 @@ const makeStyles = (fontScale: any) =>
   StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor:white
     },
   });

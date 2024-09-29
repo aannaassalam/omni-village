@@ -1,12 +1,13 @@
 import { Dimensions, StyleSheet, useWindowDimensions } from "react-native";
 import { fontFamilyMedium, fontFamilyRegular } from "./fontStyle";
-import { borderColor, light_grey, primary } from "./colors";
+import { borderColor, light_grey, primary, white } from "./colors";
 export const { width, fontScale,height } = Dimensions.get('window')
 export const Styles = StyleSheet.create({
     mainContainer:{
         flex: 1,
-        paddingHorizontal: 32,
-        paddingVertical: 2
+        paddingHorizontal: 22,
+        paddingVertical: 22,
+        backgroundColor:white
     },
     fieldLabel: {
         fontFamily: fontFamilyMedium,

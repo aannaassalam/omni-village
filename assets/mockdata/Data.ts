@@ -2,7 +2,7 @@ export const home_data = [
   {
     id: 1,
     title: 'Food',
-    navigation: 'total_land',
+    navigation: 'food',
     image: require('../../assets/food.png'),
   },
   {
