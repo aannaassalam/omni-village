@@ -115,5 +115,8 @@ export const Styles = StyleSheet.create({
         borderColor: '#c6f1d3',
         borderWidth: 1,
         borderRadius: 10,
-    }
+    },
+    addAndDeleteButtonSection: {
+        marginTop: '5%',
+    },
 })

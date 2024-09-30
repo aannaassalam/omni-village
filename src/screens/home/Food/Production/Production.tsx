@@ -22,6 +22,11 @@ const Production = ({navigation}:{navigation:any}) => {
       value: 10,
     },
     {
+      title: 'Trees,shrubs & grassland',
+      navigation: 'trees',
+      value: 10,
+    },
+    {
       title: 'Poultry',
       navigation: 'poultry',
       value: 10,
@@ -31,11 +36,7 @@ const Production = ({navigation}:{navigation:any}) => {
       navigation: 'fishery',
       value: 10,
     },
-    {
-      title: 'Trees,shrubs & grassland',
-      navigation: 'trees',
-      value: 10,
-    },
+
     {
       title: 'Hunting',
       navigation: 'hunting',

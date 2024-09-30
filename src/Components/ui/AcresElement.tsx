@@ -23,7 +23,7 @@ const makeStyles = (fontScale:any) => StyleSheet.create({
         marginRight: 12,
         alignItems:'center',
         flexDirection:'row',
-        gap:8
+        gap:10
     },
     acres_txt:{
         fontSize: 14 / fontScale,

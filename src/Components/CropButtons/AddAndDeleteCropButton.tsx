@@ -14,6 +14,12 @@ const AddAndDeleteCropButton = ({
   cropName,
   darftStyle,
   drafted,
+}: {
+  onPress?: any;
+  add?: any;
+  cropName?: any;
+  darftStyle?: any;
+  drafted?: any;
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -36,7 +42,6 @@ const AddAndDeleteCropButton = ({
           <Image
             source={require('../../../assets/delete.png')}
             style={styles.addCropIcon}
-            onPress={onPress}
           />
         )}
       </TouchableOpacity>
@@ -46,10 +51,10 @@ const AddAndDeleteCropButton = ({
 
 export default AddAndDeleteCropButton;
 
-const makeStyles = fontScale =>
+const makeStyles = (fontScale:any) =>
   StyleSheet.create({
     container: {
-      width: '90%',
+      width: '100%',
       borderColor: 'grey',
       borderWidth: 1,
       borderRadius: 10,

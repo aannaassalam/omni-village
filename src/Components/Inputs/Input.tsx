@@ -34,7 +34,9 @@ interface InputProps {
   isKM?: Boolean;
   isRight?: any;
   topLabel?: any;
-  onBlur?:any
+  onBlur?: any;
+  inner_width?: any;
+  main_width?:any
 }
 
 const Input = ({
@@ -66,6 +68,8 @@ const Input = ({
   isRight,
   topLabel,
   onBlur,
+  inner_width,
+  main_width,
 }: InputProps) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -79,7 +83,13 @@ const Input = ({
           borderColor: primary,
           borderRadius: 8,
           borderWidth: 1,
-          width: width_ ? width_ : fullLength ? '100%' : (width - 88) / 2,
+          width: width_
+            ? width_
+            : main_width
+            ? main_width
+            : fullLength
+            ? '100%'
+            : (width - 88) / 2,
         }}>
         {topLabel && (
           <View>
@@ -110,6 +120,8 @@ const Input = ({
               width:
                 parseInt(width_) > 0
                   ? parseInt(width_) - 2
+                  : inner_width
+                  ? inner_width
                   : isDate || isClock || isRupee || isKM || isRight
                   ? '80%'
                   : width - 50,
@@ -148,7 +160,7 @@ const Input = ({
             autoCapitalize="none"
           />
           {isClock && <AntIcon name="home" size={24} color={primary} />}
-          {isDate && <AntIcon name="home" size={24} color={primary} />}
+          {isDate && <AntIcon name="calendar" size={24} color={primary} style={{marginRight:16}}/>}
           {isKM && (
             <Text
               style={{

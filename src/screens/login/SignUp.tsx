@@ -308,7 +308,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       placeholder="Enter first name"
                       fullLength={false}
                       label={'First name'}
-                      width_={width / 2.5}
+                      width_={width / 2.38}
                     />
                     {touched?.first_name && errors?.first_name && (
                       <Text style={Styles.error}>
@@ -323,7 +323,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       placeholder="Enter last name"
                       fullLength={false}
                       label={'Last name'}
-                      width_={width / 2.5}
+                      width_={width / 2.39}
                     />
                     {touched?.last_name && errors?.last_name && (
                       <Text style={Styles.error}>

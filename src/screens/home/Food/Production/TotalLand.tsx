@@ -40,9 +40,6 @@ const TotalLand = ({navigation}:{navigation:any}) => {
       fishery: Yup.number()
         .required('Fishery is required')
         .typeError('Fishery must be a number'),
-      hunting: Yup.number()
-        .required('Hunting is required')
-        .typeError('Hunting must be a number'),
       storage: Yup.number()
         .required('Storage is required')
         .typeError('Storage must be a number'),
@@ -57,12 +54,11 @@ const TotalLand = ({navigation}:{navigation:any}) => {
           poultry,
           fishery,
           trees_shrubs_grassland,
-          storage,
-          hunting
+          storage
         } = values;
 
         const totalAllocatedLand =
-          hunting+cultivation + poultry + fishery + trees_shrubs_grassland + storage;
+          cultivation + poultry + fishery + trees_shrubs_grassland + storage;
 
         // Validate that the total allocated land does not exceed total land
         if (totalAllocatedLand > total_land) {
@@ -91,7 +87,6 @@ const TotalLand = ({navigation}:{navigation:any}) => {
       fishery: 0,
       trees_shrubs_grassland: 0,
       storage: 0,
-      hunting:0
     },
     // validationSchema: land_schema,
     onSubmit: async (values: any) => {
@@ -186,21 +181,6 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             />
             {touched?.fishery && errors?.fishery && (
               <Text style={Styles.error}>{String(errors?.fishery)}</Text>
-            )}
-
-            <Input
-              onChangeText={handleChange('hunting')}
-              value={String(values?.hunting)}
-              placeholder="Enter hunting"
-              fullLength={true}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              label={'Hunting'}
-              keyboardType="numeric"
-              isRight={<AcresElement title={'acres'} />}
-            />
-            {touched?.hunting && errors?.hunting && (
-              <Text style={Styles.error}>{String(errors?.hunting)}</Text>
             )}
             <Input
               onChangeText={handleChange('storage')}

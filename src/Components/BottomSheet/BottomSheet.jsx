@@ -6,20 +6,22 @@ import {
   Text,
   useWindowDimensions,
   ScrollView,
+  Keyboard,
 } from 'react-native';
+
 
 const AddBottomSheet = ({
   modalVisible,
   bottomSheetRef,
   children,
   setModal,
-  onPress = null,
+  snap
 }) => {
   // Creates a reference to the DOM element that we can interact with
 
   // Setting the points to which we want the bottom sheet to be set to
   // Using '-30' here so that it is not seen when it is not presented
-  const snapPoints = React.useMemo(() => ['35%', '50%'], []);
+  const snapPoints = React.useMemo(() => ['40%', '50%'], []);
 
   // Callback function that gets called when the bottom sheet changes
   const handleSheetChanges = React.useCallback(index => {
@@ -32,22 +34,19 @@ const AddBottomSheet = ({
     <BottomSheet
       ref={bottomSheetRef}
       index={modalVisible ? 0 : -1} // Hide the bottom sheet when we first load our component
-      snapPoints={snapPoints}
+      snapPoints={snap?snap:snapPoints}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       enablePanDownToClose
-      onClose={() => setModal(false)}
+      onClose={() => {setModal(false), Keyboard.dismiss()}}
       backdropComponent={props => (
         <BottomSheetBackdrop
           {...props}
           opacity={0.5}
-          pressBehavior={'collapse'}
+          pressBehavior={'close'}
           enableTouchThrough={false}
           appearsOnIndex={0}
           disappearsOnIndex={-1}
-          onPress={onPress}
-
-          // style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
         />
       )}
       style={{
