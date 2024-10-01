@@ -2,20 +2,20 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StackHeader from '../../../../../Components/CustomHeader/StackHeader';
 import NoData from '../../../../../Components/Nodata/NoData';
-import HarvestedProductList from '../../../../../Components/Card/HarvestedProductList';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {dark_grey} from '../../../../../styles/colors';
+import PoultryHarvestedProductList from '../../../../../Components/Card/PoultryHarvestedProductList';
 
-const Harvestedproducts = ({
+const PoultryHarvestedProduct = ({
   navigation,
   route,
 }: {
   navigation: any;
   route: any;
 }) => {
-  const {crop_name, values} = route.params;
+  const {crop_name, impVal, proVal} = route.params;
   const [data, setData] = useState([]);
   const [objError, setObjError] = useState('');
   useEffect(() => {
@@ -34,7 +34,7 @@ const Harvestedproducts = ({
           data={data}
           keyboardShouldPersistTaps="handled"
           renderItem={({item, index}: {item: any; index: any}) => (
-            <HarvestedProductList
+            <PoultryHarvestedProductList
               item={item}
               index={index}
               setData={(data: any, indx: any) => {
@@ -152,6 +152,7 @@ const Harvestedproducts = ({
                   (product: any) =>
                     product.output > 0 && product.product_name.trim() !== '',
                 );
+                console.log('alll', allValid);
                 setObjError(
                   !allValid
                     ? 'Output must be greater than 0 for each product and product name is required'
@@ -169,7 +170,7 @@ const Harvestedproducts = ({
   );
 };
 
-export default Harvestedproducts;
+export default PoultryHarvestedProduct;
 
 const styles = StyleSheet.create({
   container: {

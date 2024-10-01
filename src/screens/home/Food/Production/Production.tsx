@@ -28,7 +28,7 @@ const Production = ({navigation}:{navigation:any}) => {
     },
     {
       title: 'Poultry',
-      navigation: 'poultry',
+      navigation: 'poultrys', //TODO: Change poultrys to poultry
       value: 10,
     },
     {

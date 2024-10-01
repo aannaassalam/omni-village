@@ -15,6 +15,10 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
             navigation.navigate('treesImportantinfo', {
               crop_name: item?.crop_name,
             });
+          }else if(screen=="poultry"){
+            navigation.navigate('poultryImportantinfo',{
+              crop_name: item?.crop_name
+            })
           }
           // navigation.navigate('type');
         }}>

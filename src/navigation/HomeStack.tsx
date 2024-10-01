@@ -18,6 +18,9 @@ import Storage from '../screens/home/Food/Production/Storage/Storage';
 import SellingChannel from '../screens/home/Food/Production/SellingChannel/SellingChannel';
 import TreesImportantInfo from '../screens/home/Food/Production/Trees/TreesImportantInfo';
 import Harvestedproducts from '../screens/home/Food/Production/Trees/Harvestedproducts';
+import PoultryImportantInfo from '../screens/home/Food/Production/Poultry/PoultryImportantInfo';
+import PoultryProductionInfo from '../screens/home/Food/Production/Poultry/PoultryProductionInfo';
+import PoultryHarvestedProduct from '../screens/home/Food/Production/Poultry/PoultryHarvestedProduct';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -77,6 +80,27 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Poultry'} />,
+        }}
+      />
+      <Stack.Screen
+        name="poultryImportantinfo"
+        component={PoultryImportantInfo}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="poultryProductioninfo"
+        component={PoultryProductionInfo}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="poultryHarvestedProduct"
+        component={PoultryHarvestedProduct}
+        options={{
+          headerShown: true,
         }}
       />
       <Stack.Screen

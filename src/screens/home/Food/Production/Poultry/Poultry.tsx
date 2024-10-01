@@ -3,10 +3,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -21,11 +23,20 @@ import {
   fontFamilyBold,
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
+import AddPoultryBottomSheet from '../../../../../Components/BottomSheet/Production/AddPoultryBottomSheet';
+import { FlatList } from 'react-native';
+import NoData from '../../../../../Components/Nodata/NoData';
+import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
+import Itemlist from '../../../../../Components/Card/Itemlist';
 
 const Poultry = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const DATA = [];
+    const [modalVisible, setModalVisible] = useState(false);
+    const [data, setData] = useState([]);
+    const handleRemoveItem = async (name: any) => {
+      setData(data.filter(item => item.crop_name !== name));
+    };
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -56,7 +67,7 @@ const Poultry = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  12 Bred
+                  {data.length} Bred
                 </Text>
               </View>
             </View>
@@ -70,26 +81,53 @@ const Poultry = () => {
         </View>
       </HeaderCard>
       <View>
-        {DATA.length > 0 ? (
-          <></>
-        ) : (
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={require('../../../../../../assets/illustration.png')}
-              style={styles.illustration}
+        <FlatList
+          data={data}
+          renderItem={({item}) => (
+            <Itemlist
+              item={item}
+              setRemove={(crop: any) => handleRemoveItem(crop)}
+              screen={'poultry'}
             />
-            <CustomButton
-              btnText={'Add Crop'}
-              onPress={() => {}}
-              style={{width: width / 2, marginTop: 16}}
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <NoData
+              title={'Add Poultry'}
+              onPress={() => setModalVisible(true)}
             />
-          </View>
-        )}
+          }
+          ListFooterComponent={
+            data.length > 0 ? (
+              <TouchableOpacity
+                style={Styles.addAndDeleteButtonSection}
+                onPress={() => setModalVisible(true)}>
+                <AddAndDeleteCropButton
+                  add={true}
+                  cropName={'Add poultry'}
+                  onPress={() => setModalVisible(true)}
+                />
+              </TouchableOpacity>
+            ) : null
+          }
+        />
       </View>
+      <AddPoultryBottomSheet
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        data={data}
+        setData={async (item: any) => {
+          const find_crop = await data.find(
+            itm => itm.crop_name === item?.crop_name,
+          )?.crop_name;
+          if (find_crop) {
+            return ToastAndroid.show('Poultry already exists', ToastAndroid.SHORT);
+          } else {
+            setData([...data, item]);
+          }
+        }}
+      />
     </View>
   );
 };

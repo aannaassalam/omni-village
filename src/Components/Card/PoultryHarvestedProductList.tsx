@@ -22,7 +22,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import CustomButton from '../CustomButton/CustomButton';
 
-const HarvestedProductList = ({
+const PoultryHarvestedProductList = ({
   item,
   index,
   setRemove,
@@ -45,7 +45,6 @@ const HarvestedProductList = ({
         .min(1, 'Output must be greater than equal to 1')
         .required('Output is required'),
       self_consumed: Yup.number().required('Self consumed is required'),
-      fed_to_livestock: Yup.number().required('Fed to livestock is required'),
       sold_to_neighbours: Yup.number().required(
         'Sold to neighbours is required',
       ),
@@ -78,7 +77,6 @@ const HarvestedProductList = ({
           self_consumed,
           sold_for_industrial_use,
           sold_to_neighbours,
-          fed_to_livestock,
           wastage,
           output,
           others_value = 0,
@@ -88,7 +86,6 @@ const HarvestedProductList = ({
           self_consumed +
           sold_for_industrial_use +
           sold_to_neighbours +
-          fed_to_livestock+
           wastage +
           others_value;
 
@@ -116,7 +113,6 @@ const HarvestedProductList = ({
       product_name: '',
       output: 0,
       self_consumed: 0,
-      fed_to_livestock: 0,
       sold_to_neighbours: 0,
       sold_for_industrial_use: 0,
       wastage: 0,
@@ -133,7 +129,6 @@ const HarvestedProductList = ({
           product_name: values.product_name,
           output: parseInt(values.output),
           self_consumed: parseInt(values.self_consumed),
-          fed_to_livestock: parseInt(values.fed_to_livestock),
           sold_to_neighbours: parseInt(values.sold_to_neighbours),
           sold_for_industrial_use: parseInt(values.sold_for_industrial_use),
           wastage: parseInt(values.wastage),
@@ -149,10 +144,9 @@ const HarvestedProductList = ({
   useEffect(() => {
     resetForm({
       values: {
-        product_name: item?.product_name ||'',
+        product_name: item?.product_name || '',
         output: item?.output || 0,
         self_consumed: item?.self_consumed || 0,
-        fed_to_livestock: item?.fed_to_livestock || 0,
         sold_to_neighbours: item?.sold_to_neighbours || 0,
         sold_for_industrial_use: item?.sold_for_industrial_use || 0,
         wastage: item?.wastage || 0,
@@ -215,16 +209,12 @@ const HarvestedProductList = ({
               {touched?.output && errors?.output && (
                 <Text style={Styles.error}>{String(errors?.output)}</Text>
               )}
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('self_consumed')}
                     value={String(values?.self_consumed)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Self Consumed'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.self_consumed && errors?.self_consumed && (
@@ -232,25 +222,6 @@ const HarvestedProductList = ({
                       {String(errors?.self_consumed)}
                     </Text>
                   )}
-                </View>
-                <View>
-                  <Input
-                    onChangeText={handleChange('fed_to_livestock')}
-                    value={String(values?.fed_to_livestock)}
-                    fullLength={false}
-                    inner_width={'60%'}
-                    main_width={'90%'}
-                    label={'Fed to livestock'}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={'kg'} />}
-                  />
-                  {touched?.fed_to_livestock && errors?.fed_to_livestock && (
-                    <Text style={Styles.error}>
-                      {String(errors?.fed_to_livestock)}
-                    </Text>
-                  )}
-                </View>
-              </View>
               <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
                 <View>
                   <Input
@@ -327,7 +298,7 @@ const HarvestedProductList = ({
                     value={String(values?.others_value)}
                     fullLength={true}
                     label={values?.others}
-                    keyboardType={'default'}
+                    keyboardType={'numeric'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.others_value && errors?.others_value && (
@@ -411,7 +382,7 @@ const HarvestedProductList = ({
   );
 };
 
-export default HarvestedProductList;
+export default PoultryHarvestedProductList;
 
 const makeStyles = (fontScale: any) =>
   StyleSheet.create({
