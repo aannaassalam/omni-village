@@ -49,7 +49,7 @@ const Production = ({navigation}:{navigation:any}) => {
     },
     {
       title: 'Selling Channel',
-      navigation: 'total_land',
+      navigation: 'sellingChannel',
     },
   ];
   return (

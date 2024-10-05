@@ -66,3 +66,34 @@ export const home_data = [
     image: require('../../assets/community.png'),
   },
 ];
+
+export const storage_data = [
+  {
+    storage_id: 1,
+    storage_quantity: 0,
+    storage_method_name: '',
+    storage_method_id: '',
+    storage_name: 'grain',
+  },
+  {
+    storage_id: 2,
+    storage_quantity: 0,
+    storage_method_name: '',
+    storage_method_id: '',
+    storage_name: 'poultry',
+  },
+  {
+    storage_id: 3,
+    storage_quantity: 0,
+    storage_method_name: '',
+    storage_method_id: '',
+    storage_name: 'meat',
+  },
+  {
+    storage_id: 4,
+    storage_quantity: 0,
+    storage_method_name: '',
+    storage_method_id: '',
+    storage_name: 'vegetables & fruits',
+  },
+];

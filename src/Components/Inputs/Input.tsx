@@ -36,7 +36,8 @@ interface InputProps {
   topLabel?: any;
   onBlur?: any;
   inner_width?: any;
-  main_width?:any
+  main_width?: any;
+  autoFocus?:any
 }
 
 const Input = ({
@@ -70,6 +71,7 @@ const Input = ({
   onBlur,
   inner_width,
   main_width,
+  autoFocus,
 }: InputProps) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -145,6 +147,7 @@ const Input = ({
             }}
             onBlur={onBlur}
             keyboardType={keyboardType}
+            autoFocus={autoFocus}
             onChangeText={onChangeText}
             value={value}
             onFocus={onFocus}
@@ -160,7 +163,14 @@ const Input = ({
             autoCapitalize="none"
           />
           {isClock && <AntIcon name="home" size={24} color={primary} />}
-          {isDate && <AntIcon name="calendar" size={24} color={primary} style={{marginRight:16}}/>}
+          {isDate && (
+            <AntIcon
+              name="calendar"
+              size={24}
+              color={primary}
+              style={{marginRight: 16}}
+            />
+          )}
           {isKM && (
             <Text
               style={{

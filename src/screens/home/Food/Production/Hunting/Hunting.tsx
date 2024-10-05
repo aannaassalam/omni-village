@@ -1,12 +1,15 @@
 import {
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -21,11 +24,19 @@ import {
   fontFamilyBold,
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
+import AddHuntingBottomSheet from '../../../../../Components/BottomSheet/Production/AddhuntingBottomSheet';
+import Itemlist from '../../../../../Components/Card/Itemlist';
+import NoData from '../../../../../Components/Nodata/NoData';
+import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 
 const Hunting = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const DATA = [];
+   const [modalVisible, setModalVisible] = useState(false);
+   const [data, setData] = useState([]);
+   const handleRemoveItem = async (name: any) => {
+     setData(data.filter(item => item.crop_name !== name));
+   };
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -56,7 +67,7 @@ const Hunting = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  12 Animals
+                  {data.length} Animals
                 </Text>
               </View>
             </View>
@@ -70,26 +81,53 @@ const Hunting = () => {
         </View>
       </HeaderCard>
       <View>
-        {DATA.length > 0 ? (
-          <></>
-        ) : (
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={require('../../../../../../assets/illustration.png')}
-              style={styles.illustration}
+        <FlatList
+          data={data}
+          renderItem={({item}) => (
+            <Itemlist
+              item={item}
+              setRemove={(crop: any) => handleRemoveItem(crop)}
+              screen={'hunting'}
             />
-            <CustomButton
-              btnText={'Add Crop'}
-              onPress={() => {}}
-              style={{width: width / 2, marginTop: 16}}
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <NoData
+              title={'Add Hunting'}
+              onPress={() => setModalVisible(true)}
             />
-          </View>
-        )}
+          }
+          ListFooterComponent={
+            data.length > 0 ? (
+              <TouchableOpacity
+                style={Styles.addAndDeleteButtonSection}
+                onPress={() => setModalVisible(true)}>
+                <AddAndDeleteCropButton
+                  add={true}
+                  cropName={'Add Hunting'}
+                  onPress={() => setModalVisible(true)}
+                />
+              </TouchableOpacity>
+            ) : null
+          }
+        />
       </View>
+      <AddHuntingBottomSheet
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        data={data}
+        setData={async (item: any) => {
+          const find_crop = await data.find(
+            itm => itm.crop_name === item?.crop_name,
+          )?.crop_name;
+          if (find_crop) {
+            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
+          } else {
+            setData([...data, item]);
+          }
+        }}
+      />
     </View>
   );
 };

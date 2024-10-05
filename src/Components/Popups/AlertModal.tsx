@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {Overlay} from '@rneui/themed';
 
 
-import {black} from '../../styles/colors';
+import {black, borderColor, dark_grey} from '../../styles/colors';
 import {AlertIcon, SuccessIcon} from '../../../assets/index';
 import {fontFamilyBold, fontFamilyRegular } from '../../styles/fontStyle';
 import CustomButton from './../CustomButton/CustomButton';
@@ -55,13 +55,14 @@ const AlertModal = ({
               btnText={hideText}
               onPress={() => onHide()}
               loading={false}
-              style={{width: width / 2.9}}
+              btnStyle={{color: dark_grey}}
+              style={{width: width / 3, backgroundColor: '#ebeced'}}
             />
             <CustomButton
               btnText={confirmText}
               onPress={() => onSubmit()}
               loading={false}
-              style={{width: width / 2.9}}
+              style={{width: width / 3}}
             />
           </View>
         ) : (

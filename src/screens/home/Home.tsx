@@ -6,20 +6,24 @@ import {
   ScrollView,
   FlatList,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import HomeHeader from '../../Components/CustomHeader/HomeHeader';
 import HeaderCard from '../../Components/Card/HeaderCard';
 import {Avatar, Divider} from 'react-native-paper';
-import { fontFamilyBold, fontFamilyMedium, fontFamilyRegular } from '../../styles/fontStyle';
-import { Styles } from '../../styles/globalStyles';
-import { draft_color, primary } from '../../styles/colors';
+import {
+  fontFamilyBold,
+  fontFamilyMedium,
+  fontFamilyRegular,
+} from '../../styles/fontStyle';
+import {Styles} from '../../styles/globalStyles';
+import {draft_color, primary} from '../../styles/colors';
 import HomeCardOptions from '../../Components/Card/HomeCardOptions';
-import { home_data } from '../../../assets/mockdata/Data';
+import {home_data} from '../../../assets/mockdata/Data';
 
 const Home = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-     const [active, setActive] = useState('');
+  const [active, setActive] = useState('');
   return (
     <View style={styles.container}>
       <HomeHeader />
@@ -53,15 +57,19 @@ const Home = () => {
             </View> */}
           </HeaderCard>
           <View style={styles.flatlist}>
-          <FlatList
-            scrollEnabled={false}
-            contentContainerStyle={styles.items_container}
-            data={home_data}
-            key={2}
-            numColumns={4}
-            renderItem={({item}) => <HomeCardOptions item={item} active={active} setActive={(item:any)=>setActive(item)}/>}
-            keyExtractor={item => item.id.toString()}
-          />
+            <View
+              style={styles.card_container}>
+              {home_data.map((item: any, index: any) => {
+                return (
+                  <HomeCardOptions
+                    item={item}
+                    active={active}
+                    setActive={(item: any) => setActive(item)}
+                    key={index}
+                  />
+                );
+              })}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -112,7 +120,13 @@ const makeStyles = (fontScale: any) =>
       justifyContent: 'center',
       alignItems: 'flex-start',
     },
-    flatlist:{
-      marginVertical: 26
-    }
+    flatlist: {
+      marginVertical: 26,
+    },
+    card_container: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      columnGap:10,
+      justifyContent:'flex-start',
+    },
   });

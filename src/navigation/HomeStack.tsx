@@ -21,6 +21,7 @@ import Harvestedproducts from '../screens/home/Food/Production/Trees/Harvestedpr
 import PoultryImportantInfo from '../screens/home/Food/Production/Poultry/PoultryImportantInfo';
 import PoultryProductionInfo from '../screens/home/Food/Production/Poultry/PoultryProductionInfo';
 import PoultryHarvestedProduct from '../screens/home/Food/Production/Poultry/PoultryHarvestedProduct';
+import HuntingInfo from '../screens/home/Food/Production/Hunting/HuntingInfo';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -139,6 +140,13 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Hunting'} />,
+        }}
+      />
+      <Stack.Screen
+        name="huntingInfo"
+        component={HuntingInfo}
+        options={{
+          headerShown: true,
         }}
       />
       <Stack.Screen
