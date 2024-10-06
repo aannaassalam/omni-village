@@ -1,12 +1,15 @@
 import {
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -21,11 +24,19 @@ import {
   fontFamilyBold,
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
+import AddFisheryBottomSheet from '../../../../../Components/BottomSheet/Production/AddFisheryBottomSheet';
+import Itemlist from '../../../../../Components/Card/Itemlist';
+import NoData from '../../../../../Components/Nodata/NoData';
+import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 
 const Fishery = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const DATA = [];
+   const [modalVisible, setModalVisible] = useState(false);
+   const [data, setData] = useState([]);
+   const handleRemoveItem = async (name: any) => {
+     setData(data.filter((item: any) => item.crop_name !== name));
+   };
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -70,26 +81,50 @@ const Fishery = () => {
         </View>
       </HeaderCard>
       <View>
-        {DATA.length > 0 ? (
-          <></>
-        ) : (
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={require('../../../../../../assets/illustration.png')}
-              style={styles.illustration}
+        <FlatList
+          data={data}
+          renderItem={({item}) => (
+            <Itemlist
+              item={item}
+              setRemove={(crop: any) => handleRemoveItem(crop)}
+              screen={'fishery'}
             />
-            <CustomButton
-              btnText={'Add Crop'}
-              onPress={() => {}}
-              style={{width: width / 2, marginTop: 16}}
-            />
-          </View>
-        )}
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <NoData title={'Add Fishery'} onPress={() => setModalVisible(true)} />
+          }
+          ListFooterComponent={
+            data.length > 0 ? (
+              <TouchableOpacity
+                style={Styles.addAndDeleteButtonSection}
+                onPress={() => setModalVisible(true)}>
+                <AddAndDeleteCropButton
+                  add={true}
+                  cropName={'Add Fishery'}
+                  onPress={() => setModalVisible(true)}
+                />
+              </TouchableOpacity>
+            ) : null
+          }
+        />
       </View>
+      <AddFisheryBottomSheet
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        data={data}
+        setData={async (item: any) => {
+          const find_crop = await data.find(
+            (itm: any) => itm.crop_name === item?.crop_name,
+          )?.crop_name;
+          if (find_crop) {
+            return ToastAndroid.show('fishery already exists', ToastAndroid.SHORT);
+          } else {
+            setData([...data, item]);
+          }
+        }}
+      />
     </View>
   );
 };

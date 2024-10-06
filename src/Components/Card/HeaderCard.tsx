@@ -36,6 +36,7 @@ const makeStyles = (fontScale: any) =>
     container: {
       paddingHorizontal: 22,
       paddingVertical: 22,
+      marginTop: 12,
       backgroundColor: '#f4f4f4',
       borderColor: borderColor,
       borderWidth: 1,

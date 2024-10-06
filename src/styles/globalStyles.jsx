@@ -6,7 +6,8 @@ export const Styles = StyleSheet.create({
     mainContainer:{
         flex: 1,
         paddingHorizontal: 22,
-        paddingVertical: 22,
+        paddingBottom: 22,
+        paddingTop: 12,
         backgroundColor:white
     },
     fieldLabel: {

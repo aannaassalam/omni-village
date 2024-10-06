@@ -35,7 +35,7 @@ const Trees = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const handleRemoveItem = async (name: any) => {
-    setData(data.filter(item => item.crop_name !== name));
+    setData(data.filter((item:any) => item.crop_name !== name));
   };
   return (
     <View style={Styles.mainContainer}>

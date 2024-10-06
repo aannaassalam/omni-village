@@ -22,6 +22,9 @@ import PoultryImportantInfo from '../screens/home/Food/Production/Poultry/Poultr
 import PoultryProductionInfo from '../screens/home/Food/Production/Poultry/PoultryProductionInfo';
 import PoultryHarvestedProduct from '../screens/home/Food/Production/Poultry/PoultryHarvestedProduct';
 import HuntingInfo from '../screens/home/Food/Production/Hunting/HuntingInfo';
+import Utilisation from '../screens/home/Food/Production/Cultivation/Utilisation';
+import CultivationImportantInfo from '../screens/home/Food/Production/Cultivation/CultivationImportantInfo';
+import FisheryInfo from '../screens/home/Food/Production/Fishery/FisheryInfo';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -76,6 +79,20 @@ const HomeStack = () => {
         }}
       />
       <Stack.Screen
+        name="utilisation"
+        component={Utilisation}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="cultivationImportantInfo"
+        component={CultivationImportantInfo}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
         name="poultry"
         component={Poultry}
         options={{
@@ -110,6 +127,13 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Fishery'} />,
+        }}
+      />
+      <Stack.Screen
+        name="fisheryInfo"
+        component={FisheryInfo}
+        options={{
+          headerShown: true,
         }}
       />
       <Stack.Screen

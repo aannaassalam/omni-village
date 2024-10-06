@@ -11,7 +11,16 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
       <TouchableOpacity
         style={Styles.addAndDeleteButtonSection}
         onPress={() => {
-          if(screen=="trees"){
+          if(screen=="cultivation"){
+            navigation.navigate('utilisation', {
+              crop_name: item?.crop_name,
+            });
+          }else if(screen=="fishery"){
+            navigation.navigate('fisheryInfo', {
+              crop_name: item?.crop_name,
+            });
+          }
+          else if(screen=="trees"){
             navigation.navigate('treesImportantinfo', {
               crop_name: item?.crop_name,
             });
