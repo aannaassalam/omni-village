@@ -81,6 +81,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
         .required('Expenditure on inputs is required'),
+         yield: Yup.string().required('yield is required'),
       required_processing: Yup.boolean().required(
         'Required processing is required',
       ),
@@ -136,6 +137,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       wastage: 0,
       others: '',
       others_value: 0,
+      yield: 0,
       income_from_sale: 0,
       expenditure_on_inputs: 0,
       required_processing: false,
@@ -146,6 +148,15 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       setModalVisible(true);
     },
   });
+    useEffect(() => {
+      setValues({
+        ...values,
+        yield:
+          values?.output === 0 || values?.number === 0
+            ? 0
+            : String(parseFloat(values?.output) / parseFloat(values?.number)),
+      });
+    }, [values?.output, values?.number]);
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -283,6 +294,15 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
                 )}
               </>
             ) : null}
+            <Input
+              onChangeText={handleChange('yield')}
+              value={String(values?.yield)}
+              fullLength={true}
+              editable={false}
+              label={'Yield'}
+              isRight={<AcresElement title={'acres'} />}
+              style={{backgroundColor: '#ebeced', borderRadius: 8}}
+            />
             <Input
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
