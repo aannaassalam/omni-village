@@ -126,7 +126,7 @@ const makeStyles = (fontScale: any) =>
     card_container: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      columnGap:10,
-      justifyContent:'flex-start',
+      width: '100%',
+      justifyContent:'space-between',
     },
   });

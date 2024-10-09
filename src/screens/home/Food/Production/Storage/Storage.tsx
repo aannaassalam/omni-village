@@ -102,6 +102,7 @@ const Storage = () => {
                   Keyboard.dismiss()
                   setVisible(true);
                 } else {
+                  Keyboard.dismiss();
                   setData(prevData =>
                     prevData.map(item =>
                       item.storage_id === id

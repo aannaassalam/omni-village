@@ -31,7 +31,7 @@ const Food = ({navigation}:{navigation:any}) => {
               style={styles.image}
             />
           </View>
-          <View style={[styles.inner_container, {marginTop: 10}]}>
+          <View style={styles.bottomInner}>
             <View>
               <Text style={styles.header_text}>50</Text>
               <Text style={styles.sub_text}>Submitted</Text>
@@ -50,7 +50,7 @@ const Food = ({navigation}:{navigation:any}) => {
               style={styles.image}
             />
           </View>
-          <View style={[styles.inner_container, {marginTop: 10}]}>
+          <View style={styles.bottomInner}>
             <View>
               <Text style={styles.header_text}>50</Text>
               <Text style={styles.sub_text}>Submitted</Text>
@@ -124,6 +124,7 @@ const makeStyles = (fontScale: any) =>
       padding: 22,
       backgroundColor: white,
       borderRadius: 8,
+      width: '45%'
     },
     box_inner_container: {
       backgroundColor: dark_grey,
@@ -186,5 +187,10 @@ const makeStyles = (fontScale: any) =>
       alignSelf: 'center',
       width: '65%',
       flexWrap: 'wrap',
+    },
+    bottomInner: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 10,
     },
   });

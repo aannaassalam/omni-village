@@ -18,11 +18,13 @@ const AddFisheryBottomSheet = ({
   modalVisible,
   setModalVisible,
   data,
+  fisheryType,
   setData,
 }: {
   modalVisible?: any;
   setModalVisible?: any;
   data?: any;
+  fisheryType?:any;
   setData?: any;
 }) => {
   const bottomsheetRef = useRef(null);
@@ -38,7 +40,9 @@ const AddFisheryBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Add Fishery</Text>
+          <Text style={styles.headerText}>
+            Add {fisheryType == 'pond' ? 'Pond' : 'River'} Fishery
+          </Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -73,7 +77,7 @@ const AddFisheryBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Apple"
+              placeholder="Ex: Rohu"
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -82,7 +86,7 @@ const AddFisheryBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Add Fishery Type'}
+          btnText={`Add ${fisheryType=="pond"?"Pond":"River"} Fishery Type`}
           onPress={async () => {
             setModalVisible(!modalVisible), bottomsheetRef.current.close();
             await setData({

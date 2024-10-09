@@ -24,7 +24,12 @@ import PoultryHarvestedProduct from '../screens/home/Food/Production/Poultry/Pou
 import HuntingInfo from '../screens/home/Food/Production/Hunting/HuntingInfo';
 import Utilisation from '../screens/home/Food/Production/Cultivation/Utilisation';
 import CultivationImportantInfo from '../screens/home/Food/Production/Cultivation/CultivationImportantInfo';
-import FisheryInfo from '../screens/home/Food/Production/Fishery/FisheryInfo';
+import Pond from '../screens/home/Food/Production/Fishery/Pond/Pond';
+import PondInfo from '../screens/home/Food/Production/Fishery/Pond/PondInfo';
+import River from '../screens/home/Food/Production/Fishery/River/River';
+import RiverInfo from '../screens/home/Food/Production/Fishery/River/RiverInfo';
+import ConsumptionItem from '../screens/home/Food/Consumption/ConsumptionItem';
+import ConsumptionInfo from '../screens/home/Food/Consumption/ConsumptionInfo';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -68,6 +73,21 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Consumption'} />,
+        }}
+      />
+      <Stack.Screen
+        name="consumptionItem"
+        component={ConsumptionItem}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Consumption'} />,
+        }}
+      />
+      <Stack.Screen
+        name="consumptionInfo"
+        component={ConsumptionInfo}
+        options={{
+          headerShown: true,
         }}
       />
       <Stack.Screen
@@ -130,8 +150,31 @@ const HomeStack = () => {
         }}
       />
       <Stack.Screen
-        name="fisheryInfo"
-        component={FisheryInfo}
+        name="pond"
+        component={Pond}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Pond'} />,
+        }}
+      />
+      <Stack.Screen
+        name="pondInfo"
+        component={PondInfo}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="river"
+        component={River}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'River'} />,
+        }}
+      />
+      <Stack.Screen
+        name="riverInfo"
+        component={RiverInfo}
         options={{
           headerShown: true,
         }}

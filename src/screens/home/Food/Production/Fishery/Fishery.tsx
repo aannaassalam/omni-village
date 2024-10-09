@@ -14,29 +14,36 @@ import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
   black,
+  borderColor,
   dark_grey,
   draft_color,
   primary,
+  unSelected,
   white,
 } from '../../../../../styles/colors';
 import HeaderCard from '../../../../../Components/Card/HeaderCard';
 import {
   fontFamilyBold,
+  fontFamilyMedium,
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
-import AddFisheryBottomSheet from '../../../../../Components/BottomSheet/Production/AddFisheryBottomSheet';
-import Itemlist from '../../../../../Components/Card/Itemlist';
-import NoData from '../../../../../Components/Nodata/NoData';
-import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 
-const Fishery = () => {
+const Fishery = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-   const [modalVisible, setModalVisible] = useState(false);
-   const [data, setData] = useState([]);
-   const handleRemoveItem = async (name: any) => {
-     setData(data.filter((item: any) => item.crop_name !== name));
-   };
+  const [onItemSeleted, setOnItemSelected] = useState(null);
+  const ITEMS = [
+    {
+      title: 'Harvested from Pond',
+      navigation: 'pond',
+      image: require('../../../../../../assets/pond.png'),
+    },
+    {
+      title: 'Harvested from River',
+      navigation: 'river',
+      image: require('../../../../../../assets/river.png'),
+    },
+  ];
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -60,16 +67,6 @@ const Fishery = () => {
                   50 acres
                 </Text>
               </View>
-              <View>
-                <Text style={styles.sub_text}>Fished</Text>
-                <Text
-                  style={[
-                    styles.sub_text,
-                    {color: primary, marginVertical: 4},
-                  ]}>
-                  12 Species
-                </Text>
-              </View>
             </View>
           </View>
           <View style={styles.box_inner_container}>
@@ -80,51 +77,46 @@ const Fishery = () => {
           </View>
         </View>
       </HeaderCard>
-      <View>
-        <FlatList
-          data={data}
-          renderItem={({item}) => (
-            <Itemlist
-              item={item}
-              setRemove={(crop: any) => handleRemoveItem(crop)}
-              screen={'fishery'}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <NoData title={'Add Fishery'} onPress={() => setModalVisible(true)} />
-          }
-          ListFooterComponent={
-            data.length > 0 ? (
-              <TouchableOpacity
-                style={Styles.addAndDeleteButtonSection}
-                onPress={() => setModalVisible(true)}>
-                <AddAndDeleteCropButton
-                  add={true}
-                  cropName={'Add Fishery'}
-                  onPress={() => setModalVisible(true)}
+      <View style={{marginTop: '10%'}}>
+        {ITEMS.map((item: any, i: any) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                setOnItemSelected(i), navigation.navigate(item?.navigation);
+              }}
+              style={[
+                styles?.itemContainer,
+                {borderColor: onItemSeleted == i ? primary : borderColor},
+              ]}
+              key={i}>
+              <View
+                style={[
+                  styles.itemImageContainer,
+                  {backgroundColor: onItemSeleted == i ? primary : unSelected},
+                ]}>
+                <Image source={item.image} style={styles.itemImage} />
+              </View>
+              <View style={styles.itemInnerContainer}>
+                <Text
+                  style={[
+                    styles.itemTxt,
+                    {color: onItemSeleted == i ? primary : unSelected},
+                  ]}>
+                  {item?.title}
+                </Text>
+                <Image
+                  source={
+                    onItemSeleted == i
+                      ? require('../../../../../../assets/e4.png')
+                      : require('../../../../../../assets/e5.png')
+                  }
+                  style={{alignSelf: 'center'}}
                 />
-              </TouchableOpacity>
-            ) : null
-          }
-        />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-      <AddFisheryBottomSheet
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        data={data}
-        setData={async (item: any) => {
-          const find_crop = await data.find(
-            (itm: any) => itm.crop_name === item?.crop_name,
-          )?.crop_name;
-          if (find_crop) {
-            return ToastAndroid.show('fishery already exists', ToastAndroid.SHORT);
-          } else {
-            setData([...data, item]);
-          }
-        }}
-      />
     </View>
   );
 };
@@ -168,10 +160,47 @@ const makeStyles = (fontScale: any) =>
       alignSelf: 'center',
       width: 100,
     },
-    illustration: {
-      marginTop: '30%',
-      height: 300,
-      width: 300,
-      resizeMode: 'contain',
+    itemContainer: {
+      padding: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      // justifyContent:'space-between',
+      gap: 12,
+      borderColor: borderColor,
+      borderWidth: 1,
+      borderRadius: 6,
+      width: '100%',
+      marginVertical: 8,
+    },
+    itemInnerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    itemImage: {
+      height: 38,
+      width: 38,
+      alignSelf: 'center',
+    },
+    itemImageContainer: {
+      backgroundColor: unSelected,
+      borderRadius: 6,
+      padding: 14,
+      justifyContent: 'center',
+      alignSelf: 'center',
+      height: 80,
+      width: 80,
+    },
+    itemTxt: {
+      color: unSelected,
+      fontSize: 16 / fontScale,
+      fontFamily: fontFamilyMedium,
+      alignSelf: 'center',
+      width: '65%',
+      flexWrap: 'wrap',
+    },
+    bottomInner: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 10,
     },
   });

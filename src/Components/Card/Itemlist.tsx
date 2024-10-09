@@ -15,21 +15,28 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
             navigation.navigate('utilisation', {
               crop_name: item?.crop_name,
             });
-          }else if(screen=="fishery"){
-            navigation.navigate('fisheryInfo', {
+          }else if (screen == 'pond') {
+            navigation.navigate('pondInfo', {
               crop_name: item?.crop_name,
             });
-          }
-          else if(screen=="trees"){
+          } else if (screen == 'river') {
+            navigation.navigate('riverInfo', {
+              crop_name: item?.crop_name,
+            });
+          } else if (screen == 'trees') {
             navigation.navigate('treesImportantinfo', {
               crop_name: item?.crop_name,
             });
-          }else if(screen=="poultry"){
-            navigation.navigate('poultryImportantinfo',{
-              crop_name: item?.crop_name
-            })
-          }else if(screen=="hunting"){
+          } else if (screen == 'poultry') {
+            navigation.navigate('poultryImportantinfo', {
+              crop_name: item?.crop_name,
+            });
+          } else if (screen == 'hunting') {
             navigation.navigate('huntingInfo', {
+              crop_name: item?.crop_name,
+            });
+          }else if (screen == 'consumption'){
+            navigation.navigate('consumptionInfo', {
               crop_name: item?.crop_name,
             });
           }

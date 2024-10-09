@@ -18,7 +18,7 @@ const Production = ({navigation}:{navigation:any}) => {
   const ITEMS = [
     {
       title: 'Cultivation',
-      navigation: 'cultivations', //TODO: Change cultivations to cultivation
+      navigation: 'cultivation', //TODO: Change cultivations to cultivation
       value: 10,
     },
     {
@@ -33,7 +33,7 @@ const Production = ({navigation}:{navigation:any}) => {
     },
     {
       title: 'Fishery',
-      navigation: 'fisherys', //TODO: Change fisherys to fishery
+      navigation: 'fishery', //TODO: Change fisherys to fishery
       value: 10,
     },
 
@@ -44,12 +44,12 @@ const Production = ({navigation}:{navigation:any}) => {
     },
     {
       title: 'Storage',
-      navigation: 'storages', //TODO: Change storages to storage
+      navigation: 'storage', //TODO: Change storages to storage
       value: 10,
     },
     {
       title: 'Selling Channel',
-      navigation: 'sellingChannels', //TODO: Change sellingChannels to sellingChannel
+      navigation: 'sellingChannel', //TODO: Change sellingChannels to sellingChannel
     },
   ];
   return (
