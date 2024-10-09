@@ -69,7 +69,7 @@ const CultivationImportantInfo = ({
     required_processing: Yup.boolean().required(
       'Required processing is required',
     ),
-    processing_method: Yup.number().test(
+    processing_method: Yup.string().test(
       'processing_method-required',
       'Processing Method is required',
       function (value) {

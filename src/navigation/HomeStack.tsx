@@ -30,6 +30,7 @@ import River from '../screens/home/Food/Production/Fishery/River/River';
 import RiverInfo from '../screens/home/Food/Production/Fishery/River/RiverInfo';
 import ConsumptionItem from '../screens/home/Food/Consumption/ConsumptionItem';
 import ConsumptionInfo from '../screens/home/Food/Consumption/ConsumptionInfo';
+import DemographicInfo from '../screens/home/DemographicInfo/DemographicInfo';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -43,6 +44,7 @@ const HomeStack = () => {
         keyboardHandlingEnabled: true,
       }}>
       <Stack.Screen name="home" component={Home} />
+      {/* Food Stacks */}
       <Stack.Screen
         name="food"
         component={Food}
@@ -230,6 +232,15 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Selling Channel'} />,
+        }}
+      />
+      {/* Demographic  */}
+      <Stack.Screen
+        name="demographic"
+        component={DemographicInfo}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Demographic Info'} />,
         }}
       />
     </Stack.Navigator>
