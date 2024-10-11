@@ -14,7 +14,7 @@ export const home_data = [
   {
     id: 3,
     title: 'Landholding & Usage mapping',
-    navigation: '', // FIX ME - landholdingUsage
+    navigation: 'landholding', // FIX ME - landholdingUsage
     image: require('../../assets/landhold.png'),
   },
   {

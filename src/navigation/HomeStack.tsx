@@ -31,6 +31,7 @@ import RiverInfo from '../screens/home/Food/Production/Fishery/River/RiverInfo';
 import ConsumptionItem from '../screens/home/Food/Consumption/ConsumptionItem';
 import ConsumptionInfo from '../screens/home/Food/Consumption/ConsumptionInfo';
 import DemographicInfo from '../screens/home/DemographicInfo/DemographicInfo';
+import Landholding from '../screens/home/Landholding & Usage Mapping/Landholding';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -241,6 +242,15 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Demographic Info'} />,
+        }}
+      />
+      {/* Landholding & Usage mapping */}
+      <Stack.Screen
+        name="landholding"
+        component={Landholding}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Landholding & Usage Mapping'} />,
         }}
       />
     </Stack.Navigator>

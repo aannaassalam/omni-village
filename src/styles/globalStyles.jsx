@@ -37,6 +37,14 @@ export const Styles = StyleSheet.create({
         alignItems:'center',
         alignSelf:'center'
     },
+    pickerContainer:{
+        borderRadius:8,
+        borderColor: primary,
+        borderWidth: 1,
+        backgroundColor: '#fff',
+        width: '100%',
+        alignSelf:'center',
+    },
     bottomPopupbutton: {
         flexDirection: 'row',
         alignSelf: 'center',
