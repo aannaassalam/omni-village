@@ -1,7 +1,5 @@
 import {createStackNavigator} from '@react-navigation/stack';
-import {
-  useNavigation,
-} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useWindowDimensions} from 'react-native';
 import Home from '../screens/home/Home';
 import TotalLand from '../screens/home/Food/Production/TotalLand';
@@ -32,6 +30,15 @@ import ConsumptionItem from '../screens/home/Food/Consumption/ConsumptionItem';
 import ConsumptionInfo from '../screens/home/Food/Consumption/ConsumptionInfo';
 import DemographicInfo from '../screens/home/DemographicInfo/DemographicInfo';
 import Landholding from '../screens/home/Landholding & Usage Mapping/Landholding';
+import Housing from '../screens/home/Housing/Housing';
+import HousingFarmhouse from '../screens/home/Housing/HousingFarmhouse';
+import CommunityInfrastructure from '../screens/home/Community Infrastructure/CommunityInfrastructure';
+import BusinessCommercial from '../screens/home/Business & Commercial Establishments/BusinessCommercial';
+import OtherPersonal from '../screens/home/Other Personal and Household Items/OtherPersonal';
+import Forestry from '../screens/home/Forestry & Timber/Forestry';
+import Mobility from '../screens/home/Mobility/Mobility';
+import Energy from '../screens/home/Energy & Fuel/Energy';
+import Water from '../screens/home/Water/Water';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -251,6 +258,86 @@ const HomeStack = () => {
         options={{
           headerShown: true,
           header: () => <StackHeader title={'Landholding & Usage Mapping'} />,
+        }}
+      />
+      {/* Housing */}
+      <Stack.Screen
+        name="housing"
+        component={Housing}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Housing For Family'} />,
+        }}
+      />
+      <Stack.Screen
+        name="housingFarmhouse"
+        component={HousingFarmhouse}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Housing For Farmhouse'} />,
+        }}
+      />
+      {/* Water */}
+      <Stack.Screen
+        name="water"
+        component={Water}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Water'} />,
+        }}
+      />
+      {/* Energy */}
+      <Stack.Screen
+        name="energy"
+        component={Energy}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Energy & Fuel'} />,
+        }}
+      />
+      {/* Mobility */}
+      <Stack.Screen
+        name="mobility"
+        component={Mobility}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Mobilty'} />,
+        }}
+      />
+      {/* Forestry */}
+      <Stack.Screen
+        name="forestry"
+        component={Forestry}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Forestry'} />,
+        }}
+      />
+      {/* Other Personal */}
+      <Stack.Screen
+        name="otherPersonal"
+        component={OtherPersonal}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Other Personal & Household Items'} />,
+        }}
+      />
+      {/* Business & Commercial */}
+      <Stack.Screen
+        name="businessCommercial"
+        component={BusinessCommercial}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={' Business & Commercial Establishments'} />,
+        }}
+      />
+      {/* Community Infrastructure */}
+      <Stack.Screen
+        name="communityInfrastructure"
+        component={CommunityInfrastructure}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'CommunityInfrastructure'} />,
         }}
       />
     </Stack.Navigator>
