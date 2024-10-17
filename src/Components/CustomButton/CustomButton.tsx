@@ -50,7 +50,7 @@ export default function CustomButton({
       onPress={onPress}
       disabled={loading}>
       <Text style={[styles.cmn_btn_text, btnStyle]}>
-        {loading ? <ActivityIndicator color="#fff" /> : btnText}
+        {loading ? <ActivityIndicator color="#fff" style={{alignSelf:'center'}} /> : btnText}
       </Text>
     </TouchableOpacity>
   );

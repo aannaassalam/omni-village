@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://omnivillage-staging-810a110fb92e.herokuapp.com/api';

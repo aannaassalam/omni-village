@@ -12,26 +12,33 @@ import {
   Image,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
+  import countryToCurrency, {Currencies, Countries} from 'country-to-currency';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import Geolocation from 'react-native-geolocation-service';
 import DocumentPicker, {types} from 'react-native-document-picker';
 import {Styles, width} from '../../styles/globalStyles';
 import {fontFamilyBold, fontFamilyRegular} from '../../styles/fontStyle';
-import {dark_grey, primary} from '../../styles/colors';
+import {borderColor, dark_grey, primary} from '../../styles/colors';
 import Input from '../../Components/Inputs/Input';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {CountryPicker} from 'react-native-country-codes-picker';
 import Customdropdown from '../../Components/CustomDropdown/Customdropdown';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import {edit_user_details, send_otp, signup_otp} from '../../apis/auth';
+import {useMutation} from '@tanstack/react-query';
 
 const SignUp = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState('+91');
+  const [countryInfo,setCoutryInfo] = useState(null)
   const [fileSelected, setFileSelected] = useState('');
+  const [messages,setMessages] = useState({
+    verify_msg:'',
+  })
   const [collapsible, setCollapsible] = useState({
     personalInfoVisible: true,
     registrationInfo: false,
@@ -43,15 +50,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
     field_officer_document: null,
   });
   const [dropdown, setDropdown] = useState({
-    gender: false,
-    maritalStatus: false,
-    dob: false,
-    dlexpiry: false,
-    country: false,
-    state: false,
-    city: false,
-    tandc: false,
-    documentType: false,
+    sendtOtp: false,
+    verifyOtp: false,
+    otpLoading:false,
+    otp: '',
   });
   const documentType = [
     {
@@ -64,6 +66,48 @@ const SignUp = ({navigation}: {navigation: any}) => {
       value: 'Lesen Memandu (Driving Licence)',
     },
   ];
+  const {mutate: otp} = useMutation({
+    mutationFn: (data: any) => send_otp(data),
+    onSuccess: data => {
+      console.log('datata', data);
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message',
+        error?.response?.data?.message,
+      );
+    },
+  });
+  const {mutate: otp_verify} = useMutation({
+    mutationFn: (data: any) => signup_otp(data),
+    onSuccess: data => {
+      setDropdown({...dropdown, otpLoading: false});
+      setDropdown({...dropdown, sendtOtp: false, verifyOtp: true});
+    },
+    onError: error => {
+      setDropdown({...dropdown, otpLoading: false});
+      setMessages({...messages, verify_msg:error?.response?.data?.message || "Invalid OTP"})
+      ToastAndroid.show("Invalid OTP", ToastAndroid.TOP);
+      console.log(
+        'error?.response?.data?.message', error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  const {mutate: register} = useMutation({
+    mutationFn: (data: any) => edit_user_details(data),
+    onSuccess: data => {
+      console.log('datata', data);
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message',
+        error?.response?.data?.message,
+      );
+      // setMessage(error?.response?.data?.message);
+      //  navigation.navigate('verifyOtp', {mobile: values?.phone});
+    },
+  });
   const handleDocumentSelection = async (document_name: any) => {
     try {
       const response = await DocumentPicker.pick({
@@ -89,7 +133,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
     village_name: Yup.string().required('Village name is required'),
     country_name: Yup.string().required('Country name is required'),
     email: Yup.string().required('Email ID is required').label('Email'),
-    land_measurement: Yup.string().required('Land measurement is required'),
+    land_measurement_unit: Yup.string().required('Land measurement is required'),
+    land_measurement_unit_symbol: Yup.string().required('Land measurement unit symbol is required'),
     phone: Yup.string().required('Mobile number is required'),
     number_of_members: Yup.number()
       .max(20, 'Number of members cannot be greater than 20!')
@@ -99,12 +144,26 @@ const SignUp = ({navigation}: {navigation: any}) => {
       .of(
         Yup.object().shape({
           name: Yup.string().required('Member name is required'),
-          age: Yup.string().required('Member age is required'),
+          age: Yup.number()
+            .required('Member age is required')
+            .positive('Age must be a positive number'),
           gender: Yup.string().required('Member gender is required'),
         }),
       )
-      .required('Members is required')
-      .min(1, 'At least one member is required'),
+      .when('number_of_members', {
+        is: num => num > 0, // Only validate if the number_of_members is greater than 0
+        then: schema =>
+          schema
+            .min(
+              Yup.ref('number_of_members'),
+              'You must provide details for each member',
+            )
+            .max(
+              Yup.ref('number_of_members'),
+              'You have provided more members than specified',
+            ),
+        otherwise: schema => schema.strip(), // Remove validation if no members are needed
+      }),
     document_type: Yup.string().required('Document Type is required!'),
     social_security_number: Yup.string().required(
       'Social security number is required',
@@ -131,7 +190,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
       email: '',
       address: '',
       first_name: '',
-      land_measurement: '',
+      land_measurement_unit: '',
+      land_measurement_unit_symbol:'',
       last_name: '',
       members: [],
       number_of_members: 0,
@@ -146,9 +206,25 @@ const SignUp = ({navigation}: {navigation: any}) => {
       console.log('Form submitted with values: ', values);
       // Here you can call your API to register the user
       // Reset form after successful registration
-      resetForm();
-      ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
-      navigation.navigate('verifyOtp',{mobile: values?.phone})
+      const formData = new FormData();
+      Object.keys(values).forEach(key => {
+        if (key === 'members') {
+          // formData.append('members', JSON.stringify(_data[key]));
+          console.log('first', key, values[key]);
+        } else {
+          // formData.append(key, _data[key]);
+          console.log('second', key, values[key]);
+        }
+      });
+      if (dropdown?.verifyOtp) {
+        resetForm();
+        ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
+      } else {
+        ToastAndroid.show(
+          'Please verify you mobile number first!',
+          ToastAndroid.SHORT,
+        );
+      }
     },
   });
   const openCollapsible = useCallback(async () => {
@@ -164,7 +240,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
       'country_name',
       'village_name',
       'street_address',
-      'land_measurement',
+      'land_measurement_unit',
       'social_security_number',
       'document_type',
     ];
@@ -342,19 +418,117 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 {touched?.email && errors?.email && (
                   <Text style={Styles.error}>{String(errors?.email)}</Text>
                 )}
-                <Input
-                  onChangeText={handleChange('phone')}
-                  value={values?.phone}
-                  placeholder="Enter phone"
-                  fullLength={true}
-                  phone={() => setShow(true)}
-                  countryCode={countryCode}
-                  label={'Phone Number'}
-                  keyboardType="numeric"
-                />
-                {touched?.phone && errors?.phone && (
-                  <Text style={Styles.error}>{String(errors?.phone)}</Text>
-                )}
+                <View
+                  style={[Styles.twoFieldsContainer, {marginTop: 0, gap: 4}]}>
+                  <View>
+                    <Input
+                      onChangeText={handleChange('phone')}
+                      value={values?.phone}
+                      placeholder="Enter phone"
+                      fullLength={false}
+                      phone={() => setShow(true)}
+                      countryCode={countryCode}
+                      label={'Phone Number'}
+                      editable={dropdown?.verifyOtp ? false : true}
+                      style={{
+                        backgroundColor: dropdown?.verifyOtp
+                          ? borderColor
+                          : 'white',
+                        borderRadius: 8,
+                        width: '100%',
+                      }}
+                      keyboardType="numeric"
+                      width_={dropdown?.verifyOtp ? width / 1.3 : width / 1.5}
+                      maxLength={15}
+                      // isRight={
+                      //   <AntDesign
+                      //     name="down"
+                      //     size={20}
+                      //     color={primary}
+                      //     style={{marginRight: 90}}
+                      //   />
+                      // }
+                    />
+                    {touched?.phone && errors?.phone && (
+                      <Text style={Styles.error}>{String(errors?.phone)}</Text>
+                    )}
+                  </View>
+                  {dropdown?.verifyOtp ? (
+                    <AntDesign
+                      name="checkcircle"
+                      size={30}
+                      color={primary}
+                      style={{marginTop: '10%', marginLeft: '5%'}}
+                    />
+                  ) : (
+                    <View style={{marginTop: '10%'}}>
+                      <CustomButton
+                        onPress={() => {
+                          if (values.phone) {
+                            setDropdown({...dropdown, sendtOtp: true});
+                            otp({
+                              country_code: countryCode,
+                              phone: values?.phone,
+                              type: 'register',
+                            });
+                          } else {
+                            ToastAndroid.show(
+                              'Please enter phone number',
+                              ToastAndroid.SHORT,
+                            );
+                          }
+                        }}
+                        btnText={'Sent OTP'}
+                        style={{
+                          width: '80%',
+                          alignSelf: 'center',
+                        }}
+                      />
+                    </View>
+                  )}
+                </View>
+                {dropdown?.sendtOtp ? (
+                  <View
+                    style={[Styles.twoFieldsContainer, {marginTop: 0, gap: 4}]}>
+                    <View>
+                      <Input
+                        onChangeText={e => setDropdown({...dropdown, otp: e})}
+                        value={dropdown?.otp}
+                        placeholder="Enter otp"
+                        fullLength={false}
+                        label={'OTP'}
+                        keyboardType="numeric"
+                        maxLength={4}
+                        width_={width / 1.5}
+                      />
+                    </View>
+                    <View style={{marginTop: '10%'}}>
+                      <CustomButton
+                        onPress={() => {
+                          if (dropdown.otp) {
+                            setDropdown({...dropdown, otpLoading: true});
+                            otp_verify({
+                              country_code: countryCode,
+                              phone: parseInt(values?.phone),
+                              currency:
+                                countryToCurrency[countryInfo?.code || 'IN'],
+                              country: countryInfo?.name?.en || 'India',
+                              otp: dropdown?.otp,
+                            });
+                          } else {
+                            ToastAndroid.show('Enter otp', ToastAndroid.SHORT);
+                          }
+                        }}
+                        loading={dropdown?.otpLoading}
+                        btnText={'Verify OTP'}
+                        style={{
+                          width: '80%',
+                          alignSelf: 'center',
+                        }}
+                      />
+                    </View>
+                  </View>
+                ) : null}
                 <Input
                   onChangeText={handleChange('address')}
                   value={values?.address}
@@ -550,21 +724,26 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     {id: 2, label: 'Acres', value: 'ac'},
                     {id: 3, label: 'Bigha', value: 'bigha'},
                   ]}
-                  value={values.land_measurement}
+                  value={values.land_measurement_unit}
                   label={'Land measurement'}
                   // onChange={handleChange(`members[${index}].gender`)}
                   onChange={(value: any) => {
                     setValues({
                       ...values,
-                      land_measurement: value?.value,
+                      land_measurement_unit: value?.label,
                     });
+                     setValues({
+                       ...values,
+                       land_measurement_unit_symbol: value?.value,
+                     });
                   }}
                 />
-                {touched?.land_measurement && errors?.land_measurement && (
-                  <Text style={Styles.error}>
-                    {String(errors?.land_measurement)}
-                  </Text>
-                )}
+                {touched?.land_measurement_unit &&
+                  errors?.land_measurement_unit && (
+                    <Text style={Styles.error}>
+                      {String(errors?.land_measurement_unit)}
+                    </Text>
+                  )}
                 <Input
                   onChangeText={handleChange('social_security_number')}
                   value={values?.social_security_number}
@@ -814,7 +993,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
           },
         }}
         pickerButtonOnPress={(item: any) => {
+          console.log('itemmm', item);
           setCountryCode(item.dial_code);
+          setCoutryInfo(item);
           setShow(false);
         }}
       />

@@ -1,44 +1,71 @@
-import { Image, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import React, { useState } from 'react'
-import { Styles, width } from '../../styles/globalStyles'
-import { fontFamilyBold, fontFamilyRegular } from '../../styles/fontStyle'
-import { dark_grey, primary } from '../../styles/colors'
-import Input from '../../Components/Inputs/Input'
+import {Image, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
+import React, {useState} from 'react';
+import {Styles, width} from '../../styles/globalStyles';
+import {fontFamilyBold, fontFamilyRegular} from '../../styles/fontStyle';
+import {dark_grey, primary} from '../../styles/colors';
+import Input from '../../Components/Inputs/Input';
 import {CountryPicker} from 'react-native-country-codes-picker';
-import CustomButton from '../../Components/CustomButton/CustomButton'
+import CustomButton from '../../Components/CustomButton/CustomButton';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux'
-import { reqSuccess } from '../../redux/auth/actions'
+import {useDispatch} from 'react-redux';
+import {reqSuccess} from '../../redux/auth/actions';
+import {useMutation} from '@tanstack/react-query';
+import {send_otp} from '../../apis/auth';
+import AlertModal from '../../Components/Popups/AlertModal';
 
-const Login = ({navigation}:{navigation:any}) => {
-  const {fontScale} = useWindowDimensions()
-  const styles = makeStyles(fontScale)
-  const [show,setShow]=useState(false)
-  const dispatch=useDispatch()
-  const [countryCode, setCountryCode]=useState('+91')
-   let loginSchema = Yup.object().shape({
-     phone: Yup.string()
-       .matches(/^[0-9]{10}$/, 'Mobile number must be exactly 10 digits')
-       .required('Mobile number is required'),
-   });
-   const {
-     handleChange,
-     handleSubmit,
-     values,
-     errors,
-     setFieldTouched,
-     touched,
-     resetForm,
-   } = useFormik({
-     initialValues: {
-       phone: '',
-     },
-    //  validationSchema: loginSchema,
-     onSubmit: async (values: any) => {
-      dispatch(reqSuccess())
-     },
-   });
+const Login = ({navigation}: {navigation: any}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+  const [show, setShow] = useState(false);
+  const [message, setMessage] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [countryCode, setCountryCode] = useState('+91');
+  const {mutate: otp} = useMutation({
+    mutationFn: (data: any) => send_otp(data),
+    onSuccess: data => {
+      setLoading(false);
+      console.log('datata', data);
+      navigation.navigate('verifyOtp', {
+        mobile: values?.phone,
+      });
+    },
+    onError: error => {
+      setLoading(false);
+      setModalVisible(true);
+      setMessage(error?.response?.data?.message);
+      //  navigation.navigate('verifyOtp', {mobile: values?.phone});
+    },
+  });
+  let loginSchema = Yup.object().shape({
+    phone: Yup.string()
+      .matches(/^[0-9]{10}$/, 'Mobile number must be exactly 10 digits')
+      .required('Mobile number is required'),
+  });
+  const {
+    handleChange,
+    handleSubmit,
+    values,
+    errors,
+    setFieldTouched,
+    touched,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      phone: '',
+    },
+     validationSchema: loginSchema,
+    onSubmit: async (values: any) => {
+      // dispatch(reqSuccess())
+      otp({
+        country_code: countryCode,
+        phone: values?.phone,
+        type: 'login',
+      });
+    },
+  });
   return (
     <View style={styles.container}>
       <Image source={require('../../../assets/logo.png')} style={styles.logo} />
@@ -56,13 +83,20 @@ const Login = ({navigation}:{navigation:any}) => {
           fullLength={true}
           phone={() => setShow(true)}
           countryCode={countryCode}
+          keyboardType="number-pad"
         />
         {errors?.phone && (
           <Text style={Styles.error}>{String(errors?.phone)}</Text>
         )}
       </View>
       <Text style={[styles.subheading, {bottom: 130, alignSelf: 'center'}]}>
-        Dont have an account ?<Text style={{color: primary}} onPress={()=>navigation.navigate('signup')}> Signup</Text>{' '}
+        Dont have an account ?
+        <Text
+          style={{color: primary}}
+          onPress={() => navigation.navigate('signup')}>
+          {' '}
+          Signup
+        </Text>{' '}
       </Text>
       <View style={Styles.bottomBtn}>
         <CustomButton onPress={handleSubmit} btnText={'Login'} />
@@ -102,11 +136,22 @@ const Login = ({navigation}:{navigation:any}) => {
           setShow(false);
         }}
       />
+      <AlertModal
+        visible={modalVisible}
+        onSubmit={() => {
+          setModalVisible(false);
+          // dispatch(reqSuccess());
+        }}
+        successModal={false}
+        confirmText={'Okay'}
+        comments={message}
+        title={'Something went wrong'}
+      />
     </View>
   );
-}
+};
 
-export default Login
+export default Login;
 
 const makeStyles = (fontScale: any) =>
   StyleSheet.create({

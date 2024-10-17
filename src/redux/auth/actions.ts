@@ -1,3 +1,4 @@
+import { get_user_details } from '../../apis/auth';
 import {
   REQ,
   REQ_SUCCESS,
@@ -38,12 +39,49 @@ export const logout = () => ({type: LOGOUT});
 export const tokenRetriever = (notificationToken: any) => {
   return async (dispatch: any) => {
     try {
-      const userData = await EncryptedStorage.getItem('omnivillageToken');
+      const userData = await EncryptedStorage.getItem('omniVillageToken');
+      console.log('userDataaaaaa', userData);
       const loggedData = userData != null ? JSON.parse(userData) : null;
       if (loggedData != null) {
-       
+        dispatch(
+          reqSuccess(
+            loggedData?.token,
+            loggedData?.id,
+            loggedData?.full_name,
+            loggedData?.email,
+            loggedData?.phone,
+            loggedData?.dob,
+            loggedData?.gender,
+            loggedData?.app_notification_on,
+          ),
+        );
+        get_user_details()
+          .then(res => {
+            if (res?.data?.sucess) {
+              dispatch(
+                reqSuccess(
+                  loggedData?.token,
+                  res?.data?.id,
+                  res?.data?.full_name,
+                  res?.data?.email,
+                  res?.data?.phone,
+                  res?.data?.dob,
+                  res?.data?.gender,
+                  res?.data?.app_notification_on,
+                ),
+              );
+            }
+          })
+          .catch(err => {
+            dispatch(reqFailure(err?.message ?? 'No error message'));
+          });
+        // dispatch(getUserDetails(loggedData?.token, notificationToken, null));
       }
     } catch (err) {
+      console.log(
+        'token retriever error: ',
+        err?.message ?? 'No error message',
+      );
       dispatch(reqFailure(err?.message ?? 'No error message'));
     }
   };
