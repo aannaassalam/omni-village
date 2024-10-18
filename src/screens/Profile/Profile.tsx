@@ -31,19 +31,17 @@ import {
   get_land_measurement,
   get_user_details,
   get_village,
-  send_otp,
-  signup_otp,
 } from '../../apis/auth';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {land, reqSuccess} from '../../redux/auth/actions';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-const SignUp = ({navigation}: {navigation: any}) => {
+const Profile = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const dispatch = useDispatch();
-  const authState = useSelector((state:any)=>state.authState)
+  const authState = useSelector((state: any) => state.authState);
   const [show, setShow] = useState(false);
   const [countryCode, setCountryCode] = useState('+91');
   const [countryInfo, setCoutryInfo] = useState(null);
@@ -81,53 +79,17 @@ const SignUp = ({navigation}: {navigation: any}) => {
   const {data} = useQuery({
     queryKey: ['measurement'],
     queryFn: () => get_land_measurement(),
-  })
+  });
+  useEffect(() => {
+    dispatch(land(data));
+  }, [data]);
    const {data: village} = useQuery({
      queryKey: ['village'],
-     queryFn: () => get_village({country:countryInfo?.name?.en || 'India'}),
+     queryFn: () => get_village({country: authState?.country}),
    });
-  useEffect(()=>{
-    dispatch(land(data))
-  },[data])
-  const {mutate: otp} = useMutation({
-    mutationFn: (data: any) => send_otp(data),
-    onSuccess: data => {
-      console.log('datata', data);
-    },
-    onError: error => {
-      console.log(
-        'error?.response?.data?.message',error,
-        error?.response?.data?.message,
-      );
-    },
-  });
-  const {mutate: otp_verify} = useMutation({
-    mutationFn: (data: any) => signup_otp(data),
-    onSuccess: data => {
-      setDropdown({
-        ...dropdown,
-        sendtOtp: false,
-        verifyOtp: true,
-        otpLoading: false,
-      });
-    },
-    onError: error => {
-      setDropdown({...dropdown, otpLoading: false});
-      setMessages({
-        ...messages,
-        verify_msg: error?.response?.data?.message || 'Invalid OTP',
-      });
-      ToastAndroid.show('Invalid OTP', ToastAndroid.TOP);
-      console.log(
-        'error?.response?.data?.message',
-        error,
-        error?.response?.data?.message,
-      );
-    },
-  });
   const {mutate: register} = useMutation({
     mutationFn: (data: any) => edit_user_details(data),
-    onSuccess: async(data) => {
+    onSuccess: async data => {
       console.log('datata', data);
       await get_user_details().then(async profile => {
         console.log('profileee', profile);
@@ -182,11 +144,13 @@ const SignUp = ({navigation}: {navigation: any}) => {
             profile?.sub_area,
           ),
         );
+        navigation.goBack()
       });
     },
     onError: error => {
       console.log(
-        'error?.response?.data?.message register',error,
+        'error?.response?.data?.message register',
+        error,
         error?.response?.data?.message,
       );
       // setMessage(error?.response?.data?.message);
@@ -216,9 +180,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
     first_name: Yup.string().required('First Name is required'),
     last_name: Yup.string().required('Last Name is required'),
     village_name: Yup.string().required('Village name is required'),
-    land_measurement: Yup.string().required(
-      'Land measurement is required',
-    ),
+    land_measurement: Yup.string().required('Land measurement is required'),
     land_measurement_symbol: Yup.string().required(
       'Land measurement unit symbol is required',
     ),
@@ -237,20 +199,45 @@ const SignUp = ({navigation}: {navigation: any}) => {
           gender: Yup.string().required('Member gender is required'),
         }),
       )
-      .when('number_of_members', {
-        is: num => num > 0, // Only validate if the number_of_members is greater than 0
-        then: schema =>
-          schema
-            .min(
-              Yup.ref('number_of_members'),
-              'You must provide details for each member',
-            )
-            .max(
-              Yup.ref('number_of_members'),
-              'You have provided more members than specified',
-            ),
-        otherwise: schema => schema.strip(), // Remove validation if no members are needed
-      }),
+      .test(
+        'member-count',
+        'You must have exactly the number of members specified',
+        function (value) {
+          const {number_of_members} = this.parent;
+          
+
+           // Check if the number of members matches the input
+           if (value) {
+             // If the lengths don't match, remove excess members
+             if (value.length > number_of_members) {
+               return (values.members = values.members.slice(
+                 0,
+                 values.number_of_members,
+               ));
+             }
+             return value.length === number_of_members;
+           }
+           return number_of_members === 0;
+        },
+      ),
+    //   .when('number_of_members', {
+    //     is: num => num > 0, // Only validate if the number_of_members is greater than 0
+    //     then: schema =>
+    //       schema
+    //         .min(
+    //           Yup.ref('number_of_members'),
+    //           'You must provide details for each member',
+    //         )
+    //         .max(
+    //           Yup.ref('number_of_members'),
+    //           'You have provided more members than specified',
+    //         )
+    //         .transform((currentValue, originalValue) => {
+    //           // If number_of_members is reduced, remove extra members
+    //           return originalValue.slice(0, currentValue);
+    //         }),
+    //     otherwise: schema => schema.strip(), // Remove validation if no members are needed
+    //   }),
     document_type: Yup.string().required('Document Type is required!'),
     social_security_number: Yup.string().required(
       'Social security number is required',
@@ -299,40 +286,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
           formData.append(key, values[key]);
         }
       });
-      
-      if(values?.village_governing_body){
-         formData.append('field_officer_document', {
-           uri: documents?.field_officer_document?.uri || '',
-           type: documents?.field_officer_document?.type || '',
-           filename: documents?.field_officer_document?.name || '',
-           name: 'field_officer_document',
-         });
-          formData.append('address_proof', {
-            uri: documents?.address_proof?.uri || '',
-            type: documents?.address_proof?.type || '',
-            filename: documents?.address_proof?.name || '',
-            name: 'address_proof',
-          });
-      }else{
-        formData.append('address_proof', {
-          uri: documents?.address_proof?.uri || '',
-          type: documents?.address_proof?.type || '',
-          filename: documents?.address_proof?.name || '',
-          name: 'address_proof',
-        });
-      }
-      if (dropdown?.verifyOtp) {
-        // resetForm();
-        ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
-        register(formData);
-      } else if (!documents?.address_proof || values?.village_governing_body ===true && !documents?.field_officer_document) {
-        ToastAndroid.show('Add Proof attachments', ToastAndroid.SHORT);
-      } else {
-        ToastAndroid.show(
-          'Please verify you mobile number first!',
-          ToastAndroid.SHORT,
-        );
-      }
+        ToastAndroid.show('Profile Updated successfully!', ToastAndroid.SHORT);
+        register(formData)
     },
   });
   const openCollapsible = useCallback(async () => {
@@ -340,10 +295,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
     const keysToCheck = [
       'first_name',
       'last_name',
+      'email',
       'phone',
       'address',
     ];
     const keysToCheckReg = [
+      'country_name',
       'village_name',
       'street_address',
       'land_measurement',
@@ -360,12 +317,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
       personalInfoVisible: !!hasPersonalKey,
       registrationInfo: !!hasRegisterKey,
       familyVisible: !!hasFamilyKey,
-      attachmentsVisible:
-        documents?.address_proof == null ||
-        (values?.village_governing_body &&
-          documents?.field_officer_document == null)
-          ? true
-          : false,
+    //   attachmentsVisible:
+    //     documents?.address_proof == null ||
+    //     (values?.village_governing_body &&
+    //       documents?.field_officer_document == null)
+    //       ? true
+    //       : false,
     });
     handleSubmit();
   }, [errors]);
@@ -452,6 +409,33 @@ const SignUp = ({navigation}: {navigation: any}) => {
       }
     });
   };
+  useEffect(()=>{
+    resetForm({
+      values: {
+        phone: authState?.phone,
+        email: authState?.email,
+        address: authState?.address,
+        first_name: authState?.first_name,
+        land_measurement: authState?.land_measurement,
+        land_measurement_symbol: authState?.land_measurement_symbol,
+        last_name: authState?.last_name,
+        members: authState?.members.map((item:any)=>{
+            return{
+                name: item.name,
+                gender: item.gender,
+                age: String(item.age),
+            }
+        }),
+        number_of_members: String(authState?.number_of_members),
+        document_type: authState?.document_type,
+        social_security_number: authState?.social_security_number,
+        village_name: authState?.village_name,
+        village_governing_body: authState?.village_governing_body || false,
+        street_address: authState?.street_address,
+      },
+    });
+  },[authState])
+  console.log("mememeee", values?.members,values?.number_of_members)
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -514,7 +498,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     )}
                   </View>
                 </View>
-                <View
+                {/* <View
                   style={[Styles.twoFieldsContainer, {marginTop: 0, gap: 4}]}>
                   <View>
                     <Input
@@ -624,7 +608,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       />
                     </View>
                   </View>
-                ) : null}
+                ) : null} */}
                 <Input
                   onChangeText={handleChange('address')}
                   value={values?.address}
@@ -722,9 +706,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
 
                       <Customdropdown
                         data={[
-                          {id: 1, label: 'Male', value: 'Male'},
-                          {id: 2, label: 'Female', value: 'Female'},
-                          {id: 3, label: 'Others', value: 'Others'},
+                          {id: 1, label: 'Male', value: 'male'},
+                          {id: 2, label: 'Female', value: 'female'},
+                          {id: 3, label: 'Others', value: 'others'},
                         ]}
                         value={values.members[index]?.gender}
                         label={'Gender for member' + ' ' + (index + 1)}
@@ -779,7 +763,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
             {collapsible?.registrationInfo && (
               <View>
                 <Customdropdown
-                  data={village.map((item:any)=>{return{id:item._id,label:item.name, value:item.name}})}
+                  data={village.map((item: any) => {
+                    return {id: item._id, label: item.name, value: item.name};
+                  })}
                   value={values.village_name}
                   label={'Village name'}
                   // onChange={handleChange(`members[${index}].gender`)}
@@ -832,7 +818,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   value={values?.social_security_number}
                   placeholder="Enter social security number"
                   fullLength={true}
-                  keyboardType="default"
+                  keyboardType="numeric"
                   label={'Social security number'}
                 />
                 {touched?.social_security_number &&
@@ -898,7 +884,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 </View>
               </View>
             )}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[styles.headerContainer, {marginTop: '8%'}]}
               onPress={() =>
                 setCollapsible({
@@ -919,8 +905,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   })
                 }
               />
-            </TouchableOpacity>
-            {collapsible.attachmentsVisible && (
+            </TouchableOpacity> */}
+            {/* {collapsible.attachmentsVisible && (
               <View>
                 <View style={[styles.middleContainer]}>
                   <Text
@@ -1037,14 +1023,15 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   </View>
                 ) : null}
               </View>
-            )}
+            )} */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={openCollapsible} btnText={'SignUp'} />
+        <CustomButton onPress={openCollapsible} btnText={'Update'} />
+        {/* <CustomButton onPress={()=>navigation.navigate('verifyOtp',{mobile: values?.mobile})} btnText={'SignUp'} /> */}
       </View>
-      <CountryPicker
+      {/* <CountryPicker
         show={show}
         lang={'en'}
         showOnly={['IN', 'MY', 'BT']}
@@ -1080,12 +1067,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
           setCoutryInfo(item);
           setShow(false);
         }}
-      />
+      /> */}
     </View>
   );
 };
 
-export default SignUp;
+export default Profile;
 
 const makeStyles = (fontScale: any) =>
   StyleSheet.create({

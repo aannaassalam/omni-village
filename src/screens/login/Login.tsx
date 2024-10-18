@@ -30,6 +30,7 @@ const Login = ({navigation}: {navigation: any}) => {
       console.log('datata', data);
       navigation.navigate('verifyOtp', {
         mobile: values?.phone,
+        countryCode: countryCode
       });
     },
     onError: error => {

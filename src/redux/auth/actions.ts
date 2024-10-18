@@ -7,28 +7,66 @@ import {
   LOGOUT,
   NET_CHECK,
   FOLLOWING,
+  LAND_MEASUREMENT,
+  WEIGHT_MESUREMENT,
 } from './actionTypes';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 export const reqSuccess = (
-  // token:any,
-  // id: any,
-  // full_name: any,
-  // email: any,
-  // phone: any,
-  // dob: any,
-  // gender: any,
-  // app_notification_on: any,
+  token:any,
+  _id: any,
+  first_name: any,
+  last_name: any,
+  email: any,
+  phone: any,
+  gender: any,
+  address: any,
+  country: any,
+  country_code: any,
+  currency: any,
+  document_type: any,
+  social_security_number: any,
+  village_name: any,
+  village_governing_body: any,
+  street_address: any,
+  land_measurement: any,
+  land_measurement_symbol: any,
+  members: any,
+  number_of_members: any,
+  total_land: any,
+  sub_area: any,
 ) => ({
   type: REQ_SUCCESS,
-  // token,
-  // id,
-  // full_name,
-  // email,
-  // phone,
-  // dob,
-  // gender,
-  // app_notification_on,
+  token,
+  _id,
+  first_name,
+  last_name,
+  email,
+  phone,
+  gender,
+  address,
+  country,
+  country_code,
+  currency,
+  document_type,
+  social_security_number,
+  village_name,
+  village_governing_body,
+  street_address,
+  land_measurement,
+  land_measurement_symbol,
+  members,
+  number_of_members,
+  total_land,
+  sub_area,
+});
+export const land = (data: any) => ({
+  type: LAND_MEASUREMENT,
+  data
+});
+export const weight = (data: any) => ({
+  type: WEIGHT_MESUREMENT,
+  data,
 });
 export const reqFailure = (error: any) => ({
   type: REQ_FAILURE,
@@ -36,7 +74,7 @@ export const reqFailure = (error: any) => ({
 });
 export const logout = () => ({type: LOGOUT});
 
-export const tokenRetriever = (notificationToken: any) => {
+export const tokenRetriever = () => {
   return async (dispatch: any) => {
     try {
       const userData = await EncryptedStorage.getItem('omniVillageToken');
@@ -46,33 +84,63 @@ export const tokenRetriever = (notificationToken: any) => {
         dispatch(
           reqSuccess(
             loggedData?.token,
-            loggedData?.id,
-            loggedData?.full_name,
+            loggedData?._id,
+            loggedData?.first_name,
+            loggedData?.last_name,
             loggedData?.email,
             loggedData?.phone,
-            loggedData?.dob,
             loggedData?.gender,
-            loggedData?.app_notification_on,
+            loggedData?.address,
+            loggedData?.country,
+            loggedData?.country_code,
+            loggedData?.currency,
+            loggedData?.document_type,
+            loggedData?.social_security_number,
+            loggedData?.village_name,
+            loggedData?.village_governing_body,
+            loggedData?.street_address,
+            loggedData?.land_measurement,
+            loggedData?.land_measurement_symbol,
+            loggedData?.members,
+            loggedData?.number_of_members,
+            loggedData?.total_land,
+            loggedData?.sub_area,
           ),
         );
         get_user_details()
-          .then(res => {
-            if (res?.data?.sucess) {
+          .then(profile => {
+            console.log("profileee", profile)
+            // if (res?.data?.sucess) {
               dispatch(
                 reqSuccess(
                   loggedData?.token,
-                  res?.data?.id,
-                  res?.data?.full_name,
-                  res?.data?.email,
-                  res?.data?.phone,
-                  res?.data?.dob,
-                  res?.data?.gender,
-                  res?.data?.app_notification_on,
+                  profile?._id,
+                  profile?.first_name,
+                  profile?.last_name,
+                  profile?.email,
+                  profile?.phone,
+                  profile?.gender,
+                  profile?.address,
+                  profile?.country,
+                  profile?.country_code,
+                  profile?.currency,
+                  profile?.document_type,
+                  profile?.social_security_number,
+                  profile?.village_name,
+                  profile?.village_governing_body,
+                  profile?.street_address,
+                  profile?.land_measurement,
+                  profile?.land_measurement_symbol,
+                  profile?.members,
+                  profile?.number_of_members,
+                  profile?.total_land,
+                  profile?.sub_area,
                 ),
               );
-            }
+            // }
           })
           .catch(err => {
+            dispatch(logUserOut())
             dispatch(reqFailure(err?.message ?? 'No error message'));
           });
         // dispatch(getUserDetails(loggedData?.token, notificationToken, null));
@@ -88,9 +156,10 @@ export const tokenRetriever = (notificationToken: any) => {
 };
 
 export const logUserOut = () => {
-  return async (dispatch:any) => {
+  return async (dispatch: any) => {
     try {
-      await EncryptedStorage.removeItem('a2zCarsToken');
+      await EncryptedStorage.removeItem('omniVillageToken');
+      dispatch(logout())
       console.log('Encrypted Storage emptied!');
     } catch (err) {
       console.log('unable to logout: ', err.message);

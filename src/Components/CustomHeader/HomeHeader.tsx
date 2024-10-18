@@ -20,7 +20,7 @@ const HomeHeader = () => {
   return (
     <View style={styles.container}>
       <View style={styles.inner_container}>
-        <Feather
+        {/* <Feather
           name="menu"
           color={white}
           size={28}
@@ -28,7 +28,7 @@ const HomeHeader = () => {
           onPress={() => {
             navigation.openDrawer()
           }}
-        />
+        /> */}
         <View style={styles.header_txt_container}>
           <Image
             style={styles.logo_mini}
@@ -66,7 +66,6 @@ const makeStyles = (fontScale: any) =>
     },
     header_txt_container: {
       // alignSelf: 'center',
-      backgroundColor: 'pink',
     },
     header_txt: {
       fontSize: 24 / fontScale,
@@ -81,6 +80,7 @@ const makeStyles = (fontScale: any) =>
     logo_mini: {
       height: height / 14,
       width: width / 3,
+      marginLeft: 17,
       resizeMode: 'contain',
       justifyContent: 'center',
       alignSelf: 'center',

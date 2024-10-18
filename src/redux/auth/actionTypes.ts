@@ -1,5 +1,7 @@
 export const RETRIEVE_TOKEN = 'RETRIEVE_TOKEN';
 export const REQ = 'REQ';
+export const LAND_MEASUREMENT = 'LAND_MEASUREMENT';
+export const WEIGHT_MESUREMENT = 'WEIGHT_MESUREMENT';
 export const REQ_SUCCESS = 'REQ_SUCCESS';
 export const FOLLOWING = "FOLLOWING"
 export const REQ_FAILURE = 'REQ_FAILURE';

@@ -22,6 +22,30 @@ export const get_user_details = async () => {
 };
 
 export const edit_user_details = async (body: any) => {
-  const res = await axios.put(BASE_URL + endpoints?.auth?.edit_user_details, body);
+  const res = await axios.put(
+    BASE_URL + endpoints?.auth?.edit_user_details,
+    body,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  );
+  return res.data;
+};
+
+export const get_land_measurement = async () => {
+  const res = await axios.get(BASE_URL + endpoints?.auth?.land_measurement);
+  return res.data;
+};
+
+export const get_weight_measurement = async () => {
+  const res = await axios.get(BASE_URL + endpoints?.auth?.weight_measurement);
+  return res.data;
+};
+
+export const get_village = async (params:any) => {
+  console.log("paramsss", params)
+  const res = await axios.get(BASE_URL + endpoints?.auth?.village+params?.country);
   return res.data;
 };

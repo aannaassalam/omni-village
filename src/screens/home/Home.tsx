@@ -19,22 +19,38 @@ import {Styles} from '../../styles/globalStyles';
 import {draft_color, primary} from '../../styles/colors';
 import HomeCardOptions from '../../Components/Card/HomeCardOptions';
 import {home_data} from '../../../assets/mockdata/Data';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { logUserOut } from '../../redux/auth/actions';
 
-const Home = () => {
+const Home = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [active, setActive] = useState('');
+  const dispatch = useDispatch()
+  const authState = useSelector((state)=>state.authState)
   return (
     <View style={styles.container}>
       <HomeHeader />
       <ScrollView>
         <View style={styles.mainContainer}>
-          <HeaderCard onPress={() => {}}>
+          <HeaderCard
+            onPress={() => {
+              navigation.navigate('profile');
+            }}>
             <View style={styles.header_container}>
-              <Avatar.Text size={54} label="XD" />
+              <Avatar.Text
+                size={54}
+                label={`${authState?.first_name[0]}${authState?.last_name[0]}`}
+              />
               <View style={{gap: 6}}>
-                <Text style={styles.header_text}>Andalib Quraishi</Text>
-                <Text style={styles.sub_text}>+918765432123</Text>
+                <Text style={styles.header_text}>
+                  {authState?.first_name} {authState?.last_name}
+                </Text>
+                <Text style={styles.sub_text}>
+                  {authState?.country_code}
+                  {authState?.phone}
+                </Text>
               </View>
             </View>
             {/* <Divider style={Styles.divider} />
@@ -57,8 +73,7 @@ const Home = () => {
             </View> */}
           </HeaderCard>
           <View style={styles.flatlist}>
-            <View
-              style={styles.card_container}>
+            <View style={styles.card_container}>
               {home_data.map((item: any, index: any) => {
                 return (
                   <HomeCardOptions
@@ -73,6 +88,12 @@ const Home = () => {
           </View>
         </View>
       </ScrollView>
+      <View style={Styles.bottomBtn}>
+        <CustomButton
+          btnText={'Logout'}
+          onPress={() => dispatch(logUserOut())}
+        />
+      </View>
     </View>
   );
 };

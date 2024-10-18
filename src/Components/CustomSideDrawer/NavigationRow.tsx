@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {logout} from '../../redux/auth/actions';
+import {logout, logUserOut} from '../../redux/auth/actions';
 
 
 // styles
@@ -95,8 +95,8 @@ const NavigationRow = ({
           visible={showLogoutModal}
           onHide={() => setShowLogoutModal(false)}
           onSubmit={() => {
+            dispatch(logUserOut())
             setShowLogoutModal(false);
-            dispatch(logout());
           }}
           hideText="No"
           confirmText="Yes"

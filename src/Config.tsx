@@ -4,6 +4,7 @@ import {WithSplashScreen} from './screens/onboarding/Splash';
 import {useDispatch, useSelector} from 'react-redux';
 import LoginStack from './navigation/LoginStack';
 import DrawerNavigation from './navigation/DrawerNavigation';
+import { tokenRetriever } from './redux/auth/actions';
 
 const Config = ({token}:{token:any}) => {
   const [isAppReady, setIsAppReady] = useState(false);
@@ -11,7 +12,9 @@ const Config = ({token}:{token:any}) => {
   const dispatch =useDispatch()
   useEffect(() => {
     setIsAppReady(true);
+    dispatch(tokenRetriever())
   }, [token]);
+
   return (
     <WithSplashScreen isAppReady={isAppReady}>
       <NavigationContainer>

@@ -39,6 +39,8 @@ import Forestry from '../screens/home/Forestry & Timber/Forestry';
 import Mobility from '../screens/home/Mobility/Mobility';
 import Energy from '../screens/home/Energy & Fuel/Energy';
 import Water from '../screens/home/Water/Water';
+import Profile from '../screens/Profile/Profile';
+import MapScreen from '../screens/login/MapScreen';
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
@@ -52,6 +54,21 @@ const HomeStack = () => {
         keyboardHandlingEnabled: true,
       }}>
       <Stack.Screen name="home" component={Home} />
+      <Stack.Screen
+        name="profile"
+        component={Profile}
+        options={{
+          headerShown: true,
+          header: () => <StackHeader title={'Profile'} />,
+        }}
+      />
+      <Stack.Screen
+        name="MapScreen"
+        component={MapScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       {/* Food Stacks */}
       <Stack.Screen
         name="food"
@@ -319,7 +336,9 @@ const HomeStack = () => {
         component={OtherPersonal}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Other Personal & Household Items'} />,
+          header: () => (
+            <StackHeader title={'Other Personal & Household Items'} />
+          ),
         }}
       />
       {/* Business & Commercial */}
@@ -328,7 +347,9 @@ const HomeStack = () => {
         component={BusinessCommercial}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={' Business & Commercial Establishments'} />,
+          header: () => (
+            <StackHeader title={' Business & Commercial Establishments'} />
+          ),
         }}
       />
       {/* Community Infrastructure */}
