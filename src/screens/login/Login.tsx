@@ -27,7 +27,6 @@ const Login = ({navigation}: {navigation: any}) => {
     mutationFn: (data: any) => send_otp(data),
     onSuccess: data => {
       setLoading(false);
-      console.log('datata', data);
       navigation.navigate('verifyOtp', {
         mobile: values?.phone,
         countryCode: countryCode

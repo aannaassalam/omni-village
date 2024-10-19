@@ -13,6 +13,10 @@ import {fontScale, width} from '../../../styles/globalStyles';
 import Customdropdown from '../../CustomDropdown/Customdropdown';
 import Input from '../../Inputs/Input';
 import CustomButton from '../../CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { get_crops } from '../../../apis/crops';
+import { useNavigation } from '@react-navigation/native';
 
 const AddCultivationBottomSheet = ({
   modalVisible,
@@ -25,10 +29,17 @@ const AddCultivationBottomSheet = ({
   data?: any;
   setData?: any;
 }) => {
+  const navigation = useNavigation()
   const bottomsheetRef = useRef(null);
   const [crop_name, setCrop_name] = useState(null);
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
+  const authState = useSelector((state: any) => state.authState);
+  const {data: cultivation_crop} = useQuery({
+    queryKey: ['cultivation_crop'],
+    queryFn: () =>
+      get_crops({country: authState?.country, category: 'cultivation'}),
+  });
   const snapPoints = React.useMemo(() => ['70%'], []);
   return (
     <AddBottomSheet
@@ -55,20 +66,21 @@ const AddCultivationBottomSheet = ({
           </TouchableOpacity>
         </View>
         <Customdropdown
-          data={[
-            {label: 'pine', value: 'pine'},
-            {label: 'mango', value: 'mango'},
-            {label: 'banayan', value: 'banayan'},
-            {label: 'others', value: 'others'},
-          ]}
-          value={crop_name}
+          data={cultivation_crop?.length>0?[...cultivation_crop?.map((item: any) => {
+            return {
+              id: item?._id,
+              label: item?.name,
+              value: item?.name,
+            }
+          }),{id:0,label:'Others', value:'others'}]:[]}
+          value={crop_name?.name}
           noLabel={true}
           onChange={(value: any) => {
-            setCrop_name(value?.value);
+            setCrop_name({_id: value?.id, name: value?.value});
           }}
           style={{marginTop: '8%'}}
         />
-        {crop_name === 'others' ? (
+        {crop_name?.name === 'others' ? (
           <View style={{marginTop: '6%'}}>
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
@@ -86,12 +98,14 @@ const AddCultivationBottomSheet = ({
           onPress={async () => {
             setModalVisible(!modalVisible), bottomsheetRef.current.close();
             await setData({
-              crop_name: crop_name == 'others' ? extra_crop_name : crop_name,
+              crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
+              crop_name: crop_name?.name == 'others' ? extra_crop_name : crop_name?.name,
             });
             setOnFocus(false), Keyboard.dismiss();
-            await setCrop_name(null), await setExtra_crop_name(null);
+             setCrop_name(null),  setExtra_crop_name(null);
           }}
           style={{marginTop: '6%', width: '100%'}}
+          disabled={crop_name == null}
         />
       </View>
     </AddBottomSheet>

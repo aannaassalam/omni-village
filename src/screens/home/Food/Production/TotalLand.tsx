@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../styles/globalStyles';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
@@ -17,11 +17,86 @@ import {Divider} from 'react-native-paper';
 import {dark_grey, white} from '../../../../styles/colors';
 import CustomButton from '../../../../Components/CustomButton/CustomButton';
 import AcresElement from '../../../../Components/ui/AcresElement';
+import { useMutation } from '@tanstack/react-query';
+import { add_total_land } from '../../../../apis/food';
+import { useDispatch, useSelector } from 'react-redux';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { reqSuccess } from '../../../../redux/auth/actions';
+import { get_user_details } from '../../../../apis/auth';
 
 const TotalLand = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [isFocused, setIsFocused] = useState(false);
+  const [loading,setLoading] = useState(false);
+  const authState= useSelector((state)=>state.authState)
+  const dispatch = useDispatch()
+  const {mutate: addLand} = useMutation({
+    mutationFn: (data: any) => add_total_land(data),
+    onSuccess: async(data) => {
+      setLoading(false);
+      await get_user_details().then(async profile => {
+        console.log('profileee', profile);
+        const userData = JSON.stringify({
+          token: null,
+          id: profile?._id,
+          first_name: profile?.first_name,
+          last_name: profile?.last_name,
+          email: profile?.email,
+          phone: profile?.phone,
+          gender: profile?.gender,
+          address: profile?.address,
+          country: profile?.country,
+          country_code: profile?.country_code,
+          currency: profile?.currency,
+          document_type: profile?.document_type,
+          social_security_number: profile?.social_security_number,
+          village_name: profile?.village_name,
+          village_governing_body: profile?.village_governing_body,
+          street_address: profile?.street_address,
+          land_measurement: profile?.land_measurement,
+          land_measurement_symbol: profile?.land_measurement_symbol,
+          members: profile?.members,
+          number_of_members: profile?.number_of_members,
+          total_land: profile?.total_land,
+          sub_area: profile?.sub_area,
+        });
+        await EncryptedStorage.setItem('omniVillageToken', userData);
+        dispatch(
+          reqSuccess(
+            null,
+            profile?._id,
+            profile?.first_name,
+            profile?.last_name,
+            profile?.email,
+            profile?.phone,
+            profile?.gender,
+            profile?.address,
+            profile?.country,
+            profile?.country_code,
+            profile?.currency,
+            profile?.document_type,
+            profile?.social_security_number,
+            profile?.village_name,
+            profile?.village_governing_body,
+            profile?.street_address,
+            profile?.land_measurement,
+            profile?.land_measurement_symbol,
+            profile?.members,
+            profile?.number_of_members,
+            profile?.total_land,
+            profile?.sub_area,
+          ),
+        );
+      });
+      navigation.navigate('production');
+
+    },
+    onError: error => {
+      console.log("errorrrrrr", error)
+      setLoading(false);
+    },
+  });
   let land_schema = Yup.object()
     .shape({
       total_land: Yup.number()
@@ -31,7 +106,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
       cultivation: Yup.number()
         .required('Cultivation is required')
         .typeError('Cultivation must be a number'),
-      trees_shrubs_grassland: Yup.number()
+      trees: Yup.number()
         .required('Trees,shrubs & Grassland is required')
         .typeError('Trees,shrubs & Grassland must be a number'),
       poultry: Yup.number()
@@ -48,17 +123,11 @@ const TotalLand = ({navigation}:{navigation:any}) => {
       'land-limit',
       'Sum of Cultivation,Poultry, Fishery, Trees, Shrubs & Grassland, and Storage should not exceed Total land',
       function (values) {
-        const {
-          total_land,
-          cultivation,
-          poultry,
-          fishery,
-          trees_shrubs_grassland,
-          storage
-        } = values;
+        const {total_land, cultivation, poultry, fishery, trees, storage} =
+          values;
 
         const totalAllocatedLand =
-          cultivation + poultry + fishery + trees_shrubs_grassland + storage;
+          cultivation + poultry + fishery + trees + storage;
 
         // Validate that the total allocated land does not exceed total land
         if (totalAllocatedLand > total_land) {
@@ -81,19 +150,40 @@ const TotalLand = ({navigation}:{navigation:any}) => {
     resetForm,
   } = useFormik({
     initialValues: {
-      total_land: 0,
-      cultivation: 0,
-      poultry: 0,
-      fishery: 0,
-      trees_shrubs_grassland: 0,
-      storage: 0,
+      total_land: '',
+      cultivation: '',
+      poultry: '',
+      fishery: '',
+      trees: '',
+      storage: '',
     },
-    // validationSchema: land_schema,
+    validationSchema: land_schema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
-      navigation.navigate('production')
+      setLoading(true);
+      let val = {
+        total_land: parseInt(values?.total_land),
+        cultivation: parseInt(values?.cultivation),
+        trees: parseInt(values?.trees),
+        poultry: parseInt(values?.poultry),
+        fishery: parseInt(values?.fishery),
+        storage: parseInt(values?.storage),
+      };
+      addLand(val);
     },
   });
+  useEffect(() => {
+    resetForm({
+      values: {
+        total_land: authState?.total_land,
+        cultivation: authState?.sub_area?.cultivation,
+        poultry: authState?.sub_area?.poultry,
+        fishery: authState?.sub_area?.fishery,
+        trees: authState?.sub_area?.trees,
+        storage: authState?.sub_area?.storage,
+      },
+    });
+  }, [authState?.sub_area, authState?.total_land]);
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
@@ -104,13 +194,14 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             <Input
               onChangeText={handleChange('total_land')}
               value={String(values?.total_land)}
-              placeholder="Enter total land"
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               label={'Total land'}
               keyboardType="numeric"
               onBlur={() => setIsFocused(false)}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
             {touched?.total_land && errors?.total_land && (
               <Text style={Styles.error}>{String(errors?.total_land)}</Text>
@@ -126,44 +217,44 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             <Input
               onChangeText={handleChange('cultivation')}
               value={String(values?.cultivation)}
-              placeholder="Enter cultivation"
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
               label={'Cultivation'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
             {touched?.cultivation && errors?.cultivation && (
               <Text style={Styles.error}>{String(errors?.cultivation)}</Text>
             )}
             <Input
-              onChangeText={handleChange('trees_shrubs_grassland')}
-              value={String(values?.trees_shrubs_grassland)}
-              placeholder="Enter trees,shrubs&grassland"
+              onChangeText={handleChange('trees')}
+              value={String(values?.trees)}
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
               label={'Trees,shrubs & grassland'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
-            {touched?.trees_shrubs_grassland &&
-              errors?.trees_shrubs_grassland && (
-                <Text style={Styles.error}>
-                  {String(errors?.trees_shrubs_grassland)}
-                </Text>
-              )}
+            {touched?.trees && errors?.trees && (
+              <Text style={Styles.error}>{String(errors?.trees)}</Text>
+            )}
             <Input
               onChangeText={handleChange('poultry')}
               value={String(values?.poultry)}
-              placeholder="Enter poultry"
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
               label={'Poultry'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
             {touched?.poultry && errors?.poultry && (
               <Text style={Styles.error}>{String(errors?.poultry)}</Text>
@@ -171,13 +262,14 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             <Input
               onChangeText={handleChange('fishery')}
               value={String(values?.fishery)}
-              placeholder="Enter fishery"
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
               label={'Fishery'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
             {touched?.fishery && errors?.fishery && (
               <Text style={Styles.error}>{String(errors?.fishery)}</Text>
@@ -185,13 +277,14 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             <Input
               onChangeText={handleChange('storage')}
               value={String(values?.storage)}
-              placeholder="Enter storage"
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               label={'Storage'}
               keyboardType="numeric"
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
             />
             {touched?.storage && errors?.storage && (
               <Text style={Styles.error}>{String(errors?.storage)}</Text>
@@ -200,7 +293,11 @@ const TotalLand = ({navigation}:{navigation:any}) => {
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={handleSubmit} btnText={'Submit'} />
+        <CustomButton
+          onPress={handleSubmit}
+          btnText={'Submit'}
+          loading={loading}
+        />
       </View>
     </View>
   );

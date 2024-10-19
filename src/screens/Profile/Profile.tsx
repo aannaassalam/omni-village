@@ -90,7 +90,6 @@ const Profile = ({navigation}: {navigation: any}) => {
   const {mutate: register} = useMutation({
     mutationFn: (data: any) => edit_user_details(data),
     onSuccess: async data => {
-      console.log('datata', data);
       await get_user_details().then(async profile => {
         console.log('profileee', profile);
         const userData = JSON.stringify({

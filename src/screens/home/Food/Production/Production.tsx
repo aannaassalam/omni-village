@@ -1,5 +1,12 @@
-import {Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View} from 'react-native';
-import React from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../styles/globalStyles';
 import HeaderCard from '../../../../Components/Card/HeaderCard';
 import {
@@ -11,47 +18,46 @@ import {
   white,
 } from '../../../../styles/colors';
 import {fontFamilyBold, fontFamilyRegular} from '../../../../styles/fontStyle';
+import {useSelector} from 'react-redux';
 
-const Production = ({navigation}:{navigation:any}) => {
+const Production = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const ITEMS = [
-    {
-      title: 'Cultivation',
-      navigation: 'cultivation', //TODO: Change cultivations to cultivation
-      value: 10,
-    },
-    {
-      title: 'Trees,shrubs & grassland',
-      navigation: 'trees',
-      value: 10,
-    },
-    {
-      title: 'Poultry',
-      navigation: 'poultry', //TODO: Change poultrys to poultry
-      value: 10,
-    },
-    {
-      title: 'Fishery',
-      navigation: 'fishery', //TODO: Change fisherys to fishery
-      value: 10,
-    },
-
-    {
-      title: 'Hunting',
-      navigation: 'hunting',
-      value: 10,
-    },
-    {
-      title: 'Storage',
-      navigation: 'storage', //TODO: Change storages to storage
-      value: 10,
-    },
-    {
-      title: 'Selling Channel',
-      navigation: 'sellingChannel', //TODO: Change sellingChannels to sellingChannel
-    },
-  ];
+  const authState = useSelector((state: any) => state.authState);
+  const [items, setItems] = useState([{}]);
+  useEffect(() => {
+    setItems([
+      {
+        title: 'Cultivation',
+        navigation: 'cultivation', //TODO: Change cultivations to cultivation
+        value: authState?.sub_area?.cultivation,
+      },
+      {
+        title: 'Trees,shrubs & grassland',
+        navigation: 'trees',
+        value: authState?.sub_area?.trees,
+      },
+      {
+        title: 'Poultry',
+        navigation: 'poultry', //TODO: Change poultrys to poultry
+        value: authState?.sub_area?.poultry,
+      },
+      {
+        title: 'Fishery',
+        navigation: 'fishery', //TODO: Change fisherys to fishery
+        value: authState?.sub_area?.fishery,
+      },
+      {
+        title: 'Storage',
+        navigation: 'storage', //TODO: Change storages to storage
+        value: authState?.sub_area?.storage,
+      },
+      {
+        title: 'Selling Channel',
+        navigation: 'sellingChannel', //TODO: Change sellingChannels to sellingChannel
+      },
+    ]);
+  }, [authState?.sub_area, authState?.total_land]);
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -72,7 +78,7 @@ const Production = ({navigation}:{navigation:any}) => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.total_land} {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
@@ -82,7 +88,12 @@ const Production = ({navigation}:{navigation:any}) => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.cultivation +
+                    authState?.sub_area?.trees +
+                    authState?.sub_area?.poultry +
+                    authState?.sub_area?.fishery +
+                    authState?.sub_area?.storage}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
             </View>
@@ -96,7 +107,7 @@ const Production = ({navigation}:{navigation:any}) => {
         </View>
       </HeaderCard>
       <View style={styles.inner_content_container}>
-        {ITEMS.map((item: any, index: any) => {
+        {items.map((item: any, index: any) => {
           return (
             <TouchableOpacity
               key={index}
@@ -152,7 +163,7 @@ const makeStyles = (fontScale: any) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       flexWrap: 'wrap',
-      marginVertical:'8%'
+      marginVertical: '8%',
     },
     box_container: {
       borderColor: borderColor,

@@ -22,6 +22,10 @@ import {fontScale, Styles, width} from '../../../../../styles/globalStyles';
 import {dark_grey} from '../../../../../styles/colors';
 import {fontFamilyRegular} from '../../../../../styles/fontStyle';
 import AlertModal from '../../../../../Components/Popups/AlertModal';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {add_cultivation, edit_cultivation} from '../../../../../apis/food';
+import {useTranslation} from 'react-i18next';
+import {useSelector} from 'react-redux';
 const CultivationImportantInfo = ({
   navigation,
   route,
@@ -29,10 +33,59 @@ const CultivationImportantInfo = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name, utilInfo} = route.params;
+  const {crop_name, utilInfo, crop_id, data} = route.params;
+  const authState = useSelector(state => state.authState);
+  const queryClient = useQueryClient();
+  const {t} = useTranslation();
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [modalViisble, setModalVisible] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+  const [message, setMessage] = useState('');
+  const soilHealth = [
+    {label: 'stable', value: t('stable')},
+    {label: 'decreasing yield', value: t('decreasing yield')},
+  ];
+  const fertilisers = [
+    {label: 'organic self made', value: t('organic self made')},
+    {label: 'organic purchased', value: t('organic purchased')},
+    {label: 'chemical based', value: t('chemical based')},
+    {label: 'none', value: t('none')},
+  ];
+  const pesticides = [
+    {label: 'organic self made', value: t('organic self made')},
+    {label: 'organic purchased', value: t('organic purchased')},
+    {label: 'chemical based', value: t('chemical based')},
+    {label: 'none', value: t('none')},
+  ];
+  const {mutate: addCultivation} = useMutation({
+    mutationFn: (data: any) => add_cultivation(data),
+    onSuccess: data => {
+      setSuccessModal(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  const {mutate: updateCultivation} = useMutation({
+    mutationFn: (data: any) => edit_cultivation(data),
+    onSuccess: data => {
+      setSuccessModal(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -49,7 +102,7 @@ const CultivationImportantInfo = ({
       'Decreasing yield is required',
       function (value) {
         const {soil_health} = this.parent; // Accessing other field values
-        if (soil_health === 'Decreasing Yield') {
+        if (soil_health === 'decreasing Yield') {
           return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
         }
         return true; // Otherwise, no validation on decreasing_yield
@@ -93,21 +146,44 @@ const CultivationImportantInfo = ({
   } = useFormik({
     initialValues: {
       soil_health: '',
-      decreasing_yield: 0,
+      decreasing_yield: '',
       type_of_fertiliser: '',
       type_of_pesticide: '',
-      income_from_sale: 0,
-      expenditure_on_inputs: 0,
-      yield: 0,
+      income_from_sale: '',
+      expenditure_on_inputs: '',
+      yield: '',
       month_planted: new Date(),
       month_harvested: new Date(),
       required_processing: false,
       processing_method: '',
     },
-    // validationSchema: treesSchema,
+    validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
-      setModalVisible(true);
+      const new_data = {
+        ...utilInfo,
+        crop_id: crop_id,
+        soil_health: values?.soil_health,
+        decreasing_yeild: parseInt(values?.decreasing_yield),
+        type_of_fertilizer_used: values?.type_of_fertiliser,
+        type_of_pesticide_used: values?.type_of_pesticide,
+        income_from_sale: parseInt(values?.income_from_sale),
+        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+        yeild: parseInt(values?.yield),
+        month_planted: values?.month_planted,
+        month_harvested: values?.month_harvested,
+        required_processing: values?.required_processing,
+        processing_method: values?.processing_method,
+        status: 1,
+      };
+      if (data?._id) {
+        setMessage('updated')
+        updateCultivation({...new_data, cultivation_id: data?._id});
+      } else {
+        setMessage('submitted')
+        addCultivation({...new_data});
+      }
+      setModalVisible(false);
     },
   });
   const onChange = (selectedDate: any) => {
@@ -120,7 +196,7 @@ const CultivationImportantInfo = ({
   };
   const onChange2 = (selectedDate: any) => {
     const currentDate = selectedDate;
-    setShow(false);
+    setShow2(false);
     setValues({
       ...values,
       month_harvested: new Date(currentDate?.nativeEvent?.timestamp),
@@ -133,17 +209,77 @@ const CultivationImportantInfo = ({
         parseFloat(utilInfo?.output) / parseFloat(utilInfo?.area_allocated),
       ),
     });
-  }, [utilInfo.area_allocated, utilInfo?.output]);
+    resetForm({
+      values: {
+        soil_health: data?.soil_health || '',
+        decreasing_yield: data?.decreasing_yeild || '',
+        type_of_fertiliser: data?.type_of_fertilizer_used || '',
+        type_of_pesticide: data?.type_of_pesticide_used || '',
+        income_from_sale: data?.income_from_sale || '',
+        expenditure_on_inputs: data?.expenditure_on_inputs || '',
+        yield:
+          data?.yeild ||
+          String(
+            parseFloat(utilInfo?.output) / parseFloat(utilInfo?.area_allocated),
+          ),
+        month_planted: data?.month_planted
+          ? new Date(data?.month_planted)
+          : new Date(),
+        month_harvested: data?.month_planted
+          ? new Date(data?.month_harvested)
+          : new Date(),
+        required_processing: data?.required_processing || false,
+        processing_method: data?.processing_method || '',
+      },
+    });
+  }, [utilInfo.area_allocated, utilInfo?.output, data]);
+  const onDraft = async () => {
+    if (data?._id) {
+      const new_data = {
+        ...utilInfo,
+        soil_health: values?.soil_health,
+        decreasing_yield: parseInt(values?.decreasing_yield),
+        type_of_fertiliser: values?.type_of_fertiliser,
+        type_of_pesticide: values?.type_of_pesticide,
+        income_from_sale: parseInt(values?.income_from_sale),
+        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+        yield: parseInt(values?.yield),
+        month_planted: values?.month_planted,
+        month_harvested: values?.month_harvested,
+        required_processing: values?.required_processing,
+        processing_method: values?.processing_method,
+        status: 0,
+      };
+      setMessage('drafted')
+      updateCultivation({...new_data, cultivation_id: data?._id});
+    } else {
+      const new_data = {
+        ...utilInfo,
+        crop_id: crop_id,
+        soil_health: values?.soil_health,
+        decreasing_yield: parseInt(values?.decreasing_yield),
+        type_of_fertiliser: values?.type_of_fertiliser,
+        type_of_pesticide: values?.type_of_pesticide,
+        income_from_sale: parseInt(values?.income_from_sale),
+        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+        yield: parseInt(values?.yield),
+        month_planted: values?.month_planted,
+        month_harvested: values?.month_harvested,
+        required_processing: values?.required_processing,
+        processing_method: values?.processing_method,
+        status: 0,
+      };
+      setMessage('drafted')
+      addCultivation(new_data);
+    }
+  };
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
         <ScrollView contentContainerStyle={{paddingBottom: 105}}>
           <View style={Styles.mainContainer}>
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={soilHealth}
               value={values.soil_health}
               label={'Soil health'}
               onChange={(value: any) => {
@@ -157,7 +293,7 @@ const CultivationImportantInfo = ({
             {touched?.soil_health && errors?.soil_health && (
               <Text style={Styles.error}>{String(errors?.soil_health)}</Text>
             )}
-            {values?.soil_health === 'Decreasing Yield' && (
+            {values?.soil_health === 'decreasing yield' && (
               <>
                 <Input
                   onChangeText={handleChange('decreasing_yield')}
@@ -175,10 +311,7 @@ const CultivationImportantInfo = ({
               </>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={fertilisers}
               value={values.type_of_fertiliser}
               label={'Type of fertiliser used'}
               onChange={(value: any) => {
@@ -194,10 +327,7 @@ const CultivationImportantInfo = ({
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={pesticides}
               value={values.type_of_pesticide}
               label={'Type of pesticide used'}
               onChange={(value: any) => {
@@ -217,7 +347,8 @@ const CultivationImportantInfo = ({
               value={String(values?.income_from_sale)}
               fullLength={true}
               label={'Income from sale'}
-              isRight={<AcresElement title={'Dollar'} />}
+              keyboardType="numeric"
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
               <Text style={Styles.error}>
@@ -228,8 +359,9 @@ const CultivationImportantInfo = ({
               onChangeText={handleChange('expenditure_on_inputs')}
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
+              keyboardType="numeric"
               label={'Expenditure on inputs'}
-              isRight={<AcresElement title={'Dollar'} />}
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
               errors?.expenditure_on_inputs && (
@@ -301,7 +433,7 @@ const CultivationImportantInfo = ({
               fullLength={true}
               editable={false}
               label={'Yield'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={<AcresElement title={authState?.land_measurement} />}
               style={{backgroundColor: '#ebeced', borderRadius: 8}}
             />
             <Pressable onPress={() => setShow(true)}>
@@ -352,12 +484,14 @@ const CultivationImportantInfo = ({
       <View style={[Styles.bottomBtn]}>
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
-            onPress={handleSubmit}
+            onPress={() => setModalVisible(true)}
             btnText={'Submit'}
             style={{width: width / 2.5}}
           />
           <CustomButton
-            onPress={() => {}}
+            onPress={() => {
+              onDraft();
+            }}
             btnText={'Save as draft'}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
@@ -368,11 +502,21 @@ const CultivationImportantInfo = ({
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={() => setModalVisible(false)}
+        onSubmit={handleSubmit}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"
         comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack(), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
       />
     </View>
   );

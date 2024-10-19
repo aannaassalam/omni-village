@@ -35,7 +35,6 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
    const {mutate: login} = useMutation({
      mutationFn: (data: any) => login_otp(data),
      onSuccess: data => {
-       console.log('datata', data);
        setVerified(true)
      },
      onError: error => {

@@ -19,15 +19,19 @@ export default AcresElement
 
 const makeStyles = (fontScale:any) => StyleSheet.create({
     container: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 6,
         marginRight: 12,
         alignItems:'center',
+        alignSelf:'center',
+        justifyContent:'center',
         flexDirection:'row',
         gap:10
     },
     acres_txt:{
         fontSize: 14 / fontScale,
         fontFamily: fontFamilyRegular,
-        color: dark_grey
+        color: dark_grey,
+        flexWrap:'wrap',
+        width:45
     }
 })

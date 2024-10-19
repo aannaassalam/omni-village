@@ -92,7 +92,6 @@ const SignUp = ({navigation}: {navigation: any}) => {
   const {mutate: otp} = useMutation({
     mutationFn: (data: any) => send_otp(data),
     onSuccess: data => {
-      console.log('datata', data);
     },
     onError: error => {
       console.log(
@@ -128,7 +127,6 @@ const SignUp = ({navigation}: {navigation: any}) => {
   const {mutate: register} = useMutation({
     mutationFn: (data: any) => edit_user_details(data),
     onSuccess: async(data) => {
-      console.log('datata', data);
       await get_user_details().then(async profile => {
         console.log('profileee', profile);
         const userData = JSON.stringify({

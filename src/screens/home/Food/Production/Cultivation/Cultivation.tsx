@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -28,15 +29,33 @@ import AddCultivationBottomSheet from '../../../../../Components/BottomSheet/Pro
 import Itemlist from '../../../../../Components/Card/Itemlist';
 import NoData from '../../../../../Components/Nodata/NoData';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
+import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { get_crops } from '../../../../../apis/crops';
+import { get_cultivation } from '../../../../../apis/food';
+import { get_weight_measurement } from '../../../../../apis/auth';
 
-const Cultivation = () => {
+const Cultivation = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
  const [modalVisible, setModalVisible] = useState(false);
  const [data, setData] = useState([]);
+ const authState=useSelector((state:any)=>state.authState)
+ const {data: cultivation, isLoading} = useQuery({
+   queryKey: ['get_cultivation'],
+   queryFn: () => get_cultivation(),
+ });
+ useEffect(() => {
+   setData(cultivation);
+ },[cultivation])
  const handleRemoveItem = async (name: any) => {
    setData(data.filter((item:any) => item.crop_name !== name));
  };
+ if(isLoading){
+  return <View style={{marginTop:'50%'}}>
+    <ActivityIndicator size={'large'} color={primary} style={{alignSelf:'center'}}/>
+  </View>
+ }
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -57,7 +76,7 @@ const Cultivation = () => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.cultivation} {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
@@ -67,7 +86,7 @@ const Cultivation = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  12 Crops
+                  {data?.length} Crops
                 </Text>
               </View>
             </View>
@@ -99,7 +118,7 @@ const Cultivation = () => {
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -119,12 +138,17 @@ const Cultivation = () => {
         data={data}
         setData={async (item: any) => {
           const find_crop = await data.find(
-            (itm:any) => itm.crop_name === item?.crop_name,
+            (itm: any) => itm.crop_name === item?.crop_name,
           )?.crop_name;
           if (find_crop) {
             return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
+            console.log("iteemememe", item)
+              navigation.navigate('utilisation', {
+                crop_name: item?.crop_name,
+                crop_id: item?.crop_id,
+              });
           }
         }}
       />

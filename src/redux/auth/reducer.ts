@@ -105,9 +105,9 @@ const authReducer = (
     }
     case WEIGHT_MESUREMENT: {
       const arr =
-        action?.data.length > 0
+        action?.data?.length > 0
           ? action?.data?.map((data: ' ') => {
-              return {id: data._id, label: data.name, value: data?.symbol};
+              return {id: data._id, label: data.name, value: data?.name};
             })
           : [];
       return {

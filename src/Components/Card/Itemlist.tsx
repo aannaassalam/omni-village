@@ -13,7 +13,8 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
         onPress={() => {
           if(screen=="cultivation"){
             navigation.navigate('utilisation', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.en,
+              data: item,
             });
           }else if (screen == 'pond') {
             navigation.navigate('pondInfo', {
@@ -48,7 +49,7 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
           }}
           drafted={item.status === 0}
           add={false}
-          cropName={item?.crop_name}
+          cropName={item?.crop_name || item?.crop?.name?.en}
           onPress={() => {
             // setDelete_id(item.data._id);
             // setDeletePopup(true);

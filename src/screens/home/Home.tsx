@@ -6,7 +6,7 @@ import {
   ScrollView,
   FlatList,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import HomeHeader from '../../Components/CustomHeader/HomeHeader';
 import HeaderCard from '../../Components/Card/HeaderCard';
 import {Avatar, Divider} from 'react-native-paper';
@@ -21,7 +21,9 @@ import HomeCardOptions from '../../Components/Card/HomeCardOptions';
 import {home_data} from '../../../assets/mockdata/Data';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { logUserOut } from '../../redux/auth/actions';
+import { logUserOut, weight } from '../../redux/auth/actions';
+import { useQuery } from '@tanstack/react-query';
+import { get_weight_measurement } from '../../apis/auth';
 
 const Home = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -29,6 +31,13 @@ const Home = ({navigation}:{navigation:any}) => {
   const [active, setActive] = useState('');
   const dispatch = useDispatch()
   const authState = useSelector((state)=>state.authState)
+   const {data: weight_measurement} = useQuery({
+     queryKey: ['weight_measurement'],
+     queryFn: () => get_weight_measurement(),
+   });
+   useEffect(()=>{
+    dispatch(weight(weight_measurement))
+   },[weight_measurement])
   return (
     <View style={styles.container}>
       <HomeHeader />
@@ -73,18 +82,25 @@ const Home = ({navigation}:{navigation:any}) => {
             </View> */}
           </HeaderCard>
           <View style={styles.flatlist}>
-            <View style={styles.card_container}>
-              {home_data.map((item: any, index: any) => {
-                return (
-                  <HomeCardOptions
-                    item={item}
-                    active={active}
-                    setActive={(item: any) => setActive(item)}
-                    key={index}
-                  />
-                );
-              })}
-            </View>
+            <FlatList
+              scrollEnabled={false}
+              contentContainerStyle={{
+                justifyContent: 'space-between',
+                width: '100%',
+              }}
+              keyExtractor={(item, i) => i.toString()}
+              data={home_data}
+              numColumns={4}
+              columnWrapperStyle={{justifyContent: 'flex-start', gap: 10, paddingHorizontal: 4}}
+              renderItem={({item,index}) => (
+                <HomeCardOptions
+                  item={item}
+                  active={active}
+                  setActive={(item: any) => setActive(item)}
+                  key={index}
+                />
+              )}
+            />
           </View>
         </View>
       </ScrollView>
@@ -142,12 +158,16 @@ const makeStyles = (fontScale: any) =>
       alignItems: 'flex-start',
     },
     flatlist: {
-      marginVertical: 26,
+      // paddingHorizontal: 16,
+      paddingVertical: 16,
+      justifyContent: 'center',
+      // backgroundColor:'pink'
     },
     card_container: {
       flexDirection: 'row',
       flexWrap: 'wrap',
       width: '100%',
-      justifyContent:'space-between',
+      justifyContent: 'flex-start',
+      // backgroundColor: 'red',
     },
   });

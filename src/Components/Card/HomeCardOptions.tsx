@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import {dark_grey, primary } from '../../styles/colors'
 import { fontFamilyMedium } from '../../styles/fontStyle'
 import { useNavigation } from '@react-navigation/native'
+import { width } from '../../styles/globalStyles'
 
 const HomeCardOptions = ({item, active, setActive}:{item:any, active?:any, setActive?:any}) => {
     const {fontScale} = useWindowDimensions()
@@ -42,10 +43,12 @@ const makeStyles = (fontScale: any) =>
       borderRadius: 4,
       backgroundColor: dark_grey,
       padding: 12,
-      justifyContent:'center',
+      justifyContent: 'center',
       alignItems: 'center',
-      marginVertical: 8,
-      marginHorizontal: 8
+      // width: width / 6,
+      // height: 50,
+      // marginVertical: 8,
+      // marginHorizontal: 8
     },
     name_txt: {
       fontSize: 13 / fontScale,
@@ -57,9 +60,9 @@ const makeStyles = (fontScale: any) =>
       marginVertical: 4,
       marginHorizontal: 8,
     },
-    image:{
+    image: {
       height: 40,
       width: 40,
       resizeMode: 'contain',
-    }
+    },
   });
