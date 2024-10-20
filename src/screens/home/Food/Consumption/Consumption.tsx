@@ -10,22 +10,17 @@ import {unSelected} from '../../../../styles/colors';
 import {fontFamilyMedium} from '../../../../styles/fontStyle';
 import {FlatList} from 'react-native';
 import {Styles} from '../../../../styles/globalStyles';
+import { useQuery } from '@tanstack/react-query';
+import { get_consumption_type } from '../../../../apis/crops';
+import { USER_PREFERRED_LANGUAGE } from '../../../../i18next';
 
 const Consumption = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const items = [
-    {name: 'Apple'},
-    {name: 'Orange'},
-    {name: 'Banana'},
-    {name: 'Grapes'},
-    {name: 'Mango'},
-    {name: 'Pineapple'},
-    {name: 'Strawberry'},
-    {name: 'Cherry'},
-    {name: 'Watermelon'},
-    {name: 'Papaya'},
-  ];
+  const {data: consumptionType, isLoading} = useQuery({
+    queryKey: ['get_type'],
+    queryFn: () => get_consumption_type({lang: USER_PREFERRED_LANGUAGE}),
+  });
   return (
     <View style={styles.container}>
       <View
@@ -34,10 +29,10 @@ const Consumption = ({navigation}:{navigation:any}) => {
           {paddingTop: 0, paddingHorizontal: 16, paddingBottom: 0},
         ]}>
         <FlatList
-          data={items}
+          data={consumptionType}
           contentContainerStyle={{marginVertical: 10, paddingBottom: 10}}
           renderItem={({item}) => (
-            <TouchableOpacity key={item.name} style={styles.box_container} onPress={()=>navigation.navigate('consumptionItem')}>
+            <TouchableOpacity key={item.name} style={styles.box_container} onPress={()=>navigation.navigate('consumptionItem',{id:item?._id})}>
               <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           )}

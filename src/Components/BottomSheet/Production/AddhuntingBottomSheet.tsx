@@ -3,6 +3,7 @@ import {
   Keyboard,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,6 +14,9 @@ import {fontScale, width} from '../../../styles/globalStyles';
 import Customdropdown from '../../CustomDropdown/Customdropdown';
 import Input from '../../Inputs/Input';
 import CustomButton from '../../CustomButton/CustomButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { add_crops, get_crops } from '../../../apis/crops';
+import { useSelector } from 'react-redux';
 
 const AddHuntingBottomSheet = ({
   modalVisible,
@@ -30,6 +34,35 @@ const AddHuntingBottomSheet = ({
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
   const snapPoints = React.useMemo(() => ['70%'], []);
+    const authState = useSelector((state: any) => state.authState);
+    const queryClient = useQueryClient();
+    const {data: hunting_crop} = useQuery({
+      queryKey: ['hunting_crops'],
+      queryFn: () =>
+        get_crops({country: authState?.country, category: 'hunting'}),
+    });
+    const {mutate: addCrop} = useMutation({
+      mutationFn: (data: any) => add_crops(data),
+      onSuccess: async data => {
+        console.log('idddd', data);
+        queryClient.invalidateQueries();
+        setModalVisible(!modalVisible), bottomsheetRef.current.close();
+        await setData({
+          crop_id: data?._id,
+          crop_name: extra_crop_name,
+        });
+        setOnFocus(false), Keyboard.dismiss();
+        setCrop_name(null), setExtra_crop_name(null);
+      },
+      onError: error => {
+        ToastAndroid.show('Crop exists', ToastAndroid.SHORT);
+        console.log(
+          'error?.response?.data?.message add crop',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
   return (
     <AddBottomSheet
       snap={onFocus && snapPoints}
@@ -46,6 +79,7 @@ const AddHuntingBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
+                setCrop_name(null), setExtra_crop_name(null);
               }
             }}>
             <Image
@@ -55,20 +89,28 @@ const AddHuntingBottomSheet = ({
           </TouchableOpacity>
         </View>
         <Customdropdown
-          data={[
-            {label: 'pine', value: 'pine'},
-            {label: 'mango', value: 'mango'},
-            {label: 'banayan', value: 'banayan'},
-            {label: 'others', value: 'others'},
-          ]}
-          value={crop_name}
+          data={
+            hunting_crop?.length > 0
+              ? [
+                  ...hunting_crop?.map((item: any) => {
+                    return {
+                      id: item?._id,
+                      label: item?.name,
+                      value: item?.name,
+                    };
+                  }),
+                  {id: 0, label: 'Others', value: 'others'},
+                ]
+              : []
+          }
+          value={crop_name?.name}
           noLabel={true}
           onChange={(value: any) => {
-            setCrop_name(value?.value);
+            setCrop_name({_id: value?.id, name: value?.value});
           }}
           style={{marginTop: '8%'}}
         />
-        {crop_name === 'others' ? (
+        {crop_name?.name === 'others' ? (
           <View style={{marginTop: '6%'}}>
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
@@ -84,12 +126,37 @@ const AddHuntingBottomSheet = ({
         <CustomButton
           btnText={'Add Crop'}
           onPress={async () => {
-            setModalVisible(!modalVisible), bottomsheetRef.current.close();
-            await setData({
-              crop_name: crop_name == 'others' ? extra_crop_name : crop_name,
-            });
-            setOnFocus(false), Keyboard.dismiss();
-            await setCrop_name(null), await setExtra_crop_name(null);
+             if (crop_name?.name == 'others' && extra_crop_name) {
+               let data = {
+                 name: {
+                   en: extra_crop_name,
+                   ms: 'optional',
+                   dz: 'optional',
+                 },
+                 country: ['india', 'bhutan', 'malaysia'],
+                 status: 0,
+                 ideal_consumption_per_person: 0, //from application,
+                 category: 'hunting', //cultivation, fishery, hunting, poultry, tree
+               };
+               addCrop(data);
+             } else if (
+               (crop_name?.name == 'others' && extra_crop_name === null) ||
+               extra_crop_name == '' ||
+               !crop_name?.name
+             ) {
+               ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
+             } else {
+               setModalVisible(!modalVisible), bottomsheetRef.current.close();
+               await setData({
+                 crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
+                 crop_name:
+                   crop_name?.name == 'others'
+                     ? extra_crop_name
+                     : crop_name?.name,
+               });
+               setOnFocus(false), Keyboard.dismiss();
+               setCrop_name(null), setExtra_crop_name(null);
+             }
           }}
           style={{marginTop: '6%', width: '100%'}}
         />

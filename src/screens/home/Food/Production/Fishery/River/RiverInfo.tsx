@@ -23,9 +23,52 @@ import CustomButton from '../../../../../../Components/CustomButton/CustomButton
 import Customdropdown from '../../../../../../Components/CustomDropdown/Customdropdown';
 import {fontFamilyRegular} from '../../../../../../styles/fontStyle';
 import AlertModal from '../../../../../../Components/Popups/AlertModal';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {add_fishery, edit_fishery} from './../../../../../../apis/food';
+import {get_feeds} from '../../../../../../apis/crops';
+import {useSelector} from 'react-redux';
 const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
-  const {crop_name} = route.params;
+  const {crop_name,crop_id,data} = route.params;
   const [modalViisble, setModalVisible] = useState(false);
+    const [successModal, setSuccessModal] = useState(false);
+    const [message, setMessage] = useState('');
+    const authState = useSelector(state => state.authState);
+    const queryClient = useQueryClient();
+    const {data: feeds} = useQuery({
+      queryKey: ['feeds_fishery'],
+      queryFn: () =>
+        get_feeds({country: authState?.country, category: 'fishery'}),
+    });
+    const {mutate: addFishery} = useMutation({
+      mutationFn: (data: any) => add_fishery(data),
+      onSuccess: data => {
+        setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+      onSettled: () => setModalVisible(false),
+    });
+    const {mutate: updateFishery} = useMutation({
+      mutationFn: (data: any) => edit_fishery(data),
+      onSuccess: data => {
+        setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+      onSettled: () => setModalVisible(false),
+    });
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -41,7 +84,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
         .min(1, 'Number must be greater than equal to 1')
         .required('number is required'),
       type_of_feed: Yup.string().required('Type of feed is required'),
-      create_type: Yup.number().test(
+      create_type: Yup.string().test(
         'create-type-required',
         'Create type is required',
         function (value) {
@@ -51,6 +94,9 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
           }
           return true; // Otherwise, no validation on decreasing_yield
         },
+      ),
+      weight_measurement: Yup.string().required(
+        'Weight measurement required is required',
       ),
       output: Yup.number()
         .min(1, 'Output must be greater than equal to 1')
@@ -81,7 +127,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
         .required('Expenditure on inputs is required'),
-         yield: Yup.string().required('yield is required'),
+      yield: Yup.string().required('yield is required'),
       required_processing: Yup.boolean().required(
         'Required processing is required',
       ),
@@ -130,6 +176,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       number: 0,
       type_of_feed: '',
       create_type: '',
+      weight_measurement:'',
       output: 0,
       self_consumed: 0,
       sold_to_neighbours: 0,
@@ -142,7 +189,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       expenditure_on_inputs: 0,
       required_processing: false,
     },
-    // validationSchema: treesSchema,
+    validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
       setModalVisible(true);
@@ -152,11 +199,117 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
       setValues({
         ...values,
         yield:
-          values?.output === 0 || values?.number === 0
+          values?.output === '' || values?.number === ''
             ? 0
             : String(parseFloat(values?.output) / parseFloat(values?.number)),
       });
     }, [values?.output, values?.number]);
+    useEffect(()=>{
+        resetForm({
+          values: {
+            number: data?.number || '5',
+            type_of_feed: data?.type_of_feed || 'Others',
+            weight_measurement: data?.weight_measurement || 'gram',
+            create_type: data?.create_type || 'wormss',
+            output: data?.output || '90',
+            self_consumed: data?.self_consumed || '7',
+            sold_to_neighbours: data?.sold_to_neighbours || '7',
+            sold_for_industrial_use: data?.sold_for_industrial_use || '7',
+            wastage: data?.wastage || '7',
+            others: data?.others || '',
+            others_value: data?.others_value || '',
+            yield:
+              data?.yield || values?.output === '' || values?.number === ''
+                ? 0
+                : String(
+                    parseFloat(values?.output) / parseFloat(values?.number),
+                  ),
+            income_from_sale: data?.income_from_sale || '789',
+            expenditure_on_inputs: data?.expenditure_on_inputs || '890',
+            required_processing: data?.required_processing || false,
+          },
+        });
+    },[data])
+    const onSubmit = () =>{
+        let new_data = {
+          number: parseInt(values?.number),
+          type_of_feed: values?.type_of_feed,
+          create_type: values?.create_type,
+          total_feed: parseInt(values?.total_feed || 0),
+          weight_measurement: values?.weight_measurement || '',
+          output: parseInt(values?.output),
+          self_consumed: parseInt(values?.self_consumed),
+          sold_to_neighbours: parseInt(values?.sold_to_neighbours),
+          sold_for_industrial_use: parseInt(values?.sold_for_industrial_use),
+          wastage: parseInt(values?.wastage),
+          others: values?.others,
+          others_value: parseInt(values?.others_value),
+          yield: parseFloat(values?.yield),
+          income_from_sale: parseInt(values?.income_from_sale),
+          expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+          required_processing: values?.required_processing,
+          status: 1,
+          fishery_type: 'river',
+        };
+        if (data?._id) {
+          setMessage('updated');
+          updateFishery({...new_data, fishery_id: data?._id});
+        } else {
+          console.log('here2');
+          setMessage('submitted');
+          addFishery({...new_data, crop_id: crop_id});
+        }
+    }
+     const onDraft = async () => {
+       if (data?._id) {
+         const new_data = {
+           number: parseInt(values?.number),
+           type_of_feed: values?.type_of_feed,
+           create_type: values?.create_type,
+           total_feed: parseInt(values?.total_feed),
+           weight_measurement: values?.weight_measurement || '',
+           output: parseInt(values?.output),
+           self_consumed: parseInt(values?.self_consumed),
+           sold_to_neighbours: parseInt(values?.sold_to_neighbours),
+           sold_for_industrial_use: parseInt(values?.sold_for_industrial_use),
+           wastage: parseInt(values?.wastage),
+           others: values?.others,
+           others_value: parseInt(values?.others_value),
+           yield: parseFloat(values?.yield),
+           income_from_sale: parseInt(values?.income_from_sale),
+           expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+           required_processing: values?.required_processing,
+           status: 0,
+           fishery_type: 'river',
+         };
+         setMessage('drafted');
+         updateFishery({...new_data, fishery_id: data?._id});
+       } else {
+         console.log('croppp', crop_id);
+         const new_data = {
+           number: parseInt(values?.number),
+           type_of_feed: values?.type_of_feed,
+           create_type: values?.create_type,
+           weight_measurement: values?.weight_measurement || '',
+           total_feed: parseInt(values?.total_feed),
+           output: parseInt(values?.output),
+           self_consumed: parseInt(values?.self_consumed),
+           sold_to_neighbours: parseInt(values?.sold_to_neighbours),
+           sold_for_industrial_use: parseInt(values?.sold_for_industrial_use),
+           wastage: parseInt(values?.wastage),
+           others: values?.others,
+           others_value: parseInt(values?.others_value),
+           yield: parseFloat(values?.yield),
+           income_from_sale: parseInt(values?.income_from_sale),
+           expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+           required_processing: values?.required_processing,
+           status: 0,
+           fishery_type: 'river',
+         };
+         setMessage('drafted');
+         addFishery({...new_data, crop_id: crop_id});
+       }
+     }
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -173,11 +326,24 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               <Text style={Styles.error}>{String(errors?.number)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-                {id: 3, label: 'Others', value: 'Others'},
-              ]}
+              data={
+                feeds?.length > 0
+                  ? [
+                      ...feeds?.map((item: any) => {
+                        return {
+                          id: item?._id,
+                          label: item.name,
+                          value: item.name,
+                        };
+                      }),
+                      {
+                        id: 'others',
+                        label: 'Others',
+                        value: 'Others',
+                      },
+                    ]
+                  : []
+              }
               value={values.type_of_feed}
               label={'Type of feed'}
               onChange={(value: any) => {
@@ -207,13 +373,29 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
                 )}
               </>
             )}
+            <Customdropdown
+              data={authState?.weight_measurements}
+              value={values.weight_measurement}
+              label={'Weight measuremnt'}
+              onChange={(value: any) => {
+                setValues({
+                  ...values,
+                  weight_measurement: value?.value,
+                });
+              }}
+            />
+            {touched?.weight_measurement && errors?.weight_measurement && (
+              <Text style={Styles.error}>
+                {String(errors?.weight_measurement)}
+              </Text>
+            )}
             <Input
               onChangeText={handleChange('output')}
               value={String(values?.output)}
               fullLength={true}
               label={'Output'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.output && errors?.output && (
               <Text style={Styles.error}>{String(errors?.output)}</Text>
@@ -224,7 +406,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               fullLength={true}
               label={'Self Consumed'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.self_consumed && errors?.self_consumed && (
               <Text style={Styles.error}>{String(errors?.self_consumed)}</Text>
@@ -235,7 +417,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               fullLength={true}
               label={'Sold to neighbours'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.sold_to_neighbours && errors?.sold_to_neighbours && (
               <Text style={Styles.error}>
@@ -248,7 +430,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               fullLength={true}
               label={'Sold for industrial use'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.sold_for_industrial_use &&
               errors?.sold_for_industrial_use && (
@@ -262,7 +444,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               fullLength={true}
               label={'Wastage'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.wastage && errors?.wastage && (
               <Text style={Styles.error}>{String(errors?.wastage)}</Text>
@@ -285,7 +467,7 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   fullLength={true}
                   label={values?.others}
                   keyboardType={'default'}
-                  isRight={<AcresElement title={'kg'} />}
+                  isRight={<AcresElement title={values?.weight_measurement} />}
                 />
                 {touched?.others_value && errors?.others_value && (
                   <Text style={Styles.error}>
@@ -300,7 +482,9 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               fullLength={true}
               editable={false}
               label={'Yield'}
-              isRight={<AcresElement title={'acres'} />}
+              isRight={
+                <AcresElement title={authState?.land_measurement_symbol} />
+              }
               style={{backgroundColor: '#ebeced', borderRadius: 8}}
             />
             <Input
@@ -308,7 +492,8 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               value={String(values?.income_from_sale)}
               fullLength={true}
               label={'Income from sale'}
-              isRight={<AcresElement title={'Dollar'} />}
+              keyboardType="numeric"
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
               <Text style={Styles.error}>
@@ -320,7 +505,8 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
               label={'Expenditure on inputs'}
-              isRight={<AcresElement title={'Dollar'} />}
+              keyboardType="numeric"
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
               errors?.expenditure_on_inputs && (
@@ -397,7 +583,9 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
             style={{width: width / 2.5}}
           />
           <CustomButton
-            onPress={() => {}}
+            onPress={() => {
+              onDraft();
+            }}
             btnText={'Save as draft'}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
@@ -408,11 +596,21 @@ const RiverInfo = ({navigation, route}: {navigation: any; route: any}) => {
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={() => setModalVisible(false)}
+        onSubmit={()=>onSubmit()}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"
         comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
       />
     </View>
   );

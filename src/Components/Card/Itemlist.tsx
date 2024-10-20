@@ -3,9 +3,11 @@ import React from 'react';
 import AddAndDeleteCropButton from '../CropButtons/AddAndDeleteCropButton';
 import {Styles} from '../../styles/globalStyles';
 import { useNavigation } from '@react-navigation/native';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 
-const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:any}) => {
+const Itemlist = ({item, setRemove, screen, id}: {item: any, setRemove?:any, screen:any, id:any}) => {
     const navigation = useNavigation()
+    const lang = USER_PREFERRED_LANGUAGE
   return (
     <View>
       <TouchableOpacity
@@ -13,32 +15,46 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
         onPress={() => {
           if(screen=="cultivation"){
             navigation.navigate('utilisation', {
-              crop_name: item?.crop_name || item?.crop?.name?.en,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
               data: item,
             });
           }else if (screen == 'pond') {
             navigation.navigate('pondInfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              data: item,
             });
           } else if (screen == 'river') {
             navigation.navigate('riverInfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              data: item,
             });
           } else if (screen == 'trees') {
             navigation.navigate('treesImportantinfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              data: item,
             });
           } else if (screen == 'poultry') {
             navigation.navigate('poultryImportantinfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              data: item,
             });
           } else if (screen == 'hunting') {
             navigation.navigate('huntingInfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              data: item,
             });
           }else if (screen == 'consumption'){
             navigation.navigate('consumptionInfo', {
-              crop_name: item?.crop_name,
+              crop_name: item?.crop_name || item?.crop?.name?.[lang],
+              crop_id: item?.crop_id,
+              id: item?.consumption_type_id||id,
+              data: item,
             });
           }
           // navigation.navigate('type');
@@ -49,11 +65,11 @@ const Itemlist = ({item, setRemove, screen}: {item: any, setRemove?:any, screen:
           }}
           drafted={item.status === 0}
           add={false}
-          cropName={item?.crop_name || item?.crop?.name?.en}
+          cropName={item?.crop_name || item?.crop?.name?.[lang]}
           onPress={() => {
             // setDelete_id(item.data._id);
             // setDeletePopup(true);
-            setRemove(item?.crop_name)
+            setRemove(item)
           }}
         />
       </TouchableOpacity>

@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StackHeader from '../../../../../Components/CustomHeader/StackHeader';
 import NoData from '../../../../../Components/Nodata/NoData';
@@ -7,6 +7,9 @@ import {Styles, width} from '../../../../../styles/globalStyles';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {dark_grey} from '../../../../../styles/colors';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {add_trees, edit_trees} from '../../../../../apis/food';
+import AlertModal from '../../../../../Components/Popups/AlertModal';
 
 const Harvestedproducts = ({
   navigation,
@@ -15,9 +18,13 @@ const Harvestedproducts = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name, values} = route.params;
-  const [data, setData] = useState([]);
+  const {crop_name, impInfo, crop_id, edit_data} = route.params;
+  const [data, setData] = useState(edit_data);
   const [objError, setObjError] = useState('');
+  const queryClient = useQueryClient();
+  const [modalViisble, setModalVisible] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+   const [message, setMessage] = useState('');
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -27,6 +34,40 @@ const Harvestedproducts = ({
       ),
     });
   }, [crop_name]);
+  const {mutate: addTrees} = useMutation({
+    mutationFn: (data: any) => add_trees(data),
+    onSuccess: data => {
+      setModalVisible(false);
+      setSuccessModal(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      setModalVisible(false)
+      ToastAndroid.show(error?.response?.data?.message ? error?.response?.data?.message :'Error Detected', ToastAndroid.SHORT);
+      console.log(
+        'error?.response?.data?.message',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  const {mutate: updateTrees} = useMutation({
+    mutationFn: (data: any) => edit_trees(data),
+    onSuccess: data => {
+      // setSuccessModal(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  useEffect(()=>{
+    setData(edit_data?.products.length>0?edit_data?.products:[]);
+  },[edit_data])
   return (
     <View style={styles.container}>
       <View style={[Styles.mainContainer, {paddingBottom: 120}]}>
@@ -76,7 +117,7 @@ const Harvestedproducts = ({
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <>
                 <TouchableOpacity
                   style={Styles.addAndDeleteButtonSection}
@@ -112,7 +153,7 @@ const Harvestedproducts = ({
                           sold_to_neighbours: 0,
                           sold_for_industrial_use: 0,
                           wastage: 0,
-                          others: 'Retain',
+                          others: '',
                           others_value: 0,
                           month_harvested: new Date().toISOString(),
                           required_processing: false,
@@ -128,7 +169,7 @@ const Harvestedproducts = ({
         />
       </View>
 
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <View style={[Styles.bottomBtn]}>
           <View style={{flexDirection: 'row', gap: 16}}>
             <CustomButton
@@ -137,11 +178,15 @@ const Harvestedproducts = ({
                   (product: any) =>
                     product.output > 0 && product.product_name.trim() !== '',
                 );
-                setObjError(
-                  !allValid
-                    ? 'Output must be greater than 0 for each product and product name is required'
-                    : '',
-                );
+                if (allValid) {
+                  setModalVisible(true);
+                } else {
+                  setObjError(
+                    !allValid
+                      ? 'Output must be greater than 0 for each product and product name is required'
+                      : '',
+                  );
+                }
               }}
               btnText={'Submit'}
               style={{width: width / 2.5}}
@@ -152,11 +197,31 @@ const Harvestedproducts = ({
                   (product: any) =>
                     product.output > 0 && product.product_name.trim() !== '',
                 );
-                setObjError(
-                  !allValid
-                    ? 'Output must be greater than 0 for each product and product name is required'
-                    : '',
-                );
+                if (allValid) {
+                  if (data?._id) {
+                    setMessage('drafted')
+                    updateTrees({
+                      ...impInfo,
+                      harvested_products: data,
+                      tree_id: data?._id,
+                      status: 0,
+                    });
+                  } else {
+                    setMessage('drafted')
+                    addTrees({
+                      ...impInfo,
+                      harvested_products: data,
+                      crop_id: crop_id,
+                      status: 0,
+                    });
+                  }
+                } else {
+                  setObjError(
+                    !allValid
+                      ? 'Output must be greater than 0 for each product and product name is required'
+                      : '',
+                  );
+                }
               }}
               btnText={'Save as draft'}
               btnStyle={{color: dark_grey}}
@@ -165,6 +230,46 @@ const Harvestedproducts = ({
           </View>
         </View>
       )}
+      <AlertModal
+        visible={modalViisble}
+        cancel={true}
+        hideText={'Cancel'}
+        onSubmit={() => {
+          if (edit_data?._id) {
+            console.log('hereerer');
+            setMessage('updated');
+            updateTrees({
+              ...impInfo,
+              harvested_products: data,
+              tree_id: edit_data?._id,
+              status: 1,
+            });
+          } else {
+            console.log('hereerer2');
+            setMessage('submitted');
+            addTrees({
+              ...impInfo,
+              harvested_products: data,
+              crop_id: crop_id,
+              status: 1,
+            });
+          }
+        }}
+        confirmText="Submit"
+        onHide={() => setModalVisible(false)}
+        title="Confirm Submit"
+        comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack(), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
+      />
     </View>
   );
 };

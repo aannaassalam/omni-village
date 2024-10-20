@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StackHeader from '../../../../../Components/CustomHeader/StackHeader';
 import NoData from '../../../../../Components/Nodata/NoData';
@@ -7,6 +7,9 @@ import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAnd
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {dark_grey} from '../../../../../styles/colors';
 import PoultryHarvestedProductList from '../../../../../Components/Card/PoultryHarvestedProductList';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { add_poultry, edit_poultry } from '../../../../../apis/food';
+import AlertModal from '../../../../../Components/Popups/AlertModal';
 
 const PoultryHarvestedProduct = ({
   navigation,
@@ -15,18 +18,58 @@ const PoultryHarvestedProduct = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name, impVal, proVal} = route.params;
-  const [data, setData] = useState([]);
-  const [objError, setObjError] = useState('');
-  useEffect(() => {
-    navigation.setOptions({
-      header: (props: any) => (
-        <StackHeader
-          title={crop_name.charAt(0).toUpperCase() + crop_name.slice(1)}
-        />
-      ),
+  const {crop_name, impVal, proVal, crop_id, get_data} = route.params;
+    const [data, setData] = useState([]);
+    const [objError, setObjError] = useState('');
+    const queryClient = useQueryClient();
+    const [modalViisble, setModalVisible] = useState(false);
+    const [successModal, setSuccessModal] = useState(false);
+    const [message, setMessage] = useState('');
+    useEffect(() => {
+      navigation.setOptions({
+        header: (props: any) => (
+          <StackHeader
+            title={crop_name.charAt(0).toUpperCase() + crop_name.slice(1)}
+          />
+        ),
+      });
+    }, [crop_name]);
+    const {mutate: addPoultry} = useMutation({
+      mutationFn: (data: any) => add_poultry(data),
+      onSuccess: data => {
+        setModalVisible(false);
+        setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        setModalVisible(false);
+        ToastAndroid.show(
+          error?.response?.data?.message
+            ? error?.response?.data?.message
+            : 'Error Detected',
+          ToastAndroid.SHORT,
+        );
+        console.log(
+          'error?.response?.data?.message',
+          error,
+          error?.response?.data?.message,
+        );
+      },
     });
-  }, [crop_name]);
+    const {mutate: updatePoultry} = useMutation({
+      mutationFn: (data: any) => edit_poultry(data),
+      onSuccess: data => {
+        // setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
   return (
     <View style={styles.container}>
       <View style={[Styles.mainContainer, {paddingBottom: 120}]}>
@@ -37,6 +80,7 @@ const PoultryHarvestedProduct = ({
             <PoultryHarvestedProductList
               item={item}
               index={index}
+              weight={impVal?.weight_measurement}
               setData={(data: any, indx: any) => {
                 setData((prevData: any) =>
                   prevData.map((item: any, index: any) =>
@@ -76,7 +120,7 @@ const PoultryHarvestedProduct = ({
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <>
                 <TouchableOpacity
                   style={Styles.addAndDeleteButtonSection}
@@ -128,7 +172,7 @@ const PoultryHarvestedProduct = ({
         />
       </View>
 
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <View style={[Styles.bottomBtn]}>
           <View style={{flexDirection: 'row', gap: 16}}>
             <CustomButton
@@ -137,11 +181,16 @@ const PoultryHarvestedProduct = ({
                   (product: any) =>
                     product.output > 0 && product.product_name.trim() !== '',
                 );
-                setObjError(
-                  !allValid
-                    ? 'Output must be greater than 0 for each product and product name is required'
-                    : '',
-                );
+                if (allValid) {
+                  setModalVisible(true);
+                   setObjError('');
+                } else {
+                  setObjError(
+                    !allValid
+                      ? 'Output must be greater than 0 for each product and product name is required'
+                      : '',
+                  );
+                }
               }}
               btnText={'Submit'}
               style={{width: width / 2.5}}
@@ -152,12 +201,33 @@ const PoultryHarvestedProduct = ({
                   (product: any) =>
                     product.output > 0 && product.product_name.trim() !== '',
                 );
-                console.log('alll', allValid);
-                setObjError(
-                  !allValid
-                    ? 'Output must be greater than 0 for each product and product name is required'
-                    : '',
-                );
+                if (allValid) {
+                  if (data?._id) {
+                    setMessage('drafted');
+                    updatePoultry({
+                      ...impVal,
+                      ...proVal,
+                      harvested_products: data,
+                      tree_id: data?._id,
+                      status: 0,
+                    });
+                  } else {
+                    setMessage('drafted');
+                    addPoultry({
+                      ...impVal,
+                      ...proVal,
+                      harvested_products: data,
+                      crop_id: crop_id,
+                      status: 0,
+                    });
+                  }
+                } else {
+                  setObjError(
+                    !allValid
+                      ? 'Output must be greater than 0 for each product and product name is required'
+                      : '',
+                  );
+                }
               }}
               btnText={'Save as draft'}
               btnStyle={{color: dark_grey}}
@@ -166,6 +236,46 @@ const PoultryHarvestedProduct = ({
           </View>
         </View>
       )}
+      <AlertModal
+        visible={modalViisble}
+        cancel={true}
+        hideText={'Cancel'}
+        onSubmit={() => {
+          if (data?._id) {
+            setMessage('updated');
+            addPoultry({
+              ...impVal,
+              ...proVal,
+              harvested_products: data,
+              poultry_id: data?._id,
+              status: 1,
+            });
+          } else {
+            setMessage('submitted');
+            addPoultry({
+              ...impVal,
+              ...proVal,
+              harvested_products: data,
+              crop_id: crop_id,
+              status: 1,
+            });
+          }
+        }}
+        confirmText="Submit"
+        onHide={() => setModalVisible(false)}
+        title="Confirm Submit"
+        comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack(), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
+      />
     </View>
   );
 };

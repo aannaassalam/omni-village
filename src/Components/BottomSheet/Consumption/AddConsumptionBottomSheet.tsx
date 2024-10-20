@@ -3,6 +3,7 @@ import {
   Keyboard,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,23 +14,36 @@ import {fontScale, width} from '../../../styles/globalStyles';
 import Customdropdown from '../../CustomDropdown/Customdropdown';
 import Input from '../../Inputs/Input';
 import CustomButton from '../../CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { get_consumption_crop } from '../../../apis/crops';
+import { USER_PREFERRED_LANGUAGE } from './../../../i18next/index';
 
 const AddConsumptionBottomSheet = ({
   modalVisible,
   setModalVisible,
   data,
   setData,
+  id
 }: {
   modalVisible?: any;
   setModalVisible?: any;
   data?: any;
   setData?: any;
+  id:any
 }) => {
   const bottomsheetRef = useRef(null);
   const [crop_name, setCrop_name] = useState(null);
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
   const snapPoints = React.useMemo(() => ['70%'], []);
+  const authState = useSelector((state: any) => state.authState);
+  const queryClient = useQueryClient();
+   const {data: consumption_crop} = useQuery({
+     queryKey: ['comsumption_crop'],
+     queryFn: () =>
+       get_consumption_crop({lang: USER_PREFERRED_LANGUAGE,country: authState?.country, label: id}),
+   });
   return (
     <AddBottomSheet
       snap={onFocus && snapPoints}
@@ -55,16 +69,23 @@ const AddConsumptionBottomSheet = ({
           </TouchableOpacity>
         </View>
         <Customdropdown
-          data={[
-            {label: 'pine', value: 'pine'},
-            {label: 'mango', value: 'mango'},
-            {label: 'banayan', value: 'banayan'},
-            {label: 'others', value: 'others'},
-          ]}
-          value={crop_name}
+          data={
+            consumption_crop?.length > 0
+              ? [
+                  ...consumption_crop?.map((item: any) => {
+                    return {
+                      id: item?._id,
+                      label: item?.name,
+                      value: item?.name,
+                    };
+                  })
+                ]
+              : []
+          }
+          value={crop_name?.name}
           noLabel={true}
           onChange={(value: any) => {
-            setCrop_name(value?.value);
+            setCrop_name({_id: value?.id, name: value?.value});
           }}
           style={{marginTop: '8%'}}
         />
@@ -86,7 +107,8 @@ const AddConsumptionBottomSheet = ({
           onPress={async () => {
             setModalVisible(!modalVisible), bottomsheetRef.current.close();
             await setData({
-              crop_name: crop_name == 'others' ? extra_crop_name : crop_name,
+              crop_id: crop_name?._id,
+              crop_name: crop_name?.name == 'others' ? extra_crop_name : crop_name?.name,
             });
             setOnFocus(false), Keyboard.dismiss();
             await setCrop_name(null), await setExtra_crop_name(null);

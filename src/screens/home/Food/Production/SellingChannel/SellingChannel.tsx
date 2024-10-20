@@ -1,14 +1,19 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Styles } from '../../../../../styles/globalStyles';
 import { fontFamilyBold, fontFamilyRegular } from '../../../../../styles/fontStyle';
 import { black, borderColor, dark_grey, draft_color, primary } from '../../../../../styles/colors';
 import HeaderCard from '../../../../../Components/Card/HeaderCard';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { add_selling_channel, edit_selling_channel, get_selling_channel } from '../../../../../apis/food';
+import AlertModal from '../../../../../Components/Popups/AlertModal';
 
-const SellingChannel = () => {
+const SellingChannel = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const queryClient = useQueryClient();
+  const [modalVisible,setModalVisible]=useState(false)
   // Initialize state with the data object
   const [data, setData] = useState({
     local_market: false,
@@ -17,14 +22,68 @@ const SellingChannel = () => {
     export: false,
     none: false,
   });
-
+  const {data: selling_channel, isLoading} = useQuery({
+    queryKey: ['get_selling_channel'],
+    queryFn: () => get_selling_channel(),
+  });
+  const {mutate: addSellingChannel} = useMutation({
+    mutationFn: (data: any) => add_selling_channel(data),
+    onSuccess: data => {
+      setModalVisible(true)
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+   const {mutate: editSellingChannel} = useMutation({
+     mutationFn: (data: any) => edit_selling_channel(data),
+     onSuccess: data => {
+      setModalVisible(true)
+       queryClient.invalidateQueries();
+     },
+     onError: error => {
+       console.log(
+         'error?.response?.data?.message edit',
+         error,
+         error?.response?.data?.message,
+       );
+     },
+   });
+useEffect(()=>{
+  if(selling_channel){
+    setData({
+      local_market: selling_channel.local_market,
+      broker: selling_channel.broker,
+      ecommerce: selling_channel.ecommerce,
+      export: selling_channel.export,
+      none: selling_channel.none,
+    });
+  }else{
+    setData({
+      local_market: false,
+      broker: false,
+      ecommerce: false,
+      export: false,
+      none: false,
+    });
+  }
+},[selling_channel])
   // Toggle the value of the selected key
-  const toggleValue = (key:any) => {
+  const toggleValue = (key: any) => {
     setData(prevState => ({
       ...prevState,
       [key]: !prevState[key], // Toggle the value of the selected key
     }));
   };
+  console.log(
+    'selling_channel?.selling_channel_id',
+    selling_channel?._id,
+  );
   return (
     <View style={styles.container}>
       <View style={Styles.mainContainer}>
@@ -72,8 +131,40 @@ const SellingChannel = () => {
         </View>
       </View>
       <View style={Styles.bottomBtn}>
-        <CustomButton btnText={'Submit'} onPress={() => {}} />
+        <CustomButton
+          btnText={'Submit'}
+          onPress={() => {
+            if (selling_channel?._id) {
+              console.log('hereee');
+              editSellingChannel({
+                selling_channel_id: selling_channel?._id,
+                local_market: data?.local_market,
+                broker: data?.broker,
+                ecommerce: data?.ecommerce,
+                export: data?.export,
+                none: data?.none,
+              });
+            } else {
+              console.log('heereree2');
+              addSellingChannel({
+                local_market: data?.local_market,
+                broker: data?.broker,
+                ecommerce: data?.ecommerce,
+                export: data?.export,
+                none: data?.none,
+              });
+            }
+          }}
+        />
       </View>
+      <AlertModal
+        visible={modalVisible}
+        successModal={true}
+        onSubmit={() => {setModalVisible(false),navigation.goBack()}}
+        confirmText="Okay"
+        title="Successfully Submit"
+        comments="Form submitted successfully!"
+      />
     </View>
   );
 }

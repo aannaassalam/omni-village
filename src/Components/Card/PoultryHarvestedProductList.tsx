@@ -27,17 +27,18 @@ const PoultryHarvestedProductList = ({
   index,
   setRemove,
   setData,
+  weight
 }: {
   item: any;
   index?: any;
   setRemove?: any;
   setData?: any;
+  weight?:any
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
   let treesSchema = Yup.object()
     .shape({
       product_name: Yup.string().required('Product name is required'),
@@ -111,13 +112,13 @@ const PoultryHarvestedProductList = ({
   } = useFormik({
     initialValues: {
       product_name: '',
-      output: 0,
-      self_consumed: 0,
-      sold_to_neighbours: 0,
-      sold_for_industrial_use: 0,
-      wastage: 0,
+      output: '',
+      self_consumed: '',
+      sold_to_neighbours: '',
+      sold_for_industrial_use: '',
+      wastage: '',
       others: '',
-      others_value: 0,
+      others_value: '',
       month_harvested: new Date(),
       required_processing: false,
     },
@@ -133,7 +134,7 @@ const PoultryHarvestedProductList = ({
           sold_for_industrial_use: parseInt(values.sold_for_industrial_use),
           wastage: parseInt(values.wastage),
           others: values.others,
-          others_value: parseInt(values.others_value),
+          others_value: parseInt(values.others_value || 0) ,
           month_harvested: values?.month_harvested,
           required_processing: values.required_processing,
         },
@@ -145,13 +146,13 @@ const PoultryHarvestedProductList = ({
     resetForm({
       values: {
         product_name: item?.product_name || '',
-        output: item?.output || 0,
-        self_consumed: item?.self_consumed || 0,
-        sold_to_neighbours: item?.sold_to_neighbours || 0,
-        sold_for_industrial_use: item?.sold_for_industrial_use || 0,
-        wastage: item?.wastage || 0,
+        output: item?.output || '',
+        self_consumed: item?.self_consumed || '',
+        sold_to_neighbours: item?.sold_to_neighbours || '',
+        sold_for_industrial_use: item?.sold_for_industrial_use || '',
+        wastage: item?.wastage || '',
         others: item?.others || '',
-        others_value: item?.others_value || 0,
+        others_value: item?.others_value || '',
         month_harvested: item?.month_harvested || new Date(),
         required_processing: item?.required_processing || false,
       },
@@ -204,24 +205,24 @@ const PoultryHarvestedProductList = ({
                 fullLength={true}
                 label={'Production Output'}
                 keyboardType={'numeric'}
-                isRight={<AcresElement title={'kg'} />}
+                isRight={<AcresElement title={weight} />}
               />
               {touched?.output && errors?.output && (
                 <Text style={Styles.error}>{String(errors?.output)}</Text>
               )}
-                  <Input
-                    onChangeText={handleChange('self_consumed')}
-                    value={String(values?.self_consumed)}
-                    fullLength={true}
-                    label={'Self Consumed'}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={'kg'} />}
-                  />
-                  {touched?.self_consumed && errors?.self_consumed && (
-                    <Text style={Styles.error}>
-                      {String(errors?.self_consumed)}
-                    </Text>
-                  )}
+              <Input
+                onChangeText={handleChange('self_consumed')}
+                value={String(values?.self_consumed)}
+                fullLength={true}
+                label={'Self Consumed'}
+                keyboardType={'numeric'}
+                isRight={<AcresElement title={weight} />}
+              />
+              {touched?.self_consumed && errors?.self_consumed && (
+                <Text style={Styles.error}>
+                  {String(errors?.self_consumed)}
+                </Text>
+              )}
               <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
                 <View>
                   <Input
@@ -230,9 +231,9 @@ const PoultryHarvestedProductList = ({
                     fullLength={false}
                     label={'Sold to neighbours'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
+                    inner_width={'40%'}
                     main_width={'90%'}
-                    isRight={<AcresElement title={'kg'} />}
+                    isRight={<AcresElement title={weight} />}
                   />
                   {touched?.sold_to_neighbours &&
                     errors?.sold_to_neighbours && (
@@ -246,11 +247,11 @@ const PoultryHarvestedProductList = ({
                     onChangeText={handleChange('sold_for_industrial_use')}
                     value={String(values?.sold_for_industrial_use)}
                     fullLength={false}
-                    inner_width={'60%'}
+                    inner_width={'40%'}
                     main_width={'90%'}
                     label={'Sold for industrial use'}
                     keyboardType={'numeric'}
-                    isRight={<AcresElement title={'kg'} />}
+                    isRight={<AcresElement title={weight} />}
                   />
                   {touched?.sold_for_industrial_use &&
                     errors?.sold_for_industrial_use && (
@@ -268,9 +269,9 @@ const PoultryHarvestedProductList = ({
                     fullLength={false}
                     label={'Wastage'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
+                    inner_width={'40%'}
                     main_width={'90%'}
-                    isRight={<AcresElement title={'kg'} />}
+                    isRight={<AcresElement title={weight} />}
                   />
                   {touched?.wastage && errors?.wastage && (
                     <Text style={Styles.error}>{String(errors?.wastage)}</Text>
@@ -299,7 +300,7 @@ const PoultryHarvestedProductList = ({
                     fullLength={true}
                     label={values?.others}
                     keyboardType={'numeric'}
-                    isRight={<AcresElement title={'kg'} />}
+                    isRight={<AcresElement title={weight} />}
                   />
                   {touched?.others_value && errors?.others_value && (
                     <Text style={Styles.error}>

@@ -3,6 +3,7 @@ import {
   Keyboard,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,6 +14,9 @@ import {fontScale, width} from '../../../styles/globalStyles';
 import Customdropdown from '../../CustomDropdown/Customdropdown';
 import Input from '../../Inputs/Input';
 import CustomButton from '../../CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { add_storage_method, get_storage } from '../../../apis/food';
 
 const AddstorageBottomSheet = ({
   modalVisible,
@@ -29,6 +33,34 @@ const AddstorageBottomSheet = ({
   const [extra_crop_name, setExtra_crop_name] = useState('');
   const [onFocus, setOnFocus] = useState(false);
   const snapPoints = React.useMemo(() => ['70%'], []);
+  const authState = useSelector((state: any) => state.authState);
+  const queryClient  = useQueryClient()
+   const {data: cultivation_crop} = useQuery({
+     queryKey: ['cultivation_crop'],
+     queryFn: () =>
+       get_storage({country: authState?.country, category: 'cultivation'}),
+   });
+   const {mutate: addCrop} = useMutation({
+     mutationFn: (data: any) => add_storage_method(data),
+     onSuccess: async data => {
+       queryClient.invalidateQueries();
+       setModalVisible(!modalVisible), bottomsheetRef.current.close();
+       await setData({
+         crop_id: data?._id,
+         crop_name: extra_crop_name,
+       });
+       setOnFocus(false), Keyboard.dismiss();
+        setExtra_crop_name(null);
+     },
+     onError: error => {
+       ToastAndroid.show('Crop exists', ToastAndroid.SHORT);
+       console.log(
+         'error?.response?.data?.message add crop',
+         error,
+         error?.response?.data?.message,
+       );
+     },
+   });
   return (
     <AddBottomSheet
       snap={onFocus && snapPoints}
@@ -45,6 +77,7 @@ const AddstorageBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
+                  setExtra_crop_name(null)
               }
             }}>
             <Image
@@ -68,12 +101,16 @@ const AddstorageBottomSheet = ({
         <CustomButton
           btnText={'Submit'}
           onPress={async () => {
-            setModalVisible(!modalVisible), bottomsheetRef.current.close();
-            await setData({
-              crop_name: extra_crop_name 
-            });
-            setOnFocus(false), Keyboard.dismiss();
-            await setExtra_crop_name(null);
+            if(extra_crop_name==="" || !extra_crop_name){
+              ToastAndroid.show("Add storage method name", ToastAndroid.BOTTOM)
+            }else{
+              setModalVisible(!modalVisible), bottomsheetRef.current.close();
+              await setData({
+                crop_name: extra_crop_name 
+              });
+              setOnFocus(false), Keyboard.dismiss();
+              await setExtra_crop_name(null);
+            }
           }}
           style={{marginTop: '6%', width: '100%'}}
         />

@@ -1,5 +1,5 @@
-import {Image, Keyboard, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
-import React, {useState} from 'react';
+import {Image, Keyboard, KeyboardAvoidingView, StyleSheet, Text, ToastAndroid, useWindowDimensions, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import HeaderCard from '../../../../../Components/Card/HeaderCard';
 import {
@@ -20,6 +20,9 @@ import AcresElement from '../../../../../Components/ui/AcresElement';
 import Customdropdown from '../../../../../Components/CustomDropdown/Customdropdown';
 import { TextInput } from 'react-native-paper';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import { add_storage, edit_storage, get_storage } from '../../../../../apis/food';
 
 const Storage = () => {
   const {fontScale} = useWindowDimensions();
@@ -27,10 +30,45 @@ const Storage = () => {
   const [data, setData] = useState(storage_data);
   const [visible, setVisible] = useState(false);
   const [selectedStorage, setSelectedStorage] = useState({});
+  const authState= useSelector((state:any)=>state.authState)
+   const queryClient = useQueryClient();
+   const [modalVisible, setModalVisible] = useState(false);
+    const {data: getStorage, isLoading} = useQuery({
+      queryKey: ['get_storage'],
+      queryFn: () => get_storage(),
+    });
+    const {mutate: addStorage} = useMutation({
+      mutationFn: (data: any) => add_storage(data),
+      onSuccess: data => {
+        setModalVisible(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
+    const {mutate: editStorage} = useMutation({
+      mutationFn: (data: any) => edit_storage(data),
+      onSuccess: data => {
+        setModalVisible(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
   const handleSelectStorageMethod = (methodId: any, methodName: any) => {
     setData(prevData =>
       prevData.map(item =>
-        item.storage_id === methodId
+        item._id === methodId
           ? {
               ...item,
               storage_method_id: methodId + 12,
@@ -40,6 +78,13 @@ const Storage = () => {
       ),
     );
   };
+  useEffect(()=>{
+    if(getStorage.length>0){
+      setData(getStorage)
+    }else{
+      setData(storage_data)
+    }
+  },[getStorage, storage_data])
   return (
     <View style={{flex:1,backgroundColor:'#fff'}}>
     <View style={Styles.mainContainer}>
@@ -61,7 +106,7 @@ const Storage = () => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.storage} {authState?.land_measurement_symbol}
                 </Text>
               </View>
             </View>
@@ -74,22 +119,23 @@ const Storage = () => {
           </View>
         </View>
       </HeaderCard>
+      <KeyboardAvoidingView keyboardVerticalOffset={120} behavior='padding'>
       <View>
         {data.map((item: any, index: any) => {
           return (
             <StorageList
             key={index}
-              id={item?.storage_id}
+              id={item?._id||index}
               title={`For ${item?.storage_name}`}
               storage_method_name={item?.storage_method_name}
               storage_value={item?.storage_quantity}
               onStorageValue={(value: any, id: any) => {
                 setData(prevData =>
                   prevData.map(item =>
-                    item.storage_id === id
+                    item._id === id
                       ? {
                           ...item,
-                          storage_quantity: value,
+                          storage_quantity: parseInt(value) || 0,
                         }
                       : item,
                   ),
@@ -98,14 +144,24 @@ const Storage = () => {
               isVisible={visible}
               setValue={(value: any, id: any) => {
                 setSelectedStorage(item);
-                if (value == 'Others') {
-                  Keyboard.dismiss()
-                  setVisible(true);
-                } else {
+                // if (value == 'Others') {
+                //   setData(prevData =>
+                //     prevData.map(item =>
+                //       item._id === id
+                //         ? {
+                //             ...item,
+                //             storage_method_name: value,
+                //           }
+                //         : item,
+                //     ),
+                //   );
+                //   Keyboard.dismiss()
+                //   setVisible(true);
+                // } else {
                   Keyboard.dismiss();
                   setData(prevData =>
                     prevData.map(item =>
-                      item.storage_id === id
+                      item._id === id
                         ? {
                             ...item,
                             storage_method_name: value,
@@ -113,22 +169,46 @@ const Storage = () => {
                         : item,
                     ),
                   );
-                }
+                // }
               }}
             />
           );
         })}
       </View>
+      </KeyboardAvoidingView>
     </View>
       <View style={Styles.bottomBtn}>
-        <CustomButton btnText={'Submit'} onPress={()=>{}}/>
+        <CustomButton btnText={'Submit'} onPress={()=>{
+          const totalQuantity = data.reduce(
+            (acc, item) => acc + item.storage_quantity,
+            0,
+          );
+          const allHaveMethod = data.every(
+            item => item.storage_method_name !== '',
+          );
+          if(totalQuantity>authState?.sub_area?.storage){
+            ToastAndroid.show('Total storage quantity exceeds sub-area storage capacity', ToastAndroid.BOTTOM)
+          }else{
+            if(allHaveMethod){
+              if (getStorage.length>0) {
+                console.log('hereee');
+                editStorage(data);
+              } else {
+                console.log('heereree2');
+                addStorage(data);
+              }
+            }else{
+              ToastAndroid.show('Please select storage method for all crops', ToastAndroid.BOTTOM)
+            }
+          }
+        }}/>
       </View>
       {visible &&   
       <AddstorageBottomSheet
         modalVisible={visible}
         setModalVisible={setVisible}
-        setData={(name: any) =>{
-          handleSelectStorageMethod(selectedStorage.storage_id, name?.crop_name)
+        setData={(item: any) =>{
+          handleSelectStorageMethod(item?.crop_id||selectedStorage._id, item?.crop_name)
         }
         }
       />

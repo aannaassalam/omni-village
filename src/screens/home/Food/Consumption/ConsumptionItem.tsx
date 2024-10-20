@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../styles/globalStyles';
 import {
   black,
@@ -28,15 +29,55 @@ import Itemlist from '../../../../Components/Card/Itemlist';
 import NoData from '../../../../Components/Nodata/NoData';
 import AddAndDeleteCropButton from '../../../../Components/CropButtons/AddAndDeleteCropButton';
 import AddConsumptionBottomSheet from '../../../../Components/BottomSheet/Consumption/AddConsumptionBottomSheet';
+import { useSelector } from 'react-redux';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { get_consumption_crop } from '../../../../apis/crops';
+import { delete_consumption, get_consumption } from '../../../../apis/food';
 
-const ConsumptionItem = () => {
+const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
+  const {id} = route.params
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
-  const handleRemoveItem = async (name: any) => {
-    setData(data.filter((item: any) => item.crop_name !== name));
-  };
+    const authState = useSelector((state: any) => state.authState);
+    const queryClient = useQueryClient();
+    const {data: consumption, isLoading} = useQuery({
+      queryKey: ['get_consumption'],
+      queryFn: () => get_consumption(id),
+    });
+    const {mutate: deleteConsumption} = useMutation({
+      mutationFn: (data: any) => delete_consumption(data),
+      onSuccess: data => {
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
+    useEffect(() => {
+      setData(consumption);
+    }, [consumption]);
+    const handleRemoveItem = async (itm: any) => {
+      setData(data.filter((item: any) => item._id !== itm?._id));
+      deleteConsumption(itm?._id);
+    };
+    console.log("consumpppttt", consumption)
+    if (isLoading) {
+      return (
+        <View style={{marginTop: '100%'}}>
+          <ActivityIndicator
+            size={'large'}
+            color={primary}
+            style={{alignSelf: 'center'}}
+          />
+        </View>
+      );
+    }
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -57,7 +98,7 @@ const ConsumptionItem = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data.length} Items
+                  {data?.length} Items
                 </Text>
               </View>
             </View>
@@ -78,6 +119,7 @@ const ConsumptionItem = () => {
               item={item}
               setRemove={(crop: any) => handleRemoveItem(crop)}
               screen={'consumption'}
+              id={id}
             />
           )}
           keyExtractor={(item, index) => index.toString()}
@@ -86,7 +128,7 @@ const ConsumptionItem = () => {
             <NoData title={'Select Type'} onPress={() => setModalVisible(true)} />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -104,14 +146,23 @@ const ConsumptionItem = () => {
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         data={data}
+        id={id}
         setData={async (item: any) => {
           const find_crop = await data.find(
-            (itm: any) => itm.crop_name === item?.crop_name,
-          )?.crop_name;
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
           if (find_crop) {
             return ToastAndroid.show('Item already exists', ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
+            console.log("heerere", item)
+            navigation.navigate('consumptionInfo', {
+              id: id,
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
           }
         }}
       />

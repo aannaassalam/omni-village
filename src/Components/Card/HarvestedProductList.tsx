@@ -21,6 +21,7 @@ import Input from '../Inputs/Input';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import CustomButton from '../CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
 
 const HarvestedProductList = ({
   item,
@@ -37,6 +38,7 @@ const HarvestedProductList = ({
   const styles = makeStyles(fontScale);
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
+  const authState = useSelector((state)=>state?.authState)
   const [selectedItem, setSelectedItem] = useState('');
   let treesSchema = Yup.object()
     .shape({
@@ -114,14 +116,14 @@ const HarvestedProductList = ({
   } = useFormik({
     initialValues: {
       product_name: '',
-      output: 0,
-      self_consumed: 0,
-      fed_to_livestock: 0,
-      sold_to_neighbours: 0,
-      sold_for_industrial_use: 0,
-      wastage: 0,
+      output: '',
+      self_consumed: '',
+      fed_to_livestock: '',
+      sold_to_neighbours: '',
+      sold_for_industrial_use: '',
+      wastage: '',
       others: '',
-      others_value: 0,
+      others_value: '',
       month_harvested: new Date(),
       required_processing: false,
     },
@@ -138,7 +140,7 @@ const HarvestedProductList = ({
           sold_for_industrial_use: parseInt(values.sold_for_industrial_use),
           wastage: parseInt(values.wastage),
           others: values.others,
-          others_value: parseInt(values.others_value),
+          others_value: parseInt(values.others_value) || 0,
           month_harvested: values?.month_harvested,
           required_processing: values.required_processing,
         },
@@ -150,14 +152,14 @@ const HarvestedProductList = ({
     resetForm({
       values: {
         product_name: item?.product_name ||'',
-        output: item?.output || 0,
-        self_consumed: item?.self_consumed || 0,
-        fed_to_livestock: item?.fed_to_livestock || 0,
-        sold_to_neighbours: item?.sold_to_neighbours || 0,
-        sold_for_industrial_use: item?.sold_for_industrial_use || 0,
-        wastage: item?.wastage || 0,
+        output: item?.output || '',
+        self_consumed: item?.self_consumed || '',
+        fed_to_livestock: item?.fed_to_livestock || '',
+        sold_to_neighbours: item?.sold_to_neighbours || '',
+        sold_for_industrial_use: item?.sold_for_industrial_use || '',
+        wastage: item?.wastage || '',
         others: item?.others || '',
-        others_value: item?.others_value || 0,
+        others_value: item?.others_value || '',
         month_harvested: item?.month_harvested || new Date(),
         required_processing: item?.required_processing || false,
       },
@@ -188,9 +190,9 @@ const HarvestedProductList = ({
           />
         </TouchableOpacity>
       </TouchableOpacity>
-      <KeyboardAvoidingView
+      {/* <KeyboardAvoidingView
         behavior={Platform.OS == 'android' ? 'height' : 'position'}
-        keyboardVerticalOffset={120}>
+        keyboardVerticalOffset={120}> */}
         <ScrollView>
           {visible && (
             <>
@@ -406,7 +408,7 @@ const HarvestedProductList = ({
             </>
           )}
         </ScrollView>
-      </KeyboardAvoidingView>
+      {/* </KeyboardAvoidingView> */}
     </View>
   );
 };

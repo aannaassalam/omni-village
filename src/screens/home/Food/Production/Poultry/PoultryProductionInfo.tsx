@@ -17,6 +17,7 @@ import Input from '../../../../../Components/Inputs/Input';
 import AcresElement from '../../../../../Components/ui/AcresElement';
 import { fontFamilyRegular } from '../../../../../styles/fontStyle';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
 
 const PoultryProductionInfo = ({
   navigation,
@@ -25,7 +26,8 @@ const PoultryProductionInfo = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name, impVal} = route.params;
+  const {crop_name, impVal, crop_id,data} = route.params;
+  const authState = useSelector((state:any)=>state.authState)
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -83,8 +85,8 @@ const PoultryProductionInfo = ({
         // Validate that the total allocated land does not exceed total land
         if (totalAllocatedLand > total_feed) {
           return this.createError({
-            path: 'output',
-            message: `The output (${totalAllocatedLand}) exceeds the available output (${total_feed})`,
+            path: 'total_feed',
+            message: `The output (${totalAllocatedLand}) exceeds the available total feed (${total_feed})`,
           });
         }
         return true;
@@ -101,26 +103,55 @@ const PoultryProductionInfo = ({
     resetForm,
   } = useFormik({
     initialValues: {
-      total_feed: 0,
-      self_produced:0,
-      neighbours: 0,
-      purchased_from_market: 0,
+      total_feed: '',
+      self_produced:'',
+      neighbours: '',
+      purchased_from_market: '',
       others: '',
-      others_value: 0,
-      income_from_sale: 0,
-      expenditure_on_inputs: 0,
+      others_value: '',
+      income_from_sale: '',
+      expenditure_on_inputs: '',
       steriods:false
     },
-    // validationSchema: poultrySchema,
+    validationSchema: poultrySchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
+      let new_val = {
+        total_feed: parseInt(values.total_feed),
+        self_produced: parseInt(values.self_produced),
+        neighbours: parseInt(values.neighbours),
+        purchased_from_market: parseInt(values.purchased_from_market),
+        others: values.others,
+        others_value: parseInt(values.others_value || 0),
+        income_from_sale: parseInt(values.income_from_sale),
+        expenditure_on_inputs: parseInt(values.expenditure_on_inputs),
+        steriods: values.steriods,
+      };
       navigation.navigate('poultryHarvestedProduct', {
         crop_name: crop_name,
+        crop_id: crop_id,
         impVal: impVal,
-        proVal: values,
+        proVal: new_val,
+        get_data: data
       });
     },
   });
+   useEffect(() => {
+     resetForm({
+       values: {
+         total_feed: data?.total_feed || '',
+         self_produced: data?.self_produced || '',
+         neighbours: data?.neighbours || '',
+         purchased_from_market: data?.purchased_from_market || '',
+         others: data?.others || '',
+         others_value: data?.others_value || '',
+         income_from_sale: data?.income_from_sale || '',
+         expenditure_on_inputs: data?.expenditure_on_inputs || '',
+         steriods: data?.steriods || false,
+       },
+     });
+   }, [data]);
+   console.log('errrrrr', typeof impVal?.average_age_of_livestocks);
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -132,6 +163,7 @@ const PoultryProductionInfo = ({
               fullLength={true}
               keyboardType="numeric"
               label={'Total feed'}
+              isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.total_feed && errors?.total_feed && (
               <Text style={Styles.error}>{String(errors?.total_feed)}</Text>
@@ -142,6 +174,7 @@ const PoultryProductionInfo = ({
               fullLength={true}
               keyboardType="numeric"
               label={'Self produced'}
+              isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.self_produced && errors?.self_produced && (
               <Text style={Styles.error}>{String(errors?.self_produced)}</Text>
@@ -152,6 +185,7 @@ const PoultryProductionInfo = ({
               fullLength={true}
               keyboardType="numeric"
               label={'Neighbours'}
+              isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.neighbours && errors?.neighbours && (
               <Text style={Styles.error}>{String(errors?.neighbours)}</Text>
@@ -160,7 +194,9 @@ const PoultryProductionInfo = ({
               onChangeText={handleChange('purchased_from_market')}
               value={String(values?.purchased_from_market)}
               fullLength={true}
+              keyboardType='numeric'
               label={'Purchased from market'}
+              isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.purchased_from_market &&
               errors?.purchased_from_market && (
@@ -185,7 +221,7 @@ const PoultryProductionInfo = ({
                   fullLength={true}
                   label={values?.others}
                   keyboardType={'numeric'}
-                  isRight={<AcresElement title={'kg'} />}
+                  isRight={<AcresElement title={impVal?.weight_measurement} />}
                 />
                 {touched?.others_value && errors?.others_value && (
                   <Text style={Styles.error}>
@@ -200,7 +236,7 @@ const PoultryProductionInfo = ({
               fullLength={true}
               keyboardType="numeric"
               label={'Income from sale'}
-              isRight={<AcresElement title={'Dollar'} />}
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
               <Text style={Styles.error}>
@@ -213,7 +249,7 @@ const PoultryProductionInfo = ({
               fullLength={true}
               keyboardType="numeric"
               label={'Expenditure on inputs'}
-              isRight={<AcresElement title={'Dollar'} />}
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
               errors?.expenditure_on_inputs && (
@@ -229,12 +265,12 @@ const PoultryProductionInfo = ({
                 onPress={() =>
                   setValues({
                     ...values,
-                    required_processing: !values?.required_processing,
+                    steriods: !values?.steriods,
                   })
                 }>
                 <Image
                   source={
-                    values?.required_processing === true
+                    values?.steriods === true
                       ? require('../../../../../../assets/checked.png')
                       : require('../../../../../../assets/unchecked.png')
                   }
@@ -246,12 +282,12 @@ const PoultryProductionInfo = ({
                 onPress={() =>
                   setValues({
                     ...values,
-                    required_processing: !values?.required_processing,
+                    steriods: !values?.steriods,
                   })
                 }>
                 <Image
                   source={
-                    values?.required_processing === false
+                    values?.steriods === false
                       ? require('../../../../../../assets/checked.png')
                       : require('../../../../../../assets/unchecked.png')
                   }

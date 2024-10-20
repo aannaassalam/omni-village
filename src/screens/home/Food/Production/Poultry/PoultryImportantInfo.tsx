@@ -13,6 +13,10 @@ import {Styles} from '../../../../../styles/globalStyles';
 import Input from '../../../../../Components/Inputs/Input';
 import Customdropdown from '../../../../../Components/CustomDropdown/Customdropdown';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { get_feeds } from '../../../../../apis/crops';
 
 const PoultryImportantInfo = ({
   navigation,
@@ -21,7 +25,35 @@ const PoultryImportantInfo = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name} = route.params;
+  const {crop_name, crop_id,data} = route.params;
+  const authState = useSelector((state: any) => state.authState);
+  const {t} = useTranslation()
+   const average_age = [
+     {
+       id: 1,
+       label: 'Less than a year',
+       value:'1',
+     },
+     {
+       id: 2,
+       label: '1 to 2 years',
+       value: '2',
+     },
+     {
+       id: 3,
+       label: '2 to 3 years',
+       value: '3',
+     },
+     {
+       id: 4,
+       label: '3 to 5 years',
+       value: '5',
+     },
+   ];
+      const {data: feeds} = useQuery({
+        queryKey: ['feeds'],
+        queryFn: () => get_feeds({country: authState?.country, category:'normal'}),
+      });
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -39,7 +71,7 @@ const PoultryImportantInfo = ({
       'Average age of livestocks is required',
     ),
     type_of_fed_required: Yup.string().required('Type of fed is required'),
-    create_type: Yup.number().test(
+    create_type: Yup.string().test(
       'create-type-required',
       'Create type is required',
       function (value) {
@@ -49,6 +81,9 @@ const PoultryImportantInfo = ({
         }
         return true; // Otherwise, no validation on decreasing_yield
       },
+    ),
+    weight_measurement: Yup.string().required(
+      'Weight measurement required is required',
     ),
   });
   const {
@@ -62,20 +97,38 @@ const PoultryImportantInfo = ({
     resetForm,
   } = useFormik({
     initialValues: {
-      number: 0,
+      number: '',
       average_age_of_livestocks: '',
       type_of_fed_required: '',
       create_type: '',
+      weight_measurement:''
     },
-    // validationSchema: poultrySchema,
+    validationSchema: poultrySchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
       navigation.navigate('poultryProductioninfo', {
         crop_name: crop_name,
-        impVal: values,
+        crop_id: crop_id,
+        data: data,
+        impVal: {
+          ...values,
+          number: parseInt(values?.number),
+          avg_age_time_period: 'month',
+        },
       });
     },
   });
+   useEffect(() => {
+     resetForm({
+       values: {
+         number: data?.number || '',
+         average_age_of_livestocks: data?.average_age_of_livestocks || '',
+         type_of_fed_required: data?.type_of_fed_required || '',
+         create_type: data?.create_type || '',
+         weight_measurement: data?.weight_measurement||'',
+       },
+     });
+   }, [data]);
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -86,17 +139,13 @@ const PoultryImportantInfo = ({
               value={String(values?.number)}
               fullLength={true}
               label={'Number'}
+              keyboardType='numeric'
             />
             {touched?.number && errors?.number && (
               <Text style={Styles.error}>{String(errors?.number)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Less than a year', value: 'Less than a year'},
-                {id: 2, label: '1 to 2 years', value: '1 to 2 years'},
-                {id: 3, label: '2 to 3 years', value: '2 to 3 years'},
-                {id: 3, label: '3 to 5 years', value: '3 to 5 years'},
-              ]}
+              data={average_age}
               value={values.average_age_of_livestocks}
               label={'Average age of livestocks'}
               onChange={(value: any) => {
@@ -113,11 +162,17 @@ const PoultryImportantInfo = ({
                 </Text>
               )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-                {id: 3, label: 'Others', value: 'Others'},
-              ]}
+              data={feeds?.length>0?[...feeds?.map((item:any)=>{
+                return{
+                  id: item?._id,
+                  label:item.name,
+                  value:item.name
+                }
+              }),{
+                id: 'others',
+                label: 'Others',
+                value: 'Others',
+              }]:[]}
               value={values.type_of_fed_required}
               label={'Type of fed required apart from grassland grassing'}
               onChange={(value: any) => {
@@ -147,6 +202,22 @@ const PoultryImportantInfo = ({
                   </Text>
                 )}
               </>
+            )}
+            <Customdropdown
+              data={authState?.weight_measurements}
+              value={values.weight_measurement}
+              label={'Weight measuremnt'}
+              onChange={(value: any) => {
+                setValues({
+                  ...values,
+                  weight_measurement: value?.value,
+                });
+              }}
+            />
+            {touched?.weight_measurement && errors?.weight_measurement && (
+              <Text style={Styles.error}>
+                {String(errors?.weight_measurement)}
+              </Text>
             )}
           </View>
         </ScrollView>

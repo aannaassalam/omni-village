@@ -71,6 +71,7 @@ const CultivationImportantInfo = ({
         error?.response?.data?.message,
       );
     },
+    onSettled:()=>setModalVisible(false)
   });
   const {mutate: updateCultivation} = useMutation({
     mutationFn: (data: any) => edit_cultivation(data),
@@ -85,6 +86,7 @@ const CultivationImportantInfo = ({
         error?.response?.data?.message,
       );
     },
+    onSettled: () => setModalVisible(false),
   });
   useEffect(() => {
     navigation.setOptions({
@@ -160,32 +162,36 @@ const CultivationImportantInfo = ({
     validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
-      const new_data = {
-        ...utilInfo,
-        crop_id: crop_id,
-        soil_health: values?.soil_health,
-        decreasing_yeild: parseInt(values?.decreasing_yield),
-        type_of_fertilizer_used: values?.type_of_fertiliser,
-        type_of_pesticide_used: values?.type_of_pesticide,
-        income_from_sale: parseInt(values?.income_from_sale),
-        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
-        yeild: parseInt(values?.yield),
-        month_planted: values?.month_planted,
-        month_harvested: values?.month_harvested,
-        required_processing: values?.required_processing,
-        processing_method: values?.processing_method,
-        status: 1,
-      };
-      if (data?._id) {
-        setMessage('updated')
-        updateCultivation({...new_data, cultivation_id: data?._id});
-      } else {
-        setMessage('submitted')
-        addCultivation({...new_data});
-      }
-      setModalVisible(false);
+     
+      setModalVisible(true);
     },
   });
+  const onSubmit = () =>{
+     const new_data = {
+       ...utilInfo,
+       crop_id: crop_id,
+       soil_health: values?.soil_health,
+       decreasing_yeild: parseInt(values?.decreasing_yield || 0),
+       type_of_fertilizer_used: values?.type_of_fertiliser,
+       type_of_pesticide_used: values?.type_of_pesticide,
+       income_from_sale: parseInt(values?.income_from_sale),
+       expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
+       yeild: parseInt(values?.yield),
+       month_planted: values?.month_planted,
+       month_harvested: values?.month_harvested,
+       required_processing: values?.required_processing,
+       processing_method: values?.processing_method,
+       status: 1,
+     };
+     if (data?._id) {
+       setMessage('updated');
+       updateCultivation({...new_data, cultivation_id: data?._id});
+     } else {
+       console.log('here2');
+       setMessage('submitted');
+       addCultivation({...new_data});
+     }
+  }
   const onChange = (selectedDate: any) => {
     const currentDate = selectedDate;
     setShow(false);
@@ -238,7 +244,7 @@ const CultivationImportantInfo = ({
       const new_data = {
         ...utilInfo,
         soil_health: values?.soil_health,
-        decreasing_yield: parseInt(values?.decreasing_yield),
+        decreasing_yield: parseInt(values?.decreasing_yield || 0),
         type_of_fertiliser: values?.type_of_fertiliser,
         type_of_pesticide: values?.type_of_pesticide,
         income_from_sale: parseInt(values?.income_from_sale),
@@ -253,11 +259,12 @@ const CultivationImportantInfo = ({
       setMessage('drafted')
       updateCultivation({...new_data, cultivation_id: data?._id});
     } else {
+      console.log("croppp", crop_id)
       const new_data = {
         ...utilInfo,
         crop_id: crop_id,
         soil_health: values?.soil_health,
-        decreasing_yield: parseInt(values?.decreasing_yield),
+        decreasing_yield: parseInt(values?.decreasing_yield || 0),
         type_of_fertiliser: values?.type_of_fertiliser,
         type_of_pesticide: values?.type_of_pesticide,
         income_from_sale: parseInt(values?.income_from_sale),
@@ -484,7 +491,8 @@ const CultivationImportantInfo = ({
       <View style={[Styles.bottomBtn]}>
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
-            onPress={() => setModalVisible(true)}
+            // onPress={() => setModalVisible(true)}
+            onPress={handleSubmit}
             btnText={'Submit'}
             style={{width: width / 2.5}}
           />
@@ -502,7 +510,7 @@ const CultivationImportantInfo = ({
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={handleSubmit}
+        onSubmit={()=>onSubmit()}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"

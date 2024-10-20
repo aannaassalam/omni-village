@@ -23,14 +23,6 @@ import { get_cultivation } from '../../../../../apis/food';
 const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
   const {crop_name,crop_id,data} = route.params;
   const authState = useSelector((state:any)=>state.authState)
-  const [weight,setWeight] = useState([])
-  // const {data:weight_measurement} = useQuery({
-  //   queryKey: ['weight_measurement'],
-  //   queryFn: () => get_weight_measurement(),
-  // });
-  // useEffect(()=>{
-  //   setWeight(weight_measurement)
-  // },[weight_measurement])
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -138,7 +130,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
         sold_for_industrial_use: parseInt(values?.sold_for_industrial_use),
         wastage: parseInt(values?.wastage),
         other: values?.others,
-        other_value: parseInt(values?.others_value),
+        other_value: parseInt(values?.others_value) || 0,
       };
       navigation.navigate('cultivationImportantInfo', {
         crop_name: crop_name,

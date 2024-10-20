@@ -48,6 +48,11 @@ const Production = ({navigation}: {navigation: any}) => {
         value: authState?.sub_area?.fishery,
       },
       {
+        title: 'Hunting',
+        navigation: 'hunting', //TODO: Change fisherys to fishery
+        value: authState?.sub_area?.hunting || 'NA',
+      },
+      {
         title: 'Storage',
         navigation: 'storage', //TODO: Change storages to storage
         value: authState?.sub_area?.storage,

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -28,15 +29,52 @@ import AddHuntingBottomSheet from '../../../../../Components/BottomSheet/Product
 import Itemlist from '../../../../../Components/Card/Itemlist';
 import NoData from '../../../../../Components/Nodata/NoData';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
+import { useSelector } from 'react-redux';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { delete_hunting, get_hunting } from '../../../../../apis/food';
 
-const Hunting = () => {
+const Hunting = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
    const [modalVisible, setModalVisible] = useState(false);
    const [data, setData] = useState([]);
-   const handleRemoveItem = async (name: any) => {
-     setData(data.filter(item => item.crop_name !== name));
-   };
+    const authState = useSelector((state: any) => state.authState);
+    const queryClient = useQueryClient();
+ const {data: hunting, isLoading} = useQuery({
+   queryKey: ['get_hunting'],
+   queryFn: () => get_hunting(),
+ });
+ const {mutate: deleteHunting} = useMutation({
+   mutationFn: (data: any) => delete_hunting(data),
+   onSuccess: data => {
+     queryClient.invalidateQueries();
+   },
+   onError: error => {
+     console.log(
+       'error?.response?.data?.message edit',
+       error,
+       error?.response?.data?.message,
+     );
+   },
+ });
+ useEffect(() => {
+   setData(hunting);
+ }, [hunting]);
+ const handleRemoveItem = async (itm: any) => {
+   setData(data.filter((item: any) => item._id !== itm?._id));
+   deleteHunting(itm?._id);
+ };
+ if (isLoading) {
+   return (
+     <View style={{marginTop: '100%'}}>
+       <ActivityIndicator
+         size={'large'}
+         color={primary}
+         style={{alignSelf: 'center'}}
+       />
+     </View>
+   );
+ }
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -51,23 +89,13 @@ const Hunting = () => {
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
-                <Text
-                  style={[
-                    styles.sub_text,
-                    {color: draft_color, marginVertical: 4},
-                  ]}>
-                  50 acres
-                </Text>
-              </View>
-              <View>
                 <Text style={styles.sub_text}>Hunted</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data.length} Animals
+                  {data?.length} Animals
                 </Text>
               </View>
             </View>
@@ -99,7 +127,7 @@ const Hunting = () => {
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -118,14 +146,20 @@ const Hunting = () => {
         setModalVisible={setModalVisible}
         data={data}
         setData={async (item: any) => {
-          const find_crop = await data.find(
-            itm => itm.crop_name === item?.crop_name,
-          )?.crop_name;
-          if (find_crop) {
-            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
-          } else {
-            setData([...data, item]);
-          }
+         const find_crop = await data.find(
+           (itm: any) =>
+             itm.crop_name === item?.crop_name ||
+             itm?.crop_id === item?.crop_id,
+         );
+         if (find_crop) {
+           return ToastAndroid.show('Hunting already exists', ToastAndroid.SHORT);
+         } else {
+           setData([...data, item]);
+           navigation.navigate('huntingInfo', {
+             crop_name: item?.crop_name,
+             crop_id: item?.crop_id,
+           });
+         }
         }}
       />
     </View>

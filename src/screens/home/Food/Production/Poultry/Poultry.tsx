@@ -8,7 +8,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -28,15 +28,41 @@ import { FlatList } from 'react-native';
 import NoData from '../../../../../Components/Nodata/NoData';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 import Itemlist from '../../../../../Components/Card/Itemlist';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { delete_poultry, get_poultry } from '../../../../../apis/food';
+import { useSelector } from 'react-redux';
 
-const Poultry = () => {
+const Poultry = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState([]);
-    const handleRemoveItem = async (name: any) => {
-      setData(data.filter(item => item.crop_name !== name));
-    };
+    const queryClient = useQueryClient()
+    const authState = useSelector((state)=>state.authState)
+  const {data: poultry, isLoading} = useQuery({
+    queryKey: ['get_poultry'],
+    queryFn: () => get_poultry(),
+  });
+  const {mutate: deletePoultry} = useMutation({
+    mutationFn: (data: any) => delete_poultry(data),
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  useEffect(() => {
+    setData(poultry);
+  }, [poultry]);
+  const handleRemoveItem = async (itm: any) => {
+    setData(data.filter((item: any) => item._id !== itm?._id));
+    deletePoultry(itm?._id);
+  };
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -57,7 +83,7 @@ const Poultry = () => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.poultry} {authState?.land_measurement}
                 </Text>
               </View>
               <View>
@@ -67,7 +93,7 @@ const Poultry = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data.length} Bred
+                  {data?.length} Bred
                 </Text>
               </View>
             </View>
@@ -99,7 +125,7 @@ const Poultry = () => {
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -119,12 +145,19 @@ const Poultry = () => {
         data={data}
         setData={async (item: any) => {
           const find_crop = await data.find(
-            itm => itm.crop_name === item?.crop_name,
-          )?.crop_name;
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
           if (find_crop) {
-            return ToastAndroid.show('Poultry already exists', ToastAndroid.SHORT);
+            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
+            console.log('iteemememe', item);
+            navigation.navigate('poultryImportantinfo', {
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
           }
         }}
       />

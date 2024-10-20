@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../../../styles/globalStyles';
 import CustomButton from '../../../../../../Components/CustomButton/CustomButton';
 import {
@@ -28,15 +29,52 @@ import AddFisheryBottomSheet from '../../../../../../Components/BottomSheet/Prod
 import Itemlist from '../../../../../../Components/Card/Itemlist';
 import NoData from '../../../../../../Components/Nodata/NoData';
 import AddAndDeleteCropButton from '../../../../../../Components/CropButtons/AddAndDeleteCropButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { delete_fishery, get_fishery } from '../../../../../../apis/food';
+import { useSelector } from 'react-redux';
 
-const River = () => {
+const River = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
-  const handleRemoveItem = async (name: any) => {
-    setData(data.filter((item: any) => item.crop_name !== name));
-  };
+    const authState = useSelector(state => state.authState);
+    const queryClient = useQueryClient();
+    const {data: river_fishery, isLoading} = useQuery({
+      queryKey: ['get_river_fishery'],
+      queryFn: () => get_fishery('river'),
+    });
+    const {mutate: deleteFishery} = useMutation({
+      mutationFn: (data: any) => delete_fishery(data),
+      onSuccess: data => {
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+    });
+    useEffect(() => {
+      setData(river_fishery);
+    }, [river_fishery]);
+    const handleRemoveItem = async (itm: any) => {
+      setData(data.filter((item: any) => item._id !== itm?._id));
+      deleteFishery(itm?._id);
+    };
+    if (isLoading) {
+      return (
+        <View style={{marginTop: '100%'}}>
+          <ActivityIndicator
+            size={'large'}
+            color={primary}
+            style={{alignSelf: 'center'}}
+          />
+        </View>
+      );
+    }
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -57,7 +95,8 @@ const River = () => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.fishery}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
@@ -67,7 +106,7 @@ const River = () => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  12 Species
+                  {data?.length} Species
                 </Text>
               </View>
             </View>
@@ -99,7 +138,7 @@ const River = () => {
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -119,16 +158,22 @@ const River = () => {
         data={data}
         fisheryType={'river'}
         setData={async (item: any) => {
-          const find_crop = await data.find(
-            (itm: any) => itm.crop_name === item?.crop_name,
-          )?.crop_name;
+           const find_crop = await data.find(
+             (itm: any) =>
+               itm.crop_name === item?.crop_name ||
+               itm?.crop_id === item?.crop_id,
+           );
           if (find_crop) {
             return ToastAndroid.show(
-              'pond fishery already exists',
+              'Fishery already exists',
               ToastAndroid.SHORT,
             );
           } else {
             setData([...data, item]);
+            navigation.navigate('riverInfo', {
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
           }
         }}
       />

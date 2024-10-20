@@ -27,11 +27,13 @@ import {
   fontFamilyMedium,
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
+import { useSelector } from 'react-redux';
 
 const Fishery = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [onItemSeleted, setOnItemSelected] = useState(null);
+  const authState = useSelector((state)=>state.authState)
   const ITEMS = [
     {
       title: 'Harvested from Pond',
@@ -64,7 +66,7 @@ const Fishery = ({navigation}: {navigation: any}) => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.fishery} {authState?.land_measurement_symbol}
                 </Text>
               </View>
             </View>

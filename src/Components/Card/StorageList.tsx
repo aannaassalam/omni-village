@@ -5,6 +5,7 @@ import Customdropdown from '../CustomDropdown/Customdropdown'
 import Input from '../Inputs/Input'
 import AcresElement from '../ui/AcresElement'
 import AddstorageBottomSheet from '../BottomSheet/Production/AddstorageMethodBottomSheet'
+import { useSelector } from 'react-redux'
 
 const StorageList = ({
   title,
@@ -25,26 +26,29 @@ const StorageList = ({
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const authState = useSelector((state:any)=>state.authState)
   return (
     <View>
       <View style={Styles.twoFieldsContainer}>
         <View>
           <Input
             value={String(storage_value)}
-            onChangeText={(val:any)=>onStorageValue(val,id)}
+            onChangeText={(val: any) => onStorageValue(val, id)}
             label={title}
             inner_width={'65%'}
             keyboardType="numeric"
             main_width={width / 2.37}
-            isRight={<AcresElement title={'acres'} />}
+            isRight={
+              <AcresElement title={authState?.land_measurement_symbol} />
+            }
           />
         </View>
         <View>
           <Customdropdown
             data={[
-              {id: 1, label: 'Stable', value: 'Stable'},
-              {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              {id: 3, label: 'Others', value: 'Others'},
+              {id: 1, label: 'Cold Storage', value: 'Cold Storage'},
+              {id: 2, label: 'Hot Storage', value: 'Hot Storage'},
+              {id: 3, label: 'Dry Storage', value: 'Dry Storage'},
             ]}
             value={storage_method_name}
             style={{width: width / 2.3}}

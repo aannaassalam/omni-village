@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -8,7 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {
@@ -28,15 +29,53 @@ import Itemlist from '../../../../../Components/Card/Itemlist';
 import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAndDeleteCropButton';
 import {TouchableOpacity} from 'react-native';
 import NoData from '../../../../../Components/Nodata/NoData';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { delete_trees, get_trees } from '../../../../../apis/food';
+import { useSelector } from 'react-redux';
+import { USER_PREFERRED_LANGUAGE } from '../../../../../i18next';
 
-const Trees = () => {
+const Trees = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState([]);
-  const handleRemoveItem = async (name: any) => {
-    setData(data.filter((item:any) => item.crop_name !== name));
-  };
+  const authState = useSelector((state)=>state.authState)
+  const queryClient = useQueryClient()
+  const {data: trees, isLoading} = useQuery({
+    queryKey: ['get_trees'],
+    queryFn: () => get_trees(),
+  });
+   const {mutate: deleteTrees} = useMutation({
+     mutationFn: (data: any) => delete_trees(data),
+     onSuccess: data => {
+       queryClient.invalidateQueries();
+     },
+     onError: error => {
+       console.log(
+         'error?.response?.data?.message edit',
+         error,
+         error?.response?.data?.message,
+       );
+     },
+   });
+  useEffect(() => {
+    setData(trees);
+  }, [trees]);
+ const handleRemoveItem = async (itm: any) => {
+   setData(data.filter((item: any) => item._id !== itm?._id));
+   deleteTrees(itm?._id);
+ };
+   if (isLoading) {
+     return (
+       <View style={{marginTop: '100%'}}>
+         <ActivityIndicator
+           size={'large'}
+           color={primary}
+           style={{alignSelf: 'center'}}
+         />
+       </View>
+     );
+   }
   return (
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
@@ -57,17 +96,17 @@ const Trees = () => {
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  50 acres
+                  {authState?.sub_area?.trees} {authState?.land_measurement}
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Cultivated</Text>
+                <Text style={styles.sub_text}>Planted</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data.length} Crops
+                  {data?.length} Crops
                 </Text>
               </View>
             </View>
@@ -99,7 +138,7 @@ const Trees = () => {
             />
           }
           ListFooterComponent={
-            data.length > 0 ? (
+            data?.length > 0 ? (
               <TouchableOpacity
                 style={Styles.addAndDeleteButtonSection}
                 onPress={() => setModalVisible(true)}>
@@ -118,14 +157,21 @@ const Trees = () => {
         setModalVisible={setModalVisible}
         data={data}
         setData={async (item: any) => {
-          const find_crop = await data.find(
-            itm => itm.crop_name === item?.crop_name,
-          )?.crop_name;
-          if (find_crop) {
-            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
-          } else {
-            setData([...data, item]);
-          }
+           const find_crop = await data.find(
+             (itm: any) => itm.crop_name  === item?.crop_name || itm?.crop_id === item?.crop_id,
+           )
+           if (find_crop) {
+             return ToastAndroid.show(
+               'Trees already exists',
+               ToastAndroid.SHORT,
+             );
+           } else {
+             setData([...data, item]);
+             navigation.navigate('treesImportantinfo', {
+               crop_name: item?.crop_name,
+               crop_id: item?.crop_id,
+             });
+           }
         }}
       />
     </View>

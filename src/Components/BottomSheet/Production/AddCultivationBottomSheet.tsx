@@ -3,6 +3,7 @@ import {
   Keyboard,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,10 +14,10 @@ import {fontScale, width} from '../../../styles/globalStyles';
 import Customdropdown from '../../CustomDropdown/Customdropdown';
 import Input from '../../Inputs/Input';
 import CustomButton from '../../CustomButton/CustomButton';
-import { useSelector } from 'react-redux';
-import { useQuery } from '@tanstack/react-query';
-import { get_crops } from '../../../apis/crops';
-import { useNavigation } from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {add_crops, get_crops} from '../../../apis/crops';
+import {useNavigation} from '@react-navigation/native';
 
 const AddCultivationBottomSheet = ({
   modalVisible,
@@ -29,16 +30,39 @@ const AddCultivationBottomSheet = ({
   data?: any;
   setData?: any;
 }) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const bottomsheetRef = useRef(null);
   const [crop_name, setCrop_name] = useState(null);
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
   const authState = useSelector((state: any) => state.authState);
+  const queryClient = useQueryClient();
   const {data: cultivation_crop} = useQuery({
     queryKey: ['cultivation_crop'],
     queryFn: () =>
       get_crops({country: authState?.country, category: 'cultivation'}),
+  });
+  const {mutate: addCrop} = useMutation({
+    mutationFn: (data: any) => add_crops(data),
+    onSuccess: async data => {
+      console.log("idddd", data)
+      queryClient.invalidateQueries();
+      setModalVisible(!modalVisible), bottomsheetRef.current.close();
+      await setData({
+        crop_id: data?._id,
+        crop_name: extra_crop_name,
+      });
+      setOnFocus(false), Keyboard.dismiss();
+      setCrop_name(null), setExtra_crop_name(null);
+    },
+    onError: error => {
+      ToastAndroid.show("Crop exists",ToastAndroid.SHORT)
+      console.log(
+        'error?.response?.data?.message add crop',
+        error,
+        error?.response?.data?.message,
+      );
+    },
   });
   const snapPoints = React.useMemo(() => ['70%'], []);
   return (
@@ -57,6 +81,7 @@ const AddCultivationBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
+                   setCrop_name(null), setExtra_crop_name(null);
               }
             }}>
             <Image
@@ -66,13 +91,20 @@ const AddCultivationBottomSheet = ({
           </TouchableOpacity>
         </View>
         <Customdropdown
-          data={cultivation_crop?.length>0?[...cultivation_crop?.map((item: any) => {
-            return {
-              id: item?._id,
-              label: item?.name,
-              value: item?.name,
-            }
-          }),{id:0,label:'Others', value:'others'}]:[]}
+          data={
+            cultivation_crop?.length > 0
+              ? [
+                  ...cultivation_crop?.map((item: any) => {
+                    return {
+                      id: item?._id,
+                      label: item?.name,
+                      value: item?.name,
+                    };
+                  }),
+                  {id: 0, label: 'Others', value: 'others'},
+                ]
+              : []
+          }
           value={crop_name?.name}
           noLabel={true}
           onChange={(value: any) => {
@@ -96,13 +128,37 @@ const AddCultivationBottomSheet = ({
         <CustomButton
           btnText={'Add Crop'}
           onPress={async () => {
-            setModalVisible(!modalVisible), bottomsheetRef.current.close();
-            await setData({
-              crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
-              crop_name: crop_name?.name == 'others' ? extra_crop_name : crop_name?.name,
-            });
-            setOnFocus(false), Keyboard.dismiss();
-             setCrop_name(null),  setExtra_crop_name(null);
+            if (crop_name?.name == 'others' && extra_crop_name) {
+              let data = {
+                name: {
+                  en: extra_crop_name,
+                  ms: 'optional',
+                  dz: 'optional',
+                },
+                country: ['india', 'bhutan', 'malaysia'],
+                status: 0,
+                ideal_consumption_per_person: 0, //from application,
+                category: 'cultivation', //cultivation, fishery, hunting, poultry, tree
+              };
+              addCrop(data);
+            }else if (
+              (crop_name?.name == 'others' && extra_crop_name === null) ||
+              extra_crop_name == '' ||
+              !crop_name?.name
+            ) {
+              ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
+            } else {
+              setModalVisible(!modalVisible), bottomsheetRef.current.close();
+              await setData({
+                crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
+                crop_name:
+                  crop_name?.name == 'others'
+                    ? extra_crop_name
+                    : crop_name?.name,
+              });
+              setOnFocus(false), Keyboard.dismiss();
+              setCrop_name(null), setExtra_crop_name(null);
+            }
           }}
           style={{marginTop: '6%', width: '100%'}}
           disabled={crop_name == null}

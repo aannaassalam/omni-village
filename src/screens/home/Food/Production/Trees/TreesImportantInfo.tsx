@@ -15,6 +15,8 @@ import Customdropdown from '../../../../../Components/CustomDropdown/Customdropd
 import AcresElement from '../../../../../Components/ui/AcresElement';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import { white } from '../../../../../styles/colors';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 const TreesImportantInfo = ({
   navigation,
@@ -23,7 +25,62 @@ const TreesImportantInfo = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name} = route.params;
+  const {crop_name, crop_id, data} = route.params;
+  const {t} = useTranslation();
+  const authState = useSelector((state)=>state.authState)
+  const soilHealth = [
+    {label: 'stable', value: t('stable')},
+    {label: 'decreasing yield', value: t('decreasing yield')},
+  ];
+  const fertilisers = [
+    {label: 'organic self made', value: t('organic self made')},
+    {label: 'organic purchased', value: t('organic purchased')},
+    {label: 'chemical based', value: t('chemical based')},
+    {label: 'none', value: t('none')},
+  ];
+  const pesticides = [
+    {label: 'organic self made', value: t('organic self made')},
+    {label: 'organic purchased', value: t('organic purchased')},
+    {label: 'chemical based', value: t('chemical based')},
+    {label: 'none', value: t('none')},
+  ];
+  const average_age = [
+    {
+      id: 1,
+      label: '0 to 5 years',
+      value: t('0 to 5 years')
+    },
+    {
+      id: 2,
+      label: '5 to 10 years',
+      value: t('5 to 10 years')
+    },
+    {
+      id: 3,
+      label: '10 to 20 years',
+      value: t('10 to 20 years')
+    },
+    {
+      id: 4,
+      label: '20 to 30 years',
+      value: t('20 to 30 years')
+    },
+    {
+      id: 5,
+      label: '30 to 50 years',
+      value: t('30 to 50 years')
+    },
+    {
+      id: 6,
+      label: '50 to 70 years',
+      value: t('50 to 70 years')
+    },
+    {
+      id: 7,
+      label: 'Above 70',
+      value: t('Above 70')
+    },
+  ];
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -73,24 +130,50 @@ const TreesImportantInfo = ({
     resetForm,
   } = useFormik({
     initialValues: {
-      number_of_trees: 0,
+      number_of_trees: '',
       average_age_of_trees: '',
       soil_health: '',
-      decreasing_yield: 0,
+      decreasing_yield: '',
       type_of_fertiliser: '',
       type_of_pesticide: '',
-      income_from_sale: 0,
-      expenditure_on_inputs: 0,
+      income_from_sale: '',
+      expenditure_on_inputs: '',
     },
-    // validationSchema: treesSchema,
+    validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
+      let parseVal={
+        number_of_trees: parseInt(values.number_of_trees),
+        average_age_of_trees: values.average_age_of_trees,
+        soil_health: values.soil_health,
+        decreasing_yield: parseFloat(values.decreasing_yield || 0),
+        type_of_fertiliser: values.type_of_fertiliser,
+        type_of_pesticide: values.type_of_pesticide,
+        income_from_sale: parseInt(values.income_from_sale),
+        expenditure_on_inputs: parseInt(values.expenditure_on_inputs)
+      }
       navigation.navigate('treesHarvestedProduct', {
         crop_name: crop_name,
-        values: values,
+        crop_id: crop_id,
+        impInfo: parseVal,
+        edit_data: data,
       });
     },
   });
+    useEffect(() => {
+      resetForm({
+        values: {
+          number_of_trees: data?.number_of_trees || '',
+          average_age_of_trees: data?.average_age_of_trees || '',
+          soil_health: data?.soil_health || '',
+          decreasing_yield: data?.decreasing_yield || '',
+          type_of_fertiliser: data?.type_of_fertiliser || '',
+          type_of_pesticide: data?.type_of_pesticide || '',
+          income_from_sale: data?.income_from_sale || '',
+          expenditure_on_inputs: data?.expenditure_on_inputs||'',
+        },
+      });
+    }, [data]);
   return (
     <View style={styles.container}>
         <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -100,6 +183,7 @@ const TreesImportantInfo = ({
               onChangeText={handleChange('number_of_trees')}
               value={String(values?.number_of_trees)}
               fullLength={true}
+              keyboardType='numeric'
               label={'Number of trees'}
             />
             {touched?.number_of_trees && errors?.number_of_trees && (
@@ -108,12 +192,7 @@ const TreesImportantInfo = ({
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Less than a year', value: 'Less than a year'},
-                {id: 2, label: '1 to 2 years', value: '1 to 2 years'},
-                {id: 3, label: '2 to 3 years', value: '2 to 3 years'},
-                {id: 3, label: '3 to 5 years', value: '3 to 5 years'},
-              ]}
+              data={average_age}
               value={values.average_age_of_trees}
               label={'Average age of trees'}
               onChange={(value: any) => {
@@ -129,10 +208,7 @@ const TreesImportantInfo = ({
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={soilHealth}
               value={values.soil_health}
               label={'Soil health'}
               onChange={(value: any) => {
@@ -146,7 +222,7 @@ const TreesImportantInfo = ({
             {touched?.soil_health && errors?.soil_health && (
               <Text style={Styles.error}>{String(errors?.soil_health)}</Text>
             )}
-            {values?.soil_health === 'Decreasing Yield' && (
+            {values?.soil_health === 'decreasing yield' && (
               <>
                 <Input
                   onChangeText={handleChange('decreasing_yield')}
@@ -164,10 +240,7 @@ const TreesImportantInfo = ({
               </>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={fertilisers}
               value={values.type_of_fertiliser}
               label={'Type of fertiliser used'}
               onChange={(value: any) => {
@@ -183,10 +256,7 @@ const TreesImportantInfo = ({
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={pesticides}
               value={values.type_of_pesticide}
               label={'Type of pesticide used'}
               onChange={(value: any) => {
@@ -206,7 +276,8 @@ const TreesImportantInfo = ({
               value={String(values?.income_from_sale)}
               fullLength={true}
               label={'Income from sale'}
-              isRight={<AcresElement title={'Dollar'} />}
+              keyboardType='numeric'
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
               <Text style={Styles.error}>
@@ -218,7 +289,8 @@ const TreesImportantInfo = ({
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
               label={'Expenditure on inputs'}
-              isRight={<AcresElement title={'Dollar'} />}
+              keyboardType='numeric'
+              isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
               errors?.expenditure_on_inputs && (

@@ -22,6 +22,10 @@ import AcresElement from '../../../../Components/ui/AcresElement';
 import CustomButton from '../../../../Components/CustomButton/CustomButton';
 import {fontFamilyRegular} from '../../../../styles/fontStyle';
 import AlertModal from '../../../../Components/Popups/AlertModal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { add_consumption, edit_consumption } from '../../../../apis/food';
+import { useSelector } from 'react-redux';
+import Customdropdown from '../../../../Components/CustomDropdown/Customdropdown';
 const ConsumptionInfo = ({
   navigation,
   route,
@@ -29,8 +33,45 @@ const ConsumptionInfo = ({
   navigation: any;
   route: any;
 }) => {
-  const {crop_name} = route.params;
+  const {crop_name, crop_id, data,id} = route.params;
   const [modalViisble, setModalVisible] = useState(false);
+    const [successModal, setSuccessModal] = useState(false);
+    const [message, setMessage] = useState('');
+    const authState = useSelector(state => state.authState);
+    const queryClient = useQueryClient();
+    const {mutate: addConsumption} = useMutation({
+      mutationFn: (data: any) => add_consumption(data),
+      onSuccess: data => {
+        console.log("daat added consump", data)
+        setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        setModalVisible(false);
+        console.log(
+          'error?.response?.data?.message',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+      onSettled: () => setModalVisible(false),
+    });
+    const {mutate: updateConsumption} = useMutation({
+      mutationFn: (data: any) => edit_consumption(data),
+      onSuccess: data => {
+        setSuccessModal(true);
+        queryClient.invalidateQueries();
+      },
+      onError: error => {
+        setModalVisible(false);
+        console.log(
+          'error?.response?.data?.message edit',
+          error,
+          error?.response?.data?.message,
+        );
+      },
+      onSettled: () => setModalVisible(false),
+    });
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -45,6 +86,9 @@ const ConsumptionInfo = ({
       quantity: Yup.number()
         .min(1, 'Quantity must be greater than equal to 1')
         .required('quantity is required'),
+      weight_measurement: Yup.string().required(
+        'Weight measurement required is required',
+      ),
       self_grown: Yup.number().required('Self grown is required'),
       purchased_from_neighbours: Yup.number().required(
         'Purchased from neighbour is required',
@@ -65,15 +109,13 @@ const ConsumptionInfo = ({
         } = values;
 
         const totalAllocatedLand =
-        self_grown
-          + purchased_from_neighbours
-          + purchased_from_market;
+          self_grown + purchased_from_neighbours + purchased_from_market;
 
         // Validate that the total allocated land does not exceed total land
         if (totalAllocatedLand > quantity) {
           return this.createError({
-            path: 'output',
-            message: `The output (${totalAllocatedLand}) exceeds the available output (${quantity})`,
+            path: 'quantity',
+            message: `The quantity (${totalAllocatedLand}) exceeds the available quantity (${quantity})`,
           });
         }
         return true;
@@ -90,28 +132,103 @@ const ConsumptionInfo = ({
     resetForm,
   } = useFormik({
     initialValues: {
-      quantity: 0,
-      self_grown: 0,
-      purchased_from_neighbours: 0,
-      purchased_from_market: 0,
+      quantity: '',
+    weight_measurement:'',
+      self_grown: '',
+      purchased_from_neighbours: '',
+      purchased_from_market: '',
     },
-    // validationSchema: treesSchema,
+    validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
       setModalVisible(true);
     },
   });
+  useEffect(()=>{
+      resetForm({
+        values:{
+        quantity: data?.quantity || '',
+        self_grown: data?.self_grown || '',
+        weight_measurement: data?.weight_measurement||'',
+        purchased_from_neighbours: data?.purchased_from_neighbours || '',
+        purchased_from_market: data?.purchased_from_market || '',
+    }})
+  },[data])
+  const onDrafted = async () => {
+    if (data?._id) {
+      let new_data = {
+        consumption_type_id: id, //Get this ID from Consumption Types API
+        total_quantity: values?.quantity,
+        weight_measurement: values?.weight_measurement,
+        purchased_from_market: values?.purchased_from_market,
+        purchased_from_neighbours: values?.purchased_from_neighbours,
+        self_grown: values?.purchased_from_neighbours,
+        status: 0,
+      };
+      setMessage('drafted');
+      updateConsumption({...new_data, consumption_id: data?._id});
+    } else {
+      let new_data = {
+        consumption_type_id: id, //Get this ID from Consumption Types API
+        total_quantity: values?.quantity,
+        weight_measurement: values?.weight_measurement,
+        purchased_from_market: values?.purchased_from_market,
+        purchased_from_neighbours: values?.purchased_from_neighbours,
+        self_grown: values?.purchased_from_neighbours,
+        status: 0,
+      };
+      setMessage('drafted');
+      addConsumption({...new_data, crop_id: crop_id});
+    }
+  };
+  const onSubmit = () => {
+    let new_data = {
+      consumption_type_id: id, //Get this ID from Consumption Types API
+      total_quantity: values?.quantity,
+      weight_measurement: values?.weight_measurement,
+      purchased_from_market: values?.purchased_from_market,
+      purchased_from_neighbours: values?.purchased_from_neighbours,
+      self_grown: values?.purchased_from_neighbours,
+      status: 1,
+    };
+    if (data?._id) {
+      setMessage('updated');
+      updateConsumption({...new_data, consumption_id: data?._id});
+    } else {
+      console.log('here2');
+      setMessage('submitted');
+      addConsumption({...new_data, crop_id: crop_id});
+    }
+  };
+  console.log("datataa", data)
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
         <ScrollView contentContainerStyle={{paddingBottom: 105}}>
           <View style={Styles.mainContainer}>
+            <Customdropdown
+              data={authState?.weight_measurements}
+              value={values.weight_measurement}
+              label={'Weight measuremnt'}
+              onChange={(value: any) => {
+                setValues({
+                  ...values,
+                  weight_measurement: value?.value,
+                });
+              }}
+            />
+            {touched?.weight_measurement && errors?.weight_measurement && (
+              <Text style={Styles.error}>
+                {String(errors?.weight_measurement)}
+              </Text>
+            )}
             <Input
               onChangeText={handleChange('quantity')}
               value={String(values?.quantity)}
               fullLength={true}
               label={'Quantity'}
               keyboardType={'numeric'}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.quantity && errors?.quantity && (
               <Text style={Styles.error}>{String(errors?.quantity)}</Text>
@@ -122,7 +239,7 @@ const ConsumptionInfo = ({
               fullLength={true}
               label={'Self Grown'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.self_grown && errors?.self_grown && (
               <Text style={Styles.error}>{String(errors?.self_grown)}</Text>
@@ -133,7 +250,7 @@ const ConsumptionInfo = ({
               fullLength={true}
               label={'Purchased from neighbours'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.purchased_from_neighbours &&
               errors?.purchased_from_neighbours && (
@@ -147,7 +264,7 @@ const ConsumptionInfo = ({
               fullLength={true}
               label={'Purchased from market'}
               keyboardType={'numeric'}
-              isRight={<AcresElement title={'kg'} />}
+              isRight={<AcresElement title={values?.weight_measurement} />}
             />
             {touched?.purchased_from_market &&
               errors?.purchased_from_market && (
@@ -161,12 +278,12 @@ const ConsumptionInfo = ({
       <View style={[Styles.bottomBtn]}>
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
-            onPress={handleSubmit}
+            onPress={()=>setModalVisible(true)}
             btnText={'Submit'}
             style={{width: width / 2.5}}
           />
           <CustomButton
-            onPress={() => {}}
+            onPress={() => {onDrafted()}}
             btnText={'Save as draft'}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
@@ -177,11 +294,21 @@ const ConsumptionInfo = ({
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={() => setModalVisible(false)}
+        onSubmit={() => onSubmit()}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"
         comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
       />
     </View>
   );
