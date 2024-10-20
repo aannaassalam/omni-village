@@ -99,7 +99,7 @@ const CultivationImportantInfo = ({
   }, [crop_name]);
   let treesSchema = Yup.object().shape({
     soil_health: Yup.string().required('Soil health is required'),
-    decreasing_yield: Yup.number().test(
+    decreasing_yeild: Yup.number().test(
       'decreasing-yield-required',
       'Decreasing yield is required',
       function (value) {
@@ -110,8 +110,12 @@ const CultivationImportantInfo = ({
         return true; // Otherwise, no validation on decreasing_yield
       },
     ),
-    type_of_fertiliser: Yup.string().required('Type of fertiliser is required'),
-    type_of_pesticide: Yup.string().required('Type of pesticide is required'),
+    type_of_fertilizer_used: Yup.string().required(
+      'Type of fertiliser is required',
+    ),
+    type_of_pesticide_used: Yup.string().required(
+      'Type of pesticide is required',
+    ),
     income_from_sale: Yup.number()
       .min(1, 'Income from sale must be greater than equal to 1')
       .required('Income from sale is required'),
@@ -148,9 +152,9 @@ const CultivationImportantInfo = ({
   } = useFormik({
     initialValues: {
       soil_health: '',
-      decreasing_yield: '',
-      type_of_fertiliser: '',
-      type_of_pesticide: '',
+      decreasing_yeild: '',
+      type_of_fertilizer_used: '',
+      type_of_pesticide_used: '',
       income_from_sale: '',
       expenditure_on_inputs: '',
       yield: '',
@@ -162,7 +166,7 @@ const CultivationImportantInfo = ({
     validationSchema: treesSchema,
     onSubmit: async (values: any) => {
       console.log('Form submitted with values: ', values);
-     
+
       setModalVisible(true);
     },
   });
@@ -171,9 +175,9 @@ const CultivationImportantInfo = ({
        ...utilInfo,
        crop_id: crop_id,
        soil_health: values?.soil_health,
-       decreasing_yeild: parseInt(values?.decreasing_yield || 0),
-       type_of_fertilizer_used: values?.type_of_fertiliser,
-       type_of_pesticide_used: values?.type_of_pesticide,
+       decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+       type_of_fertilizer_used: values?.type_of_fertilizer_used,
+       type_of_pesticide_used: values?.type_of_pesticide_used,
        income_from_sale: parseInt(values?.income_from_sale),
        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
        yeild: parseInt(values?.yield),
@@ -218,9 +222,9 @@ const CultivationImportantInfo = ({
     resetForm({
       values: {
         soil_health: data?.soil_health || '',
-        decreasing_yield: data?.decreasing_yeild || '',
-        type_of_fertiliser: data?.type_of_fertilizer_used || '',
-        type_of_pesticide: data?.type_of_pesticide_used || '',
+        decreasing_yeild: data?.decreasing_yeild || '',
+        type_of_fertilizer_used: data?.type_of_fertilizer_used || '',
+        type_of_pesticide_used: data?.type_of_pesticide_used || '',
         income_from_sale: data?.income_from_sale || '',
         expenditure_on_inputs: data?.expenditure_on_inputs || '',
         yield:
@@ -244,9 +248,9 @@ const CultivationImportantInfo = ({
       const new_data = {
         ...utilInfo,
         soil_health: values?.soil_health,
-        decreasing_yield: parseInt(values?.decreasing_yield || 0),
-        type_of_fertiliser: values?.type_of_fertiliser,
-        type_of_pesticide: values?.type_of_pesticide,
+        decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+        type_of_fertilizer_used: values?.type_of_fertilizer_used,
+        type_of_pesticide_used: values?.type_of_pesticide_used,
         income_from_sale: parseInt(values?.income_from_sale),
         expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
         yield: parseInt(values?.yield),
@@ -264,9 +268,9 @@ const CultivationImportantInfo = ({
         ...utilInfo,
         crop_id: crop_id,
         soil_health: values?.soil_health,
-        decreasing_yield: parseInt(values?.decreasing_yield || 0),
-        type_of_fertiliser: values?.type_of_fertiliser,
-        type_of_pesticide: values?.type_of_pesticide,
+        decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+        type_of_fertilizer_used: values?.type_of_fertilizer_used,
+        type_of_pesticide_used: values?.type_of_pesticide_used,
         income_from_sale: parseInt(values?.income_from_sale),
         expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
         yield: parseInt(values?.yield),
@@ -303,52 +307,54 @@ const CultivationImportantInfo = ({
             {values?.soil_health === 'decreasing yield' && (
               <>
                 <Input
-                  onChangeText={handleChange('decreasing_yield')}
-                  value={String(values?.decreasing_yield)}
+                  onChangeText={handleChange('decreasing_yeild')}
+                  value={String(values?.decreasing_yeild)}
                   fullLength={true}
                   label={'How much from first planting'}
                   keyboardType="numeric"
                   isRight={<AcresElement title={'    %'} />}
                 />
-                {touched?.decreasing_yield && errors?.decreasing_yield && (
+                {touched?.decreasing_yeild && errors?.decreasing_yeild && (
                   <Text style={Styles.error}>
-                    {String(errors?.decreasing_yield)}
+                    {String(errors?.decreasing_yeild)}
                   </Text>
                 )}
               </>
             )}
             <Customdropdown
               data={fertilisers}
-              value={values.type_of_fertiliser}
+              value={values.type_of_fertilizer_used}
               label={'Type of fertiliser used'}
               onChange={(value: any) => {
                 setValues({
                   ...values,
-                  type_of_fertiliser: value?.value,
+                  type_of_fertilizer_used: value?.value,
                 });
               }}
             />
-            {touched?.type_of_fertiliser && errors?.type_of_fertiliser && (
-              <Text style={Styles.error}>
-                {String(errors?.type_of_fertiliser)}
-              </Text>
-            )}
+            {touched?.type_of_fertilizer_used &&
+              errors?.type_of_fertilizer_used && (
+                <Text style={Styles.error}>
+                  {String(errors?.type_of_fertilizer_used)}
+                </Text>
+              )}
             <Customdropdown
               data={pesticides}
-              value={values.type_of_pesticide}
+              value={values.type_of_pesticide_used}
               label={'Type of pesticide used'}
               onChange={(value: any) => {
                 setValues({
                   ...values,
-                  type_of_pesticide: value?.value,
+                  type_of_pesticide_used: value?.value,
                 });
               }}
             />
-            {touched?.type_of_pesticide && errors?.type_of_pesticide && (
-              <Text style={Styles.error}>
-                {String(errors?.type_of_pesticide)}
-              </Text>
-            )}
+            {touched?.type_of_pesticide_used &&
+              errors?.type_of_pesticide_used && (
+                <Text style={Styles.error}>
+                  {String(errors?.type_of_pesticide_used)}
+                </Text>
+              )}
             <Input
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
@@ -510,7 +516,7 @@ const CultivationImportantInfo = ({
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={()=>onSubmit()}
+        onSubmit={() => onSubmit()}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"

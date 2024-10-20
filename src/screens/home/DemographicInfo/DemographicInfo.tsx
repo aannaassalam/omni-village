@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles, width} from '../../../styles/globalStyles';
 import AlertModal from '../../../Components/Popups/AlertModal';
 import {useFormik} from 'formik';
@@ -20,10 +20,46 @@ import { fontFamilyRegular } from '../../../styles/fontStyle';
 import { dark_grey } from '../../../styles/colors';
 import MultiselectDropdown from '../../../Components/CustomDropdown/MultiselectDropdown';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { add_demographic, edit_demographic, get_demographic } from '../../../apis/demographicInfo';
 const DemographicInfo = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makStyles(fontScale);
   const [modalViisble, setModalVisible] = useState(false);
+  const queryClient = useQueryClient()
+  const {data: demographicInfo, isLoading} = useQuery({
+    queryKey: ['get_demographic'],
+    queryFn: () => get_demographic(),
+  });
+  const {mutate: addDemographic} = useMutation({
+    mutationFn: (data: any) => add_demographic(data),
+    onSuccess: data => {
+      setModalVisible(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  const {mutate: editDemographic} = useMutation({
+    mutationFn: (data: any) => edit_demographic(data),
+    onSuccess: data => {
+      setModalVisible(true);
+      queryClient.invalidateQueries();
+    },
+    onError: error => {
+      console.log(
+        'error?.response?.data?.message edit',
+        error,
+        error?.response?.data?.message,
+      );
+    },
+  });
+  console.log("demographicccccc", demographicInfo)
   let demographic = Yup.object().shape({
     marital_status: Yup.string().required('Marital status is required'),
     diet: Yup.string().required('Diet is required'),
@@ -107,8 +143,8 @@ const DemographicInfo = () => {
     initialValues: {
       marital_status: '',
       diet: '',
-      height: 0,
-      weight: 0,
+      height: '',
+      weight: '',
       speaking: '',
       reading: '',
       writing: '',
@@ -138,6 +174,43 @@ const DemographicInfo = () => {
       setModalVisible(true);
     },
   });
+
+  useEffect(() => {
+    resetForm({
+      values: {
+        marital_status: demographicInfo?.data?.marital_status || '',
+        diet: demographicInfo?.data?.diet || '',
+        height: demographicInfo?.data?.height || '',
+        weight: demographicInfo?.data?.weight || '',
+        speaking: demographicInfo?.data?.speaking || '',
+        reading: demographicInfo?.data?.reading || '',
+        writing: demographicInfo?.data?.writing || '',
+        occupation: demographicInfo?.data?.occupation || '',
+        yearly_income: demographicInfo?.data?.yearly_income || '',
+        bank_account: demographicInfo?.data?.bank_account || false,
+        savings_investment: demographicInfo?.data?.savings_investment || false,
+        savings_investment_amount:
+          demographicInfo?.data?.savings_investment_amount || 0,
+        chronic_diseases: demographicInfo?.data?.chronic_diseases || '',
+        motor_disability: demographicInfo?.data?.motor_disability || '',
+        mental_emotional: demographicInfo?.mental_emotional || '',
+        habits: demographicInfo?.data?.habits || [],
+        education: demographicInfo?.data?.education || '',
+        education_seeking_to_gain:
+          demographicInfo?.data?.education_seeking_to_gain || [],
+        skillset: demographicInfo?.data?.skillset || [],
+        skills_seeking_to_learn:
+          demographicInfo?.data?.skills_seeking_to_learn || [],
+        hobbies: demographicInfo?.data?.hobbies || [],
+        hobbies_seeking_to_adopt:
+          demographicInfo?.data?.hobbies_seeking_to_adopt || [],
+        aspiration: demographicInfo?.data?.aspiration || [],
+        unfulfilled_needs: demographicInfo?.data?.unfulfilled_needs || [],
+        wishes: demographicInfo?.data?.wishes || [],
+        others_wishes: demographicInfo?.data?.others_wishes || '',
+      },
+    });
+  }, [demographicInfo]);
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">

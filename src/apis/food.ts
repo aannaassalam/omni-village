@@ -218,7 +218,7 @@ export const delete_storage = async (id: any) => {
 };
 
 // NOTE:STORAGE METHOD
-export const get_storage_method = async (type: any) => {
+export const get_storage_method = async () => {
   const res = await axios.get(
     BASE_URL + endpoints?.food?.production?.get_storage_method,
   );

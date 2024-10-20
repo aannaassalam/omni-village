@@ -70,7 +70,7 @@ const PoultryImportantInfo = ({
     average_age_of_livestocks: Yup.string().required(
       'Average age of livestocks is required',
     ),
-    type_of_fed_required: Yup.string().required('Type of fed is required'),
+    type_of_feed: Yup.string().required('Type of feed is required'),
     create_type: Yup.string().test(
       'create-type-required',
       'Create type is required',
@@ -99,9 +99,9 @@ const PoultryImportantInfo = ({
     initialValues: {
       number: '',
       average_age_of_livestocks: '',
-      type_of_fed_required: '',
+      type_of_feed: '',
       create_type: '',
-      weight_measurement:''
+      weight_measurement: '',
     },
     validationSchema: poultrySchema,
     onSubmit: async (values: any) => {
@@ -113,7 +113,7 @@ const PoultryImportantInfo = ({
         impVal: {
           ...values,
           number: parseInt(values?.number),
-          avg_age_time_period: 'month',
+          avg_age_time_period: 'months',
         },
       });
     },
@@ -122,10 +122,10 @@ const PoultryImportantInfo = ({
      resetForm({
        values: {
          number: data?.number || '',
-         average_age_of_livestocks: data?.average_age_of_livestocks || '',
-         type_of_fed_required: data?.type_of_fed_required || '',
+         average_age_of_livestocks: String(data?.average_age_of_livestocks) || '',
+         type_of_feed: data?.type_of_feed || '',
          create_type: data?.create_type || '',
-         weight_measurement: data?.weight_measurement||'',
+         weight_measurement: data?.weight_measurement || '',
        },
      });
    }, [data]);
@@ -139,7 +139,7 @@ const PoultryImportantInfo = ({
               value={String(values?.number)}
               fullLength={true}
               label={'Number'}
-              keyboardType='numeric'
+              keyboardType="numeric"
             />
             {touched?.number && errors?.number && (
               <Text style={Styles.error}>{String(errors?.number)}</Text>
@@ -162,33 +162,38 @@ const PoultryImportantInfo = ({
                 </Text>
               )}
             <Customdropdown
-              data={feeds?.length>0?[...feeds?.map((item:any)=>{
-                return{
-                  id: item?._id,
-                  label:item.name,
-                  value:item.name
-                }
-              }),{
-                id: 'others',
-                label: 'Others',
-                value: 'Others',
-              }]:[]}
-              value={values.type_of_fed_required}
+              data={
+                feeds?.length > 0
+                  ? [
+                      ...feeds?.map((item: any) => {
+                        return {
+                          id: item?._id,
+                          label: item.name,
+                          value: item.name,
+                        };
+                      }),
+                      {
+                        id: 'others',
+                        label: 'Others',
+                        value: 'Others',
+                      },
+                    ]
+                  : []
+              }
+              value={values.type_of_feed}
               label={'Type of fed required apart from grassland grassing'}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
                   ...values,
-                  type_of_fed_required: value?.value,
+                  type_of_feed: value?.value,
                 });
               }}
             />
-            {touched?.type_of_fed_required && errors?.type_of_fed_required && (
-              <Text style={Styles.error}>
-                {String(errors?.type_of_fed_required)}
-              </Text>
+            {touched?.type_of_feed && errors?.type_of_feed && (
+              <Text style={Styles.error}>{String(errors?.type_of_feed)}</Text>
             )}
-            {values?.type_of_fed_required === 'Others' && (
+            {values?.type_of_feed === 'Others' && (
               <>
                 <Input
                   onChangeText={handleChange('create_type')}

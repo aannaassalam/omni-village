@@ -19,46 +19,49 @@ import {
 } from '../../../../styles/colors';
 import {fontFamilyBold, fontFamilyRegular} from '../../../../styles/fontStyle';
 import {useSelector} from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import '../../../../i18next'
 
 const Production = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const authState = useSelector((state: any) => state.authState);
   const [items, setItems] = useState([{}]);
+  const {t} =useTranslation()
   useEffect(() => {
     setItems([
       {
-        title: 'Cultivation',
+        title: t('cultivation'),
         navigation: 'cultivation', //TODO: Change cultivations to cultivation
         value: authState?.sub_area?.cultivation,
       },
       {
-        title: 'Trees,shrubs & grassland',
+        title: t('tree shrub grassland'),
         navigation: 'trees',
         value: authState?.sub_area?.trees,
       },
       {
-        title: 'Poultry',
+        title: t('poultry'),
         navigation: 'poultry', //TODO: Change poultrys to poultry
         value: authState?.sub_area?.poultry,
       },
       {
-        title: 'Fishery',
+        title: t('fishery'),
         navigation: 'fishery', //TODO: Change fisherys to fishery
         value: authState?.sub_area?.fishery,
       },
       {
-        title: 'Hunting',
+        title: t('hunting'),
         navigation: 'hunting', //TODO: Change fisherys to fishery
         value: authState?.sub_area?.hunting || 'NA',
       },
       {
-        title: 'Storage',
+        title: t('storage'),
         navigation: 'storage', //TODO: Change storages to storage
         value: authState?.sub_area?.storage,
       },
       {
-        title: 'Selling Channel',
+        title: t('selling channel'),
         navigation: 'sellingChannel', //TODO: Change sellingChannels to sellingChannel
       },
     ]);
@@ -73,11 +76,11 @@ const Production = ({navigation}: {navigation: any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Production
+              {t('production')}
             </Text>
             <View style={{flexDirection: 'row', gap: 16}}>
               <View>
-                <Text style={styles.sub_text}>Land allocated</Text>
+                <Text style={styles.sub_text}>{t('land allocated')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
@@ -87,7 +90,7 @@ const Production = ({navigation}: {navigation: any}) => {
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
@@ -120,7 +123,7 @@ const Production = ({navigation}: {navigation: any}) => {
               onPress={() => navigation.navigate(item?.navigation)}>
               <View style={styles.inner_container}>
                 <View>
-                  {item?.title === 'Selling Channel' ? null : (
+                  {item?.navigation === 'sellingChannel' ? null : (
                     <Text style={styles.header_text}>{item.value}</Text>
                   )}
                   <Text style={[styles.sub_text, {marginVertical: 6}]}>

@@ -65,7 +65,7 @@ const PoultryProductionInfo = ({
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
         .required('Expenditure on inputs is required'),
-      steriods: Yup.boolean().required('Steriods is required'),
+      steroids: Yup.boolean().required('Steriods is required'),
     })
     .test(
       'land-limit',
@@ -104,14 +104,14 @@ const PoultryProductionInfo = ({
   } = useFormik({
     initialValues: {
       total_feed: '',
-      self_produced:'',
+      self_produced: '',
       neighbours: '',
       purchased_from_market: '',
       others: '',
       others_value: '',
       income_from_sale: '',
       expenditure_on_inputs: '',
-      steriods:false
+      steroids: false,
     },
     validationSchema: poultrySchema,
     onSubmit: async (values: any) => {
@@ -125,14 +125,14 @@ const PoultryProductionInfo = ({
         others_value: parseInt(values.others_value || 0),
         income_from_sale: parseInt(values.income_from_sale),
         expenditure_on_inputs: parseInt(values.expenditure_on_inputs),
-        steriods: values.steriods,
+        steroids: values.steroids,
       };
       navigation.navigate('poultryHarvestedProduct', {
         crop_name: crop_name,
         crop_id: crop_id,
         impVal: impVal,
         proVal: new_val,
-        get_data: data
+        get_data: data,
       });
     },
   });
@@ -147,7 +147,7 @@ const PoultryProductionInfo = ({
          others_value: data?.others_value || '',
          income_from_sale: data?.income_from_sale || '',
          expenditure_on_inputs: data?.expenditure_on_inputs || '',
-         steriods: data?.steriods || false,
+         steroids: data?.steroids || false,
        },
      });
    }, [data]);
@@ -194,7 +194,7 @@ const PoultryProductionInfo = ({
               onChangeText={handleChange('purchased_from_market')}
               value={String(values?.purchased_from_market)}
               fullLength={true}
-              keyboardType='numeric'
+              keyboardType="numeric"
               label={'Purchased from market'}
               isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
@@ -265,12 +265,12 @@ const PoultryProductionInfo = ({
                 onPress={() =>
                   setValues({
                     ...values,
-                    steriods: !values?.steriods,
+                    steroids: !values?.steroids,
                   })
                 }>
                 <Image
                   source={
-                    values?.steriods === true
+                    values?.steroids === true
                       ? require('../../../../../../assets/checked.png')
                       : require('../../../../../../assets/unchecked.png')
                   }
@@ -282,12 +282,12 @@ const PoultryProductionInfo = ({
                 onPress={() =>
                   setValues({
                     ...values,
-                    steriods: !values?.steriods,
+                    steroids: !values?.steroids,
                   })
                 }>
                 <Image
                   source={
-                    values?.steriods === false
+                    values?.steroids === false
                       ? require('../../../../../../assets/checked.png')
                       : require('../../../../../../assets/unchecked.png')
                   }

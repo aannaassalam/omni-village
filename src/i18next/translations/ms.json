@@ -256,5 +256,18 @@
   "ecommerce": "Dagang",
   "export": "Eksport",
   "street address": "Alamat Jalan",
-  "confirm": "mengesahkan"
+  "confirm": "mengesahkan",
+
+  "food": "Makanan",
+  "demographic": "Maklumat Demografi",
+  "landholding": "Pemetaan Tanah & Penggunaan",
+  "housing": "Perumahan",
+  "water": "air",
+  "energy": "Tenaga & Bahan Api",
+  "mobility": "mobiliti",
+  "forestry": "Perhutanan & Kayu",
+  "other personal": "Lain-lain barangan peribadi & rumah",
+  "business": "Pertubuhan/Pertubuhan Perniagaan & Komersial",
+  "community": "Infrastruktur Komuniti (Hanya untuk peringkat Kampung)",
+  "total_land":"Jumlah tanah"
 }

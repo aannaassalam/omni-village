@@ -6,6 +6,8 @@ import Input from '../Inputs/Input'
 import AcresElement from '../ui/AcresElement'
 import AddstorageBottomSheet from '../BottomSheet/Production/AddstorageMethodBottomSheet'
 import { useSelector } from 'react-redux'
+import { useQuery } from '@tanstack/react-query'
+import { get_storage_method } from '../../apis/food'
 
 const StorageList = ({
   title,
@@ -14,19 +16,25 @@ const StorageList = ({
   storage_value,
   onStorageValue,
   id,
-  isVisible
+  isVisible,
+  storage_name,
 }: {
   title: any;
   setValue: any;
   onStorageValue: any;
   storage_method_name: any;
   storage_value: any;
-  id:any;
-  isVisible?:any
+  id: any;
+  isVisible?: any;
+  storage_name: any;
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const authState = useSelector((state:any)=>state.authState)
+  const authState = useSelector((state: any) => state.authState);
+  const {data: getStorageMethod, isLoading} = useQuery({
+    queryKey: ['get_storage_method'],
+    queryFn: () => get_storage_method(),
+  });
   return (
     <View>
       <View style={Styles.twoFieldsContainer}>
@@ -39,22 +47,24 @@ const StorageList = ({
             keyboardType="numeric"
             main_width={width / 2.37}
             isRight={
-              <AcresElement title={authState?.land_measurement_symbol} />
+              <AcresElement title={'Kilogram'} />
             }
           />
         </View>
         <View>
           <Customdropdown
-            data={[
-              {id: 1, label: 'Cold Storage', value: 'Cold Storage'},
-              {id: 2, label: 'Hot Storage', value: 'Hot Storage'},
-              {id: 3, label: 'Dry Storage', value: 'Dry Storage'},
-            ]}
+            data={getStorageMethod?.[storage_name].map((item)=>{
+              return{
+                id: item._id,
+                label: item.name,
+                value: item.name,
+              }
+            })}
             value={storage_method_name}
             style={{width: width / 2.3}}
             label={'Storage Method'}
             onChange={(value: any) => {
-              setValue(value?.value, id);
+              setValue(value?.value, id, value?.id);
             }}
           />
         </View>

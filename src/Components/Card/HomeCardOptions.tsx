@@ -43,11 +43,11 @@ const makeStyles = (fontScale: any) =>
       borderRadius: 4,
       backgroundColor: dark_grey,
       padding: 12,
+      paddingVertical: 22,
       justifyContent: 'center',
       alignItems: 'center',
-      // width: width / 6,
-      // height: 50,
-      // marginVertical: 8,
+      width: width / 4,
+      marginVertical: 8,
       // marginHorizontal: 8
     },
     name_txt: {
@@ -55,10 +55,11 @@ const makeStyles = (fontScale: any) =>
       fontFamily: fontFamilyMedium,
       color: dark_grey,
       textAlign: 'center',
+      alignSelf:'center',
       flexWrap: 'wrap',
-      width: 70,
+      width: 100,
       marginVertical: 4,
-      marginHorizontal: 8,
+      // marginHorizontal: 8,
     },
     image: {
       height: 40,

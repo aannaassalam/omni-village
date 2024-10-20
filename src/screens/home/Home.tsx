@@ -18,18 +18,20 @@ import {
 import {Styles} from '../../styles/globalStyles';
 import {draft_color, primary} from '../../styles/colors';
 import HomeCardOptions from '../../Components/Card/HomeCardOptions';
-import {home_data} from '../../../assets/mockdata/Data';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { logUserOut, weight } from '../../redux/auth/actions';
 import { useQuery } from '@tanstack/react-query';
 import { get_weight_measurement } from '../../apis/auth';
+import { useTranslation } from 'react-i18next';
+import '../../i18next';
 
 const Home = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [active, setActive] = useState('');
   const dispatch = useDispatch()
+  const {t} = useTranslation()
   const authState = useSelector((state)=>state.authState)
    const {data: weight_measurement} = useQuery({
      queryKey: ['weight_measurement'],
@@ -38,6 +40,74 @@ const Home = ({navigation}:{navigation:any}) => {
    useEffect(()=>{
     dispatch(weight(weight_measurement))
    },[weight_measurement])
+   const home_data = [
+     {
+       id: 1,
+       title: t('food'),
+       navigation: 'food',
+       image: require('../../../assets/food.png'),
+     },
+     {
+       id: 2,
+       title: t('demographic'),
+       navigation: 'demographic', //FIX ME - demographic
+       image: require('../../../assets/demographic.png'),
+     },
+     {
+       id: 3,
+       title: t('landholding'),
+       navigation: 'landholding', // FIX ME - landholding
+       image: require('../../../assets/landhold.png'),
+     },
+     {
+       id: 4,
+       title: t('housing'),
+       navigation: 'housing', // FIX ME - housing
+       image: require('../../../assets/housing.png'),
+     },
+     {
+       id: 5,
+       title: t('water'),
+       navigation: 'water',
+       image: require('../../../assets/water.png'),
+     },
+     {
+       id: 6,
+       title: t('energy'),
+       navigation: 'energy',
+       image: require('../../../assets/fuel.png'),
+     },
+     {
+       id: 7,
+       title: t('mobility'),
+       navigation: 'mobility',
+       image: require('../../../assets/mobility.png'),
+     },
+     {
+       id: 8,
+       title: t('forestry'),
+       navigation: 'forestry',
+       image: require('../../../assets/forestry.png'),
+     },
+     {
+       id: 9,
+       title: t('other personal'),
+       navigation: 'otherPersonal',
+       image: require('../../../assets/household.png'),
+     },
+     {
+       id: 10,
+       title: t('business'),
+       navigation: 'businessCommercial',
+       image: require('../../../assets/business.png'),
+     },
+     {
+       id: 11,
+       title: t('community'),
+       navigation: 'communityInfrastructure',
+       image: require('../../../assets/community.png'),
+     },
+   ];
   return (
     <View style={styles.container}>
       <HomeHeader />
@@ -82,17 +152,34 @@ const Home = ({navigation}:{navigation:any}) => {
             </View> */}
           </HeaderCard>
           <View style={styles.flatlist}>
-            <FlatList
-              scrollEnabled={false}
+            <View style={styles.card_container}>
+            {home_data.map((item:any,index:any)=>{
+              return (
+                <HomeCardOptions
+                  item={item}
+                  active={active}
+                  setActive={(item: any) => setActive(item)}
+                  key={index}
+                />
+              );
+            })}
+            </View>
+            {/* <FlatList
               contentContainerStyle={{
-                justifyContent: 'space-between',
+                // justifyContent: 'space-between',
                 width: '100%',
               }}
+              showsVerticalScrollIndicator
+              scrollEnabled={true}
               keyExtractor={(item, i) => i.toString()}
               data={home_data}
-              numColumns={4}
-              columnWrapperStyle={{justifyContent: 'flex-start', gap: 10, paddingHorizontal: 4}}
-              renderItem={({item,index}) => (
+              numColumns={3}
+              columnWrapperStyle={{
+                justifyContent: 'flex-start',
+                gap: 18,
+                paddingHorizontal: 4,
+              }}
+              renderItem={({item, index}) => (
                 <HomeCardOptions
                   item={item}
                   active={active}
@@ -100,13 +187,13 @@ const Home = ({navigation}:{navigation:any}) => {
                   key={index}
                 />
               )}
-            />
+            /> */}
           </View>
         </View>
       </ScrollView>
       <View style={Styles.bottomBtn}>
         <CustomButton
-          btnText={'Logout'}
+          btnText={t('logout')}
           onPress={() => dispatch(logUserOut())}
         />
       </View>
@@ -124,7 +211,7 @@ const makeStyles = (fontScale: any) =>
     },
     mainContainer: {
       paddingHorizontal: 22,
-      paddingVertical: 32,
+      paddingVertical: 12,
     },
     header_container: {
       flexDirection: 'row',
@@ -160,14 +247,15 @@ const makeStyles = (fontScale: any) =>
     flatlist: {
       // paddingHorizontal: 16,
       paddingVertical: 16,
-      justifyContent: 'center',
+      marginBottom: 20,
+      // justifyContent: 'center',
       // backgroundColor:'pink'
     },
     card_container: {
       flexDirection: 'row',
       flexWrap: 'wrap',
       width: '100%',
-      justifyContent: 'flex-start',
+      justifyContent: 'space-around',
       // backgroundColor: 'red',
     },
   });

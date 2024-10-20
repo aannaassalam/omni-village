@@ -3,19 +3,22 @@ import React, { useState } from 'react'
 import { Styles } from '../../../styles/globalStyles';
 import { borderColor, dark_grey, draft_color, primary, unSelected, white } from '../../../styles/colors';
 import { fontFamilyMedium, fontFamilyRegular } from '../../../styles/fontStyle';
+import { useTranslation } from 'react-i18next';
+import '../../../i18next'
 
 const Food = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [onItemSeleted, setOnItemSelected] = useState(null);
+  const {t} = useTranslation()
   const ITEMS = [
     {
-      title: 'Production',
+      title: t('production'),
       navigation: 'total_land',
       image: require('../../../../assets/e2.png'),
     },
     {
-      title: 'Consumption',
+      title: t('consumption'),
       navigation: 'consumption',
       image: require('../../../../assets/e3.png'),
     },

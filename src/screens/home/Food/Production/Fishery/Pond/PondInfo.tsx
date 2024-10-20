@@ -245,24 +245,24 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
   useEffect(()=>{
     resetForm({
       values: {
-        number: data?.number || '5',
-        type_of_feed: data?.type_of_feed || 'Others',
-        weight_measurement: data?.weight_measurement || 'gram',
-        create_type: data?.create_type || 'wormss',
-        total_feed: data?.total_feed || '67',
-        output: data?.output || '90',
-        self_consumed: data?.self_consumed || '7',
-        sold_to_neighbours: data?.sold_to_neighbours || '7',
-        sold_for_industrial_use: data?.sold_for_industrial_use || '7',
-        wastage: data?.wastage || '7',
+        number: data?.number || '',
+        type_of_feed: data?.type_of_feed || '',
+        weight_measurement: data?.weight_measurement || '',
+        create_type: data?.create_type || '',
+        total_feed: data?.total_feed || '',
+        output: data?.output || '',
+        self_consumed: data?.self_consumed || '',
+        sold_to_neighbours: data?.sold_to_neighbours || '',
+        sold_for_industrial_use: data?.sold_for_industrial_use || '',
+        wastage: data?.wastage || '',
         others: data?.others || '',
         others_value: data?.others_value || '',
         yield:
           data?.yield || values?.output === '' || values?.number === ''
             ? 0
             : String(parseFloat(values?.output) / parseFloat(values?.number)),
-        income_from_sale: data?.income_from_sale || '789',
-        expenditure_on_inputs: data?.expenditure_on_inputs || '890',
+        income_from_sale: data?.income_from_sale || '',
+        expenditure_on_inputs: data?.expenditure_on_inputs || '',
         required_processing: data?.required_processing || false,
       },
     });

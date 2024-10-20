@@ -203,20 +203,22 @@ const PoultryHarvestedProduct = ({
                 );
                 if (allValid) {
                   if (data?._id) {
+                    console.log("heree")
                     setMessage('drafted');
                     updatePoultry({
                       ...impVal,
                       ...proVal,
-                      harvested_products: data,
+                      harvested_product: data,
                       tree_id: data?._id,
                       status: 0,
                     });
                   } else {
+                    console.log("hereee2")
                     setMessage('drafted');
                     addPoultry({
                       ...impVal,
                       ...proVal,
-                      harvested_products: data,
+                      harvested_product: data,
                       crop_id: crop_id,
                       status: 0,
                     });
@@ -246,7 +248,7 @@ const PoultryHarvestedProduct = ({
             addPoultry({
               ...impVal,
               ...proVal,
-              harvested_products: data,
+              harvested_product: data,
               poultry_id: data?._id,
               status: 1,
             });
@@ -255,7 +257,7 @@ const PoultryHarvestedProduct = ({
             addPoultry({
               ...impVal,
               ...proVal,
-              harvested_products: data,
+              harvested_product: data,
               crop_id: crop_id,
               status: 1,
             });
@@ -270,7 +272,7 @@ const PoultryHarvestedProduct = ({
         visible={successModal}
         successModal={true}
         onSubmit={() => {
-          setSuccessModal(false), navigation.goBack(), navigation.goBack();
+          setSuccessModal(false), navigation.goBack(), navigation.goBack(), navigation.goBack()
         }}
         confirmText="Okay"
         title="Successful"

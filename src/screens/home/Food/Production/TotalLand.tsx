@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { reqSuccess } from '../../../../redux/auth/actions';
 import { get_user_details } from '../../../../apis/auth';
+import { useTranslation } from 'react-i18next';
+import '../../../../i18next'
 
 const TotalLand = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -31,6 +33,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
   const [loading,setLoading] = useState(false);
   const authState= useSelector((state)=>state.authState)
   const dispatch = useDispatch()
+  const {t} = useTranslation()
   const {mutate: addLand} = useMutation({
     mutationFn: (data: any) => add_total_land(data),
     onSuccess: async(data) => {
@@ -100,24 +103,13 @@ const TotalLand = ({navigation}:{navigation:any}) => {
   let land_schema = Yup.object()
     .shape({
       total_land: Yup.number()
-        .required('Total land is required')
-        .min(1, 'Total land must be greater than zero')
-        .typeError('Total land must be a number'),
-      cultivation: Yup.number()
-        .required('Cultivation is required')
-        .typeError('Cultivation must be a number'),
-      trees: Yup.number()
-        .required('Trees,shrubs & Grassland is required')
-        .typeError('Trees,shrubs & Grassland must be a number'),
-      poultry: Yup.number()
-        .required('Poultry is required')
-        .typeError('Poultry must be a number'),
-      fishery: Yup.number()
-        .required('Fishery is required')
-        .typeError('Fishery must be a number'),
-      storage: Yup.number()
-        .required('Storage is required')
-        .typeError('Storage must be a number'),
+        .required(t('total_land is required'))
+        .min(1, 'Total land must be greater than zero'),
+      cultivation: Yup.number().required(t('cultivation is required')),
+      trees: Yup.number().required(t('trees is required')),
+      poultry: Yup.number().required(t('poultry is required')),
+      fishery: Yup.number().required(t('fishery is required')),
+      storage: Yup.number().required(t('storage is required')),
     })
     .test(
       'land-limit',
@@ -196,7 +188,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               value={String(values?.total_land)}
               fullLength={true}
               onFocus={() => setIsFocused(true)}
-              label={'Total land'}
+              label={t('total_land')}
               keyboardType="numeric"
               onBlur={() => setIsFocused(false)}
               isRight={
@@ -208,7 +200,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
             )}
             <View style={{flexDirection: 'row', gap: 8, alignItems: 'center'}}>
               <Text style={[Styles.fieldLabel, {color: dark_grey}]}>
-                Sub area
+                {t('sub area')}
               </Text>
               <View
                 style={[Styles.horizontalLine, {width: '84%', marginTop: 16}]}
@@ -221,7 +213,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
-              label={'Cultivation'}
+              label={t('cultivation')}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
               }
@@ -236,7 +228,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
-              label={'Trees,shrubs & grassland'}
+              label={t('tree shrub grassland')}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
               }
@@ -251,7 +243,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
-              label={'Poultry'}
+              label={t('poultry')}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
               }
@@ -266,7 +258,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               keyboardType="numeric"
-              label={'Fishery'}
+              label={t('fishery')}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
               }
@@ -280,7 +272,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
               fullLength={true}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              label={'Storage'}
+              label={t('storage')}
               keyboardType="numeric"
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
@@ -295,7 +287,7 @@ const TotalLand = ({navigation}:{navigation:any}) => {
       <View style={[Styles.bottomBtn]}>
         <CustomButton
           onPress={handleSubmit}
-          btnText={'Submit'}
+          btnText={t('submit')}
           loading={loading}
         />
       </View>

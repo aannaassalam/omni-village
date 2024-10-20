@@ -41,11 +41,14 @@ import Energy from '../screens/home/Energy & Fuel/Energy';
 import Water from '../screens/home/Water/Water';
 import Profile from '../screens/Profile/Profile';
 import MapScreen from '../screens/login/MapScreen';
+import { useTranslation } from 'react-i18next';
+import '../i18next'
 const Stack = createStackNavigator();
 
 const HomeStack = () => {
   const navigation = useNavigation();
   const {fontScale} = useWindowDimensions();
+  const {t} = useTranslation()
   return (
     <Stack.Navigator
       initialRouteName="home"
@@ -75,7 +78,7 @@ const HomeStack = () => {
         component={Food}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Food'} />,
+          header: () => <StackHeader title={t('food')} />,
         }}
       />
       <Stack.Screen
@@ -83,7 +86,7 @@ const HomeStack = () => {
         component={TotalLand}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Total Land'} />,
+          header: () => <StackHeader title={t('total_land')} />,
         }}
       />
       <Stack.Screen
@@ -91,7 +94,7 @@ const HomeStack = () => {
         component={Production}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Production'} />,
+          header: () => <StackHeader title={t('production')} />,
         }}
       />
       <Stack.Screen
@@ -99,7 +102,7 @@ const HomeStack = () => {
         component={Consumption}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Consumption'} />,
+          header: () => <StackHeader title={t('consumption')} />,
         }}
       />
       <Stack.Screen
@@ -107,7 +110,7 @@ const HomeStack = () => {
         component={ConsumptionItem}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Consumption'} />,
+          header: () => <StackHeader title={t('consumption')} />,
         }}
       />
       <Stack.Screen
@@ -122,7 +125,7 @@ const HomeStack = () => {
         component={Cultivation}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Cultivation'} />,
+          header: () => <StackHeader title={t('cultivation')} />,
         }}
       />
       <Stack.Screen
@@ -144,7 +147,7 @@ const HomeStack = () => {
         component={Poultry}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Poultry'} />,
+          header: () => <StackHeader title={t('poultry')} />,
         }}
       />
       <Stack.Screen

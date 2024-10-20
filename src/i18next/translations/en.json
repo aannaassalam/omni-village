@@ -256,5 +256,20 @@
   "ecommerce": "Ecommerce",
   "export": "Export",
   "street address": "Street Address",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+
+
+  "food":"Food",
+  "demographic":"Demographic Information",
+  "landholding":"Landholding & Usage mapping",
+  "housing":"Housing",
+  "water":"Water",
+  "energy":"Energy & Fuel",
+  "mobility":"Mobility",
+  "forestry":"Foresty & Timber",
+  "other personal": "Other personal & household items",
+  "business":"Business & Commercial Establishments/Organisations",
+  "community":"Community Infrastructure (Only for Village level)",
+  "total_land":"Total land"
+  
 }

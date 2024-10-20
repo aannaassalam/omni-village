@@ -70,4 +70,10 @@ export const endpoints = {
       delete_consumption: '/consumption/delete_consumption/',
     },
   },
+  demographicInfo: {
+    get_demographic: '/demographic/get_demographic_info_by_id',
+    add_demographic: '/demographic/add_demographic_info',
+    edit_demographic: '/demographic/update_demographic_info_by_id',
+    delete_demographic: '/demographic/delete_demographic_info_by_id',
+  },
 };
