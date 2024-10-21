@@ -10,6 +10,7 @@ export const get_demographic = async () => {
   return res.data;
 };
 export const add_demographic = async (body: any) => {
+  console.log("bosydyydydydyd", body)
   const res = await axios.post(
     BASE_URL + endpoints?.demographicInfo?.add_demographic,
     body,

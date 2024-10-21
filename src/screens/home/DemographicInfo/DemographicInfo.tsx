@@ -1,5 +1,5 @@
 import {
-    Image,
+  Image,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -15,18 +15,24 @@ import * as Yup from 'yup';
 import Customdropdown from '../../../Components/CustomDropdown/Customdropdown';
 import Input from '../../../Components/Inputs/Input';
 import AcresElement from '../../../Components/ui/AcresElement';
-import { TouchableOpacity } from 'react-native';
-import { fontFamilyRegular } from '../../../styles/fontStyle';
-import { dark_grey } from '../../../styles/colors';
+import {TouchableOpacity} from 'react-native';
+import {fontFamilyRegular} from '../../../styles/fontStyle';
+import {dark_grey} from '../../../styles/colors';
 import MultiselectDropdown from '../../../Components/CustomDropdown/MultiselectDropdown';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { add_demographic, edit_demographic, get_demographic } from '../../../apis/demographicInfo';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {
+  add_demographic,
+  edit_demographic,
+  get_demographic,
+} from '../../../apis/demographicInfo';
 const DemographicInfo = () => {
   const {fontScale} = useWindowDimensions();
   const styles = makStyles(fontScale);
   const [modalViisble, setModalVisible] = useState(false);
-  const queryClient = useQueryClient()
+      const [successModal, setSuccessModal] = useState(false);
+      const [message, setMessage] = useState('');
+  const queryClient = useQueryClient();
   const {data: demographicInfo, isLoading} = useQuery({
     queryKey: ['get_demographic'],
     queryFn: () => get_demographic(),
@@ -34,32 +40,38 @@ const DemographicInfo = () => {
   const {mutate: addDemographic} = useMutation({
     mutationFn: (data: any) => add_demographic(data),
     onSuccess: data => {
-      setModalVisible(true);
+      console.log("successss",data)
+      setModalVisible(false);
+      setSuccessModal(true);
       queryClient.invalidateQueries();
     },
     onError: error => {
       console.log(
         'error?.response?.data?.message edit',
         error,
-        error?.response?.data?.message,
+        error?.response?.data?.error?.message,
       );
+    },
+    onSettled: () => {
+      setModalVisible(false), setSuccessModal(false);
     },
   });
   const {mutate: editDemographic} = useMutation({
     mutationFn: (data: any) => edit_demographic(data),
     onSuccess: data => {
-      setModalVisible(true);
+      setSuccessModal(true);
       queryClient.invalidateQueries();
     },
     onError: error => {
       console.log(
         'error?.response?.data?.message edit',
         error,
-        error?.response?.data?.message,
+        error?.response?.error?.errors?.message,
       );
     },
+    onSettled:()=>{setModalVisible(false),setSuccessModal(false)}
   });
-  console.log("demographicccccc", demographicInfo)
+  console.log('demographicccccc', demographicInfo);
   let demographic = Yup.object().shape({
     marital_status: Yup.string().required('Marital status is required'),
     diet: Yup.string().required('Diet is required'),
@@ -96,9 +108,8 @@ const DemographicInfo = () => {
       .required('Habit is required')
       .min(1, 'At least one habit is required'),
     education: Yup.string().required('Education is required'),
-    education_seeking_to_gain: Yup.array()
-      .required('Education seeking to gain is required')
-      .min(1, 'At least one education seeking to gain is required'),
+    education_seeking_to_gain: Yup.string()
+      .required('Education seeking to gain is required'),
     skillset: Yup.array()
       .required('Skillset is required')
       .min(1, 'At least one skillset is required'),
@@ -152,13 +163,13 @@ const DemographicInfo = () => {
       yearly_income: '',
       bank_account: false,
       savings_investment: false,
-      savings_investment_amount: 0,
+      savings_investment_amount: '',
       chronic_diseases: '',
       motor_disability: '',
       mental_emotional: '',
       habits: [],
       education: '',
-      education_seeking_to_gain: [],
+      education_seeking_to_gain: '',
       skillset: [],
       skills_seeking_to_learn: [],
       hobbies: [],
@@ -178,39 +189,118 @@ const DemographicInfo = () => {
   useEffect(() => {
     resetForm({
       values: {
-        marital_status: demographicInfo?.data?.marital_status || '',
-        diet: demographicInfo?.data?.diet || '',
-        height: demographicInfo?.data?.height || '',
-        weight: demographicInfo?.data?.weight || '',
-        speaking: demographicInfo?.data?.speaking || '',
-        reading: demographicInfo?.data?.reading || '',
-        writing: demographicInfo?.data?.writing || '',
-        occupation: demographicInfo?.data?.occupation || '',
-        yearly_income: demographicInfo?.data?.yearly_income || '',
+        marital_status: demographicInfo?.data?.marital_status || 'Male',
+        diet: demographicInfo?.data?.diet || 'Stable',
+        height: demographicInfo?.data?.height || '56',
+        weight: demographicInfo?.data?.weight || '78',
+        speaking: demographicInfo?.data?.speaking || 'Stable',
+        reading: demographicInfo?.data?.reading || 'Stable',
+        writing: demographicInfo?.data?.writing || 'Stable',
+        occupation: demographicInfo?.data?.occupation || 'Stable',
+        yearly_income: demographicInfo?.data?.yearly_income || 78007,
         bank_account: demographicInfo?.data?.bank_account || false,
-        savings_investment: demographicInfo?.data?.savings_investment || false,
+        savings_investment: demographicInfo?.data?.savings_investment || true,
         savings_investment_amount:
-          demographicInfo?.data?.savings_investment_amount || 0,
-        chronic_diseases: demographicInfo?.data?.chronic_diseases || '',
-        motor_disability: demographicInfo?.data?.motor_disability || '',
-        mental_emotional: demographicInfo?.mental_emotional || '',
-        habits: demographicInfo?.data?.habits || [],
-        education: demographicInfo?.data?.education || '',
-        education_seeking_to_gain:
-          demographicInfo?.data?.education_seeking_to_gain || [],
-        skillset: demographicInfo?.data?.skillset || [],
-        skills_seeking_to_learn:
-          demographicInfo?.data?.skills_seeking_to_learn || [],
-        hobbies: demographicInfo?.data?.hobbies || [],
-        hobbies_seeking_to_adopt:
-          demographicInfo?.data?.hobbies_seeking_to_adopt || [],
-        aspiration: demographicInfo?.data?.aspiration || [],
-        unfulfilled_needs: demographicInfo?.data?.unfulfilled_needs || [],
-        wishes: demographicInfo?.data?.wishes || [],
+          demographicInfo?.data?.savings_investment_amount || '78900',
+        chronic_diseases: demographicInfo?.data?.chronic_diseases || 'Stable',
+        motor_disability: demographicInfo?.data?.motor_disability || 'Stable',
+        mental_emotional: demographicInfo?.mental_emotional || 'Stable',
+        habits: demographicInfo?.data?.habits || ['Cricket', 'Football'],
+        education: demographicInfo?.data?.education || 'Stable',
+        education_seeking_to_gain: demographicInfo?.data
+          ?.education_seeking_to_gain || '',
+        skillset: demographicInfo?.data?.skillset || ['Cricket', 'Football'],
+        skills_seeking_to_learn: demographicInfo?.data
+          ?.skills_seeking_to_learn || ['Cricket', 'Football'],
+        hobbies: demographicInfo?.data?.hobbies || ['Cricket', 'Football'],
+        hobbies_seeking_to_adopt: demographicInfo?.data
+          ?.hobbies_seeking_to_adopt || ['Cricket', 'Football'],
+        aspiration: demographicInfo?.data?.aspiration || [
+          'Cricket',
+          'Football',
+        ],
+        unfulfilled_needs: demographicInfo?.data?.unfulfilled_needs || [
+          'Cricket',
+          'Football',
+        ],
+        wishes: demographicInfo?.data?.wishes || ['Cricket', 'Football'],
         others_wishes: demographicInfo?.data?.others_wishes || '',
       },
     });
   }, [demographicInfo]);
+  const onSubmitted = () => {
+    console.log("heerrere")
+    let new_data = {
+      marital_status: values?.marital_status || '',
+      diet: values?.diet || '',
+      height: values?.height || '',
+      weight: values?.weight || '',
+      speaking: values?.speaking || '',
+      reading: values?.reading || '',
+      writing: values?.writing || '',
+      occupation: values?.occupation || '',
+      yearly_income: values?.yearly_income || '',
+      bank_account: values?.bank_account || false,
+      savings_investment: values?.savings_investment || false,
+      savings_investment_amount: values?.savings_investment_amount || 0,
+      chronic_diseases: values?.chronic_diseases || '',
+      motor_disability: values?.motor_disability || '',
+      mental_emotional: values?.mental_emotional || '',
+      habits: values?.habits || [],
+      education: values?.education || '',
+      education_seeking_to_gain: values?.education_seeking_to_gain || '',
+      skillset: values?.skillset || [],
+      skills_seeking_to_learn: values?.skills_seeking_to_learn || [],
+      hobbies: values?.hobbies || [],
+      hobbies_seeking_to_adopt: values?.hobbies_seeking_to_adopt || [],
+      aspiration: values?.aspiration || [],
+      unfulfilled_needs: values?.unfulfilled_needs || [],
+      wishes: values?.wishes || [],
+      others_wishes: values?.others_wishes || '',
+      status:1,
+    };
+    if (demographicInfo?.data?._id) {
+      editDemographic({...new_data});
+    } else {
+      addDemographic({...new_data});
+    }
+  };
+  const onDrafted = () => {
+    let new_data = {
+      marital_status: values?.marital_status || '',
+      diet: values?.diet || '',
+      height: values?.height || '',
+      weight: values?.weight || '',
+      speaking: values?.speaking || '',
+      reading: values?.reading || '',
+      writing: values?.writing || '',
+      occupation: values?.occupation || '',
+      yearly_income: values?.yearly_income || '',
+      bank_account: values?.bank_account || false,
+      savings_investment: values?.savings_investment || false,
+      savings_investment_amount: values?.savings_investment_amount || 0,
+      chronic_diseases: values?.chronic_diseases || '',
+      motor_disability: values?.data,
+      mental_emotional: values?.mental_emotional || '',
+      habits: values?.habits || [],
+      education: values?.education || '',
+      education_seeking_to_gain: values?.education_seeking_to_gain || '',
+      skillset: values?.skillset || [],
+      skills_seeking_to_learn: values?.skills_seeking_to_learn || [],
+      hobbies: values?.hobbies || [],
+      hobbies_seeking_to_adopt: values?.hobbies_seeking_to_adopt || [],
+      aspiration: values?.aspiration || [],
+      unfulfilled_needs: values?.unfulfilled_needs || [],
+      wishes: values?.wishes || [],
+      others_wishes: values?.others_wishes || '',
+      status:0,
+    }
+   if (demographicInfo?.data?._id) {
+     editDemographic({...new_data});
+   } else {
+     addDemographic({...new_data});
+   }
+  };
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -218,8 +308,8 @@ const DemographicInfo = () => {
           <View style={Styles.mainContainer}>
             <Customdropdown
               data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
+                {id: 1, label: 'Male', value: 'Male'},
+                {id: 2, label: 'Female', value: 'Female'},
               ]}
               value={values.marital_status}
               label={'Marital Status'}
@@ -257,6 +347,7 @@ const DemographicInfo = () => {
               value={String(values?.height)}
               fullLength={true}
               label={'Height'}
+              keyboardType="numeric"
               isRight={<AcresElement title={'Unit'} />}
             />
             {touched?.height && errors?.height && (
@@ -267,6 +358,7 @@ const DemographicInfo = () => {
               value={String(values?.weight)}
               fullLength={true}
               label={'Weight'}
+              keyboardType="numeric"
               isRight={<AcresElement title={'Unit'} />}
             />
             {touched?.weight && errors?.weight && (
@@ -446,6 +538,7 @@ const DemographicInfo = () => {
                   onChangeText={handleChange('savings_investment_amount')}
                   value={String(values?.savings_investment_amount)}
                   fullLength={true}
+                  keyboardType="numeric"
                   label={'Savings/Investments Amount'}
                 />
                 {touched?.savings_investment_amount &&
@@ -552,7 +645,7 @@ const DemographicInfo = () => {
             {touched?.education && errors?.education && (
               <Text style={Styles.error}>{String(errors?.education)}</Text>
             )}
-            <MultiselectDropdown
+            {/* <MultiselectDropdown
               containerStyle={{
                 width: width / 1.12,
                 marginTop: '5%',
@@ -568,6 +661,21 @@ const DemographicInfo = () => {
               }
               selectedd={values?.education_seeking_to_gain}
               infoName={'Education seeking to gain'}
+            /> */}
+            <Customdropdown
+              data={[
+                {id: 1, label: 'Stable', value: 'Stable'},
+                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
+              ]}
+              value={values.education_seeking_to_gain}
+              label={'Education seeking to gain'}
+              onChange={(value: any) => {
+                console.log('valueee', value);
+                setValues({
+                  ...values,
+                  education_seeking_to_gain: value?.value,
+                });
+              }}
             />
             {touched?.education_seeking_to_gain &&
               errors?.education_seeking_to_gain && (
@@ -744,7 +852,9 @@ const DemographicInfo = () => {
             style={{width: width / 2.5}}
           />
           <CustomButton
-            onPress={() => {}}
+            onPress={() => {
+              onDrafted();
+            }}
             btnText={'Save as draft'}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
@@ -755,11 +865,21 @@ const DemographicInfo = () => {
         visible={modalViisble}
         cancel={true}
         hideText={'Cancel'}
-        onSubmit={() => setModalVisible(false)}
+        onSubmit={() => onSubmitted()}
         confirmText="Submit"
         onHide={() => setModalVisible(false)}
         title="Confirm Submit"
         comments="Are you sure you want to submit this form?"
+      />
+      <AlertModal
+        visible={successModal}
+        successModal={true}
+        onSubmit={() => {
+          setSuccessModal(false), navigation.goBack();
+        }}
+        confirmText="Okay"
+        title="Successful"
+        comments={`Form ${message} successfully`}
       />
     </View>
   );
