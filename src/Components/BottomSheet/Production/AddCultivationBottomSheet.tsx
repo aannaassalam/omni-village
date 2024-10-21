@@ -18,6 +18,7 @@ import {useSelector} from 'react-redux';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {add_crops, get_crops} from '../../../apis/crops';
 import {useNavigation} from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const AddCultivationBottomSheet = ({
   modalVisible,
@@ -32,6 +33,7 @@ const AddCultivationBottomSheet = ({
 }) => {
   const navigation = useNavigation();
   const bottomsheetRef = useRef(null);
+  const {t} = useTranslation()
   const [crop_name, setCrop_name] = useState(null);
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
@@ -45,7 +47,6 @@ const AddCultivationBottomSheet = ({
   const {mutate: addCrop} = useMutation({
     mutationFn: (data: any) => add_crops(data),
     onSuccess: async data => {
-      console.log("idddd", data)
       queryClient.invalidateQueries();
       setModalVisible(!modalVisible), bottomsheetRef.current.close();
       await setData({
@@ -56,7 +57,7 @@ const AddCultivationBottomSheet = ({
       setCrop_name(null), setExtra_crop_name(null);
     },
     onError: error => {
-      ToastAndroid.show("Crop exists",ToastAndroid.SHORT)
+      ToastAndroid.show(t('crop exists'),ToastAndroid.SHORT)
       console.log(
         'error?.response?.data?.message add crop',
         error,
@@ -73,7 +74,7 @@ const AddCultivationBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Add Crops</Text>
+          <Text style={styles.headerText}>{t('add crop')}</Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -117,7 +118,7 @@ const AddCultivationBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Apple"
+              placeholder={t('ex apple')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -126,7 +127,7 @@ const AddCultivationBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Add Crop'}
+          btnText={t('add crop')}
           onPress={async () => {
             if (crop_name?.name == 'others' && extra_crop_name) {
               let data = {
@@ -146,7 +147,7 @@ const AddCultivationBottomSheet = ({
               extra_crop_name == '' ||
               !crop_name?.name
             ) {
-              ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
+              ToastAndroid.show(t('enter crop name'), ToastAndroid.SHORT);
             } else {
               setModalVisible(!modalVisible), bottomsheetRef.current.close();
               await setData({

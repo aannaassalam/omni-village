@@ -32,6 +32,7 @@ import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAnd
 import {useSelector} from 'react-redux';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {delete_cultivation, get_cultivation} from '../../../../../apis/food';
+import { useTranslation } from 'react-i18next';
 
 const Cultivation = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
@@ -40,6 +41,7 @@ const Cultivation = ({navigation}: {navigation: any}) => {
   const [data, setData] = useState([]);
   const authState = useSelector((state: any) => state.authState);
   const queryClient = useQueryClient();
+  const {t} = useTranslation()
   const {data: cultivation, isLoading} = useQuery({
     queryKey: ['get_cultivation'],
     queryFn: () => get_cultivation(),
@@ -85,11 +87,11 @@ const Cultivation = ({navigation}: {navigation: any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Cultivation
+              {t('cultivation')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
@@ -100,13 +102,13 @@ const Cultivation = ({navigation}: {navigation: any}) => {
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Cultivated</Text>
+                <Text style={styles.sub_text}>{t('cultivated')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Crops
+                  {data?.length} {t('crops')}
                 </Text>
               </View>
             </View>
@@ -132,7 +134,10 @@ const Cultivation = ({navigation}: {navigation: any}) => {
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <NoData title={'Add Crops'} onPress={() => setModalVisible(true)} />
+            <NoData
+              title={t('add crop')}
+              onPress={() => setModalVisible(true)}
+            />
           }
           ListFooterComponent={
             data?.length > 0 ? (
@@ -141,7 +146,7 @@ const Cultivation = ({navigation}: {navigation: any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add Crops'}
+                  cropName={t('add crop')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -154,16 +159,15 @@ const Cultivation = ({navigation}: {navigation: any}) => {
         setModalVisible={setModalVisible}
         data={data}
         setData={async (item: any) => {
-         const find_crop = await data.find(
-           (itm: any) =>
-             itm.crop_name === item?.crop_name ||
-             itm?.crop_id === item?.crop_id,
-         );
+          const find_crop = await data.find(
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
           if (find_crop) {
-            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
+            return ToastAndroid.show(t('crop exists'), ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
-            console.log('iteemememe', item);
             navigation.navigate('utilisation', {
               crop_name: item?.crop_name,
               crop_id: item?.crop_id,

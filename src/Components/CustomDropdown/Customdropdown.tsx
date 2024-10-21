@@ -10,6 +10,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {borderColor, dark_grey, light_grey, primary} from '../../styles/colors';
 import { fontFamilyMedium, fontFamilyRegular} from '../../styles/fontStyle';
 import {Styles} from '../../styles/globalStyles'
+import { useTranslation } from 'react-i18next';
 
 const Customdropdown = ({
   data,
@@ -46,6 +47,7 @@ const Customdropdown = ({
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
+  const {t} = useTranslation()
   const customRenderItem = (item: any) => {
     return (
       <View style={[styles.item]}>
@@ -73,7 +75,7 @@ const Customdropdown = ({
         maxHeight={300}
         labelField="label"
         valueField="value"
-        placeholder={placeholder ? placeholder : 'Choose'}
+        placeholder={placeholder ? placeholder : t('choose')}
         searchPlaceholder="Search..."
         value={value}
         onChange={item => onChange(item)}

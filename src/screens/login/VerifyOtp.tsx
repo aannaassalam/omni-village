@@ -15,6 +15,7 @@ import {reqSuccess} from '../../redux/auth/actions';
 import { useMutation } from '@tanstack/react-query';
 import { get_user_details, login_otp, send_otp } from '../../apis/auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { useTranslation } from 'react-i18next';
 const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -23,6 +24,7 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
   const [verified, setVerified] = useState(false);
   const dispatch = useDispatch();
   const [timer, setTimer] = useState(30);
+  const {t} = useTranslation()
   const {mutate: otp} = useMutation({
     mutationFn: (data: any) => send_otp(data),
     onSuccess: data => {
@@ -68,11 +70,11 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
   return (
     <View style={styles.container}>
       <View style={styles.loginContainer}>
-        <Text style={styles.loginText}>Verification</Text>
+        <Text style={styles.loginText}>{t('verification')}</Text>
         <Text style={styles.loginDescription}>
-          Please verify the OTP below that we have sent to your Mobile Number .
+          {t('Please verify the OTP below that we have sent to your Mobile Number .')}
         </Text>
-        <Text style={styles.otpText}>OTP Sent to: </Text>
+        <Text style={styles.otpText}>{t('OTP Sent to:')} </Text>
         <Text
           style={{
             color: primary,
@@ -108,7 +110,7 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
             onResend();
           }}>
           {timer == 0 ? (
-            <Text>Resend</Text>
+            <Text>{t('resend')}</Text>
           ) : (
             <Text>00:{timer < 10 ? '0' + timer : timer}</Text>
           )}
@@ -116,7 +118,7 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
       </View>
       <View style={Styles.bottomBtn}>
         <CustomButton
-          btnText="Verify"
+          btnText={t('verify otp')}
           onPress={() => {
             if(code){
              login({
@@ -191,9 +193,9 @@ const VerifyOtp = ({navigation, route}: {navigation: any; route: any}) => {
           })
         }}
         successModal={true}
-        confirmText={'Continue'}
-        comments={'Please move forward to add your data'}
-        title={'Successfully Verified'}
+        confirmText={t('continue')}
+        comments={t('Please move forward to add your data')}
+        title={t('Successfully Verified')}
       />
     </View>
   );

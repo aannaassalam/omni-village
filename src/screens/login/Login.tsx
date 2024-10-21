@@ -13,6 +13,7 @@ import {reqSuccess} from '../../redux/auth/actions';
 import {useMutation} from '@tanstack/react-query';
 import {send_otp} from '../../apis/auth';
 import AlertModal from '../../Components/Popups/AlertModal';
+import { useTranslation } from 'react-i18next';
 
 const Login = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
@@ -22,6 +23,7 @@ const Login = ({navigation}: {navigation: any}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const {t} = useTranslation()
   const [countryCode, setCountryCode] = useState('+91');
   const {mutate: otp} = useMutation({
     mutationFn: (data: any) => send_otp(data),
@@ -42,7 +44,7 @@ const Login = ({navigation}: {navigation: any}) => {
   let loginSchema = Yup.object().shape({
     phone: Yup.string()
       .matches(/^[0-9]{10}$/, 'Mobile number must be exactly 10 digits')
-      .required('Mobile number is required'),
+      .required(t('phone number is required')),
   });
   const {
     handleChange,
@@ -71,15 +73,13 @@ const Login = ({navigation}: {navigation: any}) => {
       <Image source={require('../../../assets/logo.png')} style={styles.logo} />
       <View style={Styles.mainContainer}>
         <View>
-          <Text style={styles.heading}>Login</Text>
-          <Text style={styles.subheading}>
-            Welcome back you’ve been missed!
-          </Text>
+          <Text style={styles.heading}>{t('login')}</Text>
+          <Text style={styles.subheading}>{t('welcome back')}</Text>
         </View>
         <Input
           onChangeText={handleChange('phone')}
           value={values?.phone}
-          placeholder="Enter phone"
+          // placeholder="Enter phone"
           fullLength={true}
           phone={() => setShow(true)}
           countryCode={countryCode}
@@ -90,16 +90,16 @@ const Login = ({navigation}: {navigation: any}) => {
         )}
       </View>
       <Text style={[styles.subheading, {bottom: 130, alignSelf: 'center'}]}>
-        Dont have an account ?
+        {t("don't have an account")}
         <Text
           style={{color: primary}}
           onPress={() => navigation.navigate('signup')}>
           {' '}
-          Signup
+          {t('register')}
         </Text>{' '}
       </Text>
       <View style={Styles.bottomBtn}>
-        <CustomButton onPress={handleSubmit} btnText={'Login'} />
+        <CustomButton onPress={handleSubmit} btnText={t('login')} />
       </View>
       <CountryPicker
         show={show}

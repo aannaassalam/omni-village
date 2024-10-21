@@ -11,11 +11,13 @@ import SignUp from '../screens/login/SignUp';
 import StackHeader from '../Components/CustomHeader/StackHeader';
 import MapScreen from '../screens/login/MapScreen';
 import VerifyOtp from '../screens/login/VerifyOtp';
+import { useTranslation } from 'react-i18next';
 const Stack = createStackNavigator();
 
 const LoginStack = () => {
   const navigation = useNavigation();
   const {fontScale} = useWindowDimensions();
+  const {t} = useTranslation()
   return (
     <Stack.Navigator
       initialRouteName="detailSlider"
@@ -29,7 +31,7 @@ const LoginStack = () => {
         component={SignUp}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Sign up'} />,
+          header: () => <StackHeader title={t('register')} />,
         }}
       />
       <Stack.Screen

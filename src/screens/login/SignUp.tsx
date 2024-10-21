@@ -38,6 +38,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {land, reqSuccess} from '../../redux/auth/actions';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { useTranslation } from 'react-i18next';
 
 const SignUp = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
@@ -48,6 +49,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
   const [countryCode, setCountryCode] = useState('+91');
   const [countryInfo, setCoutryInfo] = useState(null);
   const [fileSelected, setFileSelected] = useState('');
+  const {t} = useTranslation()
   const [messages, setMessages] = useState({
     verify_msg: '',
   });
@@ -55,7 +57,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
     personalInfoVisible: true,
     registrationInfo: false,
     familyVisible: false,
-    attachmentsVisible: false,
+    attachmentsVisible: true,
   });
   const [documents, setDocuments] = useState({
     address_proof: null,
@@ -82,9 +84,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
     queryKey: ['measurement'],
     queryFn: () => get_land_measurement(),
   })
-   const {data: village} = useQuery({
-     queryKey: ['village'],
-     queryFn: () => get_village({country:countryInfo?.name?.en || 'India'}),
+   const {data: village,  dataUpdatedAt} = useQuery({
+     queryKey: ['village', countryInfo?.name?.en || 'India'],
+     queryFn: () => get_village({country: countryInfo?.name?.en || 'India'}),
+     enabled: true,
    });
   useEffect(()=>{
     dispatch(land(data))
@@ -94,6 +97,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
     onSuccess: data => {
     },
     onError: error => {
+      ToastAndroid.show(error?.response?.data?.message, ToastAndroid.BOTTOM);
       console.log(
         'error?.response?.data?.message',error,
         error?.response?.data?.message,
@@ -211,28 +215,26 @@ const SignUp = ({navigation}: {navigation: any}) => {
     }
   };
   let signupSchema = Yup.object().shape({
-    first_name: Yup.string().required('First Name is required'),
-    last_name: Yup.string().required('Last Name is required'),
-    village_name: Yup.string().required('Village name is required'),
-    land_measurement: Yup.string().required(
-      'Land measurement is required',
-    ),
+    first_name: Yup.string().required(t('first_name is required')),
+    last_name: Yup.string().required(t('last_name is required')),
+    village_name: Yup.string().required(t('village_name is required')),
+    land_measurement: Yup.string().required(t('Land measurement is required')),
     land_measurement_symbol: Yup.string().required(
       'Land measurement unit symbol is required',
     ),
-    phone: Yup.string().required('Mobile number is required'),
+    phone: Yup.string().required(t('phone number is required')),
     number_of_members: Yup.number()
       .max(20, 'Number of members cannot be greater than 20!')
       .min(1, 'At least one member is required')
-      .required('Number of member is required'),
+      .required(t('number_of_members is required')),
     members: Yup.array()
       .of(
         Yup.object().shape({
-          name: Yup.string().required('Member name is required'),
+          name: Yup.string().required(`${t('member name')} is required`),
           age: Yup.number()
-            .required('Member age is required')
+            .required(`${t('member age')} is required`)
             .positive('Age must be a positive number'),
-          gender: Yup.string().required('Member gender is required'),
+          gender: Yup.string().required(`${t('member gender')} is required`),
         }),
       )
       .when('number_of_members', {
@@ -251,12 +253,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
       }),
     document_type: Yup.string().required('Document Type is required!'),
     social_security_number: Yup.string().required(
-      'Social security number is required',
+      t('social_security_number is required'),
     ),
-    address: Yup.string().required('Address is required'),
-    street_address: Yup.string().required('Street Address is required'),
+    address: Yup.string().required(t('address is required')),
+    street_address: Yup.string().required(t('street address is required')),
     village_governing_body: Yup.boolean().required(
-      'Village governing body required',
+      t('Village governing body required'),
     ),
   });
   const {
@@ -321,13 +323,13 @@ const SignUp = ({navigation}: {navigation: any}) => {
       }
       if (dropdown?.verifyOtp) {
         // resetForm();
-        ToastAndroid.show('Registration successful!', ToastAndroid.SHORT);
+        ToastAndroid.show(t('successfully registered'), ToastAndroid.SHORT);
         register(formData);
       } else if (!documents?.address_proof || values?.village_governing_body ===true && !documents?.field_officer_document) {
-        ToastAndroid.show('Add Proof attachments', ToastAndroid.SHORT);
+        ToastAndroid.show(t('add proof attachments'), ToastAndroid.SHORT);
       } else {
         ToastAndroid.show(
-          'Please verify you mobile number first!',
+          t('Please verify you mobile number first!'),
           ToastAndroid.SHORT,
         );
       }
@@ -463,7 +465,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   personalInfoVisible: !collapsible.personalInfoVisible,
                 })
               }>
-              <Text style={styles.collapsibleHeaderText}>Personal Info</Text>
+              <Text style={styles.collapsibleHeaderText}>
+                {t('personal info')}
+              </Text>
               <AntDesign
                 name={collapsible.personalInfoVisible ? 'up' : 'down'}
                 size={20}
@@ -485,9 +489,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     <Input
                       onChangeText={handleChange('first_name')}
                       value={values?.first_name}
-                      placeholder="Enter first name"
+                      // placeholder="Enter first name"
                       fullLength={false}
-                      label={'First name'}
+                      label={t('first name')}
                       width_={width / 2.38}
                     />
                     {touched?.first_name && errors?.first_name && (
@@ -500,9 +504,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     <Input
                       onChangeText={handleChange('last_name')}
                       value={values?.last_name}
-                      placeholder="Enter last name"
+                      // placeholder="Enter last name"
                       fullLength={false}
-                      label={'Last name'}
+                      label={t('last name')}
                       width_={width / 2.39}
                     />
                     {touched?.last_name && errors?.last_name && (
@@ -518,11 +522,11 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     <Input
                       onChangeText={handleChange('phone')}
                       value={values?.phone}
-                      placeholder="Enter phone"
+                      // placeholder="Enter phone"
                       fullLength={false}
                       phone={() => setShow(true)}
                       countryCode={countryCode}
-                      label={'Phone Number'}
+                      label={t('phone')}
                       editable={dropdown?.verifyOtp ? false : true}
                       style={{
                         backgroundColor: dropdown?.verifyOtp
@@ -532,7 +536,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                         width: '100%',
                       }}
                       keyboardType="numeric"
-                      width_={dropdown?.verifyOtp ? width / 1.3 : width / 1.5}
+                      width_={dropdown?.verifyOtp ? width / 1.3 : width / 1.6}
                       maxLength={15}
                       // isRight={
                       //   <AntDesign
@@ -567,12 +571,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
                             });
                           } else {
                             ToastAndroid.show(
-                              'Please enter phone number',
+                              t('enter phone number'),
                               ToastAndroid.SHORT,
                             );
                           }
                         }}
-                        btnText={'Sent OTP'}
+                        btnText={t('send otp')}
                         style={{
                           width: '80%',
                           alignSelf: 'center',
@@ -588,12 +592,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       <Input
                         onChangeText={e => setDropdown({...dropdown, otp: e})}
                         value={dropdown?.otp}
-                        placeholder="Enter otp"
+                        // placeholder="Enter otp"
                         fullLength={false}
                         label={'OTP'}
                         keyboardType="numeric"
                         maxLength={4}
-                        width_={width / 1.5}
+                        width_={width / 1.6}
                       />
                     </View>
                     <View style={{marginTop: '10%'}}>
@@ -610,11 +614,14 @@ const SignUp = ({navigation}: {navigation: any}) => {
                               otp: dropdown?.otp,
                             });
                           } else {
-                            ToastAndroid.show('Enter otp', ToastAndroid.SHORT);
+                            ToastAndroid.show(
+                              t('enter otp recieved in'),
+                              ToastAndroid.SHORT,
+                            );
                           }
                         }}
                         loading={dropdown?.otpLoading}
-                        btnText={'Verify OTP'}
+                        btnText={t('verify otp')}
                         style={{
                           width: '80%',
                           alignSelf: 'center',
@@ -626,9 +633,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Input
                   onChangeText={handleChange('address')}
                   value={values?.address}
-                  placeholder="Enter address"
+                  // placeholder="Enter address"
                   fullLength={true}
-                  label={'Address'}
+                  label={t('address')}
                   editable={false}
                   isRight={
                     <TouchableOpacity
@@ -655,7 +662,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   familyVisible: !collapsible.familyVisible,
                 })
               }>
-              <Text style={styles.collapsibleHeaderText}>Family Info</Text>
+              <Text style={styles.collapsibleHeaderText}>
+                {t('family info')}
+              </Text>
               <AntDesign
                 name={collapsible.familyVisible ? 'up' : 'down'}
                 size={20}
@@ -674,10 +683,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Input
                   onChangeText={handleChange('number_of_members')}
                   value={values?.number_of_members}
-                  placeholder="Enter number of members"
+                  // placeholder="Enter number of members"
                   fullLength={true}
                   keyboardType="numeric"
-                  label={'Number of members'}
+                  label={t('number of family members')}
                 />
                 {touched?.number_of_members && errors?.number_of_members && (
                   <Text style={Styles.error}>
@@ -692,9 +701,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       <Input
                         onChangeText={handleChange(`members[${index}].name`)}
                         value={values.members[index]?.name}
-                        placeholder={`Enter name for member ${index + 1}`}
+                        // placeholder={`Enter name for member ${index + 1}`}
                         fullLength={true}
-                        label={`Name for member ${index + 1}`}
+                        label={`${t('member name')} ${index + 1}`}
                       />
                       {touched.members?.[index]?.name &&
                         errors.members?.[index]?.name && (
@@ -706,10 +715,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       <Input
                         onChangeText={handleChange(`members[${index}].age`)}
                         value={values.members[index]?.age}
-                        placeholder={`Enter age for member ${index + 1}`}
+                        // placeholder={`Enter age for member ${index + 1}`}
                         fullLength={true}
                         keyboardType="numeric"
-                        label={`Age for member ${index + 1}`}
+                        label={`${t('member age')} ${index + 1}`}
                       />
                       {touched.members?.[index]?.age &&
                         errors.members?.[index]?.age && (
@@ -720,12 +729,12 @@ const SignUp = ({navigation}: {navigation: any}) => {
 
                       <Customdropdown
                         data={[
-                          {id: 1, label: 'Male', value: 'Male'},
-                          {id: 2, label: 'Female', value: 'Female'},
-                          {id: 3, label: 'Others', value: 'Others'},
+                          {id: 1, label: t('Male'), value: 'Male'},
+                          {id: 2, label: t('Female'), value: 'Female'},
+                          {id: 3, label: t('Other'), value: 'Others'},
                         ]}
                         value={values.members[index]?.gender}
-                        label={'Gender for member' + ' ' + (index + 1)}
+                        label={`${t('member gender')} ${index + 1}`}
                         // onChange={handleChange(`members[${index}].gender`)}
                         onChange={(value: any) => {
                           setValues({
@@ -760,7 +769,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   registrationInfo: !collapsible.registrationInfo,
                 })
               }>
-              <Text style={styles.collapsibleHeaderText}>Household Info</Text>
+              <Text style={styles.collapsibleHeaderText}>
+                {t('household info')}
+              </Text>
               <AntDesign
                 name={collapsible.registrationInfo ? 'up' : 'down'}
                 size={20}
@@ -777,12 +788,13 @@ const SignUp = ({navigation}: {navigation: any}) => {
             {collapsible?.registrationInfo && (
               <View>
                 <Customdropdown
-                  data={village.map((item:any)=>{return{id:item._id,label:item.name, value:item.name}})}
+                  data={village.map((item: any) => {
+                    return {id: item._id, label: item.name, value: item.name};
+                  })}
                   value={values.village_name}
-                  label={'Village name'}
+                  label={t('village name')}
                   // onChange={handleChange(`members[${index}].gender`)}
                   onChange={(value: any) => {
-                    console.log('first', value?.label);
                     setValues({
                       ...values,
                       village_name: value?.value,
@@ -797,9 +809,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Input
                   onChangeText={handleChange('street_address')}
                   value={values?.street_address}
-                  placeholder="Enter street address"
+                  // placeholder="Enter street address"
                   fullLength={true}
-                  label={'Street address'}
+                  label={t('street address')}
                 />
                 {touched?.street_address && errors?.street_address && (
                   <Text style={Styles.error}>
@@ -809,10 +821,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Customdropdown
                   data={authState?.land_measurements}
                   value={values.land_measurement_symbol}
-                  label={'Land measurement'}
+                  label={t('land measurement')}
                   // onChange={handleChange(`members[${index}].gender`)}
                   onChange={(value: any) => {
-                    console.log('first', value?.label);
                     setValues({
                       ...values,
                       land_measurement: value?.label,
@@ -828,10 +839,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Input
                   onChangeText={handleChange('social_security_number')}
                   value={values?.social_security_number}
-                  placeholder="Enter social security number"
+                  // placeholder="Enter social security number"
                   fullLength={true}
                   keyboardType="default"
-                  label={'Social security number'}
+                  label={t('social security number')}
                 />
                 {touched?.social_security_number &&
                   errors?.social_security_number && (
@@ -842,7 +853,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                 <Customdropdown
                   data={documentType}
                   value={values.document_type}
-                  label={'Document Type'}
+                  label={t('document type')}
                   onChange={(value: any) => {
                     setValues({
                       ...values,
@@ -856,7 +867,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   </Text>
                 )}
                 <Text style={[Styles.fieldLabel]}>
-                  Are you part Village Governing body?
+                  {t('village governing body')}
                 </Text>
                 <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
                   <TouchableOpacity
@@ -904,7 +915,9 @@ const SignUp = ({navigation}: {navigation: any}) => {
                   attachmentsVisible: !collapsible.attachmentsVisible,
                 })
               }>
-              <Text style={styles.collapsibleHeaderText}>Attachments</Text>
+              <Text style={styles.collapsibleHeaderText}>
+                {t('attachments')}
+              </Text>
               <AntDesign
                 name={collapsible.attachmentsVisible ? 'up' : 'down'}
                 size={20}
@@ -926,7 +939,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       styles.subheading,
                       {marginBottom: 20, color: primary},
                     ]}>
-                    Address Proof
+                    {t('address proof')}
                   </Text>
                   <TouchableOpacity
                     style={[
@@ -948,7 +961,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                     {documents?.address_proof == null ? (
                       <>
                         <AntDesign name="upload" size={18} color={primary} />
-                        <Text style={styles.butnText}>Add File</Text>
+                        <Text style={styles.butnText}>{t('Add File')}</Text>
                       </>
                     ) : (
                       <>
@@ -978,7 +991,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                         styles.subheading,
                         {marginBottom: 20, color: primary},
                       ]}>
-                      Field officer document Proof
+                      {t('field officer')}
                     </Text>
                     <TouchableOpacity
                       style={[
@@ -1003,7 +1016,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
                       {documents?.field_officer_document == null ? (
                         <>
                           <AntDesign name="upload" size={18} color={primary} />
-                          <Text style={styles.butnText}>Add File</Text>
+                          <Text style={styles.butnText}>{t('Add File')}</Text>
                         </>
                       ) : (
                         <>
@@ -1037,10 +1050,19 @@ const SignUp = ({navigation}: {navigation: any}) => {
               </View>
             )}
           </View>
+          <Text style={[styles.subheading, {bottom: 10, alignSelf: 'center'}]}>
+            {t('already have an account')}
+            <Text
+              style={{color: primary}}
+              onPress={() => navigation.navigate('login')}>
+              {' '}
+              {t('login')}
+            </Text>{' '}
+          </Text>
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={openCollapsible} btnText={'SignUp'} />
+        <CustomButton onPress={openCollapsible} btnText={t('register')} />
       </View>
       <CountryPicker
         show={show}
