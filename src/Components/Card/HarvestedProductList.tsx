@@ -38,7 +38,7 @@ const HarvestedProductList = ({
   const styles = makeStyles(fontScale);
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
-  const authState = useSelector((state)=>state?.authState)
+  const authState = useSelector((state:any)=>state?.authState)
   const [selectedItem, setSelectedItem] = useState('');
   let treesSchema = Yup.object()
     .shape({
@@ -193,7 +193,6 @@ const HarvestedProductList = ({
       {/* <KeyboardAvoidingView
         behavior={Platform.OS == 'android' ? 'height' : 'position'}
         keyboardVerticalOffset={120}> */}
-        <ScrollView>
           {visible && (
             <>
               <Input
@@ -217,16 +216,12 @@ const HarvestedProductList = ({
               {touched?.output && errors?.output && (
                 <Text style={Styles.error}>{String(errors?.output)}</Text>
               )}
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('self_consumed')}
                     value={String(values?.self_consumed)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Self Consumed'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.self_consumed && errors?.self_consumed && (
@@ -234,14 +229,10 @@ const HarvestedProductList = ({
                       {String(errors?.self_consumed)}
                     </Text>
                   )}
-                </View>
-                <View>
                   <Input
                     onChangeText={handleChange('fed_to_livestock')}
                     value={String(values?.fed_to_livestock)}
-                    fullLength={false}
-                    inner_width={'60%'}
-                    main_width={'90%'}
+                    fullLength={true}
                     label={'Fed to livestock'}
                     keyboardType={'numeric'}
                     isRight={<AcresElement title={'kg'} />}
@@ -251,18 +242,12 @@ const HarvestedProductList = ({
                       {String(errors?.fed_to_livestock)}
                     </Text>
                   )}
-                </View>
-              </View>
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('sold_to_neighbours')}
                     value={String(values?.sold_to_neighbours)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Sold to neighbours'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.sold_to_neighbours &&
@@ -271,14 +256,10 @@ const HarvestedProductList = ({
                         {String(errors?.sold_to_neighbours)}
                       </Text>
                     )}
-                </View>
-                <View>
                   <Input
                     onChangeText={handleChange('sold_for_industrial_use')}
                     value={String(values?.sold_for_industrial_use)}
-                    fullLength={false}
-                    inner_width={'60%'}
-                    main_width={'90%'}
+                    fullLength={true}
                     label={'Sold for industrial use'}
                     keyboardType={'numeric'}
                     isRight={<AcresElement title={'kg'} />}
@@ -289,39 +270,27 @@ const HarvestedProductList = ({
                         {String(errors?.sold_for_industrial_use)}
                       </Text>
                     )}
-                </View>
-              </View>
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('wastage')}
                     value={String(values?.wastage)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Wastage'}
                     keyboardType={'numeric'}
-                    inner_width={'60%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.wastage && errors?.wastage && (
                     <Text style={Styles.error}>{String(errors?.wastage)}</Text>
                   )}
-                </View>
-                <View>
                   <Input
                     onChangeText={handleChange('others')}
                     value={String(values?.others)}
-                    fullLength={false}
-                    inner_width={'60%'}
-                    main_width={'90%'}
+                    fullLength={true}
                     label={'Others'}
                     keyboardType={'default'}
                   />
                   {touched?.others && errors?.others && (
                     <Text style={Styles.error}>{String(errors?.others)}</Text>
                   )}
-                </View>
-              </View>
               {values?.others !== '' ? (
                 <>
                   <Input
@@ -407,8 +376,6 @@ const HarvestedProductList = ({
               />
             </>
           )}
-        </ScrollView>
-      {/* </KeyboardAvoidingView> */}
     </View>
   );
 };

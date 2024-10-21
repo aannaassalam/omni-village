@@ -221,7 +221,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         income_from_sale: parseInt(values?.income_from_sale),
         expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
         required_processing: values?.required_processing,
-        yeild: parseFloat(values?.yield),
+        yield: parseFloat(values?.yield),
         status: 0,
       };
       setMessage('drafted');
@@ -240,7 +240,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         income_from_sale: parseInt(values?.income_from_sale),
         expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
         required_processing: values?.required_processing,
-        yeild: parseFloat(values?.yield),
+        yield: parseFloat(values?.yield),
         status: 0,
       };
       setMessage('drafted');
@@ -261,7 +261,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
       income_from_sale: parseInt(values?.income_from_sale),
       expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
       required_processing: values?.required_processing,
-      yeild: parseFloat(values?.yield),
+      yield: parseFloat(values?.yield),
       status: 1,
     };
     if (data?._id) {

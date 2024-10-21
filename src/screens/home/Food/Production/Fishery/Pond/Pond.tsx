@@ -118,7 +118,7 @@ const Pond = ({navigation}:{navigation:any}) => {
           </View>
         </View>
       </HeaderCard>
-      <View>
+      <View style={styles.flatlist_container}>
         <FlatList
           data={data}
           renderItem={({item}) => (
@@ -188,6 +188,9 @@ const makeStyles = (fontScale: any) =>
     container: {
       flex: 1,
       backgroundColor: white,
+    },
+    flatlist_container: {
+      marginBottom: '40%',
     },
     inner_container: {
       flexDirection: 'row',

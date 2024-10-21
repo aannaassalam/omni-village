@@ -99,7 +99,7 @@ const CultivationImportantInfo = ({
   }, [crop_name]);
   let treesSchema = Yup.object().shape({
     soil_health: Yup.string().required('Soil health is required'),
-    decreasing_yeild: Yup.number().test(
+    decreasing_yield: Yup.number().test(
       'decreasing-yield-required',
       'Decreasing yield is required',
       function (value) {
@@ -152,7 +152,7 @@ const CultivationImportantInfo = ({
   } = useFormik({
     initialValues: {
       soil_health: '',
-      decreasing_yeild: '',
+      decreasing_yield: '',
       type_of_fertilizer_used: '',
       type_of_pesticide_used: '',
       income_from_sale: '',
@@ -175,12 +175,12 @@ const CultivationImportantInfo = ({
        ...utilInfo,
        crop_id: crop_id,
        soil_health: values?.soil_health,
-       decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+       decreasing_yield: parseInt(values?.decreasing_yield || 0),
        type_of_fertilizer_used: values?.type_of_fertilizer_used,
        type_of_pesticide_used: values?.type_of_pesticide_used,
        income_from_sale: parseInt(values?.income_from_sale),
        expenditure_on_inputs: parseInt(values?.expenditure_on_inputs),
-       yeild: parseInt(values?.yield),
+       yield: parseInt(values?.yield),
        month_planted: values?.month_planted,
        month_harvested: values?.month_harvested,
        required_processing: values?.required_processing,
@@ -222,13 +222,13 @@ const CultivationImportantInfo = ({
     resetForm({
       values: {
         soil_health: data?.soil_health || '',
-        decreasing_yeild: data?.decreasing_yeild || '',
+        decreasing_yield: data?.decreasing_yield || '',
         type_of_fertilizer_used: data?.type_of_fertilizer_used || '',
         type_of_pesticide_used: data?.type_of_pesticide_used || '',
         income_from_sale: data?.income_from_sale || '',
         expenditure_on_inputs: data?.expenditure_on_inputs || '',
         yield:
-          data?.yeild ||
+          data?.yield ||
           String(
             parseFloat(utilInfo?.output) / parseFloat(utilInfo?.area_allocated),
           ),
@@ -248,7 +248,7 @@ const CultivationImportantInfo = ({
       const new_data = {
         ...utilInfo,
         soil_health: values?.soil_health,
-        decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+        decreasing_yield: parseInt(values?.decreasing_yield || 0),
         type_of_fertilizer_used: values?.type_of_fertilizer_used,
         type_of_pesticide_used: values?.type_of_pesticide_used,
         income_from_sale: parseInt(values?.income_from_sale),
@@ -268,7 +268,7 @@ const CultivationImportantInfo = ({
         ...utilInfo,
         crop_id: crop_id,
         soil_health: values?.soil_health,
-        decreasing_yeild: parseInt(values?.decreasing_yeild || 0),
+        decreasing_yield: parseInt(values?.decreasing_yield || 0),
         type_of_fertilizer_used: values?.type_of_fertilizer_used,
         type_of_pesticide_used: values?.type_of_pesticide_used,
         income_from_sale: parseInt(values?.income_from_sale),
@@ -307,16 +307,16 @@ const CultivationImportantInfo = ({
             {values?.soil_health === 'decreasing yield' && (
               <>
                 <Input
-                  onChangeText={handleChange('decreasing_yeild')}
-                  value={String(values?.decreasing_yeild)}
+                  onChangeText={handleChange('decreasing_yield')}
+                  value={String(values?.decreasing_yield)}
                   fullLength={true}
                   label={'How much from first planting'}
                   keyboardType="numeric"
                   isRight={<AcresElement title={'    %'} />}
                 />
-                {touched?.decreasing_yeild && errors?.decreasing_yeild && (
+                {touched?.decreasing_yield && errors?.decreasing_yield && (
                   <Text style={Styles.error}>
-                    {String(errors?.decreasing_yeild)}
+                    {String(errors?.decreasing_yield)}
                   </Text>
                 )}
               </>

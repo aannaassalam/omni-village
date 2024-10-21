@@ -183,10 +183,6 @@ const PoultryHarvestedProductList = ({
           />
         </TouchableOpacity>
       </TouchableOpacity>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == 'android' ? 'height' : 'position'}
-        keyboardVerticalOffset={120}>
-        <ScrollView>
           {visible && (
             <>
               <Input
@@ -223,16 +219,12 @@ const PoultryHarvestedProductList = ({
                   {String(errors?.self_consumed)}
                 </Text>
               )}
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('sold_to_neighbours')}
                     value={String(values?.sold_to_neighbours)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Sold to neighbours'}
                     keyboardType={'numeric'}
-                    inner_width={'40%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={weight} />}
                   />
                   {touched?.sold_to_neighbours &&
@@ -241,14 +233,10 @@ const PoultryHarvestedProductList = ({
                         {String(errors?.sold_to_neighbours)}
                       </Text>
                     )}
-                </View>
-                <View>
                   <Input
                     onChangeText={handleChange('sold_for_industrial_use')}
                     value={String(values?.sold_for_industrial_use)}
-                    fullLength={false}
-                    inner_width={'40%'}
-                    main_width={'90%'}
+                    fullLength={true}
                     label={'Sold for industrial use'}
                     keyboardType={'numeric'}
                     isRight={<AcresElement title={weight} />}
@@ -259,39 +247,27 @@ const PoultryHarvestedProductList = ({
                         {String(errors?.sold_for_industrial_use)}
                       </Text>
                     )}
-                </View>
-              </View>
-              <View style={[Styles.twoFieldsContainer, {gap: 8, marginTop: 0}]}>
-                <View>
                   <Input
                     onChangeText={handleChange('wastage')}
                     value={String(values?.wastage)}
-                    fullLength={false}
+                    fullLength={true}
                     label={'Wastage'}
                     keyboardType={'numeric'}
-                    inner_width={'40%'}
-                    main_width={'90%'}
                     isRight={<AcresElement title={weight} />}
                   />
                   {touched?.wastage && errors?.wastage && (
                     <Text style={Styles.error}>{String(errors?.wastage)}</Text>
                   )}
-                </View>
-                <View>
                   <Input
                     onChangeText={handleChange('others')}
                     value={String(values?.others)}
-                    fullLength={false}
-                    inner_width={'60%'}
-                    main_width={'90%'}
+                    fullLength={true}
                     label={'Others'}
                     keyboardType={'default'}
                   />
                   {touched?.others && errors?.others && (
                     <Text style={Styles.error}>{String(errors?.others)}</Text>
                   )}
-                </View>
-              </View>
               {values?.others !== '' ? (
                 <>
                   <Input
@@ -377,8 +353,6 @@ const PoultryHarvestedProductList = ({
               />
             </>
           )}
-        </ScrollView>
-      </KeyboardAvoidingView>
     </View>
   );
 };

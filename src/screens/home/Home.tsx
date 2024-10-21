@@ -247,7 +247,7 @@ const makeStyles = (fontScale: any) =>
     flatlist: {
       // paddingHorizontal: 16,
       paddingVertical: 16,
-      marginBottom: 20,
+      marginBottom: '30%',
       // justifyContent: 'center',
       // backgroundColor:'pink'
     },
