@@ -17,6 +17,7 @@ import CustomButton from '../../CustomButton/CustomButton';
 import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { add_crops, get_crops } from '../../../apis/crops';
+import { useTranslation } from 'react-i18next';
 
 const AddTreesBottomSheet = ({
   modalVisible,
@@ -36,6 +37,7 @@ const AddTreesBottomSheet = ({
   const snapPoints = React.useMemo(() => ['70%'], []);
    const authState = useSelector((state: any) => state.authState);
    const queryClient = useQueryClient()
+   const {t} = useTranslation()
    const {data: trees_crop} = useQuery({
      queryKey: ['trees'],
      queryFn: () =>
@@ -55,7 +57,7 @@ const AddTreesBottomSheet = ({
        setCrop_name(null), setExtra_crop_name(null);
      },
      onError: error => {
-       ToastAndroid.show('Trees already exists', ToastAndroid.SHORT);
+       ToastAndroid.show(t('trees exists'), ToastAndroid.SHORT);
        console.log(
          'error?.response?.data?.message add crop',
          error,
@@ -71,7 +73,7 @@ const AddTreesBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Add Trees,shrubs & grassland</Text>
+          <Text style={styles.headerText}>{t('add tree shrub')}</Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -79,7 +81,7 @@ const AddTreesBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
-                  setCrop_name(null), setExtra_crop_name(null);
+                setCrop_name(null), setExtra_crop_name(null);
               }
             }}>
             <Image
@@ -115,7 +117,7 @@ const AddTreesBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Apple"
+              placeholder={t('eg banyan')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -124,7 +126,7 @@ const AddTreesBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Add Trees'}
+          btnText={t('add tree shrub')}
           onPress={async () => {
             if (
               (crop_name?.name == 'others' && extra_crop_name === null) ||

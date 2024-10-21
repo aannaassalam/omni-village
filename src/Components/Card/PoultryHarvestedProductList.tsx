@@ -21,6 +21,7 @@ import Input from '../Inputs/Input';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import CustomButton from '../CustomButton/CustomButton';
+import { useTranslation } from 'react-i18next';
 
 const PoultryHarvestedProductList = ({
   item,
@@ -39,24 +40,25 @@ const PoultryHarvestedProductList = ({
   const styles = makeStyles(fontScale);
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
+  const {t} = useTranslation()
   let treesSchema = Yup.object()
     .shape({
-      product_name: Yup.string().required('Product name is required'),
+      product_name: Yup.string().required(t('product name is required')),
       output: Yup.number()
         .min(1, 'Output must be greater than equal to 1')
-        .required('Output is required'),
-      self_consumed: Yup.number().required('Self consumed is required'),
+        .required(t('output is required')),
+      self_consumed: Yup.number().required(t('self_consumed is required')),
       sold_to_neighbours: Yup.number().required(
-        'Sold to neighbours is required',
+        t('sold_to_neighbours is required'),
       ),
       sold_for_industrial_use: Yup.number().required(
-        'Sold for industrial use is required',
+        t('sold_for_industrial_use is required'),
       ),
-      wastage: Yup.number().required('Wastage is required'),
+      wastage: Yup.number().required(t('wastage is required')),
       others: Yup.string(),
       others_value: Yup.number().test(
         'other-value-required',
-        'Others value is required',
+        t('other_value is required'),
         function (value) {
           const {others} = this.parent; // Accessing other field values
           if (others) {
@@ -65,7 +67,7 @@ const PoultryHarvestedProductList = ({
           return true; // Otherwise, no validation on decreasing_yield
         },
       ),
-      month_harvested: Yup.string().required('Month harvested is required'),
+      month_harvested: Yup.string().required(t('month_harvested is required')),
       required_processing: Yup.boolean().required(
         'Required processing is required',
       ),
@@ -174,7 +176,7 @@ const PoultryHarvestedProductList = ({
           setVisible(!visible);
         }}>
         <Text style={styles.header_text}>
-          {item?.product_name || `Product ${index + 1}`}
+          {item?.product_name || `${t('product')} ${index + 1}`}
         </Text>
         <TouchableOpacity onPress={() => setRemove(index)}>
           <Image
@@ -183,176 +185,167 @@ const PoultryHarvestedProductList = ({
           />
         </TouchableOpacity>
       </TouchableOpacity>
-          {visible && (
+      {visible && (
+        <>
+          <Input
+            onChangeText={handleChange('product_name')}
+            value={String(values?.product_name)}
+            fullLength={true}
+            label={t('product name')}
+            keyboardType={'default'}
+          />
+          {touched?.product_name && errors?.product_name && (
+            <Text style={Styles.error}>{String(errors?.product_name)}</Text>
+          )}
+          <Input
+            onChangeText={handleChange('output')}
+            value={String(values?.output)}
+            fullLength={true}
+            label={t('output')}
+            keyboardType={'numeric'}
+            isRight={<AcresElement title={weight} />}
+          />
+          {touched?.output && errors?.output && (
+            <Text style={Styles.error}>{String(errors?.output)}</Text>
+          )}
+          <Input
+            onChangeText={handleChange('self_consumed')}
+            value={String(values?.self_consumed)}
+            fullLength={true}
+            label={t('self consumed')}
+            keyboardType={'numeric'}
+            isRight={<AcresElement title={weight} />}
+          />
+          {touched?.self_consumed && errors?.self_consumed && (
+            <Text style={Styles.error}>{String(errors?.self_consumed)}</Text>
+          )}
+          <Input
+            onChangeText={handleChange('sold_to_neighbours')}
+            value={String(values?.sold_to_neighbours)}
+            fullLength={true}
+            label={t('sold to neighbour')}
+            keyboardType={'numeric'}
+            isRight={<AcresElement title={weight} />}
+          />
+          {touched?.sold_to_neighbours && errors?.sold_to_neighbours && (
+            <Text style={Styles.error}>
+              {String(errors?.sold_to_neighbours)}
+            </Text>
+          )}
+          <Input
+            onChangeText={handleChange('sold_for_industrial_use')}
+            value={String(values?.sold_for_industrial_use)}
+            fullLength={true}
+            label={t('sold to industrial')}
+            keyboardType={'numeric'}
+            isRight={<AcresElement title={weight} />}
+          />
+          {touched?.sold_for_industrial_use &&
+            errors?.sold_for_industrial_use && (
+              <Text style={Styles.error}>
+                {String(errors?.sold_for_industrial_use)}
+              </Text>
+            )}
+          <Input
+            onChangeText={handleChange('wastage')}
+            value={String(values?.wastage)}
+            fullLength={true}
+            label={t('wastage')}
+            keyboardType={'numeric'}
+            isRight={<AcresElement title={weight} />}
+          />
+          {touched?.wastage && errors?.wastage && (
+            <Text style={Styles.error}>{String(errors?.wastage)}</Text>
+          )}
+          <Input
+            onChangeText={handleChange('others')}
+            value={String(values?.others)}
+            fullLength={true}
+            label={t('Other')}
+            keyboardType={'default'}
+          />
+          {touched?.others && errors?.others && (
+            <Text style={Styles.error}>{String(errors?.others)}</Text>
+          )}
+          {values?.others !== '' ? (
             <>
               <Input
-                onChangeText={handleChange('product_name')}
-                value={String(values?.product_name)}
+                onChangeText={handleChange('others_value')}
+                value={String(values?.others_value)}
                 fullLength={true}
-                label={'Production Name'}
-                keyboardType={'default'}
-              />
-              {touched?.product_name && errors?.product_name && (
-                <Text style={Styles.error}>{String(errors?.product_name)}</Text>
-              )}
-              <Input
-                onChangeText={handleChange('output')}
-                value={String(values?.output)}
-                fullLength={true}
-                label={'Production Output'}
+                label={values?.others}
                 keyboardType={'numeric'}
                 isRight={<AcresElement title={weight} />}
               />
-              {touched?.output && errors?.output && (
-                <Text style={Styles.error}>{String(errors?.output)}</Text>
+              {touched?.others_value && errors?.others_value && (
+                <Text style={Styles.error}>{String(errors?.others_value)}</Text>
               )}
-              <Input
-                onChangeText={handleChange('self_consumed')}
-                value={String(values?.self_consumed)}
-                fullLength={true}
-                label={'Self Consumed'}
-                keyboardType={'numeric'}
-                isRight={<AcresElement title={weight} />}
-              />
-              {touched?.self_consumed && errors?.self_consumed && (
-                <Text style={Styles.error}>
-                  {String(errors?.self_consumed)}
-                </Text>
-              )}
-                  <Input
-                    onChangeText={handleChange('sold_to_neighbours')}
-                    value={String(values?.sold_to_neighbours)}
-                    fullLength={true}
-                    label={'Sold to neighbours'}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={weight} />}
-                  />
-                  {touched?.sold_to_neighbours &&
-                    errors?.sold_to_neighbours && (
-                      <Text style={Styles.error}>
-                        {String(errors?.sold_to_neighbours)}
-                      </Text>
-                    )}
-                  <Input
-                    onChangeText={handleChange('sold_for_industrial_use')}
-                    value={String(values?.sold_for_industrial_use)}
-                    fullLength={true}
-                    label={'Sold for industrial use'}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={weight} />}
-                  />
-                  {touched?.sold_for_industrial_use &&
-                    errors?.sold_for_industrial_use && (
-                      <Text style={Styles.error}>
-                        {String(errors?.sold_for_industrial_use)}
-                      </Text>
-                    )}
-                  <Input
-                    onChangeText={handleChange('wastage')}
-                    value={String(values?.wastage)}
-                    fullLength={true}
-                    label={'Wastage'}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={weight} />}
-                  />
-                  {touched?.wastage && errors?.wastage && (
-                    <Text style={Styles.error}>{String(errors?.wastage)}</Text>
-                  )}
-                  <Input
-                    onChangeText={handleChange('others')}
-                    value={String(values?.others)}
-                    fullLength={true}
-                    label={'Others'}
-                    keyboardType={'default'}
-                  />
-                  {touched?.others && errors?.others && (
-                    <Text style={Styles.error}>{String(errors?.others)}</Text>
-                  )}
-              {values?.others !== '' ? (
-                <>
-                  <Input
-                    onChangeText={handleChange('others_value')}
-                    value={String(values?.others_value)}
-                    fullLength={true}
-                    label={values?.others}
-                    keyboardType={'numeric'}
-                    isRight={<AcresElement title={weight} />}
-                  />
-                  {touched?.others_value && errors?.others_value && (
-                    <Text style={Styles.error}>
-                      {String(errors?.others_value)}
-                    </Text>
-                  )}
-                </>
-              ) : null}
-              <Pressable onPress={() => setShow(true)}>
-                <Input
-                  onChangeText={handleChange('month_harvested')}
-                  value={moment(values?.month_harvested).format('DD-MM-YYYY')}
-                  fullLength={true}
-                  label={'Month harvested'}
-                  isDate={true}
-                />
-              </Pressable>
-              {touched?.month_harvested && errors?.month_harvested && (
-                <Text style={Styles.error}>
-                  {String(errors?.month_harvested)}
-                </Text>
-              )}
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={new Date()}
-                  mode={'date'}
-                  onChange={onChange}
-                />
-              )}
-              <Text style={[Styles.fieldLabel]}>
-                Required Processing method if any for the outputs
-              </Text>
-              <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
-                <TouchableOpacity
-                  onPress={() =>
-                    setValues({
-                      ...values,
-                      required_processing: !values?.required_processing,
-                    })
-                  }>
-                  <Image
-                    source={
-                      values?.required_processing === true
-                        ? require('../../../assets/checked.png')
-                        : require('../../../assets/unchecked.png')
-                    }
-                    style={{height: 22, width: 22}}
-                  />
-                </TouchableOpacity>
-                <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    setValues({
-                      ...values,
-                      required_processing: !values?.required_processing,
-                    })
-                  }>
-                  <Image
-                    source={
-                      values?.required_processing === false
-                        ? require('../../../assets/checked.png')
-                        : require('../../../assets/unchecked.png')
-                    }
-                    style={{height: 22, width: 22}}
-                  />
-                </TouchableOpacity>
-                <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
-              </View>
-              <CustomButton
-                onPress={handleSubmit}
-                btnText={'Save'}
-                style={{width: '100%', alignSelf: 'center', marginTop: '8%'}}
-              />
             </>
+          ) : null}
+          <Pressable onPress={() => setShow(true)}>
+            <Input
+              onChangeText={handleChange('month_harvested')}
+              value={moment(values?.month_harvested).format('DD-MM-YYYY')}
+              fullLength={true}
+              label={t('month harvested')}
+              isDate={true}
+            />
+          </Pressable>
+          {touched?.month_harvested && errors?.month_harvested && (
+            <Text style={Styles.error}>{String(errors?.month_harvested)}</Text>
           )}
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={new Date()}
+              mode={'date'}
+              onChange={onChange}
+            />
+          )}
+          <Text style={[Styles.fieldLabel]}>{t('required processing')}</Text>
+          <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
+            <TouchableOpacity
+              onPress={() =>
+                setValues({
+                  ...values,
+                  required_processing: !values?.required_processing,
+                })
+              }>
+              <Image
+                source={
+                  values?.required_processing === true
+                    ? require('../../../assets/checked.png')
+                    : require('../../../assets/unchecked.png')
+                }
+                style={{height: 22, width: 22}}
+              />
+            </TouchableOpacity>
+            <Text style={[styles?.subheading, {marginTop: 0}]}>{t('yes')}</Text>
+            <TouchableOpacity
+              onPress={() =>
+                setValues({
+                  ...values,
+                  required_processing: !values?.required_processing,
+                })
+              }>
+              <Image
+                source={
+                  values?.required_processing === false
+                    ? require('../../../assets/checked.png')
+                    : require('../../../assets/unchecked.png')
+                }
+                style={{height: 22, width: 22}}
+              />
+            </TouchableOpacity>
+            <Text style={[styles?.subheading, {marginTop: 0}]}>{t('no')}</Text>
+          </View>
+          <CustomButton
+            onPress={handleSubmit}
+            btnText={t('save')}
+            style={{width: '100%', alignSelf: 'center', marginTop: '8%'}}
+          />
+        </>
+      )}
     </View>
   );
 };

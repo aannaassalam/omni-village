@@ -29,56 +29,56 @@ const TreesImportantInfo = ({
   const {t} = useTranslation();
   const authState = useSelector((state)=>state.authState)
   const soilHealth = [
-    {label: 'stable', value: t('stable')},
-    {label: 'decreasing yield', value: t('decreasing yield')},
+    {label: 'stable', value: 'stable'},
+    {label: 'decreasing yield', value: 'decreasing yield'},
   ];
   const fertilisers = [
-    {label: 'organic self made', value: t('organic self made')},
-    {label: 'organic purchased', value: t('organic purchased')},
-    {label: 'chemical based', value: t('chemical based')},
-    {label: 'none', value: t('none')},
+    {label: 'organic self made', value: 'organic self made'},
+    {label: 'organic purchased', value: 'organic purchased'},
+    {label: 'chemical based', value: 'chemical based'},
+    {label: 'none', value: 'none'},
   ];
   const pesticides = [
-    {label: 'organic self made', value: t('organic self made')},
-    {label: 'organic purchased', value: t('organic purchased')},
-    {label: 'chemical based', value: t('chemical based')},
-    {label: 'none', value: t('none')},
+    {label: 'organic self made', value: 'organic self made'},
+    {label: 'organic purchased', value: 'organic purchased'},
+    {label: 'chemical based', value: 'chemical based'},
+    {label: 'none', value: 'none'},
   ];
   const average_age = [
     {
       id: 1,
       label: '0 to 5 years',
-      value: t('0 to 5 years')
+      value: '0 to 5 years'
     },
     {
       id: 2,
       label: '5 to 10 years',
-      value: t('5 to 10 years')
+      value: '5 to 10 years'
     },
     {
       id: 3,
       label: '10 to 20 years',
-      value: t('10 to 20 years')
+      value: '10 to 20 years'
     },
     {
       id: 4,
       label: '20 to 30 years',
-      value: t('20 to 30 years')
+      value: '20 to 30 years'
     },
     {
       id: 5,
       label: '30 to 50 years',
-      value: t('30 to 50 years')
+      value: '30 to 50 years'
     },
     {
       id: 6,
       label: '50 to 70 years',
-      value: t('50 to 70 years')
+      value: '50 to 70 years'
     },
     {
       id: 7,
       label: 'Above 70',
-      value: t('Above 70')
+      value: 'Above 70'
     },
   ];
   useEffect(() => {
@@ -93,16 +93,13 @@ const TreesImportantInfo = ({
   let treesSchema = Yup.object().shape({
     number_of_trees: Yup.number()
       .min(1, 'Number of trees must be greater than equal to 1')
-      .required('Number of trees is required'),
-    average_age_of_trees: Yup.string().required(
-      'Average age of trees is required',
-    ),
-    soil_health: Yup.string().required('Soil health is required'),
+      .required(t('number trees')),
+    average_age_of_trees: Yup.string().required(t('average of tree')),
+    soil_health: Yup.string().required(t('soil health')),
     decreasing_yield: Yup.number().test(
       'decreasing-yield-required',
-      'Decreasing yield is required',
+      t('decreasing_rate is required'),
       function (value) {
-        console.log('valueeee', value);
         const {soil_health} = this.parent; // Accessing other field values
         if (soil_health === 'Decreasing Yield') {
           return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
@@ -110,14 +107,18 @@ const TreesImportantInfo = ({
         return true; // Otherwise, no validation on decreasing_yield
       },
     ),
-    type_of_fertiliser: Yup.string().required('Type of fertiliser is required'),
-    type_of_pesticide: Yup.string().required('Type of pesticide is required'),
+    type_of_fertiliser: Yup.string().required(
+      t('type_of_fertilizer_used is required'),
+    ),
+    type_of_pesticide: Yup.string().required(
+      t('type_of_pesticide_used is required'),
+    ),
     income_from_sale: Yup.number()
       .min(1, 'Income from sale must be greater than equal to 1')
-      .required('Income from sale is required'),
+      .required(t('income_from_sale is required')),
     expenditure_on_inputs: Yup.number()
       .min(1, 'Expenditure on inputs must be greater than equal to 1')
-      .required('Expenditure on inputs is required'),
+      .required(t('expenditure_on_inputs is required')),
   });
   const {
     handleChange,
@@ -141,7 +142,6 @@ const TreesImportantInfo = ({
     },
     validationSchema: treesSchema,
     onSubmit: async (values: any) => {
-      console.log('Form submitted with values: ', values);
       let parseVal={
         number_of_trees: parseInt(values.number_of_trees),
         average_age_of_trees: values.average_age_of_trees,
@@ -176,15 +176,15 @@ const TreesImportantInfo = ({
     }, [data]);
   return (
     <View style={styles.container}>
-        <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
-          <ScrollView contentContainerStyle={{paddingBottom: 105}}>
-      <View style={Styles.mainContainer}>
+      <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
+        <ScrollView contentContainerStyle={{paddingBottom: 105}}>
+          <View style={Styles.mainContainer}>
             <Input
               onChangeText={handleChange('number_of_trees')}
               value={String(values?.number_of_trees)}
               fullLength={true}
-              keyboardType='numeric'
-              label={'Number of trees'}
+              keyboardType="numeric"
+              label={t('number trees')}
             />
             {touched?.number_of_trees && errors?.number_of_trees && (
               <Text style={Styles.error}>
@@ -194,7 +194,7 @@ const TreesImportantInfo = ({
             <Customdropdown
               data={average_age}
               value={values.average_age_of_trees}
-              label={'Average age of trees'}
+              label={t('average of tree')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -210,7 +210,7 @@ const TreesImportantInfo = ({
             <Customdropdown
               data={soilHealth}
               value={values.soil_health}
-              label={'Soil health'}
+              label={t('soil health')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -228,8 +228,8 @@ const TreesImportantInfo = ({
                   onChangeText={handleChange('decreasing_yield')}
                   value={String(values?.decreasing_yield)}
                   fullLength={true}
-                  label={'Decreasing yield'}
-                  keyboardType='numeric'
+                  label={t('how much from first planting')}
+                  keyboardType="numeric"
                   isRight={<AcresElement title={'    %'} />}
                 />
                 {touched?.decreasing_yield && errors?.decreasing_yield && (
@@ -242,7 +242,7 @@ const TreesImportantInfo = ({
             <Customdropdown
               data={fertilisers}
               value={values.type_of_fertiliser}
-              label={'Type of fertiliser used'}
+              label={t('type of fertilizer')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -258,7 +258,7 @@ const TreesImportantInfo = ({
             <Customdropdown
               data={pesticides}
               value={values.type_of_pesticide}
-              label={'Type of pesticide used'}
+              label={t('type of pesticides')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -275,8 +275,8 @@ const TreesImportantInfo = ({
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
               fullLength={true}
-              label={'Income from sale'}
-              keyboardType='numeric'
+              label={t('income from sale')}
+              keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
@@ -288,8 +288,8 @@ const TreesImportantInfo = ({
               onChangeText={handleChange('expenditure_on_inputs')}
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
-              label={'Expenditure on inputs'}
-              keyboardType='numeric'
+              label={t('expenditure on input')}
+              keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
@@ -298,11 +298,14 @@ const TreesImportantInfo = ({
                   {String(errors?.expenditure_on_inputs)}
                 </Text>
               )}
-      </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={handleSubmit} btnText={'Next'} />
+        <CustomButton
+          onPress={handleSubmit}
+          btnText={t('expenditure on input')}
+        />
       </View>
     </View>
   );

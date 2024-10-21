@@ -17,6 +17,7 @@ import CustomButton from '../../CustomButton/CustomButton';
 import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { add_crops, get_crops } from '../../../apis/crops';
+import { useTranslation } from 'react-i18next';
 
 const AddPoultryBottomSheet = ({
   modalVisible,
@@ -34,6 +35,7 @@ const AddPoultryBottomSheet = ({
   const [extra_crop_name, setExtra_crop_name] = useState(null);
   const [onFocus, setOnFocus] = useState(false);
   const snapPoints = React.useMemo(() => ['70%'], []);
+  const {t} = useTranslation()
    const authState = useSelector((state: any) => state.authState);
    const queryClient = useQueryClient();
   const {data: poultry_crop} = useQuery({
@@ -54,7 +56,7 @@ const AddPoultryBottomSheet = ({
       setCrop_name(null), setExtra_crop_name(null);
     },
     onError: error => {
-      ToastAndroid.show('Poultry already exists', ToastAndroid.SHORT);
+      ToastAndroid.show(t('crop exists'), ToastAndroid.SHORT);
       console.log(
         'error?.response?.data?.message add crop',
         error,
@@ -70,7 +72,7 @@ const AddPoultryBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Add Poultry</Text>
+          <Text style={styles.headerText}>{t('add livestock')}</Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -78,7 +80,7 @@ const AddPoultryBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
-                   setCrop_name(null), setExtra_crop_name(null);
+                setCrop_name(null), setExtra_crop_name(null);
               }
             }}>
             <Image
@@ -114,7 +116,7 @@ const AddPoultryBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Apple"
+              placeholder={t('eg hen')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -123,9 +125,9 @@ const AddPoultryBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Add Poultry'}
+          btnText={t('add livestock')}
           onPress={async () => {
-           if (crop_name?.name == 'others' && extra_crop_name) {
+            if (crop_name?.name == 'others' && extra_crop_name) {
               let data = {
                 name: {
                   en: extra_crop_name,
@@ -138,12 +140,12 @@ const AddPoultryBottomSheet = ({
                 category: 'poultry', //cultivation, fishery, hunting, poultry, tree
               };
               addCrop(data);
-            }else if (
+            } else if (
               (crop_name?.name == 'others' && extra_crop_name === null) ||
               extra_crop_name == '' ||
               !crop_name?.name
             ) {
-              ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
+              ToastAndroid.show(t('enter crop name'), ToastAndroid.SHORT);
             } else {
               setModalVisible(!modalVisible), bottomsheetRef.current.close();
               await setData({

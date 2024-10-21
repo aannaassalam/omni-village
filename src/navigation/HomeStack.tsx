@@ -176,7 +176,7 @@ const HomeStack = () => {
         component={Fishery}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Fishery'} />,
+          header: () => <StackHeader title={t('fishery')} />,
         }}
       />
       <Stack.Screen
@@ -184,7 +184,7 @@ const HomeStack = () => {
         component={Pond}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Pond'} />,
+          header: () => <StackHeader title={t('Pond Fishery')} />,
         }}
       />
       <Stack.Screen
@@ -199,7 +199,7 @@ const HomeStack = () => {
         component={River}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'River'} />,
+          header: () => <StackHeader title={t('River Fishery')} />,
         }}
       />
       <Stack.Screen
@@ -214,7 +214,7 @@ const HomeStack = () => {
         component={Trees}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Trees,shrubs & grassland'} />,
+          header: () => <StackHeader title={t('tree shrub grassland')} />,
         }}
       />
       <Stack.Screen
@@ -236,7 +236,7 @@ const HomeStack = () => {
         component={Hunting}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Hunting'} />,
+          header: () => <StackHeader title={t('hunting')} />,
         }}
       />
       <Stack.Screen
@@ -251,7 +251,7 @@ const HomeStack = () => {
         component={Storage}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Storage'} />,
+          header: () => <StackHeader title={t('storage')} />,
         }}
       />
       <Stack.Screen
@@ -259,7 +259,7 @@ const HomeStack = () => {
         component={SellingChannel}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Selling Channel'} />,
+          header: () => <StackHeader title={t('sellingChannel')} />,
         }}
       />
       {/* Demographic  */}
@@ -268,7 +268,7 @@ const HomeStack = () => {
         component={DemographicInfo}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Demographic Info'} />,
+          header: () => <StackHeader title={t('demographic')} />,
         }}
       />
       {/* Landholding & Usage mapping */}
@@ -277,7 +277,7 @@ const HomeStack = () => {
         component={Landholding}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Landholding & Usage Mapping'} />,
+          header: () => <StackHeader title={t('landholding')} />,
         }}
       />
       {/* Housing */}
@@ -303,7 +303,7 @@ const HomeStack = () => {
         component={Water}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Water'} />,
+          header: () => <StackHeader title={t('water')} />,
         }}
       />
       {/* Energy */}
@@ -312,7 +312,7 @@ const HomeStack = () => {
         component={Energy}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Energy & Fuel'} />,
+          header: () => <StackHeader title={t('energy')} />,
         }}
       />
       {/* Mobility */}
@@ -321,7 +321,7 @@ const HomeStack = () => {
         component={Mobility}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Mobilty'} />,
+          header: () => <StackHeader title={t('mobility')} />,
         }}
       />
       {/* Forestry */}
@@ -330,7 +330,7 @@ const HomeStack = () => {
         component={Forestry}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'Forestry'} />,
+          header: () => <StackHeader title={t('forestry')} />,
         }}
       />
       {/* Other Personal */}
@@ -339,9 +339,7 @@ const HomeStack = () => {
         component={OtherPersonal}
         options={{
           headerShown: true,
-          header: () => (
-            <StackHeader title={'Other Personal & Household Items'} />
-          ),
+          header: () => <StackHeader title={t('other personal')} />,
         }}
       />
       {/* Business & Commercial */}
@@ -350,9 +348,7 @@ const HomeStack = () => {
         component={BusinessCommercial}
         options={{
           headerShown: true,
-          header: () => (
-            <StackHeader title={' Business & Commercial Establishments'} />
-          ),
+          header: () => <StackHeader title={t('business')} />,
         }}
       />
       {/* Community Infrastructure */}
@@ -361,7 +357,7 @@ const HomeStack = () => {
         component={CommunityInfrastructure}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={'CommunityInfrastructure'} />,
+          header: () => <StackHeader title={t('community')} />,
         }}
       />
     </Stack.Navigator>

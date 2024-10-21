@@ -66,24 +66,24 @@ const PoultryImportantInfo = ({
   let poultrySchema = Yup.object().shape({
     number: Yup.number()
       .min(1, 'Number of trees must be greater than equal to 1')
-      .required('Number of trees is required'),
+      .required(t('number is required')),
     average_age_of_livestocks: Yup.string().required(
-      'Average age of livestocks is required',
+      t('avg_age_of_live_stocks is required'),
     ),
-    type_of_feed: Yup.string().required('Type of feed is required'),
+    type_of_feed: Yup.string().required(t('type_of_feed is required')),
     create_type: Yup.string().test(
       'create-type-required',
       'Create type is required',
       function (value) {
-        const {type_of_fed_required} = this.parent; // Accessing other field values
-        if (type_of_fed_required === 'Others') {
+        const {type_of_feed} = this.parent; // Accessing other field values
+        if (type_of_feed === 'Others') {
           return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
         }
         return true; // Otherwise, no validation on decreasing_yield
       },
     ),
     weight_measurement: Yup.string().required(
-      'Weight measurement required is required',
+      t('weight_measurement is required'),
     ),
   });
   const {
@@ -138,7 +138,7 @@ const PoultryImportantInfo = ({
               onChangeText={handleChange('number')}
               value={String(values?.number)}
               fullLength={true}
-              label={'Number'}
+              label={t('number')}
               keyboardType="numeric"
             />
             {touched?.number && errors?.number && (
@@ -147,7 +147,7 @@ const PoultryImportantInfo = ({
             <Customdropdown
               data={average_age}
               value={values.average_age_of_livestocks}
-              label={'Average age of livestocks'}
+              label={t('average age of the live stocks')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -181,7 +181,7 @@ const PoultryImportantInfo = ({
                   : []
               }
               value={values.type_of_feed}
-              label={'Type of fed required apart from grassland grassing'}
+              label={t('type of feed')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -199,7 +199,7 @@ const PoultryImportantInfo = ({
                   onChangeText={handleChange('create_type')}
                   value={String(values?.create_type)}
                   fullLength={true}
-                  label={'Create Type'}
+                  label={t('create type')}
                 />
                 {touched?.create_type && errors?.create_type && (
                   <Text style={Styles.error}>
@@ -211,7 +211,7 @@ const PoultryImportantInfo = ({
             <Customdropdown
               data={authState?.weight_measurements}
               value={values.weight_measurement}
-              label={'Weight measuremnt'}
+              label={t('weight_measurement')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -228,7 +228,7 @@ const PoultryImportantInfo = ({
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={handleSubmit} btnText={'Next'} />
+        <CustomButton onPress={handleSubmit} btnText={t('Next')} />
       </View>
     </View>
   );

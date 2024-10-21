@@ -32,6 +32,7 @@ import AddAndDeleteCropButton from '../../../../../../Components/CropButtons/Add
 import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { delete_fishery, get_fishery } from '../../../../../../apis/food';
+import { useTranslation } from 'react-i18next';
 
 const Pond = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -40,6 +41,7 @@ const Pond = ({navigation}:{navigation:any}) => {
   const [data, setData] = useState([]);
   const authState = useSelector((state)=>state.authState)
   const queryClient = useQueryClient()
+  const {t} = useTranslation()
     const {data: pond_fishery, isLoading} = useQuery({
       queryKey: ['get_pond_fishery'],
       queryFn: () => get_fishery('pond'),
@@ -85,27 +87,28 @@ const Pond = ({navigation}:{navigation:any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Pond Fishery
+              {t('Pond Fishery')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  {authState?.sub_area?.fishery} {authState?.land_measurement_symbol}
+                  {authState?.sub_area?.fishery}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Fished</Text>
+                <Text style={styles.sub_text}>{t('Fished')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Species
+                  {data?.length} {t('Species')}
                 </Text>
               </View>
             </View>
@@ -132,7 +135,7 @@ const Pond = ({navigation}:{navigation:any}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Pond Fishery'}
+              title={t('add fish')}
               onPress={() => setModalVisible(true)}
             />
           }
@@ -143,7 +146,7 @@ const Pond = ({navigation}:{navigation:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add Pond Fishery'}
+                  cropName={t('add fish')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -157,24 +160,24 @@ const Pond = ({navigation}:{navigation:any}) => {
         data={data}
         fisheryType={'pond'}
         setData={async (item: any) => {
-             const find_crop = await data.find(
-               (itm: any) =>
-                 itm.crop_name === item?.crop_name ||
-                 itm?.crop_id === item?.crop_id,
-             );
-            if (find_crop) {
-              return ToastAndroid.show(
-                'Fishery already exists',
-                ToastAndroid.SHORT,
-              );
-            } else {
-              console.log("iteeememm", item)
-              setData([...data, item]);
-              navigation.navigate('pondInfo', {
-                crop_name: item?.crop_name,
-                crop_id: item?.crop_id,
-              });
-            }
+          const find_crop = await data.find(
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
+          if (find_crop) {
+            return ToastAndroid.show(
+              t('fishery exists'),
+              ToastAndroid.SHORT,
+            );
+          } else {
+            console.log('iteeememm', item);
+            setData([...data, item]);
+            navigation.navigate('pondInfo', {
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
+          }
         }}
       />
     </View>

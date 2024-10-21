@@ -17,6 +17,7 @@ import CustomButton from '../../CustomButton/CustomButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { add_crops, get_crops } from '../../../apis/crops';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const AddFisheryBottomSheet = ({
   modalVisible,
@@ -38,6 +39,7 @@ const AddFisheryBottomSheet = ({
   const snapPoints = React.useMemo(() => ['70%'], []);
     const authState = useSelector((state: any) => state.authState);
     const queryClient = useQueryClient();
+    const {t} = useTranslation()
     const {data: fishery_crop} = useQuery({
       queryKey: ['fishery_crop'],
       queryFn: () =>
@@ -56,7 +58,7 @@ const AddFisheryBottomSheet = ({
         setCrop_name(null), setExtra_crop_name(null);
       },
       onError: error => {
-        ToastAndroid.show('Fishery exists', ToastAndroid.SHORT);
+        ToastAndroid.show(t('fishery exists'), ToastAndroid.SHORT);
         console.log(
           'error?.response?.data?.message add crop',
           error,
@@ -73,7 +75,8 @@ const AddFisheryBottomSheet = ({
       <View style={styles.container}>
         <View style={styles.inner_container}>
           <Text style={styles.headerText}>
-            Add {fisheryType == 'pond' ? 'Pond' : 'River'} Fishery
+            {t('add')}{' '}
+            {fisheryType == 'pond' ? t('Pond Fishery') : t('River Fishery')}
           </Text>
           <TouchableOpacity
             onPress={() => {
@@ -82,7 +85,7 @@ const AddFisheryBottomSheet = ({
                   bottomsheetRef.current.close(),
                   setOnFocus(false),
                   Keyboard.dismiss();
-                   setCrop_name(null), setExtra_crop_name(null);
+                setCrop_name(null), setExtra_crop_name(null);
               }
             }}>
             <Image
@@ -118,7 +121,7 @@ const AddFisheryBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Rohu"
+              placeholder={t('eg fish')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -127,9 +130,7 @@ const AddFisheryBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={`Add ${
-            fisheryType == 'pond' ? 'Pond' : 'River'
-          } Fishery Type`}
+          btnText={`${t('add')} ${fisheryType == 'pond' ? t('Pond Fishery') : t('River Fishery')} `}
           onPress={async () => {
             if (crop_name?.name == 'others' && extra_crop_name) {
               let data = {
@@ -146,9 +147,10 @@ const AddFisheryBottomSheet = ({
               addCrop(data);
             } else if (
               (crop_name?.name == 'others' && extra_crop_name === null) ||
-              extra_crop_name == '' || !crop_name?.name
+              extra_crop_name == '' ||
+              !crop_name?.name
             ) {
-              ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
+              ToastAndroid.show(t('enter crop name'), ToastAndroid.SHORT);
             } else {
               setModalVisible(!modalVisible), bottomsheetRef.current.close();
               await setData({

@@ -27,12 +27,14 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {add_fishery, edit_fishery} from './../../../../../../apis/food';
 import { get_feeds } from '../../../../../../apis/crops';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
   const {crop_name, crop_id, data} = route.params;
   const [modalViisble, setModalVisible] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [message, setMessage] = useState('');
   const authState  =useSelector((state)=>state.authState)
+  const {t} = useTranslation()
   const queryClient = useQueryClient();
     const {data: feeds} = useQuery({
       queryKey: ['feeds_fishery'],
@@ -86,8 +88,8 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
     .shape({
       number: Yup.number()
         .min(1, 'Number must be greater than equal to 1')
-        .required('number is required'),
-      type_of_feed: Yup.string().required('Type of feed is required'),
+        .required(t('number is required')),
+      type_of_feed: Yup.string().required(t('type_of_feed is required')),
       create_type: Yup.string().test(
         'create-type-required',
         'Create type is required',
@@ -100,26 +102,26 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
         },
       ),
       weight_measurement: Yup.string().required(
-        'Weight measurement required is required',
+        t('weight_measurement is required'),
       ),
       total_feed: Yup.number()
         .min(1, 'Total feed must be greater than equal to 1')
-        .required('Area allocated is required'),
+        .required(t('total_feed is required')),
       output: Yup.number()
         .min(1, 'Output must be greater than equal to 1')
-        .required('Output is required'),
-      self_consumed: Yup.number().required('Self consumed is required'),
+        .required(t('output is required')),
+      self_consumed: Yup.number().required(t('self_consumed is required')),
       sold_to_neighbours: Yup.number().required(
-        'Sold to neighbours is required',
+        t('sold_to_neighbours is required'),
       ),
       sold_for_industrial_use: Yup.number().required(
-        'Sold for industrial use is required',
+        t('sold_for_industrial_use is required'),
       ),
-      wastage: Yup.number().required('Wastage is required'),
+      wastage: Yup.number().required(t('wastage is required')),
       others: Yup.string(),
       others_value: Yup.number().test(
         'other-value-required',
-        'Others value is required',
+        t('other_value is required'),
         function (value) {
           const {others} = this.parent; // Accessing other field values
           if (others) {
@@ -128,13 +130,13 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
           return true; // Otherwise, no validation on decreasing_yield
         },
       ),
-      yield: Yup.string().required('yield is required'),
+      yield: Yup.string().required(t('yeild is required')),
       income_from_sale: Yup.number()
         .min(1, 'Income from sale must be greater than equal to 1')
-        .required('Income from sale is required'),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
-        .required('Expenditure on inputs is required'),
+        .required(t('expenditure_on_inputs is required')),
       required_processing: Yup.boolean().required(
         'Required processing is required',
       ),
@@ -225,11 +227,11 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
         fishery_type: 'pond',
       };
       if (data?._id) {
-        setMessage('updated');
+        setMessage(t('updated'));
         updateFishery({...new_data, fishery_id: data?._id});
       } else {
         console.log('here2');
-        setMessage('submitted');
+        setMessage(t('submitted'));
         addFishery({...new_data, crop_id: crop_id});
       }
   }
@@ -289,7 +291,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
         status: 0,
         fishery_type: 'pond',
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       updateFishery({...new_data, fishery_id: data?._id});
     } else {
       console.log('croppp', crop_id);
@@ -313,7 +315,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
         status: 0,
         fishery_type: 'pond',
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       addFishery({...new_data, fishery_type: 'pond', crop_id:crop_id});
     }
   };
@@ -326,7 +328,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('number')}
               value={String(values?.number)}
               fullLength={true}
-              label={'Number'}
+              label={t('number')}
               keyboardType={'numeric'}
             />
             {touched?.number && errors?.number && (
@@ -352,7 +354,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   : []
               }
               value={values.type_of_feed}
-              label={'Type of feed'}
+              label={t('type of feed')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -370,7 +372,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   onChangeText={handleChange('create_type')}
                   value={String(values?.create_type)}
                   fullLength={true}
-                  label={'Create type'}
+                  label={t('create type')}
                   keyboardType="default"
                 />
                 {touched?.create_type && errors?.create_type && (
@@ -383,7 +385,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
             <Customdropdown
               data={authState?.weight_measurements}
               value={values.weight_measurement}
-              label={'Weight measuremnt'}
+              label={t('weight measurement')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -400,7 +402,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('total_feed')}
               value={String(values?.total_feed)}
               fullLength={true}
-              label={'Total Feed'}
+              label={t('total feed')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -411,7 +413,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('output')}
               value={String(values?.output)}
               fullLength={true}
-              label={'Output'}
+              label={t('output')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -422,7 +424,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('self_consumed')}
               value={String(values?.self_consumed)}
               fullLength={true}
-              label={'Self Consumed'}
+              label={t('self consumed')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -433,7 +435,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_to_neighbours')}
               value={String(values?.sold_to_neighbours)}
               fullLength={true}
-              label={'Sold to neighbours'}
+              label={t('sold to neighbour')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -446,7 +448,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_for_industrial_use')}
               value={String(values?.sold_for_industrial_use)}
               fullLength={true}
-              label={'Sold for industrial use'}
+              label={t('sold to industrial')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -460,7 +462,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('wastage')}
               value={String(values?.wastage)}
               fullLength={true}
-              label={'Wastage'}
+              label={t('wastage')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -471,7 +473,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('others')}
               value={String(values?.others)}
               fullLength={true}
-              label={'Others'}
+              label={t('Other')}
               keyboardType={'default'}
             />
             {touched?.others && errors?.others && (
@@ -499,7 +501,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               value={String(values?.yield)}
               fullLength={true}
               editable={false}
-              label={'Yield'}
+              label={t('yields')}
               keyboardType="numeric"
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
@@ -510,7 +512,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
               fullLength={true}
-              label={'Income from sale'}
+              label={t('income from sale')}
               keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
@@ -523,7 +525,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('expenditure_on_inputs')}
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
-              label={'Expenditure on inputs'}
+              label={t('expenditure on input')}
               keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
@@ -533,9 +535,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   {String(errors?.expenditure_on_inputs)}
                 </Text>
               )}
-            <Text style={[Styles.fieldLabel]}>
-              Required Processing method if any for the outputs
-            </Text>
+            <Text style={[Styles.fieldLabel]}>{t('required processing')}</Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
                 onPress={() =>
@@ -553,7 +553,9 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('yes')}
+              </Text>
               <TouchableOpacity
                 onPress={() =>
                   setValues({
@@ -570,7 +572,9 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('no')}
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -579,14 +583,14 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
             onPress={handleSubmit}
-            btnText={'Submit'}
+            btnText={t('submit')}
             style={{width: width / 2.5}}
           />
           <CustomButton
             onPress={() => {
               onDraft();
             }}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
           />
@@ -595,22 +599,22 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
-        onSubmit={()=>onSubmit()}
-        confirmText="Submit"
+        hideText={t('cancel')}
+        onSubmit={() => onSubmit()}
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
         successModal={true}
         onSubmit={() => {
-          setSuccessModal(false), navigation.goBack()
+          setSuccessModal(false), navigation.goBack();
         }}
         confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t('Successful')}`}
       />
     </View>
   );

@@ -31,6 +31,7 @@ import Itemlist from '../../../../../Components/Card/Itemlist';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { delete_poultry, get_poultry } from '../../../../../apis/food';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const Poultry = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -38,6 +39,7 @@ const Poultry = ({navigation}:{navigation:any}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState([]);
     const queryClient = useQueryClient()
+    const {t} = useTranslation()
     const authState = useSelector((state)=>state.authState)
   const {data: poultry, isLoading} = useQuery({
     queryKey: ['get_poultry'],
@@ -73,27 +75,28 @@ const Poultry = ({navigation}:{navigation:any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Poultry
+              {t('poultry')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  {authState?.sub_area?.poultry} {authState?.land_measurement}
+                  {authState?.sub_area?.poultry}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Farmed</Text>
+                <Text style={styles.sub_text}>{t('Farmed')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Bred
+                  {data?.length} {t('Bred')}
                 </Text>
               </View>
             </View>
@@ -120,7 +123,7 @@ const Poultry = ({navigation}:{navigation:any}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Poultry'}
+              title={t('add livestock')}
               onPress={() => setModalVisible(true)}
             />
           }
@@ -131,7 +134,7 @@ const Poultry = ({navigation}:{navigation:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add poultry'}
+                  cropName={t('add livestock')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -150,7 +153,7 @@ const Poultry = ({navigation}:{navigation:any}) => {
               itm?.crop_id === item?.crop_id,
           );
           if (find_crop) {
-            return ToastAndroid.show('Crop already exists', ToastAndroid.SHORT);
+            return ToastAndroid.show(t('crop exists'), ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
             console.log('iteemememe', item);

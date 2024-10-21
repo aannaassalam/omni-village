@@ -10,6 +10,7 @@ import {dark_grey} from '../../../../../styles/colors';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {add_trees, edit_trees} from '../../../../../apis/food';
 import AlertModal from '../../../../../Components/Popups/AlertModal';
+import { t } from 'i18next';
 
 const Harvestedproducts = ({
   navigation,
@@ -113,7 +114,7 @@ const Harvestedproducts = ({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Harvested Products'}
+              title={t('add harvested product')}
               onPress={() => {
                 setData([
                   ...data,
@@ -159,7 +160,7 @@ const Harvestedproducts = ({
                   }}>
                   <AddAndDeleteCropButton
                     add={true}
-                    cropName={'Add Product'}
+                    cropName={t('add harvested product')}
                     onPress={() => {
                       setData([
                         ...data,
@@ -206,7 +207,7 @@ const Harvestedproducts = ({
                   );
                 }
               }}
-              btnText={'Submit'}
+              btnText={t('submit')}
               style={{width: width / 2.5}}
             />
             <CustomButton
@@ -217,8 +218,8 @@ const Harvestedproducts = ({
                 );
                 if (allValid) {
                   if (edit_data?._id) {
-                    console.log("heeet")
-                    setMessage('drafted')
+                    console.log('heeet');
+                    setMessage(t('drafted'));
                     updateTrees({
                       ...impInfo,
                       harvested_products: data,
@@ -226,8 +227,8 @@ const Harvestedproducts = ({
                       status: 0,
                     });
                   } else {
-                    console.log("heteteete")
-                    setMessage('drafted')
+                    console.log('heteteete');
+                    setMessage(t('drafted'));
                     addTrees({
                       ...impInfo,
                       harvested_products: data,
@@ -243,7 +244,7 @@ const Harvestedproducts = ({
                   );
                 }
               }}
-              btnText={'Save as draft'}
+              btnText={t('save as draft')}
               btnStyle={{color: dark_grey}}
               style={{width: width / 2.5, backgroundColor: '#ebeced'}}
             />
@@ -253,11 +254,11 @@ const Harvestedproducts = ({
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => {
           if (edit_data?._id) {
             console.log('hereerer');
-            setMessage('updated');
+            setMessage(t('updated'));
             updateTrees({
               ...impInfo,
               harvested_products: data,
@@ -266,7 +267,7 @@ const Harvestedproducts = ({
             });
           } else {
             console.log('hereerer2');
-            setMessage('submitted');
+            setMessage(t('submitted'));
             addTrees({
               ...impInfo,
               harvested_products: data,
@@ -275,10 +276,10 @@ const Harvestedproducts = ({
             });
           }
         }}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
@@ -286,9 +287,9 @@ const Harvestedproducts = ({
         onSubmit={() => {
           setSuccessModal(false), navigation.goBack(), navigation.goBack();
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        confirmText={t('Okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t('Successful')}`}
       />
     </View>
   );

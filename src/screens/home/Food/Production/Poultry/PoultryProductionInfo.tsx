@@ -18,6 +18,7 @@ import AcresElement from '../../../../../Components/ui/AcresElement';
 import { fontFamilyRegular } from '../../../../../styles/fontStyle';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const PoultryProductionInfo = ({
   navigation,
@@ -28,6 +29,7 @@ const PoultryProductionInfo = ({
 }) => {
   const {crop_name, impVal, crop_id,data} = route.params;
   const authState = useSelector((state:any)=>state.authState)
+  const {t} = useTranslation()
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -41,16 +43,16 @@ const PoultryProductionInfo = ({
     .shape({
       total_feed: Yup.number()
         .min(1, 'Total feed must be greater than equal to 1')
-        .required('Total feed is required'),
-      self_produced: Yup.number().required('Self produced is required'),
-      neighbours: Yup.number().required('Neighbours is required'),
+        .required(t('total_feed is required')),
+      self_produced: Yup.number().required(t('self_produced is required')),
+      neighbours: Yup.number().required(t('neighbours required')),
       purchased_from_market: Yup.number().required(
-        'Purchased from market is required',
+        t('purchased_from_market is required'),
       ),
       others: Yup.string(),
       others_value: Yup.number().test(
         'other-value-required',
-        'Others value is required',
+        t('other_value is required'),
         function (value) {
           const {others} = this.parent; // Accessing other field values
           if (others) {
@@ -61,11 +63,11 @@ const PoultryProductionInfo = ({
       ),
       income_from_sale: Yup.number()
         .min(1, 'Income from sale must be greater than equal to 1')
-        .required('Income from sale is required'),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
-        .required('Expenditure on inputs is required'),
-      steroids: Yup.boolean().required('Steriods is required'),
+        .required(t('expenditure_on_inputs is required')),
+      steroids: Yup.boolean().required(t('steroids is required')),
     })
     .test(
       'land-limit',
@@ -162,7 +164,7 @@ const PoultryProductionInfo = ({
               value={String(values?.total_feed)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Total feed'}
+              label={t('total feed')}
               isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.total_feed && errors?.total_feed && (
@@ -173,7 +175,7 @@ const PoultryProductionInfo = ({
               value={String(values?.self_produced)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Self produced'}
+              label={t('self produced')}
               isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.self_produced && errors?.self_produced && (
@@ -184,7 +186,7 @@ const PoultryProductionInfo = ({
               value={String(values?.neighbours)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Neighbours'}
+              label={t('neighbour')}
               isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.neighbours && errors?.neighbours && (
@@ -195,7 +197,7 @@ const PoultryProductionInfo = ({
               value={String(values?.purchased_from_market)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Purchased from market'}
+              label={t('purchased from market')}
               isRight={<AcresElement title={impVal?.weight_measurement} />}
             />
             {touched?.purchased_from_market &&
@@ -208,7 +210,7 @@ const PoultryProductionInfo = ({
               onChangeText={handleChange('others')}
               value={String(values?.others)}
               fullLength={true}
-              label={'Other'}
+              label={t('Other')}
             />
             {touched?.others && errors?.others && (
               <Text style={Styles.error}>{String(errors?.others)}</Text>
@@ -235,7 +237,7 @@ const PoultryProductionInfo = ({
               value={String(values?.income_from_sale)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Income from sale'}
+              label={t('income from sale')}
               isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.income_from_sale && errors?.income_from_sale && (
@@ -248,7 +250,7 @@ const PoultryProductionInfo = ({
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Expenditure on inputs'}
+              label={t('expenditure on input')}
               isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
@@ -258,7 +260,9 @@ const PoultryProductionInfo = ({
                 </Text>
               )}
             <Text style={[Styles.fieldLabel]}>
-              Any hormones/ artificial productivity enhancing mechanism applied
+              {t(
+                'any hormones/ artificial productivity enhancing mechanism applied',
+              )}
             </Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
@@ -277,7 +281,7 @@ const PoultryProductionInfo = ({
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>{t('yes')}</Text>
               <TouchableOpacity
                 onPress={() =>
                   setValues({
@@ -294,13 +298,13 @@ const PoultryProductionInfo = ({
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>{t('no')}</Text>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={handleSubmit} btnText={'Next'} />
+        <CustomButton onPress={handleSubmit} btnText={t('Next')} />
       </View>
     </View>
   );

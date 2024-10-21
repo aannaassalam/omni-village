@@ -33,6 +33,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { delete_trees, get_trees } from '../../../../../apis/food';
 import { useSelector } from 'react-redux';
 import { USER_PREFERRED_LANGUAGE } from '../../../../../i18next';
+import { useTranslation } from 'react-i18next';
 
 const Trees = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -41,6 +42,7 @@ const Trees = ({navigation}:{navigation:any}) => {
   const [data, setData] = useState([]);
   const authState = useSelector((state)=>state.authState)
   const queryClient = useQueryClient()
+  const {t} = useTranslation()
   const {data: trees, isLoading} = useQuery({
     queryKey: ['get_trees'],
     queryFn: () => get_trees(),
@@ -80,33 +82,34 @@ const Trees = ({navigation}:{navigation:any}) => {
     <View style={Styles.mainContainer}>
       <HeaderCard disabled={true}>
         <View style={styles.inner_container}>
-          <View>
+          <View style={{width: '60%'}}>
             <Text
               style={[
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Trees , Shrubs {'\n'} & Grasslands
+              {t('tree shrub grassland')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  {authState?.sub_area?.trees} {authState?.land_measurement}
+                  {authState?.sub_area?.trees}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Planted</Text>
+                <Text style={styles.sub_text}>{t('Planted')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Crops
+                  {data?.length} {t('crops')}
                 </Text>
               </View>
             </View>
@@ -133,7 +136,7 @@ const Trees = ({navigation}:{navigation:any}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Trees shrubs'}
+              title={t('add tree shrub')}
               onPress={() => setModalVisible(true)}
             />
           }
@@ -144,7 +147,7 @@ const Trees = ({navigation}:{navigation:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add Trees shrubs'}
+                  cropName={t('add tree shrub')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -157,21 +160,20 @@ const Trees = ({navigation}:{navigation:any}) => {
         setModalVisible={setModalVisible}
         data={data}
         setData={async (item: any) => {
-           const find_crop = await data.find(
-             (itm: any) => itm.crop_name  === item?.crop_name || itm?.crop_id === item?.crop_id,
-           )
-           if (find_crop) {
-             return ToastAndroid.show(
-               'Trees already exists',
-               ToastAndroid.SHORT,
-             );
-           } else {
-             setData([...data, item]);
-             navigation.navigate('treesImportantinfo', {
-               crop_name: item?.crop_name,
-               crop_id: item?.crop_id,
-             });
-           }
+          const find_crop = await data.find(
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
+          if (find_crop) {
+            return ToastAndroid.show(t('trees exists'), ToastAndroid.SHORT);
+          } else {
+            setData([...data, item]);
+            navigation.navigate('treesImportantinfo', {
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
+          }
         }}
       />
     </View>

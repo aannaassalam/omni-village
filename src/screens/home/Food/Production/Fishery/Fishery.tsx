@@ -28,20 +28,22 @@ import {
   fontFamilyRegular,
 } from '../../../../../styles/fontStyle';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const Fishery = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [onItemSeleted, setOnItemSelected] = useState(null);
   const authState = useSelector((state)=>state.authState)
+  const {t} = useTranslation()
   const ITEMS = [
     {
-      title: 'Harvested from Pond',
+      title: t('harvested from pond'),
       navigation: 'pond',
       image: require('../../../../../../assets/pond.png'),
     },
     {
-      title: 'Harvested from River',
+      title: t('harvested from river'),
       navigation: 'river',
       image: require('../../../../../../assets/river.png'),
     },
@@ -56,17 +58,18 @@ const Fishery = ({navigation}: {navigation: any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Fishery
+              {t('fishery')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: draft_color, marginVertical: 4},
                   ]}>
-                  {authState?.sub_area?.fishery} {authState?.land_measurement_symbol}
+                  {authState?.sub_area?.fishery}{' '}
+                  {authState?.land_measurement_symbol}
                 </Text>
               </View>
             </View>

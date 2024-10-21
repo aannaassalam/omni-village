@@ -19,10 +19,12 @@ import { useQuery } from '@tanstack/react-query';
 import { get_weight_measurement } from '../../../../../apis/auth';
 import Customdropdown from '../../../../../Components/CustomDropdown/Customdropdown';
 import { get_cultivation } from '../../../../../apis/food';
+import { useTranslation } from 'react-i18next';
 
 const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
   const {crop_name,crop_id,data} = route.params;
   const authState = useSelector((state:any)=>state.authState)
+  const {t} = useTranslation()
   useEffect(() => {
     navigation.setOptions({
       header: (props: any) => (
@@ -36,24 +38,28 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
     .shape({
       area_allocated: Yup.number()
         .min(1, 'Area allocated must be greater than equal to 1')
-        .required('Area allocated is required'),
-        weight_measurement: Yup.string().required('Weight measurement required is required'),
+        .required(t('area_allocated is required')),
+      weight_measurement: Yup.string().required(
+        t('weight_measurement is required'),
+      ),
       output: Yup.number()
         .min(1, 'Output must be greater than equal to 1')
-        .required('Output is required'),
-      self_consumed: Yup.number().required('Self consumed is required'),
-      fed_to_livestock: Yup.number().required('Fed to livestock is required'),
+        .required(t('output is required')),
+      self_consumed: Yup.number().required(t('self_consumed is required')),
+      fed_to_livestock: Yup.number().required(
+        t('fed_to_livestock is required'),
+      ),
       sold_to_neighbours: Yup.number().required(
-        'Sold to neighbours is required',
+        t('sold_to_neighbours is required'),
       ),
       sold_for_industrial_use: Yup.number().required(
-        'Sold for industrial use is required',
+        t('sold_for_industrial_use is required'),
       ),
-      wastage: Yup.number().required('Wastage is required'),
+      wastage: Yup.number().required(t('wastage is required')),
       others: Yup.string(),
       others_value: Yup.number().test(
         'other-value-required',
-        'Others value is required',
+        t('other_value is required'),
         function (value) {
           const {others} = this.parent; // Accessing other field values
           if (others) {
@@ -119,7 +125,6 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
     },
     validationSchema: treesSchema,
     onSubmit: async (values: any) => {
-      console.log('Form submitted with values: ', values);
       let parseVal = {
         area_allocated: parseInt(values?.area_allocated),
         weight_measurement: values?.weight_measurement,
@@ -165,7 +170,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('area_allocated')}
               value={String(values?.area_allocated)}
               fullLength={true}
-              label={'Area allocated'}
+              label={t('area allocated')}
               keyboardType={'numeric'}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
@@ -177,7 +182,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
             <Customdropdown
               data={authState?.weight_measurements}
               value={values.weight_measurement}
-              label={'Weight measuremnt'}
+              label={t('weight measurement')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -194,7 +199,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('output')}
               value={String(values?.output)}
               fullLength={true}
-              label={'Output'}
+              label={t('output')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -205,7 +210,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('self_consumed')}
               value={String(values?.self_consumed)}
               fullLength={true}
-              label={'Self Consumed'}
+              label={t('self consumed')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -216,7 +221,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('fed_to_livestock')}
               value={String(values?.fed_to_livestock)}
               fullLength={true}
-              label={'Fed to livestock'}
+              label={t('fed to livestock')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -229,7 +234,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_to_neighbours')}
               value={String(values?.sold_to_neighbours)}
               fullLength={true}
-              label={'Sold to neighbours'}
+              label={t('sold to neighbour')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -242,7 +247,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_for_industrial_use')}
               value={String(values?.sold_for_industrial_use)}
               fullLength={true}
-              label={'Sold for industrial use'}
+              label={t('sold to industrial')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -256,7 +261,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('wastage')}
               value={String(values?.wastage)}
               fullLength={true}
-              label={'Wastage'}
+              label={t('wastage')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -267,7 +272,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('others')}
               value={String(values?.others)}
               fullLength={true}
-              label={'Others'}
+              label={t('Other')}
               keyboardType={'default'}
             />
             {touched?.others && errors?.others && (
@@ -294,7 +299,7 @@ const Utilisation = ({navigation, route}: {navigation: any; route: any}) => {
         </ScrollView>
       </KeyboardAvoidingView>
       <View style={[Styles.bottomBtn]}>
-        <CustomButton onPress={handleSubmit} btnText={'Next'} />
+        <CustomButton onPress={handleSubmit} btnText={t('Next')} />
       </View>
     </View>
   );

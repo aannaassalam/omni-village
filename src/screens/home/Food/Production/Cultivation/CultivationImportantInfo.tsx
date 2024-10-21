@@ -43,20 +43,20 @@ const CultivationImportantInfo = ({
   const [successModal, setSuccessModal] = useState(false);
   const [message, setMessage] = useState('');
   const soilHealth = [
-    {label: 'stable', value: t('stable')},
-    {label: 'decreasing yield', value: t('decreasing yield')},
+    {label: 'stable', value: 'stable'},
+    {label: 'decreasing yield', value: 'decreasing yield'},
   ];
   const fertilisers = [
-    {label: 'organic self made', value: t('organic self made')},
-    {label: 'organic purchased', value: t('organic purchased')},
-    {label: 'chemical based', value: t('chemical based')},
-    {label: 'none', value: t('none')},
+    {label: 'organic self made', value: 'organic self made'},
+    {label: 'organic purchased', value: 'organic purchased'},
+    {label: 'chemical based', value: 'chemical based'},
+    {label: 'none', value: 'none'},
   ];
   const pesticides = [
-    {label: 'organic self made', value: t('organic self made')},
-    {label: 'organic purchased', value: t('organic purchased')},
-    {label: 'chemical based', value: t('chemical based')},
-    {label: 'none', value: t('none')},
+    {label: 'organic self made', value: 'organic self made'},
+    {label: 'organic purchased', value: 'organic purchased'},
+    {label: 'chemical based', value: 'chemical based'},
+    {label: 'none', value: 'none'},
   ];
   const {mutate: addCultivation} = useMutation({
     mutationFn: (data: any) => add_cultivation(data),
@@ -98,10 +98,10 @@ const CultivationImportantInfo = ({
     });
   }, [crop_name]);
   let treesSchema = Yup.object().shape({
-    soil_health: Yup.string().required('Soil health is required'),
+    soil_health: Yup.string().required(t('soil_health is required')),
     decreasing_yield: Yup.number().test(
       'decreasing-yield-required',
-      'Decreasing yield is required',
+      t('decreasing_rate is required'),
       function (value) {
         const {soil_health} = this.parent; // Accessing other field values
         if (soil_health === 'decreasing Yield') {
@@ -111,26 +111,26 @@ const CultivationImportantInfo = ({
       },
     ),
     type_of_fertilizer_used: Yup.string().required(
-      'Type of fertiliser is required',
+      t('type_of_fertilizer_used is required'),
     ),
     type_of_pesticide_used: Yup.string().required(
-      'Type of pesticide is required',
+      t('type_of_pesticide_used is required'),
     ),
     income_from_sale: Yup.number()
       .min(1, 'Income from sale must be greater than equal to 1')
-      .required('Income from sale is required'),
+      .required(t('income_from_sale is required')),
     expenditure_on_inputs: Yup.number()
       .min(1, 'Expenditure on inputs must be greater than equal to 1')
-      .required('Expenditure on inputs is required'),
-    yield: Yup.string().required('yield is required'),
-    month_harvested: Yup.string().required('Month harvested is required'),
-    month_planted: Yup.string().required('Month planted is required'),
+      .required(t('expenditure_on_inputs is required')),
+    yield: Yup.string().required(t('yeild is required')),
+    month_harvested: Yup.string().required(t('month_harvested is required')),
+    month_planted: Yup.string().required(t('month_planted is required')),
     required_processing: Yup.boolean().required(
       'Required processing is required',
     ),
     processing_method: Yup.string().test(
       'processing_method-required',
-      'Processing Method is required',
+      t('processing_method is required'),
       function (value) {
         const {required_processing} = this.parent; // Accessing other field values
         if (required_processing) {
@@ -188,11 +188,11 @@ const CultivationImportantInfo = ({
        status: 1,
      };
      if (data?._id) {
-       setMessage('updated');
+       setMessage(t('updated'));
        updateCultivation({...new_data, cultivation_id: data?._id});
      } else {
        console.log('here2');
-       setMessage('submitted');
+       setMessage(t('submitted'));
        addCultivation({...new_data});
      }
   }
@@ -260,7 +260,7 @@ const CultivationImportantInfo = ({
         processing_method: values?.processing_method,
         status: 0,
       };
-      setMessage('drafted')
+      setMessage(t('drafted'))
       updateCultivation({...new_data, cultivation_id: data?._id});
     } else {
       console.log("croppp", crop_id)
@@ -280,7 +280,7 @@ const CultivationImportantInfo = ({
         processing_method: values?.processing_method,
         status: 0,
       };
-      setMessage('drafted')
+      setMessage(t('drafted'))
       addCultivation(new_data);
     }
   };
@@ -292,7 +292,7 @@ const CultivationImportantInfo = ({
             <Customdropdown
               data={soilHealth}
               value={values.soil_health}
-              label={'Soil health'}
+              label={t('soil health')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -310,7 +310,7 @@ const CultivationImportantInfo = ({
                   onChangeText={handleChange('decreasing_yield')}
                   value={String(values?.decreasing_yield)}
                   fullLength={true}
-                  label={'How much from first planting'}
+                  label={t('how much from first planting')}
                   keyboardType="numeric"
                   isRight={<AcresElement title={'    %'} />}
                 />
@@ -324,7 +324,7 @@ const CultivationImportantInfo = ({
             <Customdropdown
               data={fertilisers}
               value={values.type_of_fertilizer_used}
-              label={'Type of fertiliser used'}
+              label={t('type of fertilizer')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -341,7 +341,7 @@ const CultivationImportantInfo = ({
             <Customdropdown
               data={pesticides}
               value={values.type_of_pesticide_used}
-              label={'Type of pesticide used'}
+              label={t('type of pesticides')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -359,7 +359,7 @@ const CultivationImportantInfo = ({
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
               fullLength={true}
-              label={'Income from sale'}
+              label={t('income from sale')}
               keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
@@ -373,7 +373,7 @@ const CultivationImportantInfo = ({
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
               keyboardType="numeric"
-              label={'Expenditure on inputs'}
+              label={t('expenditure on input')}
               isRight={<AcresElement title={authState?.currency} />}
             />
             {touched?.expenditure_on_inputs &&
@@ -382,9 +382,7 @@ const CultivationImportantInfo = ({
                   {String(errors?.expenditure_on_inputs)}
                 </Text>
               )}
-            <Text style={[Styles.fieldLabel]}>
-              Required Processing method if any for the outputs
-            </Text>
+            <Text style={[Styles.fieldLabel]}>{t('required processing')}</Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
                 onPress={() =>
@@ -445,7 +443,7 @@ const CultivationImportantInfo = ({
               value={String(values?.yield)}
               fullLength={true}
               editable={false}
-              label={'Yield'}
+              label={t('yields')}
               isRight={<AcresElement title={authState?.land_measurement} />}
               style={{backgroundColor: '#ebeced', borderRadius: 8}}
             />
@@ -454,7 +452,7 @@ const CultivationImportantInfo = ({
                 onChangeText={handleChange('month_planted')}
                 value={moment(values?.month_planted).format('DD-MM-YYYY')}
                 fullLength={true}
-                label={'Month plnated'}
+                label={t('Month Planted')}
                 isDate={true}
               />
             </Pressable>
@@ -474,7 +472,7 @@ const CultivationImportantInfo = ({
                 onChangeText={handleChange('month_harvested')}
                 value={moment(values?.month_harvested).format('DD-MM-YYYY')}
                 fullLength={true}
-                label={'Month harvested'}
+                label={t('month harvested')}
                 isDate={true}
               />
             </Pressable>
@@ -499,14 +497,14 @@ const CultivationImportantInfo = ({
           <CustomButton
             // onPress={() => setModalVisible(true)}
             onPress={handleSubmit}
-            btnText={'Submit'}
+            btnText={t('submit')}
             style={{width: width / 2.5}}
           />
           <CustomButton
             onPress={() => {
               onDraft();
             }}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
           />
@@ -515,12 +513,12 @@ const CultivationImportantInfo = ({
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => onSubmit()}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
@@ -528,9 +526,9 @@ const CultivationImportantInfo = ({
         onSubmit={() => {
           setSuccessModal(false), navigation.goBack(), navigation.goBack();
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        confirmText={t('okay')}
+        title={t('Successful')}
+        comments={`${t('form')} ${message} ${t('Successful')}`}
       />
     </View>
   );

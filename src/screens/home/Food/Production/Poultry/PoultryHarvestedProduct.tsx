@@ -10,6 +10,7 @@ import PoultryHarvestedProductList from '../../../../../Components/Card/PoultryH
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { add_poultry, edit_poultry } from '../../../../../apis/food';
 import AlertModal from '../../../../../Components/Popups/AlertModal';
+import { t } from 'i18next';
 
 const PoultryHarvestedProduct = ({
   navigation,
@@ -87,7 +88,6 @@ const PoultryHarvestedProduct = ({
       //   };
       // }));
     },[get_data])
-    console.log("get dataa", get_data)
   return (
     <View style={styles.container}>
       <View style={[Styles.mainContainer, {paddingBottom: 120}]}>
@@ -116,7 +116,7 @@ const PoultryHarvestedProduct = ({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Harvested Products'}
+              title={t('add harvested product')}
               onPress={() => {
                 setData([
                   ...data,
@@ -162,7 +162,7 @@ const PoultryHarvestedProduct = ({
                   }}>
                   <AddAndDeleteCropButton
                     add={true}
-                    cropName={'Add Product'}
+                    cropName={t('add harvested product')}
                     onPress={() => {
                       setData([
                         ...data,
@@ -201,7 +201,7 @@ const PoultryHarvestedProduct = ({
                 );
                 if (allValid) {
                   setModalVisible(true);
-                   setObjError('');
+                  setObjError('');
                 } else {
                   setObjError(
                     !allValid
@@ -210,7 +210,7 @@ const PoultryHarvestedProduct = ({
                   );
                 }
               }}
-              btnText={'Submit'}
+              btnText={t('submit')}
               style={{width: width / 2.5}}
             />
             <CustomButton
@@ -221,8 +221,8 @@ const PoultryHarvestedProduct = ({
                 );
                 if (allValid) {
                   if (get_data?._id) {
-                    console.log("heree")
-                    setMessage('drafted');
+                    console.log('heree');
+                    setMessage(t('drafted'));
                     updatePoultry({
                       ...impVal,
                       ...proVal,
@@ -231,8 +231,8 @@ const PoultryHarvestedProduct = ({
                       status: 0,
                     });
                   } else {
-                    console.log("hereee2")
-                    setMessage('drafted');
+                    console.log('hereee2');
+                    setMessage(t('drafted'));
                     addPoultry({
                       ...impVal,
                       ...proVal,
@@ -249,7 +249,7 @@ const PoultryHarvestedProduct = ({
                   );
                 }
               }}
-              btnText={'Save as draft'}
+              btnText={t('save as draft')}
               btnStyle={{color: dark_grey}}
               style={{width: width / 2.5, backgroundColor: '#ebeced'}}
             />
@@ -259,10 +259,10 @@ const PoultryHarvestedProduct = ({
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => {
           if (get_data?._id) {
-            setMessage('updated');
+            setMessage(t('updated'));
             updatePoultry({
               ...impVal,
               ...proVal,
@@ -271,7 +271,7 @@ const PoultryHarvestedProduct = ({
               status: 1,
             });
           } else {
-            setMessage('submitted');
+            setMessage(t('submitted'));
             addPoultry({
               ...impVal,
               ...proVal,
@@ -281,20 +281,23 @@ const PoultryHarvestedProduct = ({
             });
           }
         }}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
         successModal={true}
         onSubmit={() => {
-          setSuccessModal(false), navigation.goBack(), navigation.goBack(), navigation.goBack()
+          setSuccessModal(false),
+            navigation.goBack(),
+            navigation.goBack(),
+            navigation.goBack();
         }}
         confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t('Successful')}`}
       />
     </View>
   );

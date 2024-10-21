@@ -32,6 +32,7 @@ import AddAndDeleteCropButton from '../../../../../../Components/CropButtons/Add
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { delete_fishery, get_fishery } from '../../../../../../apis/food';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const River = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -40,6 +41,7 @@ const River = ({navigation}:{navigation:any}) => {
   const [data, setData] = useState([]);
     const authState = useSelector(state => state.authState);
     const queryClient = useQueryClient();
+    const {t} =useTranslation()
     const {data: river_fishery, isLoading} = useQuery({
       queryKey: ['get_river_fishery'],
       queryFn: () => get_fishery('river'),
@@ -85,11 +87,11 @@ const River = ({navigation}:{navigation:any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              River Fishery
+              {t('River Fishery')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Used land</Text>
+                <Text style={styles.sub_text}>{t('used land')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
@@ -100,13 +102,13 @@ const River = ({navigation}:{navigation:any}) => {
                 </Text>
               </View>
               <View>
-                <Text style={styles.sub_text}>Fished</Text>
+                <Text style={styles.sub_text}>{t('Fished')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Species
+                  {data?.length} {t('Species')}
                 </Text>
               </View>
             </View>
@@ -133,7 +135,7 @@ const River = ({navigation}:{navigation:any}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add River Fishery'}
+              title={t('add fish')}
               onPress={() => setModalVisible(true)}
             />
           }
@@ -144,7 +146,7 @@ const River = ({navigation}:{navigation:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add River Fishery'}
+                  cropName={t('add fish')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -158,14 +160,14 @@ const River = ({navigation}:{navigation:any}) => {
         data={data}
         fisheryType={'river'}
         setData={async (item: any) => {
-           const find_crop = await data.find(
-             (itm: any) =>
-               itm.crop_name === item?.crop_name ||
-               itm?.crop_id === item?.crop_id,
-           );
+          const find_crop = await data.find(
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
           if (find_crop) {
             return ToastAndroid.show(
-              'Fishery already exists',
+              t('fishery exists'),
               ToastAndroid.SHORT,
             );
           } else {
