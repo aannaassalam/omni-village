@@ -484,7 +484,7 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   value={String(values?.others_value)}
                   fullLength={true}
                   label={values?.others}
-                  keyboardType={'default'}
+                  keyboardType={'numeric'}
                   isRight={<AcresElement title={values?.weight_measurement} />}
                 />
                 {touched?.others_value && errors?.others_value && (
@@ -572,25 +572,6 @@ const PondInfo = ({navigation, route}: {navigation: any; route: any}) => {
               </TouchableOpacity>
               <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
             </View>
-            {values?.required_processing ? (
-              <>
-                <Input
-                  onChangeText={handleChange('processing_method')}
-                  value={String(values?.processing_method)}
-                  fullLength={true}
-                  label={'Processing Method'}
-                  multiline={true}
-                  numberOfLines={4}
-                  longText={true}
-                  textAlignVertical={'top'}
-                />
-                {touched?.processing_method && errors?.processing_method && (
-                  <Text style={Styles.error}>
-                    {String(errors?.processing_method)}
-                  </Text>
-                )}
-              </>
-            ) : null}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

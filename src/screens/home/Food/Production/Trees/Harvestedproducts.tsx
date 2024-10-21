@@ -54,7 +54,7 @@ const Harvestedproducts = ({
   const {mutate: updateTrees} = useMutation({
     mutationFn: (data: any) => edit_trees(data),
     onSuccess: data => {
-      // setSuccessModal(true);
+      setSuccessModal(true);
       queryClient.invalidateQueries();
     },
     onError: error => {
@@ -66,7 +66,25 @@ const Harvestedproducts = ({
     },
   });
   useEffect(()=>{
-    setData(edit_data?.products.length>0?edit_data?.products:[]);
+    setData(edit_data?.products.length>0?edit_data?.products
+      .map((item:any)=>{
+        return {
+          _id: item?._id,
+          product_name: item?.product_name,
+          output: item?.output,
+          self_consumed: item?.self_consumed,
+          fed_to_livestock: item?.fed_to_livestock,
+          sold_to_neighbours: item?.sold_to_neighbours,
+          sold_for_industrial_use: item?.sold_for_industrial_use,
+          wastage: item?.wastage,
+          others: item?.other,
+          others_value: item?.other_value,
+          month_harvested: new Date(item?.month_harvested),
+          required_processing: item?.required_processing,
+        };
+      }
+    )
+      :[]);
   },[edit_data])
   return (
     <View style={styles.container}>
@@ -198,15 +216,17 @@ const Harvestedproducts = ({
                     product.output > 0 && product.product_name.trim() !== '',
                 );
                 if (allValid) {
-                  if (data?._id) {
+                  if (edit_data?._id) {
+                    console.log("heeet")
                     setMessage('drafted')
                     updateTrees({
                       ...impInfo,
                       harvested_products: data,
-                      tree_id: data?._id,
+                      tree_id: edit_data?._id,
                       status: 0,
                     });
                   } else {
+                    console.log("heteteete")
                     setMessage('drafted')
                     addTrees({
                       ...impInfo,

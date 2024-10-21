@@ -19,7 +19,7 @@ const PoultryHarvestedProduct = ({
   route: any;
 }) => {
   const {crop_name, impVal, proVal, crop_id, get_data} = route.params;
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(get_data);
     const [objError, setObjError] = useState('');
     const queryClient = useQueryClient();
     const [modalViisble, setModalVisible] = useState(false);
@@ -59,7 +59,7 @@ const PoultryHarvestedProduct = ({
     const {mutate: updatePoultry} = useMutation({
       mutationFn: (data: any) => edit_poultry(data),
       onSuccess: data => {
-        // setSuccessModal(true);
+        setSuccessModal(true);
         queryClient.invalidateQueries();
       },
       onError: error => {
@@ -70,6 +70,24 @@ const PoultryHarvestedProduct = ({
         );
       },
     });
+    useEffect(()=>{
+      setData(get_data?.products?.length>0?get_data?.products:[])
+      // setData(get_data?.products.map((item)=>{
+      //   return {
+      //     product_name: item?.product_name,
+      //     output: item?.output,
+      //     self_consumed: item?.self_consumed,
+      //     sold_to_neighbours: item?.sold_to_neighbours,
+      //     sold_for_industrial_use: item?.sold_for_industrial_use,
+      //     wastage: item?.wastage,
+      //     others: item?.others,
+      //     others_value: item?.others_value,
+      //     month_harvested: new Date(item?.month_harvested),
+      //     required_processing: item?.required_processing,
+      //   };
+      // }));
+    },[get_data])
+    console.log("get dataa", get_data)
   return (
     <View style={styles.container}>
       <View style={[Styles.mainContainer, {paddingBottom: 120}]}>
@@ -202,14 +220,14 @@ const PoultryHarvestedProduct = ({
                     product.output > 0 && product.product_name.trim() !== '',
                 );
                 if (allValid) {
-                  if (data?._id) {
+                  if (get_data?._id) {
                     console.log("heree")
                     setMessage('drafted');
                     updatePoultry({
                       ...impVal,
                       ...proVal,
                       harvested_product: data,
-                      tree_id: data?._id,
+                      poultry_id: get_data?._id,
                       status: 0,
                     });
                   } else {
@@ -243,13 +261,13 @@ const PoultryHarvestedProduct = ({
         cancel={true}
         hideText={'Cancel'}
         onSubmit={() => {
-          if (data?._id) {
+          if (get_data?._id) {
             setMessage('updated');
-            addPoultry({
+            updatePoultry({
               ...impVal,
               ...proVal,
               harvested_product: data,
-              poultry_id: data?._id,
+              poultry_id: get_data?._id,
               status: 1,
             });
           } else {

@@ -329,7 +329,7 @@ const HarvestedProductList = ({
                     value={String(values?.others_value)}
                     fullLength={true}
                     label={values?.others}
-                    keyboardType={'default'}
+                    keyboardType={'numeric'}
                     isRight={<AcresElement title={'kg'} />}
                   />
                   {touched?.others_value && errors?.others_value && (
