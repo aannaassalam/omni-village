@@ -60,7 +60,7 @@ const {t} = useTranslation()
     );
 
     return (
-      <View>
+      <View style={{width:'100%'}}>
         <View style={Styles.twoFieldsContainer}>
           <View>
             <Input

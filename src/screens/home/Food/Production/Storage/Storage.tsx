@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -57,7 +58,7 @@ const Storage = ({navigation, route}: {navigation: any; route: any}) => {
     queryFn: () => get_storage_method(),
   });
 
-  const {data: getStorage} = useQuery({
+  const {data: getStorage, isLoading} = useQuery({
     queryKey: ['get_storage'],
     queryFn: () => get_storage(),
   });
@@ -179,7 +180,9 @@ const Storage = ({navigation, route}: {navigation: any; route: any}) => {
     },
     [],
   );
-
+if(isLoading){
+  return <ActivityIndicator style={{marginTop:'50%'}} size={'large'} color={primary}/>
+}
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={Styles.mainContainer}>
@@ -293,7 +296,7 @@ const Storage = ({navigation, route}: {navigation: any; route: any}) => {
         }}
         confirmText={t('Okay')}
         title={t('Successful')}
-        comments={`${t('Form')} ${t('Successful')}`}
+        comments={`${t('Form')} ${t('submitted')} ${t('Successful')}`}
       />
     </View>
   );
