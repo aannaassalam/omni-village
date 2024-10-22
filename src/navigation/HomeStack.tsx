@@ -259,7 +259,7 @@ const HomeStack = () => {
         component={SellingChannel}
         options={{
           headerShown: true,
-          header: () => <StackHeader title={t('sellingChannel')} />,
+          header: () => <StackHeader title={t('selling channel')} />,
         }}
       />
       {/* Demographic  */}

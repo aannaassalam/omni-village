@@ -26,6 +26,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { add_consumption, edit_consumption } from '../../../../apis/food';
 import { useSelector } from 'react-redux';
 import Customdropdown from '../../../../Components/CustomDropdown/Customdropdown';
+import { useTranslation } from 'react-i18next';
 const ConsumptionInfo = ({
   navigation,
   route,
@@ -37,6 +38,7 @@ const ConsumptionInfo = ({
   const [modalViisble, setModalVisible] = useState(false);
     const [successModal, setSuccessModal] = useState(false);
     const [message, setMessage] = useState('');
+    const {t} = useTranslation()
     const authState = useSelector(state => state.authState);
     const queryClient = useQueryClient();
     const {mutate: addConsumption} = useMutation({
@@ -85,16 +87,14 @@ const ConsumptionInfo = ({
     .shape({
       quantity: Yup.number()
         .min(1, 'Quantity must be greater than equal to 1')
-        .required('quantity is required'),
-      weight_measurement: Yup.string().required(
-        'Weight measurement required is required',
-      ),
-      self_grown: Yup.number().required('Self grown is required'),
+        .required(t('quantity_required')),
+      weight_measurement: Yup.string().required(t('weight measurement')),
+      self_grown: Yup.number().required(t('self_grown is required')),
       purchased_from_neighbours: Yup.number().required(
-        'Purchased from neighbour is required',
+        t('purchased_from_neighbour is required'),
       ),
       purchased_from_market: Yup.number().required(
-        'Purchased from market use is required',
+        t('purchased_from_market is required'),
       ),
     })
     .test(
@@ -115,7 +115,7 @@ const ConsumptionInfo = ({
         if (totalAllocatedLand > quantity) {
           return this.createError({
             path: 'quantity',
-            message: `The quantity (${totalAllocatedLand}) exceeds the available quantity (${quantity})`,
+            message: `The ${t('quantity')} (${totalAllocatedLand}) exceeds the available ${t('quantity')} (${quantity})`,
           });
         }
         return true;
@@ -165,7 +165,7 @@ const ConsumptionInfo = ({
         self_grown: values?.purchased_from_neighbours,
         status: 0,
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       updateConsumption({...new_data, consumption_id: data?._id});
     } else {
       let new_data = {
@@ -177,7 +177,7 @@ const ConsumptionInfo = ({
         self_grown: values?.purchased_from_neighbours,
         status: 0,
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       addConsumption({...new_data, crop_id: crop_id});
     }
   };
@@ -192,15 +192,14 @@ const ConsumptionInfo = ({
       status: 1,
     };
     if (data?._id) {
-      setMessage('updated');
+      setMessage(t('updated'));
       updateConsumption({...new_data, consumption_id: data?._id});
     } else {
       console.log('here2');
-      setMessage('submitted');
+      setMessage(t('submitted'));
       addConsumption({...new_data, crop_id: crop_id});
     }
   };
-  console.log("datataa", data)
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
@@ -209,7 +208,7 @@ const ConsumptionInfo = ({
             <Customdropdown
               data={authState?.weight_measurements}
               value={values.weight_measurement}
-              label={'Weight measuremnt'}
+              label={t('weight measurement')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -226,7 +225,7 @@ const ConsumptionInfo = ({
               onChangeText={handleChange('quantity')}
               value={String(values?.quantity)}
               fullLength={true}
-              label={'Quantity'}
+              label={t('quantity')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -237,7 +236,7 @@ const ConsumptionInfo = ({
               onChangeText={handleChange('self_grown')}
               value={String(values?.self_grown)}
               fullLength={true}
-              label={'Self Grown'}
+              label={t('self grown')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -248,7 +247,7 @@ const ConsumptionInfo = ({
               onChangeText={handleChange('purchased_from_neighbours')}
               value={String(values?.purchased_from_neighbours)}
               fullLength={true}
-              label={'Purchased from neighbours'}
+              label={t('purchased from neighbour')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -262,7 +261,7 @@ const ConsumptionInfo = ({
               onChangeText={handleChange('purchased_from_market')}
               value={String(values?.purchased_from_market)}
               fullLength={true}
-              label={'Purchased from market'}
+              label={t('purchased from market')}
               keyboardType={'numeric'}
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -278,13 +277,15 @@ const ConsumptionInfo = ({
       <View style={[Styles.bottomBtn]}>
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
-            onPress={()=>setModalVisible(true)}
-            btnText={'Submit'}
+            onPress={handleSubmit}
+            btnText={t('submit')}
             style={{width: width / 2.5}}
           />
           <CustomButton
-            onPress={() => {onDrafted()}}
-            btnText={'Save as draft'}
+            onPress={() => {
+              onDrafted();
+            }}
+            btnText={t('save as draft')}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
           />
@@ -293,11 +294,11 @@ const ConsumptionInfo = ({
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => onSubmit()}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
+        title={t('confirm')}
         comments="Are you sure you want to submit this form?"
       />
       <AlertModal
@@ -306,9 +307,9 @@ const ConsumptionInfo = ({
         onSubmit={() => {
           setSuccessModal(false), navigation.goBack();
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        confirmText={t('okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t("Successful")}`}
       />
     </View>
   );

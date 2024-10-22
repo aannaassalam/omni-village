@@ -8,12 +8,14 @@ import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { add_selling_channel, edit_selling_channel, get_selling_channel } from '../../../../../apis/food';
 import AlertModal from '../../../../../Components/Popups/AlertModal';
+import { useTranslation } from 'react-i18next';
 
 const SellingChannel = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const queryClient = useQueryClient();
   const [modalVisible,setModalVisible]=useState(false)
+  const {t} = useTranslation()
   // Initialize state with the data object
   const [data, setData] = useState({
     local_market: false,
@@ -95,7 +97,7 @@ useEffect(()=>{
                   styles.header_text,
                   {marginBottom: 16, marginTop: 6, color: black},
                 ]}>
-                Selling Channel
+                {t('selling channel')}
               </Text>
             </View>
             <View style={styles.box_inner_container}>
@@ -113,8 +115,9 @@ useEffect(()=>{
               style={styles.row}
               onPress={() => toggleValue(key)}>
               <Text style={styles.text}>
-                {key.charAt(0).toUpperCase()}
-                {key.replace('_', ' ').slice(1)}
+                {/* {key.charAt(0).toUpperCase()}
+                {key.replace('_', ' ').slice(1)} */}
+                {t(`${key}`)}
               </Text>
               <TouchableOpacity>
                 <Image
@@ -132,7 +135,7 @@ useEffect(()=>{
       </View>
       <View style={Styles.bottomBtn}>
         <CustomButton
-          btnText={'Submit'}
+          btnText={t('submit')}
           onPress={() => {
             if (selling_channel?._id) {
               console.log('hereee');
@@ -160,10 +163,12 @@ useEffect(()=>{
       <AlertModal
         visible={modalVisible}
         successModal={true}
-        onSubmit={() => {setModalVisible(false),navigation.goBack()}}
-        confirmText="Okay"
-        title="Successfully Submit"
-        comments="Form submitted successfully!"
+        onSubmit={() => {
+          setModalVisible(false), navigation.goBack();
+        }}
+        confirmText={t('Okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${t('submitted')} ${t('Successful')}`}
       />
     </View>
   );

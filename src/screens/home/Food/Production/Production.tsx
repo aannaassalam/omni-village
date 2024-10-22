@@ -21,6 +21,8 @@ import {fontFamilyBold, fontFamilyRegular} from '../../../../styles/fontStyle';
 import {useSelector} from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import '../../../../i18next'
+import { useQuery } from '@tanstack/react-query';
+import { get_storage } from '../../../../apis/food';
 
 const Production = ({navigation}: {navigation: any}) => {
   const {fontScale} = useWindowDimensions();
@@ -28,6 +30,7 @@ const Production = ({navigation}: {navigation: any}) => {
   const authState = useSelector((state: any) => state.authState);
   const [items, setItems] = useState([{}]);
   const {t} =useTranslation()
+ 
   useEffect(() => {
     setItems([
       {
@@ -120,7 +123,14 @@ const Production = ({navigation}: {navigation: any}) => {
             <TouchableOpacity
               key={index}
               style={styles.box_container}
-              onPress={() => navigation.navigate(item?.navigation)}>
+              onPress={() =>
+                // item?.navigation === 'storage'
+                //   ? navigation.navigate(item?.navigation, {
+                //       getStorage: getStorage,
+                //     })
+                //   : item?.navigation
+                navigation.navigate(item?.navigation)
+              }>
               <View style={styles.inner_container}>
                 <View>
                   {item?.navigation === 'sellingChannel' ? null : (

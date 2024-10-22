@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Styles, width} from '../../../../../styles/globalStyles';
 import HeaderCard from '../../../../../Components/Card/HeaderCard';
 import {
@@ -32,10 +32,16 @@ import {TextInput} from 'react-native-paper';
 import CustomButton from '../../../../../Components/CustomButton/CustomButton';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useSelector} from 'react-redux';
-import {add_storage, edit_storage, get_storage} from '../../../../../apis/food';
+import {
+  add_storage,
+  edit_storage,
+  get_storage,
+  get_storage_method,
+} from '../../../../../apis/food';
 import AlertModal from '../../../../../Components/Popups/AlertModal';
+import {useTranslation} from 'react-i18next';
 
-const Storage = () => {
+const Storage = ({navigation, route}: {navigation: any; route: any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [data, setData] = useState(storage_data);
@@ -44,10 +50,18 @@ const Storage = () => {
   const authState = useSelector((state: any) => state.authState);
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
-  const {data: getStorage, isLoading} = useQuery({
+  const {t} = useTranslation();
+
+  const {data: getStorageMethod} = useQuery({
+    queryKey: ['get_storage_method'],
+    queryFn: () => get_storage_method(),
+  });
+
+  const {data: getStorage} = useQuery({
     queryKey: ['get_storage'],
     queryFn: () => get_storage(),
   });
+
   const {mutate: addStorage} = useMutation({
     mutationFn: (data: any) => add_storage(data),
     onSuccess: data => {
@@ -55,7 +69,7 @@ const Storage = () => {
       queryClient.invalidateQueries();
     },
     onError: error => {
-      setModalVisible(false)
+      setModalVisible(false);
       console.log(
         'error?.response?.data?.message edit',
         error,
@@ -63,6 +77,7 @@ const Storage = () => {
       );
     },
   });
+
   const {mutate: editStorage} = useMutation({
     mutationFn: (data: any) => edit_storage(data),
     onSuccess: data => {
@@ -70,7 +85,7 @@ const Storage = () => {
       queryClient.invalidateQueries();
     },
     onError: error => {
-      setModalVisible(false)
+      setModalVisible(false);
       console.log(
         'error?.response?.data?.message edit',
         error,
@@ -78,26 +93,93 @@ const Storage = () => {
       );
     },
   });
-  const handleSelectStorageMethod = (methodId: any, methodName: any) => {
-    setData(prevData =>
-      prevData.map(item =>
-        item._id === methodId
-          ? {
-              ...item,
-              storage_method_id: methodId + 12,
-              storage_method_name: methodName,
-            }
-          : item,
-      ),
-    );
-  };
+
+  const handleSelectStorageMethod = useCallback(
+    (methodId: any, methodName: any) => {
+      setData(prevData =>
+        prevData.map(item =>
+          item._id === methodId
+            ? {
+                ...item,
+                storage_method_id: methodId + 12,
+                storage_method_name: methodName,
+              }
+            : item,
+        ),
+      );
+    },
+    [],
+  );
+
   useEffect(() => {
     if (getStorage?.length > 0) {
       setData(getStorage);
     } else {
-      setData(storage_data);
+      setData([
+        {
+          _id: 1,
+          storage_quantity: '',
+          storage_method_name: '',
+          storage_method_id: '',
+          storage_name: 'grain',
+        },
+        {
+          _id: 2,
+          storage_quantity: '',
+          storage_method_name: '',
+          storage_method_id: '',
+          storage_name: 'poultry',
+        },
+        {
+          _id: 3,
+          storage_quantity: '',
+          storage_method_name: '',
+          storage_method_id: '',
+          storage_name: 'meat',
+        },
+        {
+          _id: 4,
+          storage_quantity: '',
+          storage_method_name: '',
+          storage_method_id: '',
+          storage_name: 'vegetables & fruits',
+        },
+      ]);
     }
-  }, [getStorage, storage_data]);
+  }, [getStorage]);
+
+  const onStorageValue = useCallback((value: any, id: any) => {
+    setData(prevData =>
+      prevData.map(item =>
+        item._id === id
+          ? {
+              ...item,
+              storage_quantity: parseInt(value) || 0,
+            }
+          : item,
+      ),
+    );
+  }, []);
+
+  const setValue = useCallback(
+    (value: any, id: any, storage_method_id: any) => {
+      setSelectedStorage(item => item);
+      Keyboard.dismiss();
+      setData(prevData =>
+        prevData.map(item =>
+          item._id === id
+            ? {
+                ...item,
+                storage_method_name: value,
+                storage_method_id: storage_method_id,
+              }
+            : item,
+        ),
+      );
+    },
+    [],
+  );
+
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={Styles.mainContainer}>
@@ -109,11 +191,11 @@ const Storage = () => {
                   styles.header_text,
                   {marginBottom: 16, marginTop: 6, color: black},
                 ]}>
-                Storage
+                {t('storage')}
               </Text>
               <View style={{flexDirection: 'row', gap: 26}}>
                 <View>
-                  <Text style={styles.sub_text}>Used land</Text>
+                  <Text style={styles.sub_text}>{t('used land')}</Text>
                   <Text
                     style={[
                       styles.sub_text,
@@ -135,118 +217,60 @@ const Storage = () => {
         </HeaderCard>
         <KeyboardAvoidingView keyboardVerticalOffset={100} behavior="padding">
           <ScrollView contentContainerStyle={{paddingBottom: 100}}>
-          <View>
-            {data.map((item: any, index: any) => {
-              return (
-                <StorageList
-                  key={index}
-                  id={item?._id || index}
-                  storage_name={item?.storage_name}
-                  title={`For ${item?.storage_name}`}
-                  storage_method_name={item?.storage_method_name}
-                  storage_value={item?.storage_quantity}
-                  onStorageValue={(value: any, id: any) => {
-                    setData(prevData =>
-                      prevData.map(item =>
-                        item._id === id
-                          ? {
-                              ...item,
-                              storage_quantity: parseInt(value) || 0,
-                            }
-                          : item,
-                      ),
-                    );
-                  }}
-                  isVisible={visible}
-                  setValue={(value: any, id: any, storage_method_id: any) => {
-                    setSelectedStorage(item);
-                    // if (value == 'Others') {
-                    //   setData(prevData =>
-                    //     prevData.map(item =>
-                    //       item._id === id
-                    //         ? {
-                    //             ...item,
-                    //             storage_method_name: value,
-                    //           }
-                    //         : item,
-                    //     ),
-                    //   );
-                    //   Keyboard.dismiss()
-                    //   setVisible(true);
-                    // } else {
-                    Keyboard.dismiss();
-                    setData(prevData =>
-                      prevData.map(item =>
-                        item._id === id
-                          ? {
-                              ...item,
-                              storage_method_name: value,
-                              storage_method_id: storage_method_id,
-                            }
-                          : item,
-                      ),
-                    );
-                    // }
-                  }}
-                />
-              );
-            })}
-          </View>
+            <View>
+              {data.map((item: any) => {
+                return (
+                  <StorageList
+                    key={item._id}
+                    id={item._id}
+                    storage_name={item.storage_name}
+                    title={`For ${t(`${item.storage_name}`)}`}
+                    storage_method_name={item.storage_method_name}
+                    storage_value={item.storage_quantity}
+                    onStorageValue={onStorageValue}
+                    setValue={setValue}
+                  />
+                );
+              })}
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
       <View style={Styles.bottomBtn}>
         <CustomButton
-          btnText={'Submit'}
+          btnText={t('submit')}
           onPress={() => {
-            // const totalQuantity = data.reduce(
-            //   (acc, item) => acc + item.storage_quantity,
-            //   0,
-            // );
             const allHaveMethod = data.every(
               item => item.storage_method_name !== '',
             );
-            // if (totalQuantity > authState?.sub_area?.storage) {
-            //   ToastAndroid.show(
-            //     'Total storage quantity exceeds sub-area storage capacity',
-            //     ToastAndroid.BOTTOM,
-            //   );
-            // } else {
-
-              if (allHaveMethod) {
-                if (getStorage.length > 0) {
-                  console.log('hereee', data);
-                  editStorage(data.map((item)=>{
-                    return{
-                      _id: item._id,
-                      storage_name: item?.storage_name,
-                      storage_method_id: item.storage_method_id,
-                      storage_method_name: item.storage_method_name,
-                      storage_quantity: item.storage_quantity,
-                    }
-                  }));
-                } else {
-                  console.log('heereree2', data);
-                  addStorage(
-                    data.map(item => {
-                      return {
-                        storage_name: item?.storage_name,
-                        storage_method_id: item.storage_method_id,
-                        storage_method_name: item.storage_method_name,
-                        storage_quantity: item.storage_quantity,
-                      };
-                    }),
-                  );
-                }
+            if (allHaveMethod) {
+              if (getStorage.length > 0) {
+                editStorage(
+                  data.map(item => ({
+                    _id: item._id,
+                    storage_name: item.storage_name,
+                    storage_method_id: item.storage_method_id,
+                    storage_method_name: item.storage_method_name,
+                    storage_quantity: item.storage_quantity,
+                  })),
+                );
               } else {
-                ToastAndroid.show(
-                  'Please select storage method for all crops',
-                  ToastAndroid.BOTTOM,
+                addStorage(
+                  data.map(item => ({
+                    storage_name: item.storage_name,
+                    storage_method_id: item.storage_method_id,
+                    storage_method_name: item.storage_method_name,
+                    storage_quantity: item.storage_quantity,
+                  })),
                 );
               }
+            } else {
+              ToastAndroid.show(
+                'Please select storage method for all crops',
+                ToastAndroid.BOTTOM,
+              );
             }
-          // }
-          }
+          }}
         />
       </View>
       {visible && (
@@ -265,11 +289,11 @@ const Storage = () => {
         visible={modalVisible}
         successModal={true}
         onSubmit={() => {
-          setModalVisible(false)
+          setModalVisible(false);
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form updated successfully`}
+        confirmText={t('Okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${t('Successful')}`}
       />
     </View>
   );

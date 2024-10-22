@@ -22,6 +22,7 @@ import {useSelector} from 'react-redux';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {add_hunting, edit_hunting} from '../../../../../apis/food';
 import Customdropdown from '../../../../../Components/CustomDropdown/Customdropdown';
+import { useTranslation } from 'react-i18next';
 
 const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
   const {crop_name, crop_id, data} = route.params;
@@ -30,6 +31,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
   const [message, setMessage] = useState('');
   const authState = useSelector(state => state.authState);
   const queryClient = useQueryClient();
+  const {t} = useTranslation()
   const {mutate: addHunting} = useMutation({
     mutationFn: (data: any) => add_hunting(data),
     onSuccess: data => {
@@ -74,26 +76,26 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
   let huntingSchema = Yup.object()
     .shape({
       number_hunted: Yup.number()
-        .min(1, 'Output must be greater than equal to 1')
-        .required('Product name is required'),
+        .min(1, 'Number must be greater than equal to 1')
+        .required(t('number is required')),
       weight_measurement: Yup.string().required(
-        'Weight measurement required is required',
+        t('weight_measurement is required'),
       ),
       meat: Yup.number()
         .min(1, 'Meat must be greater than equal to 1')
-        .required('Meat is required'),
-      self_consumed: Yup.number().required('Self consumed is required'),
+        .required(t('meat is required')),
+      self_consumed: Yup.number().required(t('self_consumed is required')),
       sold_to_neighbours: Yup.number().required(
-        'Sold to neighbours is required',
+        t('sold_to_neighbours is required'),
       ),
       sold_in_consumer_market: Yup.number().required(
-        'Sold in consumer market is required',
+        t('sold_in_consumer_market is required'),
       ),
       wastage: Yup.number().required('Wastage is required'),
       others: Yup.string(),
       others_value: Yup.number().test(
         'other-value-required',
-        'Others value is required',
+        t('other_value is required'),
         function (value) {
           const {others} = this.parent; // Accessing other field values
           if (others) {
@@ -104,11 +106,11 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
       ),
       income_from_sale: Yup.number()
         .min(1, 'Income from sale must be greater than equal to 1')
-        .required('Income from sale is required'),
+        .required(t('income_from_sale is required')),
       expenditure_on_inputs: Yup.number()
         .min(1, 'Expenditure on inputs must be greater than equal to 1')
-        .required('Expenditure on inputs is required'),
-      yield: Yup.string().required('yield is required'),
+        .required(t('expenditure_on_inputs is required')),
+      yield: Yup.string().required(t('yeild is required')),
       required_processing: Yup.boolean().required(
         'Required processing is required',
       ),
@@ -137,7 +139,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         if (totalAllocatedLand > meat) {
           return this.createError({
             path: 'meat',
-            message: `The meat (${totalAllocatedLand}) exceeds the available meat (${meat})`,
+            message: `The ${t('meat')} (${totalAllocatedLand}) exceeds the available ${meat} (${meat})`,
           });
         }
         return true;
@@ -224,7 +226,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         yield: parseFloat(values?.yield),
         status: 0,
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       updateHunting({...new_data, hunting_id: data?._id});
     } else {
       let new_data = {
@@ -243,7 +245,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         yield: parseFloat(values?.yield),
         status: 0,
       };
-      setMessage('drafted');
+      setMessage(t('drafted'));
       addHunting({...new_data, crop_id: crop_id});
     }
   };
@@ -265,11 +267,11 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
       status: 1,
     };
     if (data?._id) {
-      setMessage('updated');
+      setMessage(t('updated'));
       updateHunting({...new_data, hunting_id: data?._id});
     } else {
       console.log('here2');
-      setMessage('submitted');
+      setMessage(t('submitted'));
       addHunting({...new_data, crop_id: crop_id});
     }
   };
@@ -282,7 +284,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('number_hunted')}
               value={String(values?.number_hunted)}
               fullLength={true}
-              label={'Number hunted during the year'}
+              label={t('number')}
               keyboardType="numeric"
             />
             {touched?.number_hunted && errors?.number_hunted && (
@@ -291,7 +293,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
             <Customdropdown
               data={authState?.weight_measurements}
               value={values.weight_measurement}
-              label={'Weight measuremnt'}
+              label={t('weight measurement')}
               onChange={(value: any) => {
                 setValues({
                   ...values,
@@ -308,7 +310,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('meat')}
               value={String(values?.meat)}
               fullLength={true}
-              label={'Meat'}
+              label={t('meat')}
               keyboardType="numeric"
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -319,7 +321,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('self_consumed')}
               value={String(values?.self_consumed)}
               fullLength={true}
-              label={'Self Consumed'}
+              label={t('self consumed')}
               isRight={<AcresElement title={values?.weight_measurement} />}
               keyboardType="numeric"
             />
@@ -330,7 +332,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_to_neighbours')}
               value={String(values?.sold_to_neighbours)}
               fullLength={true}
-              label={'Sold to neighbours'}
+              label={t('sold to neighbour')}
               isRight={<AcresElement title={values?.weight_measurement} />}
               keyboardType="numeric"
             />
@@ -343,7 +345,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('sold_in_consumer_market')}
               value={String(values?.sold_in_consumer_market)}
               fullLength={true}
-              label={'Sold in Consumer Market'}
+              label={t('sold to consumer market')}
               isRight={<AcresElement title={values?.weight_measurement} />}
               keyboardType="numeric"
             />
@@ -357,7 +359,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('wastage')}
               value={String(values?.wastage)}
               fullLength={true}
-              label={'Wastage'}
+              label={t('wastage')}
               keyboardType="numeric"
               isRight={<AcresElement title={values?.weight_measurement} />}
             />
@@ -368,7 +370,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('others')}
               value={String(values?.others)}
               fullLength={true}
-              label={'Others'}
+              label={t('Other')}
             />
             {touched?.others && errors?.others && (
               <Text style={Styles.error}>{String(errors?.others)}</Text>
@@ -394,7 +396,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('income_from_sale')}
               value={String(values?.income_from_sale)}
               fullLength={true}
-              label={'Income from sale'}
+              label={t('income from sale')}
               keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
@@ -407,7 +409,7 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               onChangeText={handleChange('expenditure_on_inputs')}
               value={String(values?.expenditure_on_inputs)}
               fullLength={true}
-              label={'Expenditure on inputs'}
+              label={t('expenditure on input')}
               keyboardType="numeric"
               isRight={<AcresElement title={authState?.currency} />}
             />
@@ -422,15 +424,13 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
               value={String(values?.yield)}
               fullLength={true}
               editable={false}
-              label={'Yield'}
+              label={t('yields')}
               isRight={
                 <AcresElement title={authState?.land_measurement_symbol} />
               }
               style={{backgroundColor: '#ebeced', borderRadius: 8}}
             />
-            <Text style={[Styles.fieldLabel]}>
-              Required Processing method if any for the outputs
-            </Text>
+            <Text style={[Styles.fieldLabel]}>{t('required processing')}</Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
                 onPress={() =>
@@ -448,7 +448,9 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('yes')}
+              </Text>
               <TouchableOpacity
                 onPress={() =>
                   setValues({
@@ -465,7 +467,9 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('no')}
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -474,14 +478,14 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
             onPress={handleSubmit}
-            btnText={'Submit'}
+            btnText={t('submit')}
             style={{width: width / 2.5}}
           />
           <CustomButton
             onPress={() => {
               onDrafted();
             }}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
           />
@@ -490,12 +494,12 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => onSubmit()}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
@@ -503,9 +507,9 @@ const HuntingInfo = ({navigation, route}: {navigation: any; route: any}) => {
         onSubmit={() => {
           setSuccessModal(false), navigation.goBack();
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        confirmText={t('Okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t('Successful')}`}
       />
     </View>
   );

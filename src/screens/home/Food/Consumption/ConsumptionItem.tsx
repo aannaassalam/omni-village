@@ -33,6 +33,7 @@ import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { get_consumption_crop } from '../../../../apis/crops';
 import { delete_consumption, get_consumption } from '../../../../apis/food';
+import { useTranslation } from 'react-i18next';
 
 const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
   const {id} = route.params
@@ -42,6 +43,7 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
   const [data, setData] = useState([]);
     const authState = useSelector((state: any) => state.authState);
     const queryClient = useQueryClient();
+    const {t} = useTranslation()
     const {data: consumption, isLoading} = useQuery({
       queryKey: ['get_consumption'],
       queryFn: () => get_consumption(id),
@@ -66,7 +68,6 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
       setData(data.filter((item: any) => item._id !== itm?._id));
       deleteConsumption(itm?._id);
     };
-    console.log("consumpppttt", consumption)
     if (isLoading) {
       return (
         <View style={{marginTop: '100%'}}>
@@ -88,17 +89,17 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Consumption
+              {t('consumption')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
-                <Text style={styles.sub_text}>Consumed</Text>
+                <Text style={styles.sub_text}>{t('consumed')}</Text>
                 <Text
                   style={[
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Items
+                  {data?.length} {t('items')}
                 </Text>
               </View>
             </View>
@@ -125,7 +126,10 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <NoData title={'Select Type'} onPress={() => setModalVisible(true)} />
+            <NoData
+              title={t('select type')}
+              onPress={() => setModalVisible(true)}
+            />
           }
           ListFooterComponent={
             data?.length > 0 ? (
@@ -134,7 +138,7 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Select Type'}
+                  cropName={t('select type')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -154,10 +158,9 @@ const ConsumptionItem = ({navigation,route}:{navigation:any,route:any}) => {
               itm?.crop_id === item?.crop_id,
           );
           if (find_crop) {
-            return ToastAndroid.show('Item already exists', ToastAndroid.SHORT);
+            return ToastAndroid.show(t('item exists'), ToastAndroid.SHORT);
           } else {
             setData([...data, item]);
-            console.log("heerere", item)
             navigation.navigate('consumptionInfo', {
               id: id,
               crop_name: item?.crop_name,

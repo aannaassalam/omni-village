@@ -32,6 +32,7 @@ import AddAndDeleteCropButton from '../../../../../Components/CropButtons/AddAnd
 import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { delete_hunting, get_hunting } from '../../../../../apis/food';
+import { useTranslation } from 'react-i18next';
 
 const Hunting = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
@@ -40,6 +41,7 @@ const Hunting = ({navigation}:{navigation:any}) => {
    const [data, setData] = useState([]);
     const authState = useSelector((state: any) => state.authState);
     const queryClient = useQueryClient();
+    const {t} = useTranslation()
  const {data: hunting, isLoading} = useQuery({
    queryKey: ['get_hunting'],
    queryFn: () => get_hunting(),
@@ -85,7 +87,7 @@ const Hunting = ({navigation}:{navigation:any}) => {
                 styles.header_text,
                 {marginBottom: 16, marginTop: 6, color: black},
               ]}>
-              Hunting
+              {t('hunting')}
             </Text>
             <View style={{flexDirection: 'row', gap: 26}}>
               <View>
@@ -95,7 +97,7 @@ const Hunting = ({navigation}:{navigation:any}) => {
                     styles.sub_text,
                     {color: primary, marginVertical: 4},
                   ]}>
-                  {data?.length} Animals
+                  {data?.length} {t('Animals')}
                 </Text>
               </View>
             </View>
@@ -122,7 +124,7 @@ const Hunting = ({navigation}:{navigation:any}) => {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <NoData
-              title={'Add Hunting'}
+              title={t('add hunting livestock"')}
               onPress={() => setModalVisible(true)}
             />
           }
@@ -133,7 +135,7 @@ const Hunting = ({navigation}:{navigation:any}) => {
                 onPress={() => setModalVisible(true)}>
                 <AddAndDeleteCropButton
                   add={true}
-                  cropName={'Add Hunting'}
+                  cropName={t('add hunting livestock"')}
                   onPress={() => setModalVisible(true)}
                 />
               </TouchableOpacity>
@@ -146,20 +148,20 @@ const Hunting = ({navigation}:{navigation:any}) => {
         setModalVisible={setModalVisible}
         data={data}
         setData={async (item: any) => {
-         const find_crop = await data.find(
-           (itm: any) =>
-             itm.crop_name === item?.crop_name ||
-             itm?.crop_id === item?.crop_id,
-         );
-         if (find_crop) {
-           return ToastAndroid.show('Hunting already exists', ToastAndroid.SHORT);
-         } else {
-           setData([...data, item]);
-           navigation.navigate('huntingInfo', {
-             crop_name: item?.crop_name,
-             crop_id: item?.crop_id,
-           });
-         }
+          const find_crop = await data.find(
+            (itm: any) =>
+              itm.crop_name === item?.crop_name ||
+              itm?.crop_id === item?.crop_id,
+          );
+          if (find_crop) {
+            return ToastAndroid.show(t('hunting exists'), ToastAndroid.SHORT);
+          } else {
+            setData([...data, item]);
+            navigation.navigate('huntingInfo', {
+              crop_name: item?.crop_name,
+              crop_id: item?.crop_id,
+            });
+          }
         }}
       />
     </View>

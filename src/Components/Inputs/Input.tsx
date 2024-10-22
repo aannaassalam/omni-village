@@ -37,7 +37,8 @@ interface InputProps {
   onBlur?: any;
   inner_width?: any;
   main_width?: any;
-  autoFocus?:any
+  autoFocus?: any;
+  txtStyle?:any
 }
 
 const Input = ({
@@ -72,13 +73,14 @@ const Input = ({
   inner_width,
   main_width,
   autoFocus,
+  txtStyle,
 }: InputProps) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const [boxHeight, setBoxHeight] = useState(50);
   return (
     <View>
-      {!noLabel && <Text style={Styles.fieldLabel}>{label}</Text>}
+      {!noLabel && <Text style={[Styles.fieldLabel, txtStyle]}>{label}</Text>}
       <View
         style={{
           backgroundColor: 'white',

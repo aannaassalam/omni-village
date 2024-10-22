@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { get_consumption_crop } from '../../../apis/crops';
 import { USER_PREFERRED_LANGUAGE } from './../../../i18next/index';
+import { useTranslation } from 'react-i18next';
 
 const AddConsumptionBottomSheet = ({
   modalVisible,
@@ -39,6 +40,7 @@ const AddConsumptionBottomSheet = ({
   const snapPoints = React.useMemo(() => ['70%'], []);
   const authState = useSelector((state: any) => state.authState);
   const queryClient = useQueryClient();
+  const {t} = useTranslation()
    const {data: consumption_crop} = useQuery({
      queryKey: ['comsumption_crop'],
      queryFn: () =>
@@ -52,7 +54,7 @@ const AddConsumptionBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Select Type</Text>
+          <Text style={styles.headerText}>{t('select type')}</Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -94,7 +96,7 @@ const AddConsumptionBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Apple"
+              placeholder={t('eg nuts')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -103,7 +105,7 @@ const AddConsumptionBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Select Type'}
+          btnText={t('select type')}
           onPress={async () => {
             setModalVisible(!modalVisible), bottomsheetRef.current.close();
             await setData({

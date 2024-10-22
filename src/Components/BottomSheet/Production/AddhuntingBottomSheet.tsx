@@ -17,6 +17,7 @@ import CustomButton from '../../CustomButton/CustomButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { add_crops, get_crops } from '../../../apis/crops';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const AddHuntingBottomSheet = ({
   modalVisible,
@@ -36,6 +37,7 @@ const AddHuntingBottomSheet = ({
   const snapPoints = React.useMemo(() => ['70%'], []);
     const authState = useSelector((state: any) => state.authState);
     const queryClient = useQueryClient();
+    const {t} =useTranslation()
     const {data: hunting_crop} = useQuery({
       queryKey: ['hunting_crops'],
       queryFn: () =>
@@ -44,7 +46,6 @@ const AddHuntingBottomSheet = ({
     const {mutate: addCrop} = useMutation({
       mutationFn: (data: any) => add_crops(data),
       onSuccess: async data => {
-        console.log('idddd', data);
         queryClient.invalidateQueries();
         setModalVisible(!modalVisible), bottomsheetRef.current.close();
         await setData({
@@ -55,7 +56,7 @@ const AddHuntingBottomSheet = ({
         setCrop_name(null), setExtra_crop_name(null);
       },
       onError: error => {
-        ToastAndroid.show('Crop exists', ToastAndroid.SHORT);
+        ToastAndroid.show(t('hunting exists'), ToastAndroid.SHORT);
         console.log(
           'error?.response?.data?.message add crop',
           error,
@@ -71,7 +72,7 @@ const AddHuntingBottomSheet = ({
       setModal={setModalVisible}>
       <View style={styles.container}>
         <View style={styles.inner_container}>
-          <Text style={styles.headerText}>Add Hunting</Text>
+          <Text style={styles.headerText}>{t('add hunting livestock')}</Text>
           <TouchableOpacity
             onPress={() => {
               {
@@ -115,7 +116,7 @@ const AddHuntingBottomSheet = ({
             <Input
               onChangeText={(e: any) => setExtra_crop_name(e)}
               value={extra_crop_name}
-              placeholder="Ex: Boar"
+              placeholder={t('eg boar')}
               fullLength={true}
               noLabel={true}
               onFocus={() => setOnFocus(true)}
@@ -124,39 +125,42 @@ const AddHuntingBottomSheet = ({
           </View>
         ) : null}
         <CustomButton
-          btnText={'Add Crop'}
+          btnText={t('add hunting livestock')}
           onPress={async () => {
-             if (crop_name?.name == 'others' && extra_crop_name) {
-               let data = {
-                 name: {
-                   en: extra_crop_name,
-                   ms: 'optional',
-                   dz: 'optional',
-                 },
-                 country: ['india', 'bhutan', 'malaysia'],
-                 status: 0,
-                 ideal_consumption_per_person: 0, //from application,
-                 category: 'hunting', //cultivation, fishery, hunting, poultry, tree
-               };
-               addCrop(data);
-             } else if (
-               (crop_name?.name == 'others' && extra_crop_name === null) ||
-               extra_crop_name == '' ||
-               !crop_name?.name
-             ) {
-               ToastAndroid.show('Please enter crop name', ToastAndroid.SHORT);
-             } else {
-               setModalVisible(!modalVisible), bottomsheetRef.current.close();
-               await setData({
-                 crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
-                 crop_name:
-                   crop_name?.name == 'others'
-                     ? extra_crop_name
-                     : crop_name?.name,
-               });
-               setOnFocus(false), Keyboard.dismiss();
-               setCrop_name(null), setExtra_crop_name(null);
-             }
+            if (crop_name?.name == 'others' && extra_crop_name) {
+              let data = {
+                name: {
+                  en: extra_crop_name,
+                  ms: 'optional',
+                  dz: 'optional',
+                },
+                country: ['india', 'bhutan', 'malaysia'],
+                status: 0,
+                ideal_consumption_per_person: 0, //from application,
+                category: 'hunting', //cultivation, fishery, hunting, poultry, tree
+              };
+              addCrop(data);
+            } else if (
+              (crop_name?.name == 'others' && extra_crop_name === null) ||
+              extra_crop_name == '' ||
+              !crop_name?.name
+            ) {
+              ToastAndroid.show(
+                t(`enter ${t('hunting')} name`),
+                ToastAndroid.SHORT,
+              );
+            } else {
+              setModalVisible(!modalVisible), bottomsheetRef.current.close();
+              await setData({
+                crop_id: crop_name?.name == 'others' ? 0 : crop_name?._id,
+                crop_name:
+                  crop_name?.name == 'others'
+                    ? extra_crop_name
+                    : crop_name?.name,
+              });
+              setOnFocus(false), Keyboard.dismiss();
+              setCrop_name(null), setExtra_crop_name(null);
+            }
           }}
           style={{marginTop: '6%', width: '100%'}}
         />
