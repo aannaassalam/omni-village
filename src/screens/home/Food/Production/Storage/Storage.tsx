@@ -181,7 +181,7 @@ const Storage = ({navigation, route}: {navigation: any; route: any}) => {
     [],
   );
 if(isLoading){
-  return <ActivityIndicator style={{marginTop:'50%'}} size={'large'} color={primary}/>
+  return <ActivityIndicator style={{marginTop:'100%'}} size={'large'} color={primary}/>
 }
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>

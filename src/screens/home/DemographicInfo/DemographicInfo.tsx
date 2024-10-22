@@ -26,13 +26,33 @@ import {
   edit_demographic,
   get_demographic,
 } from '../../../apis/demographicInfo';
-const DemographicInfo = () => {
+import {useTranslation} from 'react-i18next'
+import {
+  diet,
+  language,
+  occupation,
+  chronic,
+  motor,
+  emotional,
+  habits,
+  education,
+  education_seeking,
+  skillset,
+  skillset_seeking,
+  hobbies,
+  hobbies_seeking,
+  aspiration,
+  unfullfilled,
+  wishes,
+} from '../../../../assets/mockdata/Data.ts';
+const DemographicInfo = ({navigation}:{navigation:any}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makStyles(fontScale);
   const [modalViisble, setModalVisible] = useState(false);
-      const [successModal, setSuccessModal] = useState(false);
-      const [message, setMessage] = useState('');
+  const [successModal, setSuccessModal] = useState(false);
+  const [message, setMessage] = useState('');
   const queryClient = useQueryClient();
+  const {t} = useTranslation()
   const {data: demographicInfo, isLoading} = useQuery({
     queryKey: ['get_demographic'],
     queryFn: () => get_demographic(),
@@ -40,7 +60,7 @@ const DemographicInfo = () => {
   const {mutate: addDemographic} = useMutation({
     mutationFn: (data: any) => add_demographic(data),
     onSuccess: data => {
-      console.log("successss",data)
+      console.log('successss', data);
       setModalVisible(false);
       setSuccessModal(true);
       queryClient.invalidateQueries();
@@ -53,12 +73,13 @@ const DemographicInfo = () => {
       );
     },
     onSettled: () => {
-      setModalVisible(false), setSuccessModal(false);
+      setModalVisible(false)
     },
   });
   const {mutate: editDemographic} = useMutation({
     mutationFn: (data: any) => edit_demographic(data),
     onSuccess: data => {
+      console.log("datatat", data)
       setSuccessModal(true);
       queryClient.invalidateQueries();
     },
@@ -69,30 +90,31 @@ const DemographicInfo = () => {
         error?.response?.error?.errors?.message,
       );
     },
-    onSettled:()=>{setModalVisible(false),setSuccessModal(false)}
+    onSettled: () => {
+      setModalVisible(false)
+    },
   });
-  console.log('demographicccccc', demographicInfo);
   let demographic = Yup.object().shape({
-    marital_status: Yup.string().required('Marital status is required'),
-    diet: Yup.string().required('Diet is required'),
+    marital_status: Yup.string().required(t('marital status required')),
+    diet: Yup.string().required(t('diet required')),
     height: Yup.number()
       .min(1, 'Height must be greater than equal to 1')
-      .required('Height is required'),
+      .required(t('height required')),
     weight: Yup.number()
       .min(1, 'Weight must be greater than equal to 1')
-      .required('Weight is required'),
-    speaking: Yup.string().required('Speaking is required'),
-    reading: Yup.string().required('Reading is required'),
-    writing: Yup.string().required('Writing is required'),
-    occupation: Yup.string().required('Occupation is required'),
-    yearly_income: Yup.string().required('Yearly income is required'),
-    bank_account: Yup.boolean().required('Bank account is required'),
+      .required(t('weight required')),
+    speaking: Yup.string().required(t('speaking required')),
+    reading: Yup.string().required(t('reading required')),
+    writing: Yup.string().required(t('writing required')),
+    occupation: Yup.string().required(t('occupation required')),
+    yearly_income: Yup.string().required(t('yearly_income required')),
+    bank_account: Yup.boolean().required(t('have bank account required')),
     savings_investment: Yup.boolean().required(
-      'Savings investment is required',
+      t('have savings investment required'),
     ),
     savings_investment_amount: Yup.number().test(
       'savings_investment-amount-required',
-      'Savings investment amount is required',
+      t('saving amount required'),
       function (value) {
         const {savings_investment} = this.parent; // Accessing other field values
         if (savings_investment) {
@@ -101,37 +123,38 @@ const DemographicInfo = () => {
         return true; // Otherwise, no validation on decreasing_yield
       },
     ),
-    chronic_diseases: Yup.string().required('Chronic diseases is required'),
-    motor_disability: Yup.string().required('Motor disability is required'),
-    mental_emotional: Yup.string().required('Mental and emotional is required'),
+    chronic_diseases: Yup.string().required(t('chronic disease required')),
+    motor_disability: Yup.string().required(t('motor disablities required')),
+    mental_emotional: Yup.string().required(t('mental emotional required')),
     habits: Yup.array()
-      .required('Habit is required')
+      .required(t('habits required'))
       .min(1, 'At least one habit is required'),
-    education: Yup.string().required('Education is required'),
-    education_seeking_to_gain: Yup.string()
-      .required('Education seeking to gain is required'),
-    skillset: Yup.array()
-      .required('Skillset is required')
-      .min(1, 'At least one skillset is required'),
+    education: Yup.string().required(t('education required')),
+    education_seeking_to_gain: Yup.string().required(
+      t('education seeking to gain required'),
+    ),
+    skillsets: Yup.array()
+      .required(t('skillsets required'))
+      .min(1, 'At least one skillsets is required'),
     skills_seeking_to_learn: Yup.array()
-      .required('Skills seeking to learn is required')
+      .required(t('skillsets seeking to learn required'))
       .min(1, 'At least one skills seeking to learn is required'),
     hobbies: Yup.array()
-      .required('Hobbies is required')
+      .required(t('hobbies required'))
       .min(1, 'At least one hobbies is required'),
     hobbies_seeking_to_adopt: Yup.array()
-      .required('Hobbies seeking to adopt is required')
+      .required(t('hobbies seeking to adopt required'))
       .min(1, 'At least one hobbies seeking to adopt is required'),
     aspiration: Yup.array()
-      .required('Aspiration is required')
+      .required(t('aspiration required'))
       .min(1, 'At least one aspiration is required'),
     unfulfilled_needs: Yup.array(),
     wishes: Yup.array()
-      .required('Wishes is required')
+      .required(t('wishes required'))
       .min(1, 'At least one wish is required'),
     others_wishes: Yup.string().test(
       'wishes-required',
-      'Wishes is required',
+      t('other wishes required'),
       function (value) {
         const {wishes} = this.parent; // Accessing other field values
         if (wishes.includes('Others')) {
@@ -170,7 +193,7 @@ const DemographicInfo = () => {
       habits: [],
       education: '',
       education_seeking_to_gain: '',
-      skillset: [],
+      skillsets: [],
       skills_seeking_to_learn: [],
       hobbies: [],
       hobbies_seeking_to_adopt: [],
@@ -189,47 +212,41 @@ const DemographicInfo = () => {
   useEffect(() => {
     resetForm({
       values: {
-        marital_status: demographicInfo?.data?.marital_status || 'Male',
-        diet: demographicInfo?.data?.diet || 'Stable',
-        height: demographicInfo?.data?.height || '56',
-        weight: demographicInfo?.data?.weight || '78',
-        speaking: demographicInfo?.data?.speaking || 'Stable',
-        reading: demographicInfo?.data?.reading || 'Stable',
-        writing: demographicInfo?.data?.writing || 'Stable',
-        occupation: demographicInfo?.data?.occupation || 'Stable',
-        yearly_income: demographicInfo?.data?.yearly_income || 78007,
+        marital_status: demographicInfo?.data?.marital_status || '',
+        diet: demographicInfo?.data?.diet || '',
+        height: demographicInfo?.data?.height || '',
+        weight: demographicInfo?.data?.weight || '',
+        speaking: demographicInfo?.data?.speaking || '',
+        reading: demographicInfo?.data?.reading || '',
+        writing: demographicInfo?.data?.writing || '',
+        occupation: demographicInfo?.data?.occupation || '',
+        yearly_income: demographicInfo?.data?.yearly_income || '',
         bank_account: demographicInfo?.data?.bank_account || false,
-        savings_investment: demographicInfo?.data?.savings_investment || true,
+        savings_investment: demographicInfo?.data?.savings_investment || false,
         savings_investment_amount:
-          demographicInfo?.data?.savings_investment_amount || '78900',
-        chronic_diseases: demographicInfo?.data?.chronic_diseases || 'Stable',
-        motor_disability: demographicInfo?.data?.motor_disability || 'Stable',
-        mental_emotional: demographicInfo?.mental_emotional || 'Stable',
-        habits: demographicInfo?.data?.habits || ['Cricket', 'Football'],
-        education: demographicInfo?.data?.education || 'Stable',
-        education_seeking_to_gain: demographicInfo?.data
-          ?.education_seeking_to_gain || '',
-        skillset: demographicInfo?.data?.skillset || ['Cricket', 'Football'],
-        skills_seeking_to_learn: demographicInfo?.data
-          ?.skills_seeking_to_learn || ['Cricket', 'Football'],
-        hobbies: demographicInfo?.data?.hobbies || ['Cricket', 'Football'],
-        hobbies_seeking_to_adopt: demographicInfo?.data
-          ?.hobbies_seeking_to_adopt || ['Cricket', 'Football'],
-        aspiration: demographicInfo?.data?.aspiration || [
-          'Cricket',
-          'Football',
-        ],
-        unfulfilled_needs: demographicInfo?.data?.unfulfilled_needs || [
-          'Cricket',
-          'Football',
-        ],
-        wishes: demographicInfo?.data?.wishes || ['Cricket', 'Football'],
+          demographicInfo?.data?.savings_investment_amount || '',
+        chronic_diseases: demographicInfo?.data?.chronic_diseases || '',
+        motor_disability: demographicInfo?.data?.motor_disability || '',
+        mental_emotional: demographicInfo?.data?.mental_emotional || '',
+        habits: demographicInfo?.data?.habits || [],
+        education: demographicInfo?.data?.education || '',
+        education_seeking_to_gain:
+          demographicInfo?.data?.education_seeking_to_gain || '',
+        skillsets: demographicInfo?.data?.skillsets || [],
+        skills_seeking_to_learn:
+          demographicInfo?.data?.skills_seeking_to_learn || [],
+        hobbies: demographicInfo?.data?.hobbies || [],
+        hobbies_seeking_to_adopt:
+          demographicInfo?.data?.hobbies_seeking_to_adopt || [],
+        aspiration: demographicInfo?.data?.aspiration || [],
+        unfulfilled_needs: demographicInfo?.data?.unfulfilled_needs || [],
+        wishes: demographicInfo?.data?.wishes || [],
         others_wishes: demographicInfo?.data?.others_wishes || '',
       },
     });
   }, [demographicInfo]);
   const onSubmitted = () => {
-    console.log("heerrere")
+    console.log('heerrere');
     let new_data = {
       marital_status: values?.marital_status || '',
       diet: values?.diet || '',
@@ -242,14 +259,14 @@ const DemographicInfo = () => {
       yearly_income: values?.yearly_income || '',
       bank_account: values?.bank_account || false,
       savings_investment: values?.savings_investment || false,
-      savings_investment_amount: values?.savings_investment_amount || 0,
+      savings_investment_amount: parseInt(values?.savings_investment_amount) || 0,
       chronic_diseases: values?.chronic_diseases || '',
       motor_disability: values?.motor_disability || '',
       mental_emotional: values?.mental_emotional || '',
       habits: values?.habits || [],
       education: values?.education || '',
       education_seeking_to_gain: values?.education_seeking_to_gain || '',
-      skillset: values?.skillset || [],
+      skillsets: values?.skillsets || [],
       skills_seeking_to_learn: values?.skills_seeking_to_learn || [],
       hobbies: values?.hobbies || [],
       hobbies_seeking_to_adopt: values?.hobbies_seeking_to_adopt || [],
@@ -257,11 +274,13 @@ const DemographicInfo = () => {
       unfulfilled_needs: values?.unfulfilled_needs || [],
       wishes: values?.wishes || [],
       others_wishes: values?.others_wishes || '',
-      status:1,
+      status: 1,
     };
     if (demographicInfo?.data?._id) {
+      setMessage(t('updated'))
       editDemographic({...new_data});
     } else {
+      setMessage(t('submitted'));
       addDemographic({...new_data});
     }
   };
@@ -278,14 +297,14 @@ const DemographicInfo = () => {
       yearly_income: values?.yearly_income || '',
       bank_account: values?.bank_account || false,
       savings_investment: values?.savings_investment || false,
-      savings_investment_amount: values?.savings_investment_amount || 0,
+      savings_investment_amount: parseInt(values?.savings_investment_amount) || 0,
       chronic_diseases: values?.chronic_diseases || '',
       motor_disability: values?.data,
       mental_emotional: values?.mental_emotional || '',
       habits: values?.habits || [],
       education: values?.education || '',
       education_seeking_to_gain: values?.education_seeking_to_gain || '',
-      skillset: values?.skillset || [],
+      skillsets: values?.skillsets || [],
       skills_seeking_to_learn: values?.skills_seeking_to_learn || [],
       hobbies: values?.hobbies || [],
       hobbies_seeking_to_adopt: values?.hobbies_seeking_to_adopt || [],
@@ -293,13 +312,15 @@ const DemographicInfo = () => {
       unfulfilled_needs: values?.unfulfilled_needs || [],
       wishes: values?.wishes || [],
       others_wishes: values?.others_wishes || '',
-      status:0,
+      status: 0,
+    };
+    if (demographicInfo?.data?._id) {
+      setMessage(t('updated'));
+      editDemographic({...new_data});
+    } else {
+      setMessage(t('updated'));
+      addDemographic({...new_data});
     }
-   if (demographicInfo?.data?._id) {
-     editDemographic({...new_data});
-   } else {
-     addDemographic({...new_data});
-   }
   };
   return (
     <View style={styles.container}>
@@ -308,11 +329,13 @@ const DemographicInfo = () => {
           <View style={Styles.mainContainer}>
             <Customdropdown
               data={[
-                {id: 1, label: 'Male', value: 'Male'},
-                {id: 2, label: 'Female', value: 'Female'},
+                {id: 1, label: 'Married', value: 'Married'},
+                {id: 2, label: 'Single', value: 'Single'},
+                {id: 3, label: 'Divorced', value: 'Divorced'},
+                {id: 4, label: 'Separated', value: 'Separated'},
               ]}
               value={values.marital_status}
-              label={'Marital Status'}
+              label={t('marital_status')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -325,12 +348,9 @@ const DemographicInfo = () => {
               <Text style={Styles.error}>{String(errors?.marital_status)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={diet}
               value={values.diet}
-              label={'Diet'}
+              label={t('diet')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -346,7 +366,7 @@ const DemographicInfo = () => {
               onChangeText={handleChange('height')}
               value={String(values?.height)}
               fullLength={true}
-              label={'Height'}
+              label={t('height')}
               keyboardType="numeric"
               isRight={<AcresElement title={'Unit'} />}
             />
@@ -357,7 +377,7 @@ const DemographicInfo = () => {
               onChangeText={handleChange('weight')}
               value={String(values?.weight)}
               fullLength={true}
-              label={'Weight'}
+              label={t('weight')}
               keyboardType="numeric"
               isRight={<AcresElement title={'Unit'} />}
             />
@@ -365,12 +385,9 @@ const DemographicInfo = () => {
               <Text style={Styles.error}>{String(errors?.weight)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={language}
               value={values.speaking}
-              label={'Speaking'}
+              label={t('speaking')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -383,12 +400,9 @@ const DemographicInfo = () => {
               <Text style={Styles.error}>{String(errors?.speaking)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={language}
               value={values.reading}
-              label={'Reading'}
+              label={t('reading')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -401,12 +415,9 @@ const DemographicInfo = () => {
               <Text style={Styles.error}>{String(errors?.reading)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={language}
               value={values.writing}
-              label={'Writing'}
+              label={t('writing')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -419,12 +430,9 @@ const DemographicInfo = () => {
               <Text style={Styles.error}>{String(errors?.writing)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={occupation}
               value={values.occupation}
-              label={'Occupation'}
+              label={t('occupation')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -438,11 +446,11 @@ const DemographicInfo = () => {
             )}
             <Customdropdown
               data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
+                {id: 1, label: '10000-20000', value: '10000-20000'},
+                {id: 2, label: '20000-30000', value: '20000-30000'},
               ]}
               value={values.yearly_income}
-              label={'Yearly Income'}
+              label={t('yearly_income')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -454,9 +462,7 @@ const DemographicInfo = () => {
             {touched?.yearly_income && errors?.yearly_income && (
               <Text style={Styles.error}>{String(errors?.yearly_income)}</Text>
             )}
-            <Text style={[Styles.fieldLabel]}>
-              Do you have a bank account ?
-            </Text>
+            <Text style={[Styles.fieldLabel]}>{t('have bank account')}</Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
                 onPress={() =>
@@ -474,7 +480,9 @@ const DemographicInfo = () => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('yes')}
+              </Text>
               <TouchableOpacity
                 onPress={() =>
                   setValues({
@@ -491,10 +499,12 @@ const DemographicInfo = () => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('no')}
+              </Text>
             </View>
             <Text style={[Styles.fieldLabel]}>
-              Do you have a savings/investment ?
+              {t('have savings investment')}
             </Text>
             <View style={{flexDirection: 'row', gap: 8, marginTop: 10}}>
               <TouchableOpacity
@@ -513,7 +523,9 @@ const DemographicInfo = () => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>Yes</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('yes')}
+              </Text>
               <TouchableOpacity
                 onPress={() =>
                   setValues({
@@ -530,7 +542,9 @@ const DemographicInfo = () => {
                   style={{height: 22, width: 22}}
                 />
               </TouchableOpacity>
-              <Text style={[styles?.subheading, {marginTop: 0}]}>No</Text>
+              <Text style={[styles?.subheading, {marginTop: 0}]}>
+                {t('no')}
+              </Text>
             </View>
             {values?.savings_investment ? (
               <>
@@ -539,7 +553,7 @@ const DemographicInfo = () => {
                   value={String(values?.savings_investment_amount)}
                   fullLength={true}
                   keyboardType="numeric"
-                  label={'Savings/Investments Amount'}
+                  label={t('saving amount')}
                 />
                 {touched?.savings_investment_amount &&
                   errors?.savings_investment_amount && (
@@ -550,12 +564,9 @@ const DemographicInfo = () => {
               </>
             ) : null}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={chronic}
               value={values.chronic_diseases}
-              label={'Chronic disease'}
+              label={t('chronic disease')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -570,12 +581,9 @@ const DemographicInfo = () => {
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={motor}
               value={values.motor_disability}
-              label={'Motor disbalities'}
+              label={t('motor disablities')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -590,12 +598,9 @@ const DemographicInfo = () => {
               </Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={emotional}
               value={values.mental_emotional}
-              label={'Mental & emotional well-being'}
+              label={t('mental emotional')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -615,25 +620,18 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={habits}
               setSelectedd={(item: any) => setValues({...values, habits: item})}
               selectedd={values?.habits}
-              infoName={'Habits'}
+              infoName={t('habits')}
             />
             {touched?.habits && errors?.habits && (
               <Text style={Styles.error}>{String(errors?.habits)}</Text>
             )}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={education}
               value={values.education}
-              label={'Education'}
+              label={t('education')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -663,12 +661,9 @@ const DemographicInfo = () => {
               infoName={'Education seeking to gain'}
             /> */}
             <Customdropdown
-              data={[
-                {id: 1, label: 'Stable', value: 'Stable'},
-                {id: 2, label: 'Decreasing Yield', value: 'Decreasing Yield'},
-              ]}
+              data={education_seeking}
               value={values.education_seeking_to_gain}
-              label={'Education seeking to gain'}
+              label={t('education seeking to gain')}
               onChange={(value: any) => {
                 console.log('valueee', value);
                 setValues({
@@ -689,19 +684,15 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={skillset}
               setSelectedd={(item: any) =>
-                setValues({...values, skillset: item})
+                setValues({...values, skillsets: item})
               }
-              selectedd={values?.skillset}
-              infoName={'Skillset'}
+              selectedd={values?.skillsets}
+              infoName={t('skillsets')}
             />
-            {touched?.skillset && errors?.skillset && (
-              <Text style={Styles.error}>{String(errors?.skillset)}</Text>
+            {touched?.skillsets && errors?.skillsets && (
+              <Text style={Styles.error}>{String(errors?.skillsets)}</Text>
             )}
             <MultiselectDropdown
               containerStyle={{
@@ -709,16 +700,12 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={skillset_seeking}
               setSelectedd={(item: any) =>
                 setValues({...values, skills_seeking_to_learn: item})
               }
               selectedd={values?.skills_seeking_to_learn}
-              infoName={'Skillset seeking to learn'}
+              infoName={t('skillsets seeking to learn')}
             />
             {touched?.skills_seeking_to_learn &&
               errors?.skills_seeking_to_learn && (
@@ -732,16 +719,12 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={hobbies}
               setSelectedd={(item: any) =>
                 setValues({...values, hobbies: item})
               }
               selectedd={values?.hobbies}
-              infoName={'Hobbies'}
+              infoName={t('hobbies')}
             />
             {touched?.hobbies && errors?.hobbies && (
               <Text style={Styles.error}>{String(errors?.hobbies)}</Text>
@@ -752,16 +735,12 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={hobbies_seeking}
               setSelectedd={(item: any) =>
                 setValues({...values, hobbies_seeking_to_adopt: item})
               }
               selectedd={values?.hobbies_seeking_to_adopt}
-              infoName={'Hobbies seeking to adopt'}
+              infoName={t('hobbies seeking to adopt')}
             />
             {touched?.hobbies_seeking_to_adopt &&
               errors?.hobbies_seeking_to_adopt && (
@@ -775,16 +754,12 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={aspiration}
               setSelectedd={(item: any) =>
                 setValues({...values, aspiration: item})
               }
               selectedd={values?.aspiration}
-              infoName={'Aspiration'}
+              infoName={t('aspiration')}
             />
             {touched?.aspiration && errors?.aspiration && (
               <Text style={Styles.error}>{String(errors?.aspiration)}</Text>
@@ -795,16 +770,12 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-              ]}
+              data={unfullfilled}
               setSelectedd={(item: any) =>
                 setValues({...values, unfulfilled_needs: item})
               }
               selectedd={values?.unfulfilled_needs}
-              infoName={'Unfulfilled needs (if any)'}
+              infoName={t('unfulfilled')}
             />
             <MultiselectDropdown
               containerStyle={{
@@ -812,15 +783,10 @@ const DemographicInfo = () => {
                 marginTop: '5%',
                 paddingTop: 0,
               }}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Story Books', name: 'Story Books'},
-                {key: 'Others', name: 'Others'},
-              ]}
+              data={wishes}
               setSelectedd={(item: any) => setValues({...values, wishes: item})}
               selectedd={values?.wishes}
-              infoName={'Wishes'}
+              infoName={t('wishes')}
             />
             {touched?.wishes && errors?.wishes && (
               <Text style={Styles.error}>{String(errors?.wishes)}</Text>
@@ -831,7 +797,7 @@ const DemographicInfo = () => {
                   onChangeText={handleChange('others_wishes')}
                   value={String(values?.others_wishes)}
                   fullLength={true}
-                  label={'Other Wishes'}
+                  label={t('other wishes')}
                   keyboardType={'default'}
                 />
                 {touched?.others_wishes && errors?.others_wishes && (
@@ -848,14 +814,14 @@ const DemographicInfo = () => {
         <View style={{flexDirection: 'row', gap: 16}}>
           <CustomButton
             onPress={handleSubmit}
-            btnText={'Submit'}
+            btnText={t('submit')}
             style={{width: width / 2.5}}
           />
           <CustomButton
             onPress={() => {
               onDrafted();
             }}
-            btnText={'Save as draft'}
+            btnText={t('save as draft')}
             btnStyle={{color: dark_grey}}
             style={{width: width / 2.5, backgroundColor: '#ebeced'}}
           />
@@ -864,12 +830,12 @@ const DemographicInfo = () => {
       <AlertModal
         visible={modalViisble}
         cancel={true}
-        hideText={'Cancel'}
+        hideText={t('cancel')}
         onSubmit={() => onSubmitted()}
-        confirmText="Submit"
+        confirmText={t('submit')}
         onHide={() => setModalVisible(false)}
-        title="Confirm Submit"
-        comments="Are you sure you want to submit this form?"
+        title={t('confirm')}
+        comments={t('Are you sure you want to submit this form?')}
       />
       <AlertModal
         visible={successModal}
@@ -877,9 +843,9 @@ const DemographicInfo = () => {
         onSubmit={() => {
           setSuccessModal(false), navigation.goBack();
         }}
-        confirmText="Okay"
-        title="Successful"
-        comments={`Form ${message} successfully`}
+        confirmText={t('okay')}
+        title={t('Successful')}
+        comments={`${t('Form')} ${message} ${t('Successful')}`}
       />
     </View>
   );
