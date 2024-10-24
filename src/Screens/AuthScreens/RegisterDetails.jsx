@@ -170,6 +170,7 @@ export default function RegisterDetails({navigation, route}) {
         lm => lm.name === data.land_measurement,
       ).symbol,
       edit: isEdit,
+      type:'villager'
     };
     const _file = fileResponse[0] || {};
 
@@ -218,7 +219,6 @@ export default function RegisterDetails({navigation, route}) {
         return false;
       }
 
-      return null;
     } else if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
@@ -819,6 +819,12 @@ const makeStyles = fontScale =>
       marginRight: 'auto',
       flex: 1,
       flexWrap: 'wrap',
+    },
+    register_txt: {
+      color: '#268C43',
+      fontSize: 14 / fontScale,
+      fontFamily: 'ubuntu-regular',
+      marginTop:'5%'
     },
     cmn_wrp: {
       flexDirection: 'row',

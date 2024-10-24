@@ -19,6 +19,7 @@ import LoginInput from '../../Components/CustomInputField/LoginInput';
 import {Scale} from '../../Helper/utils';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {sentOtp} from '../../functions/AuthScreens';
+import { fontFamilyBold, fontFamilyMedium } from '../../styles/fontStyle';
 
 export default function Register({navigation, route}) {
   const [inputVal, setInputVal] = useState('');
@@ -64,7 +65,8 @@ export default function Register({navigation, route}) {
   const {mutate, isPending} = useMutation({
     mutationFn: sentOtp,
     onSuccess: (data, variables) =>
-      navigation.navigate('registerotp', variables),
+     { console.log("datata", data)
+      navigation.navigate('registerotp', variables)},
     onError: err => {
       if (err.response.status === 400) {
         setApi_err(err.response.data.message);
@@ -166,7 +168,14 @@ export default function Register({navigation, route}) {
           />
         </View>
       </View> */}
-
+      <View style={{position:'absolute', alignContent:'center', alignSelf:'center', bottom: 60}}>
+          <View style={styles.register_text }>
+        <Text
+          varint="body1"
+            style={[styles.register_text_frst, { color: 'black' }]}>
+            {t('Are you a field officer ?')} <Text style={{ color: '#268C43', fontFamily: fontFamilyMedium }} onPress={() => navigation.navigate('registerFieldOfficer', { edit: false })}>{t('register')}</Text>
+        </Text>
+          </View>
         <View style={styles.register_text}>
           <Text style={styles.register_text_frst}>
             {t('already have an account')}
@@ -175,6 +184,7 @@ export default function Register({navigation, route}) {
             <Text style={styles.register_text_scnd}>{t('login')}</Text>
           </Pressable>
         </View>
+      </View>
       </>
       <CountryPicker
         withCurrency
@@ -291,8 +301,9 @@ const makeStyles = fontScale =>
     register_text: {
       flexDirection: 'row',
       justifyContent: 'center',
-      marginTop: 'auto',
+      // marginTop: 'auto',
       // alignSelf: 'center',
+      paddingVertical:10,
       alignItems: 'center',
     },
     register_text_frst: {

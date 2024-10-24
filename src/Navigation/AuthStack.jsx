@@ -16,16 +16,25 @@ import Productionstack from './ProductionStack';
 import Home from '../Screens/Home';
 import Demographic from '../Screens/DemographicInfo/Demographic';
 import LandholdingUsage from '../Screens/Landholding & Usage Mapping/LandholdingUsage';
+import RegisterFieldOfficer from '../Screens/AuthScreens/RegisterFieldOfficer';
+import RegisterDetailsFieldOfficer from '../Screens/AuthScreens/RegisterDetailsFieldOfficer';
+import RegisterFieldOfficerOtp from '../Screens/AuthScreens/RegisterFieldOfficerOtp';
+import { storage } from '../Helper/Storage';
 
 const Stack = createStackNavigator();
 
 export default function AuthStack({user}) {
+  console.log("user", user)
+  const type = storage.getString('type');
+  console.log("typeeee", type)
   const renderScreen = useCallback(() => {
     if (!user) {
       return 'startup';
-    } else if (user?.first_name === '-') {
+    } else if (type==="villager"&&user?.first_name === '-') {
       return 'registerdetails';
-    } else {
+    } else if (type === "officer" && user?.first_name === '-'){
+      return 'registerDetailsFieldOfficer';
+    }else {
       // return 'registerdetails';
       return 'home';
     }
@@ -36,11 +45,14 @@ export default function AuthStack({user}) {
       screenOptions={{headerShown: false}}
       initialRouteName={renderScreen()}>
       <Stack.Screen name="registerdetails" component={RegisterDetails} />
+      <Stack.Screen name="registerFieldOfficer" component={RegisterFieldOfficer} />
+      <Stack.Screen name="registerDetailsFieldOfficer" component={RegisterDetailsFieldOfficer} />
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
       <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
+      <Stack.Screen name="registerFieldOfficerOtp" component={RegisterFieldOfficerOtp} />
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
       <Stack.Screen name="home" component={Home} />
