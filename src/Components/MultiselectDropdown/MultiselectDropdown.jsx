@@ -41,7 +41,7 @@ export default MutipleselectDropdown = ({
                         selectedTextStyle={styles.selectedTextStyle}
                         inputSearchStyle={styles.inputSearchStyle}
                         iconStyle={styles.iconStyle}
-                        search
+                        search={false}
                         data={data?.map((i)=>{return{label: i?.name, value: i?.key}})}
                         labelField="label"
                         valueField="value"
@@ -63,17 +63,18 @@ const makeStyles = fontScale =>
         textInputContainer: {
             paddingTop: 5,
             marginTop: 10,
-            width: '95%',
+            width: '100%',
             alignSelf: 'center',
             position: 'relative',
         },
         textInputInner: {
             backgroundColor: '#fff',
-            borderColor: '#c6f1d3',
+            // borderColor: '#c6f1d3',
+            borderColor: primaryColor,
             borderWidth: 1,
             borderRadius: 10,
             paddingRight: 5,
-            paddingTop: 5,
+            paddingVertical: 8,
             color: '#000'
         },
         infoName: {
@@ -98,12 +99,13 @@ const makeStyles = fontScale =>
             color: '#000'
         },
         dropdown: {
-            paddingHorizontal: 8,
+            paddingHorizontal: 12,
             marginTop: 10,
             marginBottom: 6,
             fontSize: 12 / fontScale,
-            backgroundColor: borderColor,
+            backgroundColor: '#f4f4f4',
             borderRadius: 8,
+            paddingVertical:4,
         },
         selectedStyle:{
             backgroundColor:primaryColor,
@@ -123,5 +125,6 @@ const makeStyles = fontScale =>
         itemTxtStyle:{
             fontSize: 12/fontScale,
             color: '#000',
+            fontFamily: fontFamilyMedium
         }
     });

@@ -20,6 +20,12 @@ import RegisterFieldOfficer from '../Screens/AuthScreens/RegisterFieldOfficer';
 import RegisterDetailsFieldOfficer from '../Screens/AuthScreens/RegisterDetailsFieldOfficer';
 import RegisterFieldOfficerOtp from '../Screens/AuthScreens/RegisterFieldOfficerOtp';
 import { storage } from '../Helper/Storage';
+import DemographicOccupation from '../Screens/DemographicInfo/DemographiOccupation';
+import DemographicAspiration from '../Screens/DemographicInfo/DemographicAspiration';
+import DemographicDisease from '../Screens/DemographicInfo/DemographicDisease';
+import DemographicHabits from '../Screens/DemographicInfo/DemographicHabits';
+import DemographicUnfulfilled from '../Screens/DemographicInfo/DemographicUnfulfilled';
+import DemographicWishes from '../Screens/DemographicInfo/DemographicWishes';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +67,12 @@ export default function AuthStack({user}) {
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
       <Stack.Screen name="MapScreen" component={MapScreen} />
       <Stack.Screen name="demographic" component={Demographic} />
+      <Stack.Screen name="demographicOccupation" component={DemographicOccupation} />
+      <Stack.Screen name="demographicAspiration" component={DemographicAspiration} />
+      <Stack.Screen name="demographicDisease" component={DemographicDisease} />
+      <Stack.Screen name="demographicHabits" component={DemographicHabits} />
+      <Stack.Screen name="demographicUnfulfilled" component={DemographicUnfulfilled} />
+      <Stack.Screen name="demographicWishes" component={DemographicWishes} />
       <Stack.Screen name='landholdingUsage' component={LandholdingUsage}/>
     </Stack.Navigator>
   );

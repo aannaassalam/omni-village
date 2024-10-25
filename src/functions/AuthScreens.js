@@ -36,3 +36,8 @@ export const saveLand = async body => {
   let res = await axiosInstance?.post(endpoints?.auth?.landAllocation, body);
   return res?.data;
 };
+
+export const get_dropdown_data = async () => {
+  let res = await axiosInstance?.get(endpoints?.dropdown?.get_dropdown);
+  return res?.data;
+};

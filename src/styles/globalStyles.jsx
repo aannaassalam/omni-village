@@ -1,7 +1,50 @@
 import { Dimensions, StyleSheet, useWindowDimensions } from "react-native";
 import { fontFamilyMedium, fontFamilyRegular } from "./fontStyle";
-const { width, fontScale } = Dimensions.get('window')
+import { primaryColor } from "./colors";
+export const { width,height, fontScale } = Dimensions.get('window')
 export const Styles = StyleSheet.create({
+    fieldLabel: {
+        fontFamily: fontFamilyMedium,
+        fontSize: 13 / fontScale,
+        color: primaryColor,
+        marginBottom: 8,
+        marginTop: 16,
+    },
+    twoFieldsContainer: {
+        flexDirection: 'row',
+        gap: 16,
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    divider: {
+        marginVertical: 16
+    },
+    bottomBtn: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: 'white',
+        elevation: 5,
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        alignSelf: 'center'
+    },
+    pickerContainer: {
+        borderRadius: 8,
+        borderColor: primaryColor,
+        borderWidth: 1,
+        backgroundColor: '#fff',
+        width: '100%',
+        alignSelf: 'center',
+    },
+    bottomPopupbutton: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        justifyContent: 'space-between',
+        marginTop: '5%',
+        paddingHorizontal: 14
+    },
     bottomPopupbutton: {
         flexDirection: 'row',
         alignSelf: 'center',
@@ -24,6 +67,12 @@ export const Styles = StyleSheet.create({
         color: '#ff000e',
         marginLeft: 20,
         marginBottom: 5,
+        marginTop: 5,
+    },
+    error2:{
+        fontFamily: fontFamilyRegular,
+        fontSize: 14 / fontScale,
+        color: '#ff000e',
         marginTop: 5,
     },
     savePopup: {

@@ -103,6 +103,9 @@ export const endpoints = {
     edit_consumtion: '/consumption/edit_consumption',
     delete_consumption: '/consumption/delete_consumption',
   },
+  dropdown: {
+    get_dropdown: '/demographic_dropdown/',
+  },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
     edit_demographic: '/demographic/update_demographic_info_by_id',

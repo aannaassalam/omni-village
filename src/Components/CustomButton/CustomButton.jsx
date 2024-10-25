@@ -32,6 +32,7 @@ export default function CustomButton({
   btnText,
   onPress,
   style,
+  btnStyle = {},
   loading = false,
 }) {
   const {fontScale} = useWindowDimensions();
@@ -42,7 +43,7 @@ export default function CustomButton({
       style={[styles.cmn_btn, style]}
       onPress={onPress}
       disabled={loading}>
-      <Text style={styles.cmn_btn_text}>
+      <Text style={[styles.cmn_btn_text, btnStyle]}>
         {loading ? <ActivityIndicator color="#fff" /> : btnText}
       </Text>
     </TouchableOpacity>
