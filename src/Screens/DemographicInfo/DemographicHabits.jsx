@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -8,11 +8,12 @@ import Customdropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useTranslation } from 'react-i18next';
 import { Styles, width } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../Components/Inputs/Input';
 import { get_dropdown_data } from '../../functions/AuthScreens';
 import { useQuery } from '@tanstack/react-query';
+import { primaryColor } from '../../styles/colors';
 
 const DemographicHabits = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
@@ -21,33 +22,34 @@ const DemographicHabits = ({ navigation, route }) => {
     const [hobbies,setHobbies] = useState(false)
     const [skillset, setSkillset] = useState(false)
     const [skills,setSkills] = useState(false)
-    const { demographic, occupation, disease } = route.params
-    const { data: dropdownData } = useQuery({
+    const { demographic, occupation, disease, data, member_id,
+        demographic_id } = route.params
+    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        specific_habit: yup.string().required('Specific habit is required'),
-        education_status: yup.string().required('Education status is required'),
-        education_seeking_to_gain: yup.string().required('Education seeking to gain is required'),
-        cultural_traditional_hobbies: yup.array().required('Cultural traditional hobbies are required').min(1, 'Atleast one Cultural traditional hobbies are required'),
-        outdoor_nature_based_hobbies: yup.array().required('Outdoor nature based hobbies are required').min(1, 'Atleast one Outdoor nature based hobbies are required'),
-        modern_digital_hobbies: yup.array().required('Modern digital hobbies are required').min(1, 'Atleast one Modern digital hobbies are required'),
-        creative_artistics_hobbies: yup.array().required('Creative artistics hobbies are required').min(1, 'Atleast one Creative artistics hobbies are required'),
+        specific_habit: yup.string().required(t('Specific habit is required')),
+        education_status: yup.string().required(t('Education status is required')),
+        education_seeking_to_gain: yup.string().required(t('Education seeking to gain is required')),
+        cultural_traditional_hobbies: yup.array().required('Cultural traditional hobbies are required').min(1, t('Atleast one Cultural traditional hobbies are required')),
+        outdoor_nature_based_hobbies: yup.array().required('Outdoor nature based hobbies are required').min(1, t('Atleast one Outdoor nature based hobbies are required')),
+        modern_digital_hobbies: yup.array().required('Modern digital hobbies are required').min(1, t('Atleast one Modern digital hobbies are required')),
+        creative_artistics_hobbies: yup.array().required('Creative artistics hobbies are required').min(1, t('Atleast one Creative artistics hobbies are required')),
         other_hobbies: yup.string(),
-        technical_vocational_skills_learn: yup.array().required('Technical vocational skills learn are required').min(1, 'Atleast one Technical vocational skills learn are required'),
-        entrepreneurial_business_skills_learn: yup.array().required('Entrepreneurial business skills learn are required').min(1, 'Atleast one Entrepreneurial business skills learn are required'),
-        digital_technological_skills__learn: yup.array().required('Digital technological learn are required').min(1, 'Atleast one Digital technological learn are required'),
-        communication_language_skills_learn: yup.array().required('Communication language skills learn are required').min(1, 'Atleast one Communication language skills learn are required'),
-        health_well_being_skills_learn: yup.array().required('Health well being skills learn are required').min(1, 'Atleast one Health well being skills learn are required'),
-        creative_artistics_skills_learn: yup.array().required('Creative artistics skills learn are required').min(1, 'Atleast one Creative artistics skills learn are required'),
+        technical_vocational_skills_learn: yup.array().required('Technical vocational skills learn are required').min(1, t('Atleast one Technical vocational skills learn are required')),
+        entrepreneurial_business_skills_learn: yup.array().required('Entrepreneurial business skills learn are required').min(1, t('Atleast one Entrepreneurial business skills learn are required')),
+        digital_technological_skills_learn: yup.array().required('Digital technological learn are required').min(1, t('Atleast one Digital technological learn are required')),
+        communication_language_skills_learn: yup.array().required('Communication language skills learn are required').min(1, t('Atleast one Communication language skills learn are required')),
+        health_well_being_skills_learn: yup.array().required('Health well being skills learn are required').min(1, t('Atleast one Health well being skills learn are required')),
+        creative_artistics_skills_learn: yup.array().required('Creative artistics skills learn are required').min(1, t('Atleast one Creative artistics skills learn are required')),
         others_skills_learn: yup.string(),
-        technical_vocational_skills: yup.array().required('Technical vocational skills are required').min(1, 'Atleast one Technical vocational skills are required'),
-        entrepreneurial_business_skills: yup.array().required('Entrepreneurial business skills are required').min(1, 'Atleast one Entrepreneurial business skills are required'),
-        interpersonal_skills: yup.array().required('Interpersonal skills are required').min(1, 'Atleast one Interpersonal skills are required'),
-        creative_artistic_skills: yup.array().required('Creative artistic skills are required').min(1, 'Atleast one Creative artistic skills are required'),
-        professional_skills: yup.array().required('Professional skills are required').min(1, 'Atleast one Professional skills are required'),
+        technical_vocational_skills: yup.array().required('Technical vocational skills are required').min(1, t('Atleast one Technical vocational skills are required')),
+        entrepreneurial_business_skills: yup.array().required('Entrepreneurial business skills are required').min(1, t('Atleast one Entrepreneurial business skills are required')),
+        interpersonal_skills: yup.array().required('Interpersonal skills are required').min(1, t('Atleast one Interpersonal skills are required')),
+        creative_artistic_skills: yup.array().required('Creative artistic skills are required').min(1, t('Atleast one Creative artistic skills are required')),
+        professional_skills: yup.array().required('Professional skills are required').min(1, t('Atleast one Professional skills are required')),
         others_skills: yup.string()
     });
     const {
@@ -83,22 +85,58 @@ const DemographicHabits = ({ navigation, route }) => {
             professional_skills:[],
             others_skills: ''
         },
-        // validationSchema: schema,
+        validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
             navigation.navigate('demographicAspiration', {
                 demographic: demographic,
                 occupation: occupation,
                 disease: disease,
+                data:data,
+                member_id,
+        demographic_id,
                 habits: values
             })
         },
     });
+    useEffect(()=>{
+        resetForm({
+            values:{
+                specific_habit:data?.specific_habit,
+                education_status:data?.education_status,
+                education_seeking_to_gain:data?.education_seeking_to_gain,
+                cultural_traditional_hobbies:data?.cultural_traditional_hobbies,
+                outdoor_nature_based_hobbies:data?.outdoor_nature_based_hobbies,
+                modern_digital_hobbies:data?.modern_digital_hobbies,
+                creative_artistics_hobbies:data?.creative_artistics_hobbies,
+                other_hobbies:data?.other_hobbies,
+                technical_vocational_skills_learn:data?.technical_vocational_skills_learn,
+                entrepreneurial_business_skills_learn:data?.entrepreneurial_business_skills_learn,
+                digital_technological_skills_learn: data?.digital_technological_skills_learn,
+                skills_learn:data?.digital_technological_skills_learn,
+                communication_language_skills_learn:data?.communication_language_skills_learn,
+                health_well_being_skills_learn:data?.health_well_being_skills_learn,
+                creative_artistics_skills_learn:data?.creative_artistics_skills_learn,
+                others_skills_learn:data?.others_skills_learn,
+                technical_vocational_skills:data?.technical_vocational_skills,
+                entrepreneurial_business_skills:data?.entrepreneurial_business_skills,
+                interpersonal_skills:data?.interpersonal_skills,
+                creative_artistic_skills:data?.creative_artistics_skills,
+                professional_skills:data?.professional_skills,
+                others_skills:data?.others_skills
+            }
+        })
+    },[data])
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -106,9 +144,9 @@ const DemographicHabits = ({ navigation, route }) => {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <Customdropdown
-                    data={dropdownData?.['habbits'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
-                    value={values.chronic_disease}
-                    label={'Do you have any specific habits?'}
+                    data={dropdownData?.['habbits'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+                    value={values.specific_habit}
+                    label={t('Do you have any specific habits?')}
                     onChange={(value) => {
                         setValues({
                             ...values,
@@ -122,7 +160,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 <Customdropdown
                     data={dropdownData?.['current_education_status'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
                     value={values.education_status}
-                    label={'Mention your current education status'}
+                    label={t('Mention your current education status')}
                     onChange={(value) => {
                         setValues({
                             ...values,
@@ -135,8 +173,8 @@ const DemographicHabits = ({ navigation, route }) => {
                 )}
                 <Customdropdown
                     data={dropdownData?.['education_seeking_to_gain'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
-                    value={values.education_status}
-                    label={'Education seeking to gain'}
+                    value={values.education_seeking_to_gain}
+                    label={t('Education seeking to gain')}
                     onChange={(value) => {
                         setValues({
                             ...values,
@@ -149,7 +187,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 )}
                 {/* // NOTE: Hobbies section */}
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Hobbies</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Hobbies')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '65%' }]}
@@ -183,7 +221,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, cultural_traditional_hobbies: item })
                                 }
                                 selectedd={values?.cultural_traditional_hobbies}
-                                infoName={'Cultural and traditional hobbies'}
+                                infoName={t('Cultural and traditional hobbies')}
                             />
                             {touched?.cultural_traditional_hobbies && errors?.cultural_traditional_hobbies && (
                                 <Text style={Styles.error2}>{String(errors?.cultural_traditional_hobbies)}</Text>
@@ -198,7 +236,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, outdoor_nature_based_hobbies: item })
                                 }
                                 selectedd={values?.outdoor_nature_based_hobbies}
-                                infoName={'Outdoor and nature based hobbies'}
+                                infoName={t('Outdoor and nature based hobbies')}
                             />
                             {touched?.outdoor_nature_based_hobbies && errors?.outdoor_nature_based_hobbies && (
                                 <Text style={Styles.error2}>{String(errors?.outdoor_nature_based_hobbies)}</Text>
@@ -213,7 +251,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, modern_digital_hobbies: item })
                                 }
                                 selectedd={values?.modern_digital_hobbies}
-                                infoName={'Modern digital hobbies'}
+                                infoName={t('Modern digital hobbies')}
                             />
                             {touched?.modern_digital_hobbies && errors?.modern_digital_hobbies && (
                                 <Text style={Styles.error2}>{String(errors?.modern_digital_hobbies)}</Text>
@@ -228,17 +266,17 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, creative_artistics_hobbies: item })
                                 }
                                 selectedd={values?.creative_artistics_hobbies}
-                                infoName={'Creative and Artistic Hobbies'}
+                                infoName={t('Creative and Artistic Hobbies')}
                             />
                             {touched?.creative_artistics_hobbies && errors?.creative_artistics_hobbies && (
                                 <Text style={Styles.error2}>{String(errors?.creative_artistics_hobbies)}</Text>
                             )}
                             <Input
-                                label={'Other Hobbies(Specify if any)'}
+                                label={t('Other Hobbies(Specify if any)')}
                                 value={values.other_hobbies}
                                 placeholder={''}
                                 fullLength={true}
-                                onChange={handleChange('other_hobbies')}
+                                onChangeText={handleChange('other_hobbies')}
                             />
                         </View>
                     </View>
@@ -246,7 +284,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 }
                 {/* NOTE: Skillset section */}
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Skillset</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Skillset')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '65%' }]}
@@ -280,7 +318,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, technical_vocational_skills: item })
                                 }
                                 selectedd={values?.technical_vocational_skills}
-                                infoName={'Technical and Vocational Skills'}
+                                infoName={t('Technical and Vocational Skills')}
                             />
                             {touched?.technical_vocational_skills && errors?.technical_vocational_skills && (
                                 <Text style={Styles.error2}>{String(errors?.technical_vocational_skills)}</Text>
@@ -295,7 +333,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, entrepreneurial_business_skills: item })
                                 }
                                 selectedd={values?.entrepreneurial_business_skills}
-                                infoName={'Entrepreneurial and Business Skills'}
+                                infoName={t('Entrepreneurial and Business Skills')}
                             />
                             {touched?.entrepreneurial_business_skills && errors?.entrepreneurial_business_skills && (
                                 <Text style={Styles.error2}>{String(errors?.entrepreneurial_business_skills)}</Text>
@@ -310,7 +348,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, interpersonal_skills: item })
                                 }
                                 selectedd={values?.interpersonal_skills}
-                                infoName={'Interpersonal Skills'}
+                                infoName={t('Interpersonal Skills')}
                             />
                             {touched?.interpersonal_skills && errors?.interpersonal_skills && (
                                 <Text style={Styles.error2}>{String(errors?.interpersonal_skills)}</Text>
@@ -325,7 +363,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, creative_artistic_skills: item })
                                 }
                                 selectedd={values?.creative_artistic_skills}
-                                infoName={'Creative and Artistic Skills'}
+                                infoName={t('Creative and Artistic Skills')}
                             />
                             {touched?.creative_artistic_skills && errors?.creative_artistic_skills && (
                                 <Text style={Styles.error2}>{String(errors?.creative_artistic_skills)}</Text>
@@ -340,17 +378,17 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, professional_skills: item })
                                 }
                                 selectedd={values?.professional_skills}
-                                infoName={'Professional Skills'}
+                                infoName={t('Professional Skills')}
                             />
                             {touched?.professional_skills && errors?.professional_skills && (
                                 <Text style={Styles.error2}>{String(errors?.professional_skills)}</Text>
                             )}
                             <Input
-                                label={'Others(Specify if any)'}
+                                label={t('Others skills(Specify if any)')}
                                 value={values.others}
                                 placeholder={''}
                                 fullLength={true}
-                                onChange={handleChange('others')}
+                                onChangeText={handleChange('others')}
                             />
                         </View>
                     </View>
@@ -358,7 +396,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 }
                 {/* NOTE: Skills seeking to learn */}
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Skillset seeking to learn</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Skillset seeking to learn')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '35%' }]}
@@ -392,7 +430,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, technical_vocational_skills_learn: item })
                                 }
                                 selectedd={values?.technical_vocational_skills_learn}
-                                infoName={'Technical and Vocational Skills Learn'}
+                                infoName={t('Technical and Vocational Skills Learn')}
                             />
                             {touched?.technical_vocational_skills_learn && errors?.technical_vocational_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.technical_vocational_skills_learn)}</Text>
@@ -407,7 +445,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, entrepreneurial_business_skills_learn: item })
                                 }
                                 selectedd={values?.entrepreneurial_business_skills_learn}
-                                infoName={'Entrepreneurial and Business Skills Learn'}
+                                infoName={t('Entrepreneurial and Business Skills Learn')}
                             />
                             {touched?.entrepreneurial_business_skills_learn && errors?.entrepreneurial_business_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.entrepreneurial_business_skills_learn)}</Text>
@@ -422,7 +460,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, digital_technological_skills_learn: item })
                                 }
                                 selectedd={values?.digital_technological_skills_learn}
-                                infoName={'Digital and Technological Skills Learn'}
+                                infoName={t('Digital and Technological Skills Learn')}
                             />
                             {touched?.digital_technological_skills_learn && errors?.digital_technological_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.digital_technological_skills_learn)}</Text>
@@ -437,7 +475,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, health_well_being_skills_learn: item })
                                 }
                                 selectedd={values?.health_well_being_skills_learn}
-                                infoName={'Health and Well-being Skills Learn'}
+                                infoName={t('Health and Well-being Skills Learn')}
                             />
                             {touched?.health_well_being_skills_learn && errors?.health_well_being_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.health_well_being_skills_learn)}</Text>
@@ -452,7 +490,7 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, communication_language_skills_learn: item })
                                 }
                                 selectedd={values?.communication_language_skills_learn}
-                                infoName={'Communication and language Skill Learn'}
+                                infoName={t('Communication and language Skill Learn')}
                             />
                             {touched?.communication_language_skills_learn && errors?.communication_language_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.communication_language_skills_learn)}</Text>
@@ -467,17 +505,17 @@ const DemographicHabits = ({ navigation, route }) => {
                                     setValues({ ...values, creative_artistics_skills_learn: item })
                                 }
                                 selectedd={values?.creative_artistics_skills_learn}
-                                infoName={'Creative and Artistic Skills Learn'}
+                                infoName={t('Creative and Artistic Skills Learn')}
                             />
                             {touched?.creative_artistics_skills_learn && errors?.creative_artistics_skills_learn && (
                                 <Text style={Styles.error2}>{String(errors?.creative_artistics_skills_learn)}</Text>
                             )}
                             <Input
-                                label={'Others(Specify if any)'}
+                                label={t('Others skiils learn(Specify if any)')}
                                 value={values.others_skills}
                                 placeholder={''}
                                 fullLength={true}
-                                onChange={handleChange('others_skills')}
+                                onChangeText={handleChange('others_skills')}
                             />
                         </View>
                     </View>
@@ -485,7 +523,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 }
             </KeyboardAwareScrollView>
             <View style={Styles.bottomBtn}>
-                <CustomButton btnText={'Next'} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
             </View>
         </View>
     );

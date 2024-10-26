@@ -1,5 +1,5 @@
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -14,24 +14,35 @@ import AcresElement from '../../Components/ui/AcresElement';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
+import { ActivityIndicator } from 'react-native-paper';
+import { primaryColor } from '../../styles/colors';
 
 const DemographicOccupation = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
-    const { demographic } = route.params
+    const { demographic, data, member_id,
+        demographic_id } = route.params
     const { t } = useTranslation()
     const { data: user } = useUser()
-    const {data: dropdownData}= useQuery({
+    const { data: dropdownData, isLoading: dropdown_loading }= useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        occupation: yup.string().required('Occupation is required'),
-        yearly_income: yup.string().required('Yearly income is required'),
+        occupation: yup.string().required(t('occupation is required')),
+        yearly_income: yup.string().required(t('yearly income is required')),
         bank_account: yup.boolean().required(t('have bank account required')),
-        savings_investment: yup.boolean().required(
+        savings_investment: yup.boolean().test(
+            'savings_investment-required',
             t('have savings investment required'),
+            function (value) {
+                const { bank_account } = this.parent; // Accessing other field values
+                if (bank_account) {
+                    return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
+                }
+                return true; // Otherwise, no validation on decreasing_yield
+            },
         ),
         savings_investment_amount: yup.number().test(
             'savings_investment-amount-required',
@@ -62,20 +73,39 @@ const DemographicOccupation = ({ navigation, route }) => {
             savings_investment: false,
             savings_investment_amount: '',
         },
-        // validationSchema: scheme,
+        validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
             navigation.navigate('demographicDisease', {
                 demographic: demographic,
-                occupation: { ...values, savings_investment_amount: parseInt(values?.savings_investment_amount) }
+                occupation: { ...values, savings_investment_amount: parseInt(values?.savings_investment_amount) },
+                data: data,
+                member_id,
+                demographic_id
             })
         },
     });
+    useEffect(() => {
+        resetForm({
+            values:{
+                occupation: data?.occupation,
+                yearly_income: data?.yearly_income,
+                bank_account: data?.bank_account,
+                savings_investment: data?.savings_investment,
+                savings_investment_amount: data?.savings_investment_amount,
+            }
+        })
+    },[data])
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -84,7 +114,7 @@ const DemographicOccupation = ({ navigation, route }) => {
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <Customdropdown
                     data={dropdownData?.['occupation'].map((item)=>{return {id: item?._id, label: item?.name, value:item?._id}})}
-                    value={values.diet}
+                    value={values.occupation}
                     label={t('occupation')}
                     onChange={(value) => {
                         setValues({
@@ -93,12 +123,12 @@ const DemographicOccupation = ({ navigation, route }) => {
                         });
                     }}
                 />
-                {touched?.marital_status && errors?.marital_status && (
-                    <Text style={Styles.error2}>{String(errors?.marital_status)}</Text>
+                {touched?.occupation && errors?.occupation && (
+                    <Text style={Styles.error2}>{String(errors?.occupation)}</Text>
                 )}
                 <Customdropdown
-                    data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
-                    value={values.diet}
+                    data={dropdownData?.['yearly_income'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+                    value={values.yearly_income}
                     label={t('yearly income')}
                     onChange={(value) => {
                         setValues({
@@ -107,10 +137,10 @@ const DemographicOccupation = ({ navigation, route }) => {
                         });
                     }}
                 />
-                {touched?.diet && errors?.diet && (
-                    <Text style={Styles.error2}>{String(errors?.diet)}</Text>
+                {touched?.yearly_income && errors?.yearly_income && (
+                    <Text style={Styles.error2}>{String(errors?.yearly_income)}</Text>
                 )}
-                <Text style={Styles.fieldLabel}>Do you have a bank account?</Text>
+                <Text style={Styles.fieldLabel}>{t('do you have a bank account?')}</Text>
                 <SwitchButton
                     firstBtnText='Yes'
                     firstBtnPress={() => setValues({ ...values, bank_account: true })}
@@ -118,7 +148,9 @@ const DemographicOccupation = ({ navigation, route }) => {
                     secondBtntext='No'
                     secondBtnPress={() => setValues({ ...values, bank_account: false })}
                 />
-                <Text style={Styles.fieldLabel}>Do you have any savings/ investments?</Text>
+                {values?.bank_account?
+            <>
+                <Text style={Styles.fieldLabel}>{t('do you have any savings/ investments?')}</Text>
                 <SwitchButton
                     firstBtnText='Yes'
                     firstBtnPress={() => setValues({ ...values, savings_investment: true })}
@@ -126,20 +158,29 @@ const DemographicOccupation = ({ navigation, route }) => {
                     secondBtntext='No'
                     secondBtnPress={() => setValues({ ...values, savings_investment: false })}
                 />
+            </>   
+            :null 
+            }
+                {values?.savings_investment ? 
+                <>
                 <Input
-                    label={'Can you specify the amount saved/invested ?'}
+                    label={t('can you specify the amount saved/invested ?')}
                     value={values.savings_investment_amount}
                     placeholder={'0'}
                     fullLength={true}
-                    onChange={handleChange('savings_investment_amount')}
+                    keyboardType='numeric'
+                    onChangeText={handleChange('savings_investment_amount')}
                     isRight={<AcresElement title={user?.currency} />}
                 />
-                {touched?.height && errors?.height && (
-                    <Text style={Styles.error2}>{String(errors?.height)}</Text>
+                {touched?.savings_investment_amount && errors?.savings_investment_amount && (
+                    <Text style={Styles.error2}>{String(errors?.savings_investment_amount)}</Text>
                 )}
+                </>
+                :null
+            }
             </KeyboardAwareScrollView>
             <View style={Styles.bottomBtn}>
-                <CustomButton btnText={'Next'} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
             </View>
         </View>
     );

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import React from 'react';
+import { ActivityIndicator, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -10,19 +10,33 @@ import Input from '../../Components/Inputs/Input';
 import AcresElement from '../../Components/ui/AcresElement';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import { Styles } from '../../styles/globalStyles';
+import { useQuery } from '@tanstack/react-query';
+import { get_dropdown_data } from '../../functions/AuthScreens';
+import { getDemographic } from '../../functions/demographic';
+import { primaryColor } from '../../styles/colors';
 
-const Demographic = ({ navigation }) => {
+const Demographic = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {t} =useTranslation()
+  const { member_id, demographic_id } = route.params
+  const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
+    queryKey: ['dropdown_data'],
+    queryFn: get_dropdown_data,
+  })
+  const {data: demographic_data, isLoading: demographic_loading} = useQuery({
+    queryKey: ['demographic_data'],
+    queryFn: ()=>getDemographic(demographic_id),
+    enabled: !!demographic_id
+  })
+  const { t } = useTranslation()
   const scheme = yup.object().shape({
-    marital_status: yup.string().required('Marital status is required'),
-    diet: yup.string().required('Diet is required'),
-    height: yup.number().required('Height is required'),
-    weight: yup.number().required('Weight is required'),
-    language_speak: yup.string().required('Language speak is required'),
-    language_read: yup.string().required('Language read is required'),
-    language_write: yup.string().required('Language write is required'),
+    marital_status: yup.string().required(t('marital status is required')),
+    diet: yup.string().required(t('diet is required')),
+    height: yup.number().required(t('height is required')),
+    weight: yup.number().required(t('weight is required')),
+    language_speak: yup.string().required(t('language speak is required')),
+    language_read: yup.string().required(t('language read is required')),
+    language_write: yup.string().required(t('language write is required')),
   });
   const {
     handleChange,
@@ -43,19 +57,40 @@ const Demographic = ({ navigation }) => {
       language_read: '',
       language_write: '',
     },
-    // validationSchema: scheme,
+    validationSchema: scheme,
     onSubmit: async (values) => {
       console.log(values);
-      navigation.navigate('demographicOccupation',{
-        demographic: {...values, height: parseInt(values?.height), weight: parseInt(values?.weight)}
+      navigation.navigate('demographicOccupation', {
+        demographic: { ...values, height: parseInt(values?.height), weight: parseInt(values?.weight) },
+        data: demographic_data,
+        member_id,
+        demographic_id
       })
     },
   });
+  useEffect(()=>{
+    resetForm({
+      values:{
+        marital_status: demographic_data?.marital_status,
+        diet: demographic_data?.diet,
+        height: demographic_data?.height,
+        weight: demographic_data?.weight,
+        language_speak: demographic_data?.language_speak,
+        language_read: demographic_data?.language_read,
+        language_write: demographic_data?.language_write,
+      }
+    })
+  }, [demographic_data])
+  if(dropdown_loading || demographic_loading){
+    return <View style={{flex:1, justifyContent:'center', alignSelf:'center'}}>
+      <ActivityIndicator size={'large'} color={primaryColor}/>
+    </View>
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={'Demographic'}
+        headerName={t('demographic')}
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
@@ -63,13 +98,14 @@ const Demographic = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
         <Customdropdown
-          data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
-          value={values.diet}
-          label={t('marital status')}
+          data={dropdownData?.['marital_status'].map((item) => { return { label: item?.name, value: item?._id } })
+          }
+          value={values.marital_status}
+          label={t('marital_status')}
           onChange={(value) => {
             setValues({
               ...values,
-              diet: value?.value,
+              marital_status: value?.value,
             });
           }}
         />
@@ -77,7 +113,7 @@ const Demographic = ({ navigation }) => {
           <Text style={Styles.error2}>{String(errors?.marital_status)}</Text>
         )}
         <Customdropdown
-          data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
+          data={dropdownData?.['diet'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
           value={values.diet}
           label={t('diet')}
           onChange={(value) => {
@@ -91,31 +127,33 @@ const Demographic = ({ navigation }) => {
           <Text style={Styles.error2}>{String(errors?.diet)}</Text>
         )}
         <Input
-        label={'Height'}
-        value={values.height}
-        placeholder={'0'}
-        fullLength={true}
-        onChange={handleChange('height')}
-        isRight={<AcresElement title={'Unit'}/>}
+          label={t('height')}
+          value={values.height}
+          placeholder={'0'}
+          fullLength={true}
+          keyboardType='numeric'
+          onChangeText={handleChange('height')}
+          isRight={<AcresElement title={'Unit'} />}
         />
         {touched?.height && errors?.height && (
           <Text style={Styles.error2}>{String(errors?.height)}</Text>
         )}
         <Input
-          label={'Weight'}
+          label={t('weight')}
           value={values.weight}
           placeholder={'0'}
           fullLength={true}
-          onChange={handleChange('weight')}
+          keyboardType='numeric'
+          onChangeText={handleChange('weight')}
           isRight={<AcresElement title={'Unit'} />}
         />
         {touched?.weight && errors?.weight && (
           <Text style={Styles.error2}>{String(errors?.weight)}</Text>
         )}
         <Customdropdown
-          data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
-          value={values.diet}
-          label={'Which language can you speak?'}
+          data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+          value={values.language_speak}
+          label={t('which language can you speak?')}
           onChange={(value) => {
             setValues({
               ...values,
@@ -127,9 +165,9 @@ const Demographic = ({ navigation }) => {
           <Text style={Styles.error2}>{String(errors?.language_speak)}</Text>
         )}
         <Customdropdown
-          data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
-          value={values.diet}
-          label={'Which language can you read?'}
+          data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+          value={values.language_read}
+          label={t('which language can you read?')}
           onChange={(value) => {
             setValues({
               ...values,
@@ -141,9 +179,9 @@ const Demographic = ({ navigation }) => {
           <Text style={Styles.error2}>{String(errors?.language_read)}</Text>
         )}
         <Customdropdown
-          data={[{ id: 1, label: 'Single', value: 'Single' }, { id: 1, label: 'Married', value: 'Married' }]}
-          value={values.diet}
-          label={'Which language can you write?'}
+          data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+          value={values.language_write}
+          label={t('which language can you write?')}
           onChange={(value) => {
             setValues({
               ...values,
@@ -156,7 +194,7 @@ const Demographic = ({ navigation }) => {
         )}
       </KeyboardAwareScrollView>
       <View style={Styles.bottomBtn}>
-        <CustomButton btnText={'Next'} style={{width: '100%', height:60}} onPress={handleSubmit}/>
+        <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
       </View>
     </View>
   );

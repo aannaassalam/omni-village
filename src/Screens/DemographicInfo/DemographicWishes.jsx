@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -8,32 +8,56 @@ import Customdropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useTranslation } from 'react-i18next';
 import { Styles, width } from '../../styles/globalStyles';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import Input from '../../Components/Inputs/Input';
-import { borderColor } from '../../styles/colors';
-import { useQuery } from '@tanstack/react-query';
+import { borderColor, primaryColor } from '../../styles/colors';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
+import PopupModal from '../../Components/Popups/PopupModal';
+import { addDemographic, editDemographic } from '../../functions/demographic';
 
 const DemographicWishes = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { t } = useTranslation()
-    const [wishes,setWishes] = useState(true)
-    const { demographic, aspiration, disease, habits, occupation, unfulfilled } = route.params
-    const { data: dropdownData } = useQuery({
+    const [wishes, setWishes] = useState(true)
+    const { demographic, aspiration, disease, habits, occupation, unfulfilled, data, member_id,
+        demographic_id } = route.params
+    const [savepopup, setSavepopup] = useState(false);
+    const [message, setMessage] = useState('');
+    const [draftpopup, setDraftpopup] = useState(false);
+    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
     })
+    const { mutate: add_demographic } = useMutation({
+        mutationKey: ['save_demographic'],
+        mutationFn: async (data) => {
+            addDemographic(data)
+        },
+        onSuccess: (data) => console.log("successsssss save", data),
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: edit_demographic } = useMutation({
+        mutationKey: ['edit_demographic'],
+        mutationFn: async (data) => {
+            editDemographic(data)
+        },
+        onSuccess: (data) => console.log("successsssss edit", data),
+        onError: (error) => console.log("error edit", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
-        for_community: yup.array().required('for community is required').min(1, 'Atleast one for community is required'),
-        for_economy: yup.array().required('for economy is required').min(1, 'Atleast one for economy is required'),
-        for_personal_growth: yup.array().required('for personal growth is required').min(1, 'Atleast one for personal growth is required'),
-        for_environment: yup.array().required('for environment is required').min(1, 'Atleast one for environment is required'),
-        for_family_future_generation: 
-        yup.array().required('for family future generation is required').min(1, 'Atleast one for family future generation is required'),
-        others: yup.string(),
+        for_community: yup.array().required('for community is required').min(1, t('Atleast one for community is required')),
+        for_economy: yup.array().required('for economy is required').min(1, t('Atleast one for economy is required')),
+        for_personal_growth: yup.array().required('for personal growth is required').min(1, t('Atleast one for personal growth is required')),
+        for_environment: yup.array().required('for environment is required').min(1, t('Atleast one for environment is required')),
+        for_family_future_generation:
+            yup.array().required('for family future generation is required').min(1, t('Atleast one for family future generation is required')),
+        others_wishes: yup.string(),
     });
     const {
         handleChange,
@@ -51,18 +75,52 @@ const DemographicWishes = ({ navigation, route }) => {
             for_personal_growth: [],
             for_environment: [],
             for_family_future_generation: [],
-            others: '',
+            others_wishes: '',
         },
-        // validationSchema: loginSchema,
+        validationSchema: scheme,
         onSubmit: async (values) => {
-            console.log(values);
+            setSavepopup(true)
         },
     });
+    useEffect(() => {
+        resetForm({
+            values: {
+                for_community: data?.for_community,
+                for_economy: data?.for_economy,
+                for_personal_growth: data?.for_personal_growth,
+                for_environment: data?.for_environment,
+                for_family_future_generation: data?.for_family_future_generation,
+                others_wishes: data?.others_wishes
+            }
+        })
+    }, [data])
+    const handleDraft = () => {
+        let new_data = { ...demographic, ...aspiration, ...disease, ...habits, ...occupation, ...unfulfilled, ...values }
+        if (data?._id) {
+            edit_demographic({ ...new_data, status: 0, demographic_id: demographic_id })
+        } else {
+            add_demographic({ ...new_data, status: 0, member_id: member_id })
+        }
+
+    }
+    const onSubmit = () => {
+        let new_data = { ...demographic, ...aspiration, ...disease, ...habits, ...occupation, ...unfulfilled, ...values }
+        if (data?._id) {
+            edit_demographic({ ...new_data, status: 1, demographic_id: demographic_id })
+        } else {
+            add_demographic({ ...new_data, status: 1, member_id: member_id })
+        }
+    }
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -104,7 +162,7 @@ const DemographicWishes = ({ navigation, route }) => {
                                     setValues({ ...values, for_community: item })
                                 }
                                 selectedd={values?.for_community}
-                                infoName={'For community'}
+                                infoName={t('For community')}
                             />
                             {touched?.for_community && errors?.for_community && (
                                 <Text style={Styles.error2}>{String(errors?.for_community)}</Text>
@@ -119,7 +177,7 @@ const DemographicWishes = ({ navigation, route }) => {
                                     setValues({ ...values, for_economy: item })
                                 }
                                 selectedd={values?.for_economy}
-                                infoName={'For economy'}
+                                infoName={t('For economy')}
                             />
                             {touched?.for_economy && errors?.for_economy && (
                                 <Text style={Styles.error2}>{String(errors?.for_economy)}</Text>
@@ -134,7 +192,7 @@ const DemographicWishes = ({ navigation, route }) => {
                                     setValues({ ...values, for_personal_growth: item })
                                 }
                                 selectedd={values?.for_personal_growth}
-                                infoName={'For personal growth'}
+                                infoName={t('For personal growth')}
                             />
                             {touched?.for_personal_growth && errors?.for_personal_growth && (
                                 <Text style={Styles.error2}>{String(errors?.for_personal_growth)}</Text>
@@ -149,7 +207,7 @@ const DemographicWishes = ({ navigation, route }) => {
                                     setValues({ ...values, for_environment: item })
                                 }
                                 selectedd={values?.for_environment}
-                                infoName={'For environment'}
+                                infoName={t('For environment')}
                             />
                             {touched?.for_environment && errors?.for_environment && (
                                 <Text style={Styles.error2}>{String(errors?.for_environment)}</Text>
@@ -164,17 +222,17 @@ const DemographicWishes = ({ navigation, route }) => {
                                     setValues({ ...values, for_family_future_generation: item })
                                 }
                                 selectedd={values?.for_family_future_generation}
-                                infoName={'For family and future generation'}
+                                infoName={t('For family and future generation')}
                             />
                             {touched?.for_family_future_generation && errors?.for_family_future_generation && (
                                 <Text style={Styles.error2}>{String(errors?.for_family_future_generation)}</Text>
                             )}
                             <Input
-                                label={'Other(Specify if any)'}
-                                value={values.others}
+                                label={t('Other wishes(Specify if any)')}
+                                value={values.others_wishes}
                                 placeholder={''}
                                 fullLength={true}
-                                onChange={handleChange('others')}
+                                onChangeText={handleChange('others_wishes')}
                             />
 
                         </View>
@@ -182,10 +240,70 @@ const DemographicWishes = ({ navigation, route }) => {
                     : null
                 }
             </KeyboardAwareScrollView>
-            <View style={[Styles.bottomBtn, {flexDirection:'row', justifyContent:'space-between'}]}>
+            <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
                 <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor:borderColor }} onPress={handleSubmit} btnStyle={{color:'black'}}/>
+                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
             </View>
+            {/* submit popup */}
+            <PopupModal
+                modalVisible={savepopup}
+                setBottomModalVisible={setSavepopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('confirm')}</Text>
+                    <Text style={Styles.nextText}>{t('')}</Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('submit')}
+                            onPress={() => onSubmit()}
+                        // loading={}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => {
+                                setSavepopup(false);
+                            }}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+            {/* draft popup */}
+            <PopupModal
+                modalVisible={draftpopup}
+                setBottomModalVisible={setDraftpopup}
+                styleInner={[styles.savePopup, { width: '90%' }]}>
+                <View style={styles.submitPopup}>
+                    <View style={styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={styles.noteImage}
+                        />
+                    </View>
+                    <Text style={styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={styles.nextText}>{t('')}</Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('save')}
+                            onPress={() => handleDraft()}
+                        // loading={}
+                        />
+                        <CustomButton
+                            style={styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => setDraftpopup(false)}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
         </View>
     );
 };

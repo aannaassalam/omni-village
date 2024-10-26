@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -10,31 +10,33 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
+import { primaryColor } from '../../styles/colors';
 
 const DemographicAspiration = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
-    const { demographic, occupation , disease, habits} = route.params
+    const { demographic, occupation, disease, habits, data, member_id,
+        demographic_id } = route.params
     const { t } = useTranslation()
     const [aspiration,setAspiration]=useState(true)
-    const { data: dropdownData } = useQuery({
+    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        economic: yup.array().required('Economic is required').min(1,'Atleast one economic aspiration is required'),
-        educational: yup.array().required('Educational is required').min(1,'Atleast one educational aspiration is required'),
-        health_well_being: yup.array().required('Health and well-being is required').min(1,'Atleast one health and well-being aspiration is required'),
-        infrastructure_technology: yup.array().required('Infrastructure and technology is required').min(1,'Atleast one infrastructure and technology aspiration is required'),
-        environmental_sustainability: yup.array().required('Environmental sustainability is required').min(1,'Atleast one environmental sustainability aspiration is required'),
-        cultural: yup.array().required('Cultural is required').min(1,'Atleast one cultural aspiration is required'),
-        community_social: yup.array().required('Community and social is required').min(1,'Atleast one community and social aspiration is required'),
-        personal_growth: yup.array().required('Personal growth is required').min(1,'Atleast one personal growth aspiration is required'),
-        spiritual: yup.array().required('Spiritual is required').min(1,'Atleast one spiritual aspiration is required'),
+        economic: yup.array().required('Economic aspiration is required').min(1,t('Atleast one economic aspiration is required')),
+        educational: yup.array().required('Educational aspiration is required').min(1,t('Atleast one educational aspiration is required')),
+        health_well_being: yup.array().required('Health and well-being aspiration is required').min(1,t('Atleast one health and well-being aspiration is required')),
+        infrastructure_technology: yup.array().required('Infrastructure and technology aspiration is required').min(1,t('Atleast one infrastructure and technology aspiration is required')),
+        environmental_sustainability: yup.array().required('Environmental sustainability aspiration is required').min(1,t('Atleast one environmental sustainability aspiration is required')),
+        cultural: yup.array().required('Cultural aspiration is required').min(1,t('Atleast one cultural aspiration is required')),
+        community_social: yup.array().required('Community and social aspiration is required').min(1,t('Atleast one community and social aspiration is required')),
+        personal_growth: yup.array().required('Personal growth aspiration is required').min(1,t('Atleast one personal growth aspiration is required')),
+        spiritual: yup.array().required('Spiritual aspiration is required').min(1,t('Atleast one spiritual aspiration is required')),
       
     });
     const {
@@ -58,7 +60,7 @@ const DemographicAspiration = ({ navigation, route }) => {
             personal_growth: [],
             spiritual: []
         },
-        // validationSchema: schema,
+        validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
             navigation.navigate('demographicUnfulfilled',{
@@ -66,10 +68,33 @@ const DemographicAspiration = ({ navigation, route }) => {
                 disease,
                 habits,
                 demographic,
-                aspiration: values
+                aspiration: values,
+                data:data,
+                member_id,
+                demographic_id
             })
         },
     });
+    useEffect(()=>{
+        resetForm({
+            values:{
+                economic:data?.economic,
+                educational:data?.educational,
+                health_well_being:data?.health_well_being,
+                infrastructure_technology:data?.infrastructure_technology,
+                environmental_sustainability:data?.environmental_sustainability,
+                cultural:data?.cultural,
+                community_social:data?.community_social,
+                personal_growth:data?.personal_growth,
+                spiritual:data?.spiritual
+            }
+        })
+    },[data])
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -116,7 +141,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, economic: item })
                                 }
                                 selectedd={values?.economic}
-                                infoName={'Economic aspirations'}
+                                infoName={t('Economic aspirations')}
                             />
                             {touched?.economic && errors?.economic && (
                                 <Text style={Styles.error2}>{String(errors?.economic)}</Text>
@@ -131,7 +156,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, educational: item })
                                 }
                                 selectedd={values?.educational}
-                                infoName={'Educational aspirations'}
+                                infoName={t('Educational aspirations')}
                             />
                             {touched?.educational && errors?.educational && (
                                 <Text style={Styles.error2}>{String(errors?.educational)}</Text>
@@ -146,7 +171,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, health_well_being: item })
                                 }
                                 selectedd={values?.health_well_being}
-                                infoName={'Health & well-being aspirations'}
+                                infoName={t('Health & well-being aspirations')}
                             />
                             {touched?.health_well_being && errors?.health_well_being && (
                                 <Text style={Styles.error2}>{String(errors?.health_well_being)}</Text>
@@ -161,7 +186,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, infrastructure_technology: item })
                                 }
                                 selectedd={values?.infrastructure_technology}
-                                infoName={'Infrastructure & Technology aspirations'}
+                                infoName={t('Infrastructure & Technology aspirations')}
                             />
                             {touched?.infrastructure_technology && errors?.infrastructure_technology && (
                                 <Text style={Styles.error2}>{String(errors?.infrastructure_technology)}</Text>
@@ -176,7 +201,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, environmental_sustainability: item })
                                 }
                                 selectedd={values?.environmental_sustainability}
-                                infoName={'Environmemtal sustainability aspirations'}
+                                infoName={t('Environmemtal sustainability aspirations')}
                             />
                             {touched?.environmental_sustainability && errors?.environmental_sustainability && (
                                 <Text style={Styles.error2}>{String(errors?.environmental_sustainability)}</Text>
@@ -191,7 +216,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, cultural: item })
                                 }
                                 selectedd={values?.cultural}
-                                infoName={'Cultural aspirations'}
+                                infoName={t('Cultural aspirations')}
                             />
                             {touched?.cultural && errors?.cultural && (
                                 <Text style={Styles.error2}>{String(errors?.cultural)}</Text>
@@ -206,7 +231,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, community_social: item })
                                 }
                                 selectedd={values?.community_social}
-                                infoName={'Community social aspirations'}
+                                infoName={t('Community social aspirations')}
                             />
                             {touched?.community_social && errors?.community_social && (
                                 <Text style={Styles.error2}>{String(errors?.community_social)}</Text>
@@ -221,7 +246,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, personal_growth: item })
                                 }
                                 selectedd={values?.personal_growth}
-                                infoName={'Personal growth aspirations'}
+                                infoName={t('Personal growth aspirations')}
                             />
                             {touched?.personal_growth && errors?.personal_growth && (
                                 <Text style={Styles.error2}>{String(errors?.personal_growth)}</Text>
@@ -236,7 +261,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, spiritual: item })
                                 }
                                 selectedd={values?.spiritual}
-                                infoName={'Spiritual aspirations'}
+                                infoName={t('Spiritual aspirations')}
                             />
                             {touched?.spiritual && errors?.spiritual && (
                                 <Text style={Styles.error2}>{String(errors?.spiritual)}</Text>
@@ -248,7 +273,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                 }
             </KeyboardAwareScrollView>
             <View style={Styles.bottomBtn}>
-                <CustomButton btnText={'Next'} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
             </View>
         </View>
     );

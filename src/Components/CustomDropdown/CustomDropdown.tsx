@@ -87,7 +87,7 @@ const Customdropdown = ({
   );
 };
 
-export default Customdropdown;
+export default React.memo(Customdropdown);
 const width = Dimensions.get('window').width;
 const makeStyles = (fontScale: any) =>
   StyleSheet.create({

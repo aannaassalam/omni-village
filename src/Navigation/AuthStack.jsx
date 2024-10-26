@@ -26,13 +26,12 @@ import DemographicDisease from '../Screens/DemographicInfo/DemographicDisease';
 import DemographicHabits from '../Screens/DemographicInfo/DemographicHabits';
 import DemographicUnfulfilled from '../Screens/DemographicInfo/DemographicUnfulfilled';
 import DemographicWishes from '../Screens/DemographicInfo/DemographicWishes';
+import Members from '../Screens/DemographicInfo/Members';
 
 const Stack = createStackNavigator();
 
 export default function AuthStack({user}) {
-  console.log("user", user)
   const type = storage.getString('type');
-  console.log("typeeee", type)
   const renderScreen = useCallback(() => {
     if (!user) {
       return 'startup';
@@ -66,6 +65,7 @@ export default function AuthStack({user}) {
       <Stack.Screen name="ProductionStack" component={Productionstack} />
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
       <Stack.Screen name="MapScreen" component={MapScreen} />
+      <Stack.Screen name="members" component={Members} />
       <Stack.Screen name="demographic" component={Demographic} />
       <Stack.Screen name="demographicOccupation" component={DemographicOccupation} />
       <Stack.Screen name="demographicAspiration" component={DemographicAspiration} />

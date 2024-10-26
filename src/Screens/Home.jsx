@@ -39,57 +39,57 @@ const Home = ({ navigation }) => {
   }
   const ITEMS = [
     {
-      title: 'Food',
+      title: t('food'),
       navigation: 'foodHome',
       image: require('../../assets/food.png'),
     },
     {
-      title: 'Demographic Information',
-      navigation: 'demographic',
+      title: t('demographic'),
+      navigation: 'members',
       image: require('../../assets/demographic.png'),
     },
     {
-      title: 'Landholding & Usage mapping',
+      title: t('landholding'),
       navigation: '', // FIX ME - landholdingUsage
       image: require('../../assets/landhold.png'),
     },
     {
-      title: 'Housing',
+      title: t('housing'),
       navigation: 'housing',
       image: require('../../assets/housing.png'),
     },
     {
-      title: 'Water',
+      title: t('water'),
       navigation: 'water',
       image: require('../../assets/water.png'),
     },
     {
-      title: 'Energy & Fuel',
+      title: t('energy'),
       navigation: 'energyFuel',
       image: require('../../assets/fuel.png'),
     },
     {
-      title: 'Mobility',
+      title: t('mobility'),
       navigation: 'mobility',
       image: require('../../assets/mobility.png'),
     },
     {
-      title: 'Forestry & Timber',
+      title: t('forestry'),
       navigation: 'forestryTimber',
       image: require('../../assets/forestry.png'),
     },
     {
-      title: 'Other personal & Household Items',
+      title: t('other personal'),
       navigation: 'others',
       image: require('../../assets/household.png'),
     },
     {
-      title: 'Business & Commercial Establishments/Organisations',
+      title: t('business'),
       navigation: 'busniess',
       image: require('../../assets/business.png'),
     },
     {
-      title: 'Community Infrastructure (Only for Village level)',
+      title: t('community'),
       navigation: 'community',
       image: require('../../assets/community.png'),
     },

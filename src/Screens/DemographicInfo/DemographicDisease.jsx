@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -8,30 +8,32 @@ import Customdropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useTranslation } from 'react-i18next';
 import { Styles, width } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
+import { primaryColor } from '../../styles/colors';
 
 const DemographicDisease = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { t } = useTranslation()
-    const { demographic, occupation } = route.params
+    const { demographic, occupation, data, member_id,
+        demographic_id } = route.params
     const [mental, setMental] = useState(false)
-    const { data: dropdownData } = useQuery({
+    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        chronic_disease: yup.string().required('Chronic disease is required'),
-        motor_disablity: yup.string().required('Motor disability is required'),
-        currently_feeling: yup.string().required('Current feeling is required'),
-        feelings_with_others: yup.string().required('Feelings with others is required'),
-        support_you_have: yup.array().required('Support you have is required').min(1,'Atleast one support is required'),
-        recover_from_stress: yup.string().required('Recover from stress is required'),
-        share_feelings_of_others: yup.string().required('Share feelings of others is required'),
+        chronic_disease: yup.string().required(t('chronic disease is required')),
+        motor_disablity: yup.string().required(t('motor disability is required')),
+        currently_feeling: yup.string().required(t('current feeling is required')),
+        feelings_with_others: yup.string().required(t('feelings with others is required')),
+        support_you_have: yup.array().required(t('support you have is required')).min(1,t('atleast one support is required')),
+        recover_from_stress: yup.string().required(t('recover from stress is required')),
+        share_feelings_of_others: yup.string().required(t('share feelings of others is required')),
     });
     const {
         handleChange,
@@ -52,21 +54,41 @@ const DemographicDisease = ({ navigation, route }) => {
             recover_from_stress: '',
             share_feelings_of_others: ''
         },
-        // validationSchema: loginSchema,
+        validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
             navigation.navigate('demographicHabits',{
                 demographic: demographic,
                 occupation: occupation,
-                disease: values
+                disease: values,
+                data: data,
+                member_id,
+                demographic_id
             })
         },
     });
+    useEffect(()=>{
+        resetForm({
+            values:{
+                chronic_disease: data?.chronic_disease,
+                motor_disablity: data?.motor_disablity,
+                currently_feeling: data?.currently_feeling,
+                feelings_with_others: data?.feelings_with_others,
+                support_you_have: data?.support_you_have,
+                recover_from_stress: data?.recover_from_stress,
+            }
+        })
+    },[data])
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -74,9 +96,9 @@ const DemographicDisease = ({ navigation, route }) => {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <Customdropdown
-                    data={dropdownData?.['chronic_diseases'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
+                    data={dropdownData?.['chronic_diseases'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.chronic_disease}
-                    label={'Do you have any chronic disease'}
+                    label={t('Do you have any chronic disease?')}
                     onChange={(value) => {
                         setValues({
                             ...values,
@@ -88,9 +110,9 @@ const DemographicDisease = ({ navigation, route }) => {
                     <Text style={Styles.error2}>{String(errors?.chronic_disease)}</Text>
                 )}
                 <Customdropdown
-                    data={dropdownData?.['motor_disability'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
+                    data={dropdownData?.['motor_disability'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.motor_disablity}
-                    label={'Do you have any motor disablity'}
+                    label={t('Do you have any motor disability?')}
                     onChange={(value) => {
                         setValues({
                             ...values,
@@ -102,7 +124,7 @@ const DemographicDisease = ({ navigation, route }) => {
                     <Text style={Styles.error2}>{String(errors?.motor_disablity)}</Text>
                 )}
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Mental Health & Emotional Well-being</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Mental Health & Emotional Well-being')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '15%' }]}
@@ -129,7 +151,7 @@ const DemographicDisease = ({ navigation, route }) => {
                         <Customdropdown
                                 data={dropdownData?.['overall_wellbeing'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                             value={values.currently_feeling}
-                            label={'How are you currently feeling?'}
+                            label={t('How are you currently feeling?')}
                             onChange={(value) => {
                                 setValues({
                                     ...values,
@@ -143,7 +165,7 @@ const DemographicDisease = ({ navigation, route }) => {
                         <Customdropdown
                                 data={dropdownData?.['communication_of_feelings'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                             value={values.feelings_with_others}
-                            label={'Do you talk about your feelings with others?'}
+                            label={t('Do you talk about your feelings with others?')}
                             onChange={(value) => {
                                 setValues({
                                     ...values,
@@ -164,7 +186,7 @@ const DemographicDisease = ({ navigation, route }) => {
                                 setValues({ ...values, support_you_have: item })
                             }
                             selectedd={values?.support_you_have}
-                            infoName={'What kind of support do you have ?'}
+                            infoName={t('What kind of support do you have ?')}
                         />
                         {touched?.support_you_have && errors?.support_you_have && (
                             <Text style={Styles.error2}>{String(errors?.support_you_have)}</Text>
@@ -172,7 +194,7 @@ const DemographicDisease = ({ navigation, route }) => {
                         <Customdropdown
                                 data={dropdownData?.['stress_and_resilience'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                             value={values.recover_from_stress}
-                                label={'How do you manage and recover from stress?'}
+                                label={t('How do you manage and recover from stress?')}
                             onChange={(value) => {
                                 setValues({
                                     ...values,
@@ -186,7 +208,7 @@ const DemographicDisease = ({ navigation, route }) => {
                         <Customdropdown
                                 data={dropdownData?.['empathy'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                             value={values.share_feelings_of_others}
-                            label={'How well do you understand & share feelings of others?'}
+                            label={t('How well do you understand & share feelings of others?')}
                             onChange={(value) => {
                                 setValues({
                                     ...values,
@@ -203,7 +225,7 @@ const DemographicDisease = ({ navigation, route }) => {
                 }
             </KeyboardAwareScrollView>
             <View style={Styles.bottomBtn}>
-                <CustomButton btnText={'Next'} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
             </View>
         </View>
     );

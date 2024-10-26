@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
@@ -8,19 +8,21 @@ import Customdropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useTranslation } from 'react-i18next';
 import { Styles, width } from '../../styles/globalStyles';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import Input from '../../Components/Inputs/Input';
 import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
+import { primaryColor } from '../../styles/colors';
 
 const DemographicUnfulfilled = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { t } = useTranslation()
     const [unfulfilled,setUnfulfilled]  =useState(true)
-    const {demographic, aspiration,disease,habits, occupation}=route.params
-    const { data: dropdownData } = useQuery({
+    const { demographic, aspiration, disease, habits, occupation, data, member_id,
+        demographic_id }=route.params
+    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
@@ -40,7 +42,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
         // .required('Social governance needs is required').min(1, 'Atleast one social governance needs is required'),
         environmental_needs: yup.array(),
         // .required('Environmental needs is required').min(1, 'Atleast one environmental needs is required'),
-        others: yup.string(),
+        others_needs: yup.string(),
     });
     const {
         handleChange,
@@ -60,9 +62,9 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
             infrastructure_needs: [],
             social_governance_needs: [],
             environmental_needs: [],
-            others: '',
+            others_needs: '',
         },
-        // validationSchema: schema,
+        validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
             navigation.navigate('demographicWishes', {
@@ -71,15 +73,37 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                 habits,
                 demographic,
                 aspiration,
-                unfulfilled: values
+                unfulfilled: values,
+                data:data,
+                member_id,
+                demographic_id
             })
         },
     });
+    useEffect(()=>{
+resetForm({
+    values:{
+        basic_necessities:data?.basic_necessities,
+        educational_needs:data?.educational_needs,
+        economic_needs:data?.economic_needs,
+        healthcare_needs:data?.healthcare_needs,
+        infrastructure_needs:data?.infrastructure_needs,
+        social_governance_needs:data?.social_governance_needs,
+        environmental_needs:data?.environmental_needs,
+        others_needs:data?.others_needs,
+    }
+})
+    },[data])
+    if (dropdown_loading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -87,7 +111,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Unfulfilled needs(If any)</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Unfulfilled needs(If any)')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '35%' }]}
@@ -121,7 +145,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, basic_necessities: item })
                                 }
                                 selectedd={values?.basic_necessities}
-                                infoName={'Basic necessities'}
+                                infoName={t('Basic necessities')}
                             />
                             {touched?.economic && errors?.basic_necessities && (
                                 <Text style={Styles.error2}>{String(errors?.basic_necessities)}</Text>
@@ -136,7 +160,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, educational_needs: item })
                                 }
                                 selectedd={values?.educational_needs}
-                                infoName={'Educational needs'}
+                                infoName={t('Educational needs')}
                             />
                             {touched?.educational_needs && errors?.educational_needs && (
                                 <Text style={Styles.error2}>{String(errors?.educational_needs)}</Text>
@@ -151,7 +175,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, economic_needs: item })
                                 }
                                 selectedd={values?.economic_needs}
-                                infoName={'Economic Needs'}
+                                infoName={t('Economic Needs')}
                             />
                             {touched?.economic_needs && errors?.economic_needs && (
                                 <Text style={Styles.error2}>{String(errors?.economic_needs)}</Text>
@@ -166,7 +190,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, healthcare_needs: item })
                                 }
                                 selectedd={values?.healthcare_needs}
-                                infoName={'Healthcare needs'}
+                                infoName={t('Healthcare needs')}
                             />
                             {touched?.healthcare_needs && errors?.healthcare_needs && (
                                 <Text style={Styles.error2}>{String(errors?.healthcare_needs)}</Text>
@@ -181,7 +205,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, infrastructure_needs: item })
                                 }
                                 selectedd={values?.infrastructure_needs}
-                                infoName={'Infrastructure needs'}
+                                infoName={t('Infrastructure needs')}
                             />
                             {touched?.infrastructure_needs && errors?.infrastructure_needs && (
                                 <Text style={Styles.error2}>{String(errors?.infrastructure_needs)}</Text>
@@ -196,7 +220,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, social_governance_needs: item })
                                 }
                                 selectedd={values?.social_governance_needs}
-                                infoName={'Self governance needs'}
+                                infoName={t('Self governance needs')}
                             />
                             {touched?.social_governance_needs && errors?.social_governance_needs && (
                                 <Text style={Styles.error2}>{String(errors?.social_governance_needs)}</Text>
@@ -211,17 +235,17 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                                     setValues({ ...values, environmental_needs: item })
                                 }
                                 selectedd={values?.environmental_needs}
-                                infoName={'Environmental needs'}
+                                infoName={t('Environmental needs')}
                             />
                             {touched?.environmental_needs && errors?.environmental_needs && (
                                 <Text style={Styles.error2}>{String(errors?.environmental_needs)}</Text>
                             )}
                             <Input
-                                label={'Other(Specify if any)'}
-                                value={values.others}
+                                label={t('Other needs(Specify if any)')}
+                                value={values.others_needs}
                                 placeholder={''}
                                 fullLength={true}
-                                onChange={handleChange('others')}
+                                onChangeText={handleChange('others_needs')}
                             />
 
                         </View>
@@ -230,7 +254,7 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
                 }
             </KeyboardAwareScrollView>
             <View style={Styles.bottomBtn}>
-                <CustomButton btnText={'Next'} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
             </View>
         </View>
     );
