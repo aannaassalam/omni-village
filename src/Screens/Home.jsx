@@ -50,7 +50,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('landholding'),
-      navigation: '', // FIX ME - landholdingUsage
+      navigation: 'landholdingUsage',
       image: require('../../assets/landhold.png'),
     },
     {

@@ -71,16 +71,17 @@ const Demographic = ({ navigation, route }) => {
   useEffect(()=>{
     resetForm({
       values:{
-        marital_status: demographic_data?.marital_status,
-        diet: demographic_data?.diet,
-        height: demographic_data?.height,
-        weight: demographic_data?.weight,
-        language_speak: demographic_data?.language_speak,
-        language_read: demographic_data?.language_read,
-        language_write: demographic_data?.language_write,
+        marital_status: demographic_data?.marital_status || '',
+        diet: demographic_data?.diet || '',
+        height: demographic_data?.height || '',
+        weight: demographic_data?.weight || '',
+        language_speak: demographic_data?.language_speak || '',
+        language_read: demographic_data?.language_read || '',
+        language_write: demographic_data?.language_write || '',
       }
     })
   }, [demographic_data])
+  console.log("de,mooo", demographic_data, demographic_id)
   if(dropdown_loading || demographic_loading){
     return <View style={{flex:1, justifyContent:'center', alignSelf:'center'}}>
       <ActivityIndicator size={'large'} color={primaryColor}/>

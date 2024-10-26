@@ -5,7 +5,7 @@ export const getDemographic = async (id) => {
   const res = await axiosInstance.get(
     endpoints.demographic.get_demographic+`?demographic_id=${id}`
   );
-  console.log("ressss0", res.data, res?.status)
+  console.log("ressss0", res.data)
   return res.data;
 };
 

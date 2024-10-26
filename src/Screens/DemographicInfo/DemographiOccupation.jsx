@@ -33,17 +33,7 @@ const DemographicOccupation = ({ navigation, route }) => {
         occupation: yup.string().required(t('occupation is required')),
         yearly_income: yup.string().required(t('yearly income is required')),
         bank_account: yup.boolean().required(t('have bank account required')),
-        savings_investment: yup.boolean().test(
-            'savings_investment-required',
-            t('have savings investment required'),
-            function (value) {
-                const { bank_account } = this.parent; // Accessing other field values
-                if (bank_account) {
-                    return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
-                }
-                return true; // Otherwise, no validation on decreasing_yield
-            },
-        ),
+        savings_investment: yup.boolean(),
         savings_investment_amount: yup.number().test(
             'savings_investment-amount-required',
             t('saving amount required'),
@@ -85,14 +75,15 @@ const DemographicOccupation = ({ navigation, route }) => {
             })
         },
     });
+    console.log("errr", errors, values)
     useEffect(() => {
         resetForm({
             values:{
-                occupation: data?.occupation,
-                yearly_income: data?.yearly_income,
-                bank_account: data?.bank_account,
-                savings_investment: data?.savings_investment,
-                savings_investment_amount: data?.savings_investment_amount,
+                occupation: data?.occupation || '',
+                yearly_income: data?.yearly_income || '',
+                bank_account: data?.bank_account || false,
+                savings_investment: data?.savings_investment || false,
+                savings_investment_amount: data?.savings_investment_amount || '',
             }
         })
     },[data])

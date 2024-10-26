@@ -83,14 +83,14 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
     useEffect(()=>{
 resetForm({
     values:{
-        basic_necessities:data?.basic_necessities,
-        educational_needs:data?.educational_needs,
-        economic_needs:data?.economic_needs,
-        healthcare_needs:data?.healthcare_needs,
-        infrastructure_needs:data?.infrastructure_needs,
-        social_governance_needs:data?.social_governance_needs,
-        environmental_needs:data?.environmental_needs,
-        others_needs:data?.others_needs,
+        basic_necessities: data?.basic_necessities || [],
+        educational_needs: data?.educational_needs || [],
+        economic_needs: data?.economic_needs || [],
+        healthcare_needs: data?.healthcare_needs || [],
+        infrastructure_needs: data?.infrastructure_needs || [],
+        social_governance_needs: data?.social_governance_needs || [],
+        environmental_needs: data?.environmental_needs || [],
+        others_needs: data?.others_needs || '',
     }
 })
     },[data])

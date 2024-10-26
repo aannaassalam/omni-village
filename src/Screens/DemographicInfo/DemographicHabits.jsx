@@ -102,28 +102,28 @@ const DemographicHabits = ({ navigation, route }) => {
     useEffect(()=>{
         resetForm({
             values:{
-                specific_habit:data?.specific_habit,
-                education_status:data?.education_status,
-                education_seeking_to_gain:data?.education_seeking_to_gain,
-                cultural_traditional_hobbies:data?.cultural_traditional_hobbies,
-                outdoor_nature_based_hobbies:data?.outdoor_nature_based_hobbies,
-                modern_digital_hobbies:data?.modern_digital_hobbies,
-                creative_artistics_hobbies:data?.creative_artistics_hobbies,
-                other_hobbies:data?.other_hobbies,
-                technical_vocational_skills_learn:data?.technical_vocational_skills_learn,
-                entrepreneurial_business_skills_learn:data?.entrepreneurial_business_skills_learn,
-                digital_technological_skills_learn: data?.digital_technological_skills_learn,
-                skills_learn:data?.digital_technological_skills_learn,
-                communication_language_skills_learn:data?.communication_language_skills_learn,
-                health_well_being_skills_learn:data?.health_well_being_skills_learn,
-                creative_artistics_skills_learn:data?.creative_artistics_skills_learn,
-                others_skills_learn:data?.others_skills_learn,
-                technical_vocational_skills:data?.technical_vocational_skills,
-                entrepreneurial_business_skills:data?.entrepreneurial_business_skills,
-                interpersonal_skills:data?.interpersonal_skills,
-                creative_artistic_skills:data?.creative_artistics_skills,
-                professional_skills:data?.professional_skills,
-                others_skills:data?.others_skills
+                specific_habit:data?.specific_habit ||'',
+                education_status: data?.education_status ||'',
+                education_seeking_to_gain: data?.education_seeking_to_gain || '',
+                cultural_traditional_hobbies: data?.cultural_traditional_hobbies || [],
+                outdoor_nature_based_hobbies: data?.outdoor_nature_based_hobbies || [],
+                modern_digital_hobbies: data?.modern_digital_hobbies || [],
+                creative_artistics_hobbies: data?.creative_artistics_hobbies || [],
+                other_hobbies:data?.other_hobbies || '',
+                technical_vocational_skills_learn: data?.technical_vocational_skills_learn || [],
+                entrepreneurial_business_skills_learn: data?.entrepreneurial_business_skills_learn || [],
+                digital_technological_skills_learn: data?.digital_technological_skills_learn || [],
+                skills_learn: data?.digital_technological_skills_learn || [],
+                communication_language_skills_learn: data?.communication_language_skills_learn || [],
+                health_well_being_skills_learn: data?.health_well_being_skills_learn || [],
+                creative_artistics_skills_learn: data?.creative_artistics_skills_learn || [],
+                others_skills_learn: data?.others_skills_learn || '',
+                technical_vocational_skills: data?.technical_vocational_skills || [],
+                entrepreneurial_business_skills: data?.entrepreneurial_business_skills || [],
+                interpersonal_skills: data?.interpersonal_skills || [],
+                creative_artistic_skills: data?.creative_artistics_skills || [],
+                professional_skills:data?.professional_skills || [],
+                others_skills:data?.others_skills || ''
             }
         })
     },[data])
@@ -158,7 +158,7 @@ const DemographicHabits = ({ navigation, route }) => {
                     <Text style={Styles.error2}>{String(errors?.specific_habit)}</Text>
                 )}
                 <Customdropdown
-                    data={dropdownData?.['current_education_status'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
+                    data={dropdownData?.['current_education_status'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.education_status}
                     label={t('Mention your current education status')}
                     onChange={(value) => {
@@ -172,7 +172,7 @@ const DemographicHabits = ({ navigation, route }) => {
                     <Text style={Styles.error2}>{String(errors?.education_status)}</Text>
                 )}
                 <Customdropdown
-                    data={dropdownData?.['education_seeking_to_gain'].map((item) => { return { id: item?._id, label: item?.name, value: item?.name } })}
+                    data={dropdownData?.['education_seeking_to_gain'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.education_seeking_to_gain}
                     label={t('Education seeking to gain')}
                     onChange={(value) => {

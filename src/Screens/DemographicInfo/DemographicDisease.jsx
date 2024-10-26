@@ -70,12 +70,12 @@ const DemographicDisease = ({ navigation, route }) => {
     useEffect(()=>{
         resetForm({
             values:{
-                chronic_disease: data?.chronic_disease,
-                motor_disablity: data?.motor_disablity,
-                currently_feeling: data?.currently_feeling,
-                feelings_with_others: data?.feelings_with_others,
-                support_you_have: data?.support_you_have,
-                recover_from_stress: data?.recover_from_stress,
+                chronic_disease: data?.chronic_disease || '',
+                motor_disablity: data?.motor_disablity || '',
+                currently_feeling: data?.currently_feeling || '',
+                feelings_with_others: data?.feelings_with_others || '',
+                support_you_have: data?.support_you_have||[],
+                recover_from_stress: data?.recover_from_stress||'',
             }
         })
     },[data])

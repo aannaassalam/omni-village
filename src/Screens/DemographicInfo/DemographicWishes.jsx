@@ -12,7 +12,7 @@ import { ActivityIndicator, Divider } from 'react-native-paper';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import Input from '../../Components/Inputs/Input';
 import { borderColor, primaryColor } from '../../styles/colors';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
 import PopupModal from '../../Components/Popups/PopupModal';
 import { addDemographic, editDemographic } from '../../functions/demographic';
@@ -27,6 +27,7 @@ const DemographicWishes = ({ navigation, route }) => {
     const [savepopup, setSavepopup] = useState(false);
     const [message, setMessage] = useState('');
     const [draftpopup, setDraftpopup] = useState(false);
+    const queryClient = useQueryClient()
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
@@ -36,8 +37,9 @@ const DemographicWishes = ({ navigation, route }) => {
         mutationKey: ['save_demographic'],
         mutationFn: async (data) => {
             addDemographic(data)
+            queryClient.invalidateQueries()
         },
-        onSuccess: (data) => console.log("successsssss save", data),
+        onSuccess: (data) => {console.log("successsssss save", data), navigation.replace('home')},
         onError: (error) => console.log("error save", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
@@ -45,8 +47,9 @@ const DemographicWishes = ({ navigation, route }) => {
         mutationKey: ['edit_demographic'],
         mutationFn: async (data) => {
             editDemographic(data)
+            queryClient.invalidateQueries()
         },
-        onSuccess: (data) => console.log("successsssss edit", data),
+        onSuccess: (data) => { console.log("successsssss edit", data), navigation.replace('home') },
         onError: (error) => console.log("error edit", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
@@ -85,12 +88,12 @@ const DemographicWishes = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-                for_community: data?.for_community,
-                for_economy: data?.for_economy,
-                for_personal_growth: data?.for_personal_growth,
-                for_environment: data?.for_environment,
-                for_family_future_generation: data?.for_family_future_generation,
-                others_wishes: data?.others_wishes
+                for_community: data?.for_community || [],
+                for_economy: data?.for_economy || [],
+                for_personal_growth: data?.for_personal_growth || [],
+                for_environment: data?.for_environment || [],
+                for_family_future_generation: data?.for_family_future_generation || [],
+                others_wishes: data?.others_wishes || ''
             }
         })
     }, [data])
@@ -279,16 +282,16 @@ const DemographicWishes = ({ navigation, route }) => {
             <PopupModal
                 modalVisible={draftpopup}
                 setBottomModalVisible={setDraftpopup}
-                styleInner={[styles.savePopup, { width: '90%' }]}>
-                <View style={styles.submitPopup}>
-                    <View style={styles.noteImage}>
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
                         <Image
                             source={require('../../../assets/note.png')}
-                            style={styles.noteImage}
+                            style={Styles.noteImage}
                         />
                     </View>
-                    <Text style={styles.confirmText}>{t('save as draft')}</Text>
-                    <Text style={styles.nextText}>{t('')}</Text>
+                    <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={Styles.nextText}>{t('')}</Text>
                     <View style={Styles.bottomPopupbutton}>
                         <CustomButton
                             style={Styles.submitButton}
@@ -297,7 +300,7 @@ const DemographicWishes = ({ navigation, route }) => {
                         // loading={}
                         />
                         <CustomButton
-                            style={styles.draftButton}
+                            style={Styles.draftButton}
                             btnText={t('cancel')}
                             onPress={() => setDraftpopup(false)}
                         />

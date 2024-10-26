@@ -78,15 +78,15 @@ const DemographicAspiration = ({ navigation, route }) => {
     useEffect(()=>{
         resetForm({
             values:{
-                economic:data?.economic,
-                educational:data?.educational,
-                health_well_being:data?.health_well_being,
-                infrastructure_technology:data?.infrastructure_technology,
-                environmental_sustainability:data?.environmental_sustainability,
-                cultural:data?.cultural,
-                community_social:data?.community_social,
-                personal_growth:data?.personal_growth,
-                spiritual:data?.spiritual
+                economic:data?.economic || [],
+                educational: data?.educational || [],
+                health_well_being: data?.health_well_being || [],
+                infrastructure_technology: data?.infrastructure_technology || [],
+                environmental_sustainability: data?.environmental_sustainability || [],
+                cultural: data?.cultural || [],
+                community_social: data?.community_social || [],
+                personal_growth: data?.personal_growth || [],
+                spiritual: data?.spiritual || []
             }
         })
     },[data])

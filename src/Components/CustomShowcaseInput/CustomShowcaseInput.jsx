@@ -14,6 +14,7 @@ const CustomShowcaseInput = ({
   productionArea,
   progressBar,
   onPress,
+  style,
   user,
 }) => {
   const {fontScale} = useWindowDimensions();
@@ -24,6 +25,7 @@ const CustomShowcaseInput = ({
       onPress={onPress}
       style={[
         styles.container,
+        style,
         progressBar
           ? {justifyContent: 'space-evenly'}
           : {justifyContent: 'flex-start'},
