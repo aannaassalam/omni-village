@@ -1,5 +1,5 @@
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
 import { useUser } from '../../Hooks/useUser'
@@ -15,8 +15,9 @@ import { primaryColor } from '../../styles/colors'
 const Members = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
-    const { data: user } = useUser()
+    const { data: user, refetch } = useUser()
     const { t } = useTranslation()
+    useEffect(()=>{refetch()},[])
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -26,14 +27,14 @@ const Members = ({ navigation }) => {
             />
             <View style={styles.mainContainer}>
                 <Input
-                    label={'How many members are there in your family?'}
+                    label={t('How many members are there in your family?')}
                     editable={false}
                     onChangeText={()=>{}}
                     placeholder={String(user?.members?.length)}
                     fullLength={true}
                 />
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>Fill in details for</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '65%' }]}
@@ -42,6 +43,7 @@ const Members = ({ navigation }) => {
                     </View>
             </View>
             {user?.members.map((item) => {
+                console.log("item", item)
                 return <CustomShowcaseInput
                     key={item?._id}
                     productionName={item?.name}

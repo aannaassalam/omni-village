@@ -37,6 +37,8 @@ export const Styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         alignSelf: 'center',
+        marginTop:18,
+        padding:12
     },
     bottomPopupbutton: {
         flexDirection: 'row',

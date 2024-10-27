@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
 import { getDemographic } from '../../functions/demographic';
 import { primaryColor } from '../../styles/colors';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 
 const Demographic = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions();
@@ -62,7 +63,7 @@ const Demographic = ({ navigation, route }) => {
       console.log(values);
       navigation.navigate('demographicOccupation', {
         demographic: { ...values, height: parseInt(values?.height), weight: parseInt(values?.weight) },
-        data: demographic_data,
+        data: demographic_data?.data,
         member_id,
         demographic_id
       })
@@ -71,17 +72,16 @@ const Demographic = ({ navigation, route }) => {
   useEffect(()=>{
     resetForm({
       values:{
-        marital_status: demographic_data?.marital_status || '',
-        diet: demographic_data?.diet || '',
-        height: demographic_data?.height || '',
-        weight: demographic_data?.weight || '',
-        language_speak: demographic_data?.language_speak || '',
-        language_read: demographic_data?.language_read || '',
-        language_write: demographic_data?.language_write || '',
+        marital_status: demographic_data?.data?.general_data?.marital_status?._id || '',
+        diet: demographic_data?.data?.general_data?.diet?._id || '',
+        height: String(demographic_data?.data?.general_data?.height || ''),
+        weight: String(demographic_data?.data?.general_data?.weight || ''),
+        language_speak: demographic_data?.data?.language?.[0]?.language_speak?._id || '',
+        language_read: demographic_data?.data?.language?.[0]?.language_read?._id || '',
+        language_write: demographic_data?.data.language?.[0]?.language_write?._id || '',
       }
     })
   }, [demographic_data])
-  console.log("de,mooo", demographic_data, demographic_id)
   if(dropdown_loading || demographic_loading){
     return <View style={{flex:1, justifyContent:'center', alignSelf:'center'}}>
       <ActivityIndicator size={'large'} color={primaryColor}/>

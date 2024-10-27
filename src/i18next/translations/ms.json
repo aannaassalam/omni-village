@@ -273,6 +273,7 @@
   "other personal": "Lain-lain barangan peribadi & rumah",
   "business": "Pertubuhan/Pertubuhan Perniagaan & Komersial",
   "community": "Infrastruktur Komuniti (Hanya untuk peringkat Kampung)",
+  
   "choose": "Pilih",
   "next": "Seterusnya",
   "marital_status": "Status perkahwinan",
@@ -343,7 +344,10 @@
   "For environment": "Untuk persekitaran",
   "For family and future generation": "Untuk keluarga dan generasi akan datang",
   "Other wishes(Specify if any)": "Kehendak lain (Nyatakan jika ada)",
+  "How many members are there in your family?": "Berapakah bilangan ahli dalam keluarga anda?",
+  "Fill in details for": "Isikan butiran untuk",
   "marital status is required": "Status perkahwinan diperlukan",
+
   "diet is required": "Diet diperlukan",
   "height is required": "Ketinggian diperlukan",
   "weight is required": "Berat badan diperlukan",

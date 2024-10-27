@@ -83,14 +83,14 @@ const DemographicUnfulfilled = ({ navigation, route }) => {
     useEffect(()=>{
 resetForm({
     values:{
-        basic_necessities: data?.basic_necessities || [],
-        educational_needs: data?.educational_needs || [],
-        economic_needs: data?.economic_needs || [],
-        healthcare_needs: data?.healthcare_needs || [],
-        infrastructure_needs: data?.infrastructure_needs || [],
-        social_governance_needs: data?.social_governance_needs || [],
-        environmental_needs: data?.environmental_needs || [],
-        others_needs: data?.others_needs || '',
+        basic_necessities: data?.unfulfilled_needs?.basic_necessities.map((i) => { return i?._id }) || [],
+        educational_needs: data?.unfulfilled_needs?.educational_needs.map((i) => { return i?._id }) || [],
+        economic_needs: data?.unfulfilled_needs?.economic_needs.map((i) => { return i?._id }) || [],
+        healthcare_needs: data?.unfulfilled_needs?.healthcare_needs.map((i) => { return i?._id }) || [],
+        infrastructure_needs: data?.unfulfilled_needs?.infrastructure_needs.map((i) => { return i?._id }) || [],
+        social_governance_needs: data?.unfulfilled_needs?.social_governance_needs.map((i) => { return i?._id }) || [],
+        environmental_needs: data?.unfulfilled_needs?.environmental_needs.map((i) => { return i?._id }) || [],
+        others_needs: data?.unfulfilled_needs?.others_needs || '',
     }
 })
     },[data])

@@ -75,15 +75,14 @@ const DemographicOccupation = ({ navigation, route }) => {
             })
         },
     });
-    console.log("errr", errors, values)
     useEffect(() => {
         resetForm({
             values:{
-                occupation: data?.occupation || '',
-                yearly_income: data?.yearly_income || '',
-                bank_account: data?.bank_account || false,
-                savings_investment: data?.savings_investment || false,
-                savings_investment_amount: data?.savings_investment_amount || '',
+                occupation: data?.general_data?.occupation?._id || '',
+                yearly_income: data?.general_data?.yearly_income?._id || '',
+                bank_account: data?.general_data?.bank_account || false,
+                savings_investment: data?.general_data?.savings_investment || false,
+                savings_investment_amount: String(data?.general_data?.savings_investment_amount || '') ,
             }
         })
     },[data])

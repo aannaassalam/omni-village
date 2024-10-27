@@ -1,11 +1,11 @@
 import axiosInstance from '../Helper/Helper';
 import {endpoints} from '../Endpoints/endpoints';
 
+
 export const getDemographic = async (id) => {
   const res = await axiosInstance.get(
-    endpoints.demographic.get_demographic+`?demographic_id=${id}`
+    endpoints.demographic.get_demographic +`?demographic_id=${id}`
   );
-  console.log("ressss0", res.data)
   return res.data;
 };
 

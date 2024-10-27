@@ -102,28 +102,27 @@ const DemographicHabits = ({ navigation, route }) => {
     useEffect(()=>{
         resetForm({
             values:{
-                specific_habit:data?.specific_habit ||'',
-                education_status: data?.education_status ||'',
-                education_seeking_to_gain: data?.education_seeking_to_gain || '',
-                cultural_traditional_hobbies: data?.cultural_traditional_hobbies || [],
-                outdoor_nature_based_hobbies: data?.outdoor_nature_based_hobbies || [],
-                modern_digital_hobbies: data?.modern_digital_hobbies || [],
-                creative_artistics_hobbies: data?.creative_artistics_hobbies || [],
-                other_hobbies:data?.other_hobbies || '',
-                technical_vocational_skills_learn: data?.technical_vocational_skills_learn || [],
-                entrepreneurial_business_skills_learn: data?.entrepreneurial_business_skills_learn || [],
-                digital_technological_skills_learn: data?.digital_technological_skills_learn || [],
-                skills_learn: data?.digital_technological_skills_learn || [],
-                communication_language_skills_learn: data?.communication_language_skills_learn || [],
-                health_well_being_skills_learn: data?.health_well_being_skills_learn || [],
-                creative_artistics_skills_learn: data?.creative_artistics_skills_learn || [],
-                others_skills_learn: data?.others_skills_learn || '',
-                technical_vocational_skills: data?.technical_vocational_skills || [],
-                entrepreneurial_business_skills: data?.entrepreneurial_business_skills || [],
-                interpersonal_skills: data?.interpersonal_skills || [],
-                creative_artistic_skills: data?.creative_artistics_skills || [],
-                professional_skills:data?.professional_skills || [],
-                others_skills:data?.others_skills || ''
+                specific_habit:data?.general_data?.specific_habit?._id ||'',
+                education_status: data?.general_data?.education_status?._id ||'',
+                education_seeking_to_gain: data?.general_data?.education_seeking_to_gain?._id || '',
+                cultural_traditional_hobbies: data?.hobbies?.cultural_traditional_hobbies.map((i)=>{return i?._id}) || [],
+                outdoor_nature_based_hobbies: data?.hobbies?.outdoor_nature_based_hobbies.map((i) => { return i?._id }) || [],
+                modern_digital_hobbies: data?.hobbies?.modern_digital_hobbies.map((i) => { return i?._id }) || [],
+                creative_artistics_hobbies: data?.hobbies?.creative_artistics_hobbies.map((i)=>{return i?._id}) || [],
+                other_hobbies: data?.hobbies?.other_hobbies || '',
+                technical_vocational_skills_learn: data?.skills_to_learn?.technical_vocational_skills_learn.map((i) => { return i?._id }) || [],
+                entrepreneurial_business_skills_learn: data?.skills_to_learn?.entrepreneurial_business_skills_learn.map((i) => { return i?._id }) || [],
+                digital_technological_skills_learn: data?.skills_to_learn?.digital_technological_skills_learn.map((i) => { return i?._id })  || [],
+                communication_language_skills_learn: data?.skills_to_learn?.communication_language_skills_learn.map((i) => { return i?._id }) || [],
+                health_well_being_skills_learn: data?.skills_to_learn?.health_well_being_skills_learn.map((i) => { return i?._id }) || [],
+                creative_artistics_skills_learn: data?.skills_to_learn?.creative_artistics_skills_learn.map((i) => { return i?._id }) || [],
+                others_skills_learn: data?.skills_to_learn?.others_skills_learn || '',
+                technical_vocational_skills: data?.skills?.technical_vocational_skills.map((i) => { return i?._id }) || [],
+                entrepreneurial_business_skills: data?.skills?.entrepreneurial_business_skills.map((i) => { return i?._id }) || [],
+                interpersonal_skills: data?.skills?.interpersonal_skills.map((i) => { return i?._id }) || [],
+                creative_artistic_skills: data?.skills?.creative_artistic_skills.map((i) => { return i?._id }) || [],
+                professional_skills: data?.skills?.professional_skills.map((i) => { return i?._id }) || [],
+                others_skills: data?.skills?.others_skills || ''
             }
         })
     },[data])
@@ -385,10 +384,10 @@ const DemographicHabits = ({ navigation, route }) => {
                             )}
                             <Input
                                 label={t('Others skills(Specify if any)')}
-                                value={values.others}
+                                value={values.others_skills}
                                 placeholder={''}
                                 fullLength={true}
-                                onChangeText={handleChange('others')}
+                                onChangeText={handleChange('others_skills')}
                             />
                         </View>
                     </View>
@@ -512,10 +511,10 @@ const DemographicHabits = ({ navigation, route }) => {
                             )}
                             <Input
                                 label={t('Others skiils learn(Specify if any)')}
-                                value={values.others_skills}
+                                value={values.others_skills_learn}
                                 placeholder={''}
                                 fullLength={true}
-                                onChangeText={handleChange('others_skills')}
+                                onChangeText={handleChange('others_skills_learn')}
                             />
                         </View>
                     </View>

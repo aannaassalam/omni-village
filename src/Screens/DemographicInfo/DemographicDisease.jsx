@@ -20,7 +20,7 @@ const DemographicDisease = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { demographic, occupation, data, member_id,
         demographic_id } = route.params
-    const [mental, setMental] = useState(false)
+    const [mental, setMental] = useState(true)
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
@@ -31,7 +31,7 @@ const DemographicDisease = ({ navigation, route }) => {
         motor_disablity: yup.string().required(t('motor disability is required')),
         currently_feeling: yup.string().required(t('current feeling is required')),
         feelings_with_others: yup.string().required(t('feelings with others is required')),
-        support_you_have: yup.array().required(t('support you have is required')).min(1,t('atleast one support is required')),
+        support_you_have: yup.array().required(t('support you have is required')).min(1, t('atleast one support is required')),
         recover_from_stress: yup.string().required(t('recover from stress is required')),
         share_feelings_of_others: yup.string().required(t('share feelings of others is required')),
     });
@@ -57,7 +57,7 @@ const DemographicDisease = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            navigation.navigate('demographicHabits',{
+            navigation.navigate('demographicHabits', {
                 demographic: demographic,
                 occupation: occupation,
                 disease: values,
@@ -67,18 +67,20 @@ const DemographicDisease = ({ navigation, route }) => {
             })
         },
     });
-    useEffect(()=>{
+    useEffect(() => {
         resetForm({
-            values:{
-                chronic_disease: data?.chronic_disease || '',
-                motor_disablity: data?.motor_disablity || '',
-                currently_feeling: data?.currently_feeling || '',
-                feelings_with_others: data?.feelings_with_others || '',
-                support_you_have: data?.support_you_have||[],
-                recover_from_stress: data?.recover_from_stress||'',
+            values: {
+                chronic_disease: data?.general_data?.chronic_disease?._id || '',
+                motor_disablity: data?.general_data?.motor_disablity?._id || '',
+                currently_feeling: data?.mental_and_emotional_wellbeing?.currently_feeling?._id || '',
+                feelings_with_others: data?.mental_and_emotional_wellbeing?.feelings_with_others?._id || '',
+                support_you_have: data?.mental_and_emotional_wellbeing?.support_you_have.map((i) => { return i?._id }) || [],
+                recover_from_stress: data?.mental_and_emotional_wellbeing?.recover_from_stress?._id || '',
+                share_feelings_of_others: data?.mental_and_emotional_wellbeing?.share_feelings_of_others?._id || '',
             }
         })
-    },[data])
+    }, [data])
+    console.log("support", data?.mental_and_emotional_wellbeing?.support_you_have)
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -147,78 +149,78 @@ const DemographicDisease = ({ navigation, route }) => {
                 {mental ?
                     <View style={styles.innerInputView}>
                         <Divider style={styles.divider2} />
-                        <View style={{width:'100%'}}>
-                        <Customdropdown
+                        <View style={{ width: '100%' }}>
+                            <Customdropdown
                                 data={dropdownData?.['overall_wellbeing'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
-                            value={values.currently_feeling}
-                            label={t('How are you currently feeling?')}
-                            onChange={(value) => {
-                                setValues({
-                                    ...values,
-                                    currently_feeling: value?.value,
-                                });
-                            }}
-                        />
-                        {touched?.currently_feeling && errors?.currently_feeling && (
-                            <Text style={Styles.error2}>{String(errors?.currently_feeling)}</Text>
-                        )}
-                        <Customdropdown
+                                value={values.currently_feeling}
+                                label={t('How are you currently feeling?')}
+                                onChange={(value) => {
+                                    setValues({
+                                        ...values,
+                                        currently_feeling: value?.value,
+                                    });
+                                }}
+                            />
+                            {touched?.currently_feeling && errors?.currently_feeling && (
+                                <Text style={Styles.error2}>{String(errors?.currently_feeling)}</Text>
+                            )}
+                            <Customdropdown
                                 data={dropdownData?.['communication_of_feelings'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
-                            value={values.feelings_with_others}
-                            label={t('Do you talk about your feelings with others?')}
-                            onChange={(value) => {
-                                setValues({
-                                    ...values,
-                                    feelings_with_others: value?.value,
-                                });
-                            }}
-                        />
-                        {touched?.feelings_with_others && errors?.feelings_with_others && (
-                            <Text style={Styles.error2}>{String(errors?.feelings_with_others)}</Text>
-                        )}
-                        <MultiselectDropdown
-                            containerStyle={{
-                                marginTop: '5%',
-                                paddingTop: 0,
-                            }}
+                                value={values.feelings_with_others}
+                                label={t('Do you talk about your feelings with others?')}
+                                onChange={(value) => {
+                                    setValues({
+                                        ...values,
+                                        feelings_with_others: value?.value,
+                                    });
+                                }}
+                            />
+                            {touched?.feelings_with_others && errors?.feelings_with_others && (
+                                <Text style={Styles.error2}>{String(errors?.feelings_with_others)}</Text>
+                            )}
+                            <MultiselectDropdown
+                                containerStyle={{
+                                    marginTop: '5%',
+                                    paddingTop: 0,
+                                }}
                                 data={dropdownData?.['support_system'].map((item) => { return { name: item?.name, key: item?._id } })}
-                            setSelectedd={(item) =>
-                                setValues({ ...values, support_you_have: item })
-                            }
-                            selectedd={values?.support_you_have}
-                            infoName={t('What kind of support do you have ?')}
-                        />
-                        {touched?.support_you_have && errors?.support_you_have && (
-                            <Text style={Styles.error2}>{String(errors?.support_you_have)}</Text>
-                        )}
-                        <Customdropdown
+                                setSelectedd={(item) =>
+                                    setValues({ ...values, support_you_have: item })
+                                }
+                                selectedd={values?.support_you_have}
+                                infoName={t('What kind of support do you have ?')}
+                            />
+                            {touched?.support_you_have && errors?.support_you_have && (
+                                <Text style={Styles.error2}>{String(errors?.support_you_have)}</Text>
+                            )}
+                            <Customdropdown
                                 data={dropdownData?.['stress_and_resilience'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
-                            value={values.recover_from_stress}
+                                value={values.recover_from_stress}
                                 label={t('How do you manage and recover from stress?')}
-                            onChange={(value) => {
-                                setValues({
-                                    ...values,
-                                    recover_from_stress: value?.value,
-                                });
-                            }}
-                        />
-                        {touched?.recover_from_stress && errors?.recover_from_stress && (
-                            <Text style={Styles.error2}>{String(errors?.recover_from_stress)}</Text>
-                        )}
-                        <Customdropdown
+                                onChange={(value) => {
+                                    setValues({
+                                        ...values,
+                                        recover_from_stress: value?.value,
+                                    });
+                                }}
+                            />
+                            {touched?.recover_from_stress && errors?.recover_from_stress && (
+                                <Text style={Styles.error2}>{String(errors?.recover_from_stress)}</Text>
+                            )}
+                            <Customdropdown
                                 data={dropdownData?.['empathy'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
-                            value={values.share_feelings_of_others}
-                            label={t('How well do you understand & share feelings of others?')}
-                            onChange={(value) => {
-                                setValues({
-                                    ...values,
-                                    share_feelings_of_others: value?.value,
-                                });
-                            }}
-                        />
-                        {touched?.share_feelings_of_others && errors?.share_feelings_of_others && (
-                            <Text style={Styles.error2}>{String(errors?.share_feelings_of_others)}</Text>
-                        )}
+                                value={values.share_feelings_of_others}
+                                label={t('How well do you understand & share feelings of others?')}
+                                onChange={(value) => {
+                                    setValues({
+                                        ...values,
+                                        share_feelings_of_others: value?.value,
+                                    });
+                                }}
+                            />
+                            {touched?.share_feelings_of_others && errors?.share_feelings_of_others && (
+                                <Text style={Styles.error2}>{String(errors?.share_feelings_of_others)}</Text>
+                            )}
                         </View>
                     </View>
                     : null

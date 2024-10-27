@@ -88,18 +88,18 @@ const DemographicWishes = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-                for_community: data?.for_community || [],
-                for_economy: data?.for_economy || [],
-                for_personal_growth: data?.for_personal_growth || [],
-                for_environment: data?.for_environment || [],
-                for_family_future_generation: data?.for_family_future_generation || [],
-                others_wishes: data?.others_wishes || ''
+                for_community: data?.wishes?.for_community.map((i) => { return i?._id }) || [],
+                for_economy: data?.wishes?.for_economy.map((i) => { return i?._id }) || [],
+                for_personal_growth: data?.wishes?.for_personal_growth.map((i) => { return i?._id }) || [],
+                for_environment: data?.wishes?.for_environment.map((i) => { return i?._id }) || [],
+                for_family_future_generation: data?.wishes?.for_family_future_generation.map((i) => { return i?._id }) || [],
+                others_wishes: data?.wishes?.others_wishes || ''
             }
         })
     }, [data])
     const handleDraft = () => {
         let new_data = { ...demographic, ...aspiration, ...disease, ...habits, ...occupation, ...unfulfilled, ...values }
-        if (data?._id) {
+        if (demographic_id) {
             edit_demographic({ ...new_data, status: 0, demographic_id: demographic_id })
         } else {
             add_demographic({ ...new_data, status: 0, member_id: member_id })
@@ -108,7 +108,7 @@ const DemographicWishes = ({ navigation, route }) => {
     }
     const onSubmit = () => {
         let new_data = { ...demographic, ...aspiration, ...disease, ...habits, ...occupation, ...unfulfilled, ...values }
-        if (data?._id) {
+        if (demographic_id) {
             edit_demographic({ ...new_data, status: 1, demographic_id: demographic_id })
         } else {
             add_demographic({ ...new_data, status: 1, member_id: member_id })

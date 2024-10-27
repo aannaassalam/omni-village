@@ -78,15 +78,15 @@ const DemographicAspiration = ({ navigation, route }) => {
     useEffect(()=>{
         resetForm({
             values:{
-                economic:data?.economic || [],
-                educational: data?.educational || [],
-                health_well_being: data?.health_well_being || [],
-                infrastructure_technology: data?.infrastructure_technology || [],
-                environmental_sustainability: data?.environmental_sustainability || [],
-                cultural: data?.cultural || [],
-                community_social: data?.community_social || [],
-                personal_growth: data?.personal_growth || [],
-                spiritual: data?.spiritual || []
+                economic: data?.aspiration?.economic.map((i) => { return i?._id }) || [],
+                educational: data?.aspiration?.educational.map((i) => { return i?._id }) || [],
+                health_well_being: data?.aspiration?.health_well_being.map((i) => { return i?._id }) || [],
+                infrastructure_technology: data?.aspiration?.infrastructure_technology.map((i) => { return i?._id }) || [],
+                environmental_sustainability: data?.aspiration?.environmental_sustainability.map((i) => { return i?._id }) || [],
+                cultural: data?.aspiration?.cultural.map((i) => { return i?._id }) || [],
+                community_social: data?.aspiration?.community_social.map((i) => { return i?._id }) || [],
+                personal_growth: data?.aspiration?.personal_growth.map((i) => { return i?._id }) || [],
+                spiritual: data?.aspiration?.spiritual.map((i) => { return i?._id }) || []
             }
         })
     },[data])

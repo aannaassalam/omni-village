@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {storage} from './Storage';
-import {USER_PREFERRED_LANGUAGE} from '../i18next';
+import { storage } from './Storage';
+import { USER_PREFERRED_LANGUAGE } from '../i18next';
 
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
 let adminUrl = 'https://omnivillage-server-360ba1f0adb3.herokuapp.com/api';
@@ -28,12 +28,12 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
       config.url =
         config.url +
-        `?language=${USER_PREFERRED_LANGUAGE}&country=${user.country || ''}`;
+        `${config?.url.includes('?') ? '&' : '?'}?language=${USER_PREFERRED_LANGUAGE}&country=${user.country || ''}`;
       if (config.data) {
         config.data.language = USER_PREFERRED_LANGUAGE;
       }
     }
-    // console.log(config.data, 'data');
+    // console.log(config.url, 'data');
     return config;
   },
   function (err) {
