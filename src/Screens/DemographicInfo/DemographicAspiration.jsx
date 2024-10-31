@@ -11,21 +11,51 @@ import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import { ActivityIndicator, Divider } from 'react-native-paper';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
-import { primaryColor } from '../../styles/colors';
+import { borderColor, primaryColor } from '../../styles/colors';
+import { addDemographic, editDemographic } from '../../functions/demographic';
+import PopupModal from '../../Components/Popups/PopupModal';
 
 const DemographicAspiration = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
-    const { demographic, occupation, disease, habits, data, member_id,
+    const { demographic, occupation, disease, habits, data, member_id, member_name,
         demographic_id } = route.params
     const { t } = useTranslation()
     const [aspiration,setAspiration]=useState(true)
+    const [savepopup, setSavepopup] = useState(false);
+    const [message, setMessage] = useState('');
+    const [draftpopup, setDraftpopup] = useState(false);
+    const queryClient = useQueryClient()
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
         queryFn: get_dropdown_data,
         refetchOnWindowFocus: true,
+    })
+    const { mutate: add_demographic } = useMutation({
+        mutationKey: ['save_demographic'],
+        mutationFn: async (data) => {
+            addDemographic(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data)
+            navigation.replace('home') 
+        },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: edit_demographic } = useMutation({
+        mutationKey: ['edit_demographic'],
+        mutationFn: async (data) => {
+            editDemographic(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss edit", data)
+             navigation.replace('home') 
+            },
+        onError: (error) => console.log("error edit", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
     const scheme = yup.object().shape({
         economic: yup.array().required('Economic aspiration is required').min(1,t('Atleast one economic aspiration is required')),
@@ -37,7 +67,8 @@ const DemographicAspiration = ({ navigation, route }) => {
         community_social: yup.array().required('Community and social aspiration is required').min(1,t('Atleast one community and social aspiration is required')),
         personal_growth: yup.array().required('Personal growth aspiration is required').min(1,t('Atleast one personal growth aspiration is required')),
         spiritual: yup.array().required('Spiritual aspiration is required').min(1,t('Atleast one spiritual aspiration is required')),
-      
+        unfulfilled_needs: yup.string(),
+        wishes: yup.string()
     });
     const {
         handleChange,
@@ -58,21 +89,24 @@ const DemographicAspiration = ({ navigation, route }) => {
             cultural: [],
             community_social: [],
             personal_growth: [],
-            spiritual: []
+            spiritual: [],
+            unfulfilled_needs:"",
+            wishes:"",
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            navigation.navigate('demographicUnfulfilled',{
-                occupation,
-                disease,
-                habits,
-                demographic,
-                aspiration: values,
-                data:data,
-                member_id,
-                demographic_id
-            })
+            setSavepopup(true)
+            // navigation.navigate('demographicUnfulfilled',{
+            //     occupation,
+            //     disease,
+            //     habits,
+            //     demographic,
+            //     aspiration: values,
+            //     data:data,
+            //     member_id,
+            //     demographic_id
+            // })
         },
     });
     useEffect(()=>{
@@ -86,10 +120,29 @@ const DemographicAspiration = ({ navigation, route }) => {
                 cultural: data?.aspiration?.cultural.map((i) => { return i?._id }) || [],
                 community_social: data?.aspiration?.community_social.map((i) => { return i?._id }) || [],
                 personal_growth: data?.aspiration?.personal_growth.map((i) => { return i?._id }) || [],
-                spiritual: data?.aspiration?.spiritual.map((i) => { return i?._id }) || []
+                spiritual: data?.aspiration?.spiritual.map((i) => { return i?._id }) || [],
+                unfulfilled_needs: String(data?.general_data?.unfulfilled_needs || ''),
+                wishes: String(data?.general_data?.wishes || ''),
             }
         })
     },[data])
+    const handleDraft = () => {
+        let new_data = { ...demographic,  ...disease, ...habits, ...occupation, ...values }
+        if (demographic_id) {
+            edit_demographic({ ...new_data, status: 0, demographic_id: demographic_id })
+        } else {
+            add_demographic({ ...new_data, status: 0, member_id: member_id })
+        }
+
+    }
+    const onSubmit = () => {
+        let new_data = { ...demographic,...disease, ...habits, ...occupation, ...values }
+        if (demographic_id) {
+            edit_demographic({ ...new_data, status: 1, demographic_id: demographic_id })
+        } else {
+            add_demographic({ ...new_data, status: 1, member_id: member_id })
+        }
+    }
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -99,7 +152,7 @@ const DemographicAspiration = ({ navigation, route }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={'Demographic'}
+                headerName={`${t('demographic')} (${member_name})`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -271,10 +324,91 @@ const DemographicAspiration = ({ navigation, route }) => {
                     </View>
                     : null
                 }
+                <Input
+                    label={t('Unfulfilled needs(If any)')}
+                    value={values.unfulfilled_needs}
+                    placeholder={''}
+                    fullLength={true}
+                    onChangeText={handleChange('unfulfilled_needs')}
+                />
+                {touched?.unfulfilled_needs && errors?.unfulfilled_needs && (
+                    <Text style={Styles.error2}>{String(errors?.unfulfilled_needs)}</Text>
+                )}
+                <Input
+                    label={t('Wishes')}
+                    value={values.wishes}
+                    placeholder={''}
+                    fullLength={true}
+                    onChangeText={handleChange('wishes')}
+                />
+                {touched?.wishes && errors?.wishes && (
+                    <Text style={Styles.error2}>{String(errors?.wishes)}</Text>
+                )}
             </KeyboardAwareScrollView>
-            <View style={Styles.bottomBtn}>
-                <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+            <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
             </View>
+            {/* submit popup */}
+            <PopupModal
+                modalVisible={savepopup}
+                setBottomModalVisible={setSavepopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('confirm')}</Text>
+                    <Text style={Styles.nextText}>{t('')}</Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('submit')}
+                            onPress={() => onSubmit()}
+                        // loading={}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => {
+                                setSavepopup(false);
+                            }}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+            {/* draft popup */}
+            <PopupModal
+                modalVisible={draftpopup}
+                setBottomModalVisible={setDraftpopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={Styles.nextText}>{t('')}</Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('save')}
+                            onPress={() => handleDraft()}
+                        // loading={}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => setDraftpopup(false)}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
         </View>
     );
 };

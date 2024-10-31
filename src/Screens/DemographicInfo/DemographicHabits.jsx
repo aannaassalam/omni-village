@@ -22,7 +22,7 @@ const DemographicHabits = ({ navigation, route }) => {
     const [hobbies,setHobbies] = useState(false)
     const [skillset, setSkillset] = useState(false)
     const [skills,setSkills] = useState(false)
-    const { demographic, occupation, disease, data, member_id,
+    const { demographic, occupation, disease, data, member_id, member_name,
         demographic_id } = route.params
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
         queryKey: ['dropdown_data'],
@@ -95,7 +95,8 @@ const DemographicHabits = ({ navigation, route }) => {
                 data:data,
                 member_id,
         demographic_id,
-                habits: values
+                habits: values,
+                member_name
             })
         },
     });
@@ -135,7 +136,7 @@ const DemographicHabits = ({ navigation, route }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('demographic')}
+                headerName={`${t('demographic')} (${member_name})`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView

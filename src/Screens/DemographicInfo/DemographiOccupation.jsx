@@ -20,7 +20,7 @@ import { primaryColor } from '../../styles/colors';
 const DemographicOccupation = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
-    const { demographic, data, member_id,
+    const { demographic, data, member_id, member_name,
         demographic_id } = route.params
     const { t } = useTranslation()
     const { data: user } = useUser()
@@ -71,7 +71,8 @@ const DemographicOccupation = ({ navigation, route }) => {
                 occupation: { ...values, savings_investment_amount: parseInt(values?.savings_investment_amount) },
                 data: data,
                 member_id,
-                demographic_id
+                demographic_id,
+                member_name
             })
         },
     });
@@ -95,7 +96,7 @@ const DemographicOccupation = ({ navigation, route }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('demographic')}
+                headerName={`${t('demographic')} (${member_name})`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -138,8 +139,7 @@ const DemographicOccupation = ({ navigation, route }) => {
                     secondBtntext='No'
                     secondBtnPress={() => setValues({ ...values, bank_account: false })}
                 />
-                {values?.bank_account?
-            <>
+            
                 <Text style={Styles.fieldLabel}>{t('do you have any savings/ investments?')}</Text>
                 <SwitchButton
                     firstBtnText='Yes'
@@ -148,9 +148,6 @@ const DemographicOccupation = ({ navigation, route }) => {
                     secondBtntext='No'
                     secondBtnPress={() => setValues({ ...values, savings_investment: false })}
                 />
-            </>   
-            :null 
-            }
                 {values?.savings_investment ? 
                 <>
                 <Input

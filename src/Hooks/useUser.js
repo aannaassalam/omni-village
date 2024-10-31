@@ -5,7 +5,6 @@ import {storage} from '../Helper/Storage';
 
 export const useUser = () => {
   const token = storage.getString('token');
-  // console.log(token, 'token');
   return useQuery({
     queryKey: ['user'],
     queryFn: async () => {
@@ -13,7 +12,7 @@ export const useUser = () => {
       return res.data;
     },
     enabled: !!token,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: 'always',
     staleTime: 0,
     // gcTime: 0,
   });

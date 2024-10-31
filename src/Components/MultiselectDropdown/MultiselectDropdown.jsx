@@ -45,7 +45,7 @@ export default MutipleselectDropdown = ({
                         data={data?.map((i)=>{return{label: i?.name, value: i?.key}})}
                         labelField="label"
                         valueField="value"
-                        placeholder="Select item"
+                        placeholder="Select multiple item"
                         searchPlaceholder="Search..."
                         value={selectedd}
                         onChange={handleSelect}

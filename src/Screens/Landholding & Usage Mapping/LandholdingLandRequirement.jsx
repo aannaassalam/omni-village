@@ -13,9 +13,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser';
 
-const LandholdingLandRequirement = ({ navigation }) => {
+const LandholdingLandRequirement = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
+    const {landholding,specification,land} = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { t } = useTranslation()
@@ -92,7 +93,7 @@ const LandholdingLandRequirement = ({ navigation }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('landholding')}
+                headerName={`${t('landholding')}(${land})`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView

@@ -273,7 +273,7 @@
   "other personal": "Lain-lain barangan peribadi & rumah",
   "business": "Pertubuhan/Pertubuhan Perniagaan & Komersial",
   "community": "Infrastruktur Komuniti (Hanya untuk peringkat Kampung)",
-  
+
   "choose": "Pilih",
   "next": "Seterusnya",
   "marital_status": "Status perkahwinan",
@@ -370,6 +370,7 @@
   "Specific habit is required": "Tabiat khusus diperlukan",
   "Education status is required": "Status pendidikan diperlukan",
   "Education seeking to gain is required": "Pendidikan yang ingin mendapatkan keuntungan diperlukan",
+  "Atleast one chronic disease is required": "Sekurang-kurangnya satu penyakit kronik diperlukan",
   "Atleast one Cultural traditional hobbies are required": "Sekurang-kurangnya satu hobi tradisional Budaya diperlukan",
   "Atleast one Outdoor nature based hobbies are required": "Sekurang-kurangnya satu hobi berasaskan alam semula jadi diperlukan",
   "Atleast one Modern digital hobbies are required": "Sekurang-kurangnya satu hobi digital moden diperlukan",

@@ -11,13 +11,14 @@ import { Styles, width } from '../../styles/globalStyles'
 import Input from '../../Components/Inputs/Input'
 import { Divider } from 'react-native-paper'
 import { primaryColor } from '../../styles/colors'
+import ItemHeader from '../../Components/CustomHeader/ItemHeader'
 
 const Members = ({ navigation }) => {
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
-    const { data: user, refetch } = useUser()
+    const { data: user, refetch: refetchUser } = useUser()
     const { t } = useTranslation()
-    useEffect(()=>{refetch()},[])
+    useEffect(() => { refetchUser() }, [])
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -25,11 +26,12 @@ const Members = ({ navigation }) => {
                 headerName={t('demographic')}
                 goBack={() => navigation.goBack()}
             />
+            <ItemHeader title={t('demographic')} />
             <View style={styles.mainContainer}>
                 <Input
                     label={t('How many members are there in your family?')}
                     editable={false}
-                    onChangeText={()=>{}}
+                    onChangeText={() => { }}
                     placeholder={String(user?.members?.length)}
                     fullLength={true}
                 />
@@ -40,7 +42,7 @@ const Members = ({ navigation }) => {
                         style={[styles.divider, { width: '65%' }]}
                         horizontalInset={true}
                     />
-                    </View>
+                </View>
             </View>
             {user?.members.map((item) => {
                 console.log("item", item)
@@ -49,7 +51,7 @@ const Members = ({ navigation }) => {
                     productionName={item?.name}
                     progressBar={false}
                     onPress={() => {
-                        navigation.navigate('demographic', { member_id: item?._id, demographic_id: item?.demographic_id })
+                        navigation.navigate('demographic', { member_id: item?._id, demographic_id: item?.demographic_id, member_name:item?.name })
                     }}
                 />
             })}

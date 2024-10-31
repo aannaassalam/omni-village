@@ -50,7 +50,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('landholding'),
-      navigation: '', //FIXME:landholdingUsage
+      navigation: 'landholdingTotalLand', //FIXME:landholdingUsage
       image: require('../../assets/landhold.png'),
     },
     {

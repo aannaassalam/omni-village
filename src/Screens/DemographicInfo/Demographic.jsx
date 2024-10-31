@@ -19,7 +19,7 @@ import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 const Demographic = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { member_id, demographic_id } = route.params
+  const { member_id, demographic_id, member_name } = route.params
   const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
     queryKey: ['dropdown_data'],
     queryFn: get_dropdown_data,
@@ -65,7 +65,8 @@ const Demographic = ({ navigation, route }) => {
         demographic: { ...values, height: parseInt(values?.height), weight: parseInt(values?.weight) },
         data: demographic_data?.data,
         member_id,
-        demographic_id
+        demographic_id,
+        member_name
       })
     },
   });
@@ -91,7 +92,7 @@ const Demographic = ({ navigation, route }) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={t('demographic')}
+        headerName={`${t('demographic')} (${member_name})`}
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView

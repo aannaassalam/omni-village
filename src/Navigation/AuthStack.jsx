@@ -28,6 +28,8 @@ import DemographicUnfulfilled from '../Screens/DemographicInfo/DemographicUnfulf
 import DemographicWishes from '../Screens/DemographicInfo/DemographicWishes';
 import Members from '../Screens/DemographicInfo/Members';
 import LandholdingLandRequirement from '../Screens/Landholding & Usage Mapping/LandholdingLandRequirement';
+import LandholdingTotalLand from '../Screens/Landholding & Usage Mapping/LandholdingTotalLand';
+import LandSpecification from '../Screens/Landholding & Usage Mapping/LandSpecification';
 
 const Stack = createStackNavigator();
 
@@ -74,7 +76,9 @@ export default function AuthStack({user}) {
       <Stack.Screen name="demographicHabits" component={DemographicHabits} />
       <Stack.Screen name="demographicUnfulfilled" component={DemographicUnfulfilled} />
       <Stack.Screen name="demographicWishes" component={DemographicWishes} />
+      <Stack.Screen name='landholdingTotalLand' component={LandholdingTotalLand} />
       <Stack.Screen name='landholdingUsage' component={LandholdingUsage}/>
+      <Stack.Screen name='landSpecification' component={LandSpecification} />
       <Stack.Screen name='landholdingLandRequirement' component={LandholdingLandRequirement} />
     </Stack.Navigator>
   );

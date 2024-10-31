@@ -18,7 +18,7 @@ const DemographicDisease = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { t } = useTranslation()
-    const { demographic, occupation, data, member_id,
+    const { demographic, occupation, data, member_id, member_name,
         demographic_id } = route.params
     const [mental, setMental] = useState(true)
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
@@ -27,7 +27,7 @@ const DemographicDisease = ({ navigation, route }) => {
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        chronic_disease: yup.string().required(t('chronic disease is required')),
+        chronic_disease: yup.array().required(t('chronic disease is required')).min(1, t('Atleast one chronic disease is required')),
         motor_disablity: yup.string().required(t('motor disability is required')),
         currently_feeling: yup.string().required(t('current feeling is required')),
         feelings_with_others: yup.string().required(t('feelings with others is required')),
@@ -46,7 +46,7 @@ const DemographicDisease = ({ navigation, route }) => {
         setValues
     } = useFormik({
         initialValues: {
-            chronic_disease: '',
+            chronic_disease: [],
             motor_disablity: '',
             currently_feeling: '',
             feelings_with_others: '',
@@ -63,14 +63,15 @@ const DemographicDisease = ({ navigation, route }) => {
                 disease: values,
                 data: data,
                 member_id,
-                demographic_id
+                demographic_id,
+                member_name
             })
         },
     });
     useEffect(() => {
         resetForm({
             values: {
-                chronic_disease: data?.general_data?.chronic_disease?._id || '',
+                chronic_disease: data?.general_data?.chronic_disease?.map((i) => { return i?._id }) || [],
                 motor_disablity: data?.general_data?.motor_disablity?._id || '',
                 currently_feeling: data?.mental_and_emotional_wellbeing?.currently_feeling?._id || '',
                 feelings_with_others: data?.mental_and_emotional_wellbeing?.feelings_with_others?._id || '',
@@ -80,7 +81,6 @@ const DemographicDisease = ({ navigation, route }) => {
             }
         })
     }, [data])
-    console.log("support", data?.mental_and_emotional_wellbeing?.support_you_have)
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -90,23 +90,27 @@ const DemographicDisease = ({ navigation, route }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('demographic')}
+                headerName={`${t('demographic')} (${member_name})`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
-                <Customdropdown
-                    data={dropdownData?.['chronic_diseases'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
-                    value={values.chronic_disease}
-                    label={t('Do you have any chronic disease?')}
-                    onChange={(value) => {
+                <MultiselectDropdown
+                    containerStyle={{
+                        marginTop: '5%',
+                        paddingTop: 0,
+                    }}
+                    data={dropdownData?.['chronic_diseases'].map((item) => { return { name: item?.name, key: item?._id } })}
+                    setSelectedd={(item) =>
                         setValues({
                             ...values,
-                            chronic_disease: value?.value,
-                        });
-                    }}
+                            chronic_disease: item,
+                        })
+                    }
+                    selectedd={values?.chronic_disease}
+                    infoName={t('Do you have any chronic disease?')}
                 />
                 {touched?.chronic_disease && errors?.chronic_disease && (
                     <Text style={Styles.error2}>{String(errors?.chronic_disease)}</Text>
