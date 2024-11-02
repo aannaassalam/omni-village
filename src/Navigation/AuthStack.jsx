@@ -30,6 +30,12 @@ import Members from '../Screens/DemographicInfo/Members';
 import LandholdingLandRequirement from '../Screens/Landholding & Usage Mapping/LandholdingLandRequirement';
 import LandholdingTotalLand from '../Screens/Landholding & Usage Mapping/LandholdingTotalLand';
 import LandSpecification from '../Screens/Landholding & Usage Mapping/LandSpecification';
+import LandSpecificationQuestioner from '../Screens/Landholding & Usage Mapping/LandSpecificationQuestioner';
+import Housing from '../Screens/Housing/Housing';
+import HousingDetails from '../Screens/Housing/HousingDetails';
+import FarmhouseDetails from '../Screens/Housing/FarmhouseDetails';
+import FarmhousePhoto from '../Screens/Housing/FarmhousePhoto';
+import HousePhoto from '../Screens/Housing/HousePhoto';
 
 const Stack = createStackNavigator();
 
@@ -77,9 +83,15 @@ export default function AuthStack({user}) {
       <Stack.Screen name="demographicUnfulfilled" component={DemographicUnfulfilled} />
       <Stack.Screen name="demographicWishes" component={DemographicWishes} />
       <Stack.Screen name='landholdingTotalLand' component={LandholdingTotalLand} />
+      <Stack.Screen name='landSpecificationQuestioner' component={LandSpecificationQuestioner} />
       <Stack.Screen name='landholdingUsage' component={LandholdingUsage}/>
       <Stack.Screen name='landSpecification' component={LandSpecification} />
       <Stack.Screen name='landholdingLandRequirement' component={LandholdingLandRequirement} />
+      <Stack.Screen name='housing' component={Housing} />
+      <Stack.Screen name='housingDetails' component={HousingDetails} />
+      <Stack.Screen name='housingPhoto' component={HousePhoto} />
+      <Stack.Screen name='farmhouseDetails' component={FarmhouseDetails} />
+      <Stack.Screen name='farmhousePhoto' component={FarmhousePhoto} />
     </Stack.Navigator>
   );
 }

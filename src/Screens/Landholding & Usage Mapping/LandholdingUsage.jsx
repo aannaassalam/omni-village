@@ -212,7 +212,7 @@ const LandholdingUsage = ({ navigation, route }) => {
                 </View>
                 <View style={styles.geotag_container}>
                     <Text style={[Styles.fieldLabel,{width:'65%',marginTop:0, alignSelf:'center'}]}>{t('Press Geotag to start locating the land owned per user.')}</Text>
-                    <CustomButton btnText={'Geotag'} onPress={getLocation}/>
+                    <CustomButton btnText={t('Geotag')} onPress={getLocation}/>
                 </View>
                 {errors.geotag && errors.geotag && (
                     <Text style={Styles.error2}>{errors.geotag}</Text>

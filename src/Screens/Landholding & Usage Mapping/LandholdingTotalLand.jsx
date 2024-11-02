@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import * as yup from 'yup';
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import ItemHeader from '../../Components/CustomHeader/ItemHeader';
@@ -9,80 +9,85 @@ import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import { Divider } from 'react-native-paper';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 
-const LandholdingTotalLand = ({navigation}) => {
-  const {t} =useTranslation()
-   const scheme = yup.object().shape({
-     total_numbers_of_lands: yup
-       .number()
-       .required(t('Total number of lands owned is required'))
-       .max(20, 'Total number of lands owned cannot be greater than 20!')
-       .min(1, 'At least one total number of lands owned is required'),
-     details_of_land: yup.array().of(
-       yup.object().shape({
-         land_located: yup.string().required('Land located is required'),
-         total_land_area_owned: yup
-           .number()
-           .required('Total land area owned is required'),
-         location: yup.string().required('Location is required'),
-         area_utilised_for: yup
-           .string()
-           .required('Area utilised for is required'),
-         total_land_area_utilised: yup
-           .number()
-           .required('Total land area utilised for is required'),
-         area_under_utilised: yup
-           .string()
-           .required('Area under utilised is required'),
-         total_land_area_under_utilised: yup
-           .number()
-           .required('Total area under utilised is required'),
-         year_purchased: yup.number().required('Year purchased is required'),
-       }),
-     ),
-   });
-       const {
-         handleChange,
-         handleSubmit,
-         values,
-         errors,
-         setFieldTouched,
-         touched,
-         resetForm,
-         setValues,
-       } = useFormik({
-         initialValues: {
-           total_numbers_of_lands: '',
-           details_of_land: [],
-         },
-         validationSchema: scheme,
-         onSubmit: async values => {
-           console.log(values);
-          //  navigation.navigate('landholdingLandRequirement', {
-          //    landholding: values,
-          //  });
-         },
-       });
-         useEffect(() => {
-           const totalLands = parseInt(values.total_numbers_of_lands || 0);
-           const newDetailsOfLand = Array(totalLands)
-             .fill()
-             .map((_, index) => ({
-              //  land_located: '',
-              //  total_land_area_owned: '',
-              //  location: '',
-              //  area_utilised_for: '',
-              //  total_land_area_utilised: '',
-              //  area_under_utilised: '',
-              //  total_land_area_under_utilised: '',
-              //  year_purchased: '',
-             }));
+const LandholdingTotalLand = ({ navigation }) => {
+  const { t } = useTranslation()
+  const scheme = yup.object().shape({
+    total_numbers_of_lands: yup
+      .number()
+      .required(t('Total number of lands owned is required'))
+      .max(20, 'Total number of lands owned cannot be greater than 20!')
+      .min(1, 'At least one total number of lands owned is required'),
+      land_requirements: yup.boolean().required(t('Land requirements is required')),
+    //  details_of_land: yup.array().of(
+    //    yup.object().shape({
+    //      land_located: yup.string().required('Land located is required'),
+    //      total_land_area_owned: yup
+    //        .number()
+    //        .required('Total land area owned is required'),
+    //      location: yup.string().required('Location is required'),
+    //      area_utilised_for: yup
+    //        .string()
+    //        .required('Area utilised for is required'),
+    //      total_land_area_utilised: yup
+    //        .number()
+    //        .required('Total land area utilised for is required'),
+    //      area_under_utilised: yup
+    //        .string()
+    //        .required('Area under utilised is required'),
+    //      total_land_area_under_utilised: yup
+    //        .number()
+    //        .required('Total area under utilised is required'),
+    //      year_purchased: yup.number().required('Year purchased is required'),
+    //    }),
+    //  ),
+  });
+  const {
+    handleChange,
+    handleSubmit,
+    values,
+    errors,
+    setFieldTouched,
+    touched,
+    resetForm,
+    setValues,
+  } = useFormik({
+    initialValues: {
+      total_numbers_of_lands: '',
+      land_requirements: false,
+      //  details_of_land: [],
+    },
+    validationSchema: scheme,
+    onSubmit: async values => {
+      console.log(values);
+      navigation.navigate('landSpecificationQuestioner', {
+        total_numbers_of_lands: values.total_numbers_of_lands,
+        land_requirements: values.land_requirements,
+      })
+    },
+  });
+  //  useEffect(() => {
+  //    const totalLands = parseInt(values.total_numbers_of_lands || 0);
+  //    const newDetailsOfLand = Array(totalLands)
+  //      .fill()
+  //      .map((_, index) => ({
+  //        land_located: '',
+  //        total_land_area_owned: '',
+  //        location: '',
+  //        area_utilised_for: '',
+  //        total_land_area_utilised: '',
+  //        area_under_utilised: '',
+  //        total_land_area_under_utilised: '',
+  //        year_purchased: '',
+  //      }));
 
-           setValues(prevValues => ({
-             ...prevValues,
-             details_of_land: newDetailsOfLand,
-           }));
-         }, [values.total_numbers_of_lands]);
+  //    setValues(prevValues => ({
+  //      ...prevValues,
+  //      details_of_land: newDetailsOfLand,
+  //    }));
+  //  }, [values.total_numbers_of_lands]);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -103,30 +108,26 @@ const LandholdingTotalLand = ({navigation}) => {
         {touched?.total_numbers_of_lands && errors?.total_numbers_of_lands && (
           <Text style={Styles.error2}>{String(errors?.total_numbers_of_lands)}</Text>
         )}
-        {values.total_numbers_of_lands>0 ?
-        <View style={styles.subArea}>
-          <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
-          <Divider
-            bold={true}
-            style={[styles.divider, { width: '65%' }]}
-            horizontalInset={true}
-          />
-        </View>
-        :null
-      }
-        {/* {Array.from({ length: values.total_numbers_of_lands }, (_, index) => { */}
-        {values?.details_of_land.length>0 && values.details_of_land.map((_, index) => {
-          return <CustomShowcaseInput
-            key={index}
-            productionName={`Land ${index+1}`}
-            style={{width: '100%',}}
-            progressBar={false}
-            onPress={() => {
-              navigation.navigate('landholdingUsage', { land: `Land ${index + 1}` })
-            }}
-          />
-        })}
-        </View>
+        <SwitchButton
+        nolabel={false}
+        label={t('Do have any more land requirements?')}
+        selected={values?.land_requirements}
+        firstBtnPress={()=> setValues({...values, land_requirements: true})}
+        secondBtnPress={()=> setValues({...values, land_requirements: false})}
+        firstBtnText={t('yes')}
+        secondBtntext={t('no')}
+        />
+        {touched?.land_requirements && errors?.land_requirements && (
+          <Text style={Styles.error2}>{String(errors?.land_requirements)}</Text>
+        )}
+      </View>
+      <View style={Styles.bottomBtn}>
+        <CustomButton
+          btnText={t('next')}
+          style={{ width: '100%' }}
+          onPress={handleSubmit}
+        />
+      </View>
     </View>
   )
 }
