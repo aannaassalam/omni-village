@@ -124,7 +124,7 @@ const Housing = ({ navigation }) => {
                         productionName={`Farmhouse ${index + 1}`}
                         progressBar={false}
                         onPress={() => {
-                            navigation.navigate('housingDetails', { house: `Farmhouse ${index + 1}`  })
+                            navigation.navigate('farmhouseDetails', { house: `Farmhouse ${index + 1}`  })
                         }}
                     />
                 })}

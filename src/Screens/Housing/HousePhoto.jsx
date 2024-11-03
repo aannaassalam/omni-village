@@ -23,14 +23,14 @@ const HousePhoto = ({ navigation, route }) => {
   const [visible, setIsVisible] = useState(false);
   const [photo, setPhoto] = useState('')
   const scheme = yup.object().shape({
-    front_photo_house: yup
+    front_photo: yup
       .object().shape({
         uri: yup.string(),
         type: yup.string(),
         name: yup.string(),
       })
       .required(t('Front photo of houses is required')),
-    back_photo_house: yup
+    back_photo: yup
       .object().shape({
         uri: yup.string(),
         type: yup.string(),
