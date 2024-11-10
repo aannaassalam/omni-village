@@ -54,7 +54,6 @@ const HousePhoto = ({ navigation, route }) => {
       name: yup.string(),
     }).required(t('Kitchen photo of house is required')),
     amenities: yup.array().required(t('Amenities is required')),
-    household_needs: yup.string().required(t('Household needs is required')),
   });
   const {
     handleChange,
@@ -73,12 +72,15 @@ const HousePhoto = ({ navigation, route }) => {
       inside_living_photo: {},
       kitchen_photo: {},
       amenities:[],
-      household_needs:[],
     },
     validationSchema: scheme,
     onSubmit: async values => {
       console.log(values);
-      // navigation.navigate('housingDetails', values)
+      navigation.navigate('householdRequirement', {
+        housingData,
+        house,
+        housingPhoto: values
+      })
     },
   });
   const handleDocumentSelection = useCallback(async (type) => {
@@ -100,7 +102,6 @@ const HousePhoto = ({ navigation, route }) => {
       console.warn(err);
     }
   }, []);
-  console.log("valuesssssssss", values)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -293,19 +294,10 @@ const HousePhoto = ({ navigation, route }) => {
         {touched?.amenities && errors?.amenities && (
           <Text style={Styles.error2}>{String(errors?.amenities)}</Text>
         )}
-        <Input
-          label={t('Household needs (if any)')}
-          value={values.household_needs}
-          fullLength={true}
-          onChangeText={handleChange('household_needs')}
-        />
-        {touched?.household_needs && errors?.household_needs && (
-          <Text style={Styles.error2}>{String(errors?.household_needs)}</Text>
-        )}
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { }} btnStyle={{ color: 'black' }} /> */}
       </View>
       <ImageView
         images={photo}

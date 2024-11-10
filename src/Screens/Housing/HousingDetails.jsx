@@ -12,12 +12,15 @@ import AcresElement from '../../Components/ui/AcresElement'
 import { useUser } from '../../Hooks/useUser'
 import YearPicker from '../../Components/YearPicker/YearPicker'
 import CustomButton from '../../Components/CustomButton/CustomButton'
+import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 const HousingDetails = ({ navigation, route }) => {
   const { t } = useTranslation()
   const { data: user } = useUser()
-  const { house } = route.params
+  const { house, data } = route.params
   const [houseDetails, setHouseDetails] = useState(true)
   const scheme = yup.object().shape({
+    name_of_the_house: yup.string().required(t('Name of the house is required')),
+    type_of_house: yup.string().required(t('Type of house is required')),
     land_utilised_for_family_housing: yup
       .number()
       .required(t('Land utilised for family housing is required')),
@@ -41,6 +44,8 @@ const HousingDetails = ({ navigation, route }) => {
     setValues,
   } = useFormik({
     initialValues: {
+      name_of_the_house:'',
+      type_of_house: '',
       land_utilised_for_family_housing: '',
       no_of_units_built: '',
       total_built_area: '',
@@ -92,6 +97,31 @@ const HousingDetails = ({ navigation, route }) => {
         {houseDetails ?
           <>
             <Input
+              label={t('Name of the house')}
+              value={values.name_of_the_house}
+              placeholder={''}
+              fullLength={true}
+              keyboardType='default'
+              onChangeText={handleChange('name_of_the_house')}
+            />
+            {touched?.name_of_the_house && errors?.name_of_the_house && (
+              <Text style={Styles.error2}>{String(errors?.name_of_the_house)}</Text>
+            )}
+            <CustomDropdown
+              data={[{ label: 'Month', value: '1' }]}
+              value={values.type_of_house}
+              label={t('Type of House')}
+              onChange={(value) => {
+                setValues({
+                  ...values,
+                  type_of_house: value?.value,
+                });
+              }}
+            />
+            {touched?.type_of_house && errors?.type_of_house && (
+              <Text style={Styles.error2}>{String(errors?.type_of_house)}</Text>
+            )}
+            <Input
               label={t('Land utilised for main family housing')}
               value={values.land_utilised_for_family_housing}
               placeholder={'0'}
@@ -103,9 +133,7 @@ const HousingDetails = ({ navigation, route }) => {
             {touched?.land_utilised_for_family_housing && errors?.land_utilised_for_family_housing && (
               <Text style={Styles.error2}>{String(errors?.land_utilised_for_family_housing)}</Text>
             )}
-            <View style={styles.innerInputView}>
-              <Divider style={styles.divider2} />
-              <View style={{ width: '100%' }}>
+          
                 <Input
                   label={t('Number of units built')}
                   value={values.no_of_units_built}
@@ -182,15 +210,27 @@ const HousingDetails = ({ navigation, route }) => {
                 {errors.year_last_expanded && errors.year_last_expanded && (
                   <Text style={Styles.error2}>{errors.year_last_expanded}</Text>
                 )}
-              </View>
-            </View>
+            <CustomDropdown
+              data={[{label:'Month', value:'1'}]}
+              value={values.type}
+              label={t('Type')}
+              onChange={(value) => {
+                setValues({
+                  ...values,
+                  type: value?.value,
+                });
+              }}
+            />
+            {touched?.type && errors?.type && (
+              <Text style={Styles.error2}>{String(errors?.type)}</Text>
+            )}
           </>
           : null
         }
       </KeyboardAwareScrollView>
       <View style={Styles.bottomBtn}>
         <CustomButton
-          btnText={'Next'}
+          btnText={t('next')}
           style={{ width: '100%', }}
           onPress={handleSubmit}
         />

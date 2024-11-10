@@ -1,13 +1,16 @@
 import React from 'react';
 import {
+  Image,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from 'react-native';
-import {Divider} from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import * as Progress from 'react-native-progress';
+import Input from '../Inputs/Input';
 
 const CustomShowcaseInput = ({
   productionName,
@@ -16,8 +19,11 @@ const CustomShowcaseInput = ({
   onPress,
   style,
   user,
+  input,
+  inputValue,
+  setInputValue,
 }) => {
-  const {fontScale} = useWindowDimensions();
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
 
   return (
@@ -27,15 +33,26 @@ const CustomShowcaseInput = ({
         styles.container,
         style,
         progressBar
-          ? {justifyContent: 'space-evenly'}
-          : {justifyContent: 'flex-start'},
+          ? { justifyContent: 'space-evenly' }
+          : { justifyContent: 'flex-start' },
       ]}>
-      <View style={styles.areaProduction}>
-        <Text style={styles.productionName}>
-          {productionName === 'trees'
-            ? 'trees, grass & shrubs'
-            : productionName}
-        </Text>
+      <View style={[styles.areaProduction, input? {paddingVertical:0}:{paddingVertical:10}]}>
+        {input ?
+          <TextInput
+            onChangeText={(e) => setInputValue(e)}
+            value={inputValue}
+            noLabel={true}
+            style={styles.inputContainer}
+            placeholder={productionName}
+            placeholderTextColor={'#000'}
+          />
+          :
+          <Text style={styles.productionName}>
+            {productionName === 'trees'
+              ? 'trees, grass & shrubs'
+              : productionName}
+          </Text>
+        }
         {productionArea ? (
           <Text style={styles.productionArea}>
             {productionArea}{' '}
@@ -56,6 +73,9 @@ const CustomShowcaseInput = ({
           </View>
         </>
       ) : null}
+      {input ?<>
+      <Image source={require('../../../assets/e4.png')} style={styles.arrow_right}/>
+      </>:null}
     </TouchableOpacity>
   );
 };
@@ -115,4 +135,17 @@ const makeStyles = fontScale =>
       color: 'green',
       padding: 5,
     },
+    inputContainer:{
+      width: '100%',
+      fontSize: 16 / fontScale,
+      color: '#000',
+      fontFamily: 'ubuntu-medium',
+      textTransform: 'capitalize',
+    },
+    arrow_right:{
+      alignContent: 'center',
+      justifyContent: 'center',
+      alignSelf: 'center',
+      marginRight: '5%',
+    }
   });

@@ -1,35 +1,48 @@
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
-import CustomHeader from '../../Components/CustomHeader/CustomHeader'
-import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
-import { useUser } from '../../Hooks/useUser'
-import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
-import { getDemographic } from '../../functions/demographic'
-import { get_dropdown_data } from '../../functions/AuthScreens'
-import { Styles, width } from '../../styles/globalStyles'
-import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
-import { primaryColor } from '../../styles/colors'
-import ItemHeader from '../../Components/CustomHeader/ItemHeader'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import ItemHeader from '../../Components/CustomHeader/ItemHeader';
+import { Styles, width } from '../../styles/globalStyles';
+import Input from '../../Components/Inputs/Input';
+import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
+import { Divider } from 'react-native-paper';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 
 const Housing = ({ navigation }) => {
-    const { fontScale } = useWindowDimensions()
-    const styles = makeStyles(fontScale)
-    const { data: user, refetch: refetchUser } = useUser()
     const { t } = useTranslation()
     const scheme = yup.object().shape({
-        total_numbers_of_houses: yup
+        total_numbers_of_house: yup
             .number()
-            .required(t('Total number of houses is required'))
-            .max(20, 'Total number of houses cannot be greater than 20!')
-            .min(1, 'At least one total number of houses is required'),
-        total_numbers_of_farmhouses: yup.number()
-            .required(t('Total number of farmhouses is required'))
-            .max(20, 'Total number of farmhouses cannot be greater than 20!')
-            .min(1, 'At least one total number of farmhouses owned is required'),
+            .required(t('Total number of house owned is required'))
+            .max(20, 'Total number of house owned cannot be greater than 20!')
+            .min(1, 'At least one total number of house owned is required'),
+        house_requirements: yup.boolean().required(t('House requirements is required')),
+        //  details_of_land: yup.array().of(
+        //    yup.object().shape({
+        //      land_located: yup.string().required('Land located is required'),
+        //      total_land_area_owned: yup
+        //        .number()
+        //        .required('Total land area owned is required'),
+        //      location: yup.string().required('Location is required'),
+        //      area_utilised_for: yup
+        //        .string()
+        //        .required('Area utilised for is required'),
+        //      total_land_area_utilised: yup
+        //        .number()
+        //        .required('Total land area utilised for is required'),
+        //      area_under_utilised: yup
+        //        .string()
+        //        .required('Area under utilised is required'),
+        //      total_land_area_under_utilised: yup
+        //        .number()
+        //        .required('Total area under utilised is required'),
+        //      year_purchased: yup.number().required('Year purchased is required'),
+        //    }),
+        //  ),
     });
     const {
         handleChange,
@@ -42,15 +55,39 @@ const Housing = ({ navigation }) => {
         setValues,
     } = useFormik({
         initialValues: {
-            total_numbers_of_houses: '',
-            total_numbers_of_farmhouses: '',
+            total_numbers_of_house: '',
+            house_requirements: false,
+            //  details_of_land: [],
         },
         validationSchema: scheme,
         onSubmit: async values => {
             console.log(values);
-            navigation.navigate('housingDetails', values)
+            navigation.navigate('houseSpecificationQuestioner', {
+                total_numbers_of_house: values.total_numbers_of_house,
+                house_requirements: values.house_requirements,
+            })
         },
     });
+    //  useEffect(() => {
+    //    const totalLands = parseInt(values.total_numbers_of_lands || 0);
+    //    const newDetailsOfLand = Array(totalLands)
+    //      .fill()
+    //      .map((_, index) => ({
+    //        land_located: '',
+    //        total_land_area_owned: '',
+    //        location: '',
+    //        area_utilised_for: '',
+    //        total_land_area_utilised: '',
+    //        area_under_utilised: '',
+    //        total_land_area_under_utilised: '',
+    //        year_purchased: '',
+    //      }));
+
+    //    setValues(prevValues => ({
+    //      ...prevValues,
+    //      details_of_land: newDetailsOfLand,
+    //    }));
+    //  }, [values.total_numbers_of_lands]);
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -58,90 +95,52 @@ const Housing = ({ navigation }) => {
                 headerName={t('housing')}
                 goBack={() => navigation.goBack()}
             />
-            <ScrollView>
             <ItemHeader title={t('housing')} />
             <View style={styles.mainContainer}>
                 <Input
-                    label={t('Total number of Houses')}
-                        onChangeText={handleChange('total_numbers_of_houses')}
-                    value={values?.total_numbers_of_houses}
+                    label={t('Total number of houses owned')}
+                    value={values.total_numbers_of_house}
+                    placeholder={''}
                     fullLength={true}
-                        keyboardType='numeric'
+                    keyboardType='numeric'
+                    onChangeText={handleChange('total_numbers_of_house')}
                 />
-                    {touched?.total_numbers_of_houses && errors?.total_numbers_of_houses && (
-                        <Text style={Styles.error2}>{String(errors?.total_numbers_of_houses)}</Text>
-                    )}
-                {values?.total_numbers_of_houses>0?
-                <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
-                    <Divider
-                        bold={true}
-                        style={[styles.divider, { width: '65%' }]}
-                        horizontalInset={true}
-                    />
-                </View>
-                :
-                null
-            }
+                {touched?.total_numbers_of_house && errors?.total_numbers_of_house && (
+                    <Text style={Styles.error2}>{String(errors?.total_numbers_of_house)}</Text>
+                )}
+                <SwitchButton
+                    nolabel={false}
+                    label={t('Do have any more house requirements?')}
+                    selected={values?.house_requirements}
+                    firstBtnPress={() => setValues({ ...values, house_requirements: true })}
+                    secondBtnPress={() => setValues({ ...values, house_requirements: false })}
+                    firstBtnText={t('yes')}
+                    secondBtntext={t('no')}
+                />
+                {touched?.house_requirements && errors?.house_requirements && (
+                    <Text style={Styles.error2}>{String(errors?.house_requirements)}</Text>
+                )}
             </View>
-                {Array.from({ length: values?.total_numbers_of_houses }, (_, index) => {
-                return <CustomShowcaseInput
-                    key={index}
-                    productionName={`House ${index+1}`}
-                    progressBar={false}
-                    onPress={() => {
-                        navigation.navigate('housingDetails', { house: `House ${index + 1}` })
-                    }}
+            <View style={Styles.bottomBtn}>
+                <CustomButton
+                    btnText={t('next')}
+                    style={{ width: '100%' }}
+                    onPress={handleSubmit}
                 />
-            })}
-                <View style={styles.mainContainer}>
-                    <Input
-                        label={t('Total number of Farmhouses')}
-                        onChangeText={handleChange('total_numbers_of_farmhouses')}
-                        value={values?.total_numbers_of_farmhouses}
-                        fullLength={true}
-                        keyboardType='numeric'
-                    />
-                    {touched?.total_numbers_of_farmhouses && errors?.total_numbers_of_farmhouses && (
-                        <Text style={Styles.error2}>{String(errors?.total_numbers_of_farmhouses)}</Text>
-                    )}
-                    {values?.total_numbers_of_farmhouses > 0 ?
-                        <View style={styles.subArea}>
-                            <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
-                            <Divider
-                                bold={true}
-                                style={[styles.divider, { width: '65%' }]}
-                                horizontalInset={true}
-                            />
-                        </View>
-                        :
-                        null
-                    }
-                </View>
-                {Array.from({ length: values?.total_numbers_of_farmhouses }, (_, index) => {
-                    return <CustomShowcaseInput
-                        key={index}
-                        productionName={`Farmhouse ${index + 1}`}
-                        progressBar={false}
-                        onPress={() => {
-                            navigation.navigate('farmhouseDetails', { house: `Farmhouse ${index + 1}`  })
-                        }}
-                    />
-                })}
-            </ScrollView>
+            </View>
         </View>
     )
 }
 
 export default Housing
 
-const makeStyles = (fontScale) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
     },
     mainContainer: {
-        paddingHorizontal: 22
+        paddingHorizontal: 22,
     },
     subArea: {
         alignSelf: 'center',
@@ -159,4 +158,4 @@ const makeStyles = (fontScale) => StyleSheet.create({
         width: '67%',
         color: 'grey',
     },
-})
+});
