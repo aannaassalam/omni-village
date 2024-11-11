@@ -17,9 +17,9 @@ const Housing = ({ navigation }) => {
     const scheme = yup.object().shape({
         total_numbers_of_house: yup
             .number()
-            .required(t('Total number of house owned is required'))
-            .max(20, 'Total number of house owned cannot be greater than 20!')
-            .min(1, 'At least one total number of house owned is required'),
+            .required(t('Total number of houses owned is required'))
+            .max(20, 'Total number of houses owned cannot be greater than 20!')
+            .min(1, 'At least one total number of houses owned is required'),
         house_requirements: yup.boolean().required(t('House requirements is required')),
         //  details_of_land: yup.array().of(
         //    yup.object().shape({

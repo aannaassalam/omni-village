@@ -11,11 +11,14 @@ import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import { borderColor } from '../../styles/colors'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+import PopupModal from '../../Components/Popups/PopupModal'
 
 const HouseholdRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { house, housingData, housingPhoto } = route.params
     const [houseDetails, setHouseDetails] = useState(true)
+    const [savePopup, setSavepopup] = useState(false)
+    const [draftPopup, setDraftpopup] = useState(false)
     const scheme = yup.object().shape({
         equipment: yup.string().required(t('Equipment is required')),
         furnishing: yup.string().required(t('Furnishing is required')),
@@ -45,6 +48,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
         // validationSchema: scheme,
         onSubmit: async values => {
             console.log(values)
+            setSavepopup(true)
         },
     });
     return (
@@ -95,7 +99,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
                             });
                         }}
                         selectedd={values.equipment}
-                        infoName={t('Equipment')}
+                        infoName={t('Equipments')}
                     />
                     {touched?.equipment && errors?.equipment && (
                         <Text style={Styles.error2}>{String(errors?.equipment)}</Text>
@@ -141,7 +145,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
                             <CustomDropdown
                                 data={[{ label: 'Month', value: '1' }]}
                                 value={values.renovation_urgency}
-                                label={t('Urgenncy')}
+                                label={t('Urgency')}
                                 onChange={(value) => {
                                     setValues({
                                         ...values,
@@ -194,8 +198,72 @@ const HouseholdRequirement = ({ navigation, route }) => {
             </KeyboardAwareScrollView>
             <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
                 <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { }} btnStyle={{ color: 'black' }} />
+                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true)}} btnStyle={{ color: 'black' }} />
             </View>
+            {/* submit popup */}
+            <PopupModal
+                modalVisible={savePopup}
+                setBottomModalVisible={setSavepopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('confirm')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('submit')}
+                            onPress={() => { onSubmit() }}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => {
+                                setSavepopup(false);
+                            }}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+            {/* draft popup */}
+            <PopupModal
+                modalVisible={draftPopup}
+                setBottomModalVisible={setDraftpopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('save')}
+                            onPress={handleDraft}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => setDraftpopup(false)}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
         </View>
     )
 }

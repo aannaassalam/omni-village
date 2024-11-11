@@ -15,7 +15,7 @@ const HouseSpecificationQuestioner = ({ navigation, route }) => {
     const scheme = yup.object().shape({
          house_names: yup.array().of(
            yup.object().shape({
-             name: yup.string().required('Name is required'),
+             name: yup.string().required(t('Name is required')),
            }),
          ),
     });
@@ -42,7 +42,7 @@ const HouseSpecificationQuestioner = ({ navigation, route }) => {
        const newDetailsOfLand = Array(totalLands)
          .fill()
          .map((_, index) => ({
-           name: `House ${index + 1}`,
+           name: `${t("House")} ${index + 1}`,
          }));
 
        setValues(prevValues => ({

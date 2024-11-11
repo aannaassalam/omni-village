@@ -14,11 +14,14 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import Input from '../../Components/Inputs/Input'
 import AcresElement from '../../Components/ui/AcresElement'
 import { useUser } from '../../Hooks/useUser'
+import PopupModal from '../../Components/Popups/PopupModal'
 
 const HousingRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { data: user } = useUser()
     const { data } = route.params
+    const [savePopup, setSavepopup] = useState(false)
+    const [draftPopup, setDraftpopup] = useState(false)
     const [houseDetails, setHouseDetails] = useState(true)
     const scheme = yup.object().shape({
         need_new_unit: yup.boolean(),
@@ -47,13 +50,14 @@ const HousingRequirement = ({ navigation, route }) => {
         // validationSchema: scheme,
         onSubmit: async values => {
             console.log(values)
+            setSavepopup(true)
         },
     });
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={`${t('Housing requirement')}`}
+                headerName={`${t('Housing requirements')}`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -61,7 +65,7 @@ const HousingRequirement = ({ navigation, route }) => {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <View style={styles.subArea}>
-                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Housing Requirements')}</Text>
+                    <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Housing requirements')}</Text>
                     <Divider
                         bold={true}
                         style={[styles.divider, { width: '45%' }]}
@@ -134,7 +138,7 @@ const HousingRequirement = ({ navigation, route }) => {
                     <CustomDropdown
                         data={[{ label: 'Yes', value: true }, { label: 'No', value: false }]}
                         value={values.land_for_new_unit}
-                        label={t('Do you need land for a new unit ? ')}
+                        label={t('Do you need land for a new unit ?')}
                         onChange={(value) => {
                             setValues({
                                 ...values,
@@ -150,7 +154,7 @@ const HousingRequirement = ({ navigation, route }) => {
                             <Divider style={styles.divider2} />
                             <View style={{ width: '100%' }}>
                                 <Input
-                                    label={t('Required Area ? ')}
+                                    label={t('Required Area ?')}
                                     value={values.required_area}
                                     placeholder={''}
                                     fullLength={true}
@@ -168,8 +172,72 @@ const HousingRequirement = ({ navigation, route }) => {
             </KeyboardAwareScrollView>
             <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
                 <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { }} btnStyle={{ color: 'black' }} />
+                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => {setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
             </View>
+            {/* submit popup */}
+            <PopupModal
+                modalVisible={savePopup}
+                setBottomModalVisible={setSavepopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('confirm')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('submit')}
+                            onPress={() => { onSubmit() }}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => {
+                                setSavepopup(false);
+                            }}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+            {/* draft popup */}
+            <PopupModal
+                modalVisible={draftPopup}
+                setBottomModalVisible={setDraftpopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('save')}
+                            onPress={handleDraft}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => setDraftpopup(false)}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
         </View>
     )
 }
