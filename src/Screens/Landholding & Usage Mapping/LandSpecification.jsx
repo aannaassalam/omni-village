@@ -11,70 +11,54 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import {Styles, width} from '../../styles/globalStyles';
+import { Styles, width } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import Geolocation from 'react-native-geolocation-service';
-import {Divider, TextInput} from 'react-native-paper';
-import {fontFamilyMedium} from '../../styles/fontStyle';
+import { Divider, TextInput } from 'react-native-paper';
+import { fontFamilyMedium } from '../../styles/fontStyle';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as yup from 'yup';
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import Input from '../../Components/Inputs/Input';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 import AcresElement from '../../Components/ui/AcresElement';
-import {useUser} from '../../Hooks/useUser';
+import { useUser } from '../../Hooks/useUser';
 import YearPicker from '../../Components/YearPicker/YearPicker';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
-import {borderColor, primaryColor} from '../../styles/colors';
+import { borderColor, primaryColor } from '../../styles/colors';
 import PopupModal from '../../Components/Popups/PopupModal';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { editLandholding, getLandholdingDropdown } from '../../functions/landholding';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 
-const LandSpecification = ({navigation, route}) => {
-  const {fontScale} = useWindowDimensions();
+const LandSpecification = ({ navigation, route }) => {
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {t} = useTranslation();
-  const {landholding, land, data} = route.params;
+  const { t } = useTranslation();
+  const { landholding, land, landholding_id, data } = route.params;
   const [savePopup, setSavepopup] = useState(false);
   const [draftPopup, setDraftpopup] = useState(false);
-  const {data: user} = useUser();
+  const { data: user } = useUser();
   const queryClient = useQueryClient();
-  const {data: dropdownData, isLoading: dropdown_loading} = useQuery({
-    queryKey: ['dropdown_data'],
-    queryFn: () => {},
+  const { data: landholding_dropdown, isLoading } = useQuery({
+    queryKey: ['landholding_dropdown'],
+    queryFn: () => getLandholdingDropdown(),
     refetchOnWindowFocus: true,
-  });
-  const {mutate: add_landholding} = useMutation({
-    mutationKey: ['add_landholding'],
-    mutationFn: async data => {
-      // addDemographic(data)
-      queryClient.invalidateQueries();
-    },
-    onSuccess: data => {
-      console.log('successsssss save', data), navigation.replace('home');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
-      setDraftpopup(false), setSavepopup(false);
-    },
-  });
-  const {mutate: edit_landholding} = useMutation({
+  })
+  const { mutate: edit_landholding } = useMutation({
     mutationKey: ['edit_landholding'],
-    mutationFn: async data => {
-      // editDemographic(data)
-      queryClient.invalidateQueries();
+    mutationFn: async (data) => {
+      editLandholding(data)
+      queryClient.invalidateQueries()
     },
-    onSuccess: data => {
-      console.log('successsssss edit', data), navigation.replace('home');
-    },
-    onError: error => console.log('error edit', error),
-    onSettled: () => {
-      setDraftpopup(false), setSavepopup(false);
-    },
-  });
+    onSuccess: (data) => { navigation.replace('landSpecificationQuestioner') },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     land_under_use: yup.boolean().required(t('Land used is required')),
     status_of_land: yup
@@ -83,7 +67,7 @@ const LandSpecification = ({navigation, route}) => {
         'status-of-land-is-required',
         t('status of land is required'),
         function (value) {
-          const {land_under_use} = this.parent; // Accessing other field values
+          const { land_under_use } = this.parent; // Accessing other field values
           if (!land_under_use && (!value || value.length === 0)) {
             return this.createError({
               path: 'status_of_land',
@@ -100,9 +84,7 @@ const LandSpecification = ({navigation, route}) => {
           type: yup.string().required('Type is required'),
           type_category: yup
             .array()
-            .required(t('Category is required'))
-            .max(20, 'Category cannot be greater than 20!')
-            .min(1, t('At least one Category is required')),
+            .required(t('Category is required')),
           total_land_area_utilised: yup
             .number()
             .required(t('Total land area utilised is required')),
@@ -112,7 +94,7 @@ const LandSpecification = ({navigation, route}) => {
         'status-of-land-is-required',
         t('purpose status of land for is required'),
         function (value) {
-          const {land_under_use} = this.parent; // Accessing other field values
+          const { land_under_use } = this.parent; // Accessing other field values
           if (!land_under_use && (!value || value.length === 0)) {
             return this.createError({
               path: 'purpose_status_of_land',
@@ -128,7 +110,7 @@ const LandSpecification = ({navigation, route}) => {
         'land-under-used-is-required',
         t('Purpose is required'),
         function (value) {
-          const {land_under_use} = this.parent; // Accessing other field values
+          const { land_under_use } = this.parent; // Accessing other field values
           if (land_under_use && (!value || value.length === 0)) {
             return this.createError({
               path: 'total_purpose',
@@ -157,7 +139,7 @@ const LandSpecification = ({navigation, route}) => {
         'land-under-used-is-required',
         t('Purpose utilised for is required'),
         function (value) {
-          const {land_under_use} = this.parent; // Accessing other field values
+          const { land_under_use } = this.parent; // Accessing other field values
           if (land_under_use && (!value || value.length === 0)) {
             return this.createError({
               path: 'purpose_land_utilised_for',
@@ -193,7 +175,8 @@ const LandSpecification = ({navigation, route}) => {
       setSavepopup(true);
     },
   });
-
+const handleData = (data) => {
+}
   useEffect(() => {
     const land_use = values?.land_under_use;
     const totalPurpose = land_use
@@ -204,19 +187,19 @@ const LandSpecification = ({navigation, route}) => {
       : [];
     const newDetailsOfLand = land_use
       ? Array(totalPurpose)
-          .fill()
-          .map((item, index) => ({
-            type: values?.total_purpose[index] || '',
-            total_land_area_utilised: '',
-            type_category: [],
-          }))
+        .fill()
+        .map((item, index) => ({
+          type: values?.total_purpose[index] || '',
+          total_land_area_utilised: '',
+          type_category: [],
+        }))
       : Array(totalStatus)
-          .fill()
-          .map((item, index) => ({
-            type: values?.status_of_land[index] || '',
-            total_land_area_utilised: '',
-            type_category: [],
-          }));
+        .fill()
+        .map((item, index) => ({
+          type: values?.status_of_land[index] || '',
+          total_land_area_utilised: '',
+          type_category: [],
+        }));
 
     setValues(prevValues => ({
       ...prevValues,
@@ -233,12 +216,12 @@ const LandSpecification = ({navigation, route}) => {
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.purpose_land_utilised_for];
     newDetailsOfLand[index][field] = value;
-    setValues({...values, purpose_land_utilised_for: newDetailsOfLand});
+    setValues({ ...values, purpose_land_utilised_for: newDetailsOfLand });
   };
   const handleFieldChangeSecond = (index, field, value) => {
     const newDetailsOfLand = [...values.purpose_status_of_land];
     newDetailsOfLand[index][field] = value;
-    setValues({...values, purpose_status_of_land: newDetailsOfLand});
+    setValues({ ...values, purpose_status_of_land: newDetailsOfLand });
   };
   useEffect(() => {
     const land_use = values?.land_under_use;
@@ -259,35 +242,75 @@ const LandSpecification = ({navigation, route}) => {
   useEffect(() => {
     resetForm({
       values: {
-        purpose_land_utilised_for: [],
-        purpose_status_of_land: [],
-        land_under_use: false,
-        total_purpose: [],
-        status_of_land: [],
+        purpose_land_utilised_for: data?.purpose_land_utilised_for.map((item) => {
+          return {
+            type: item?.type,
+            total_land_area_utilised: String(item?.total_land_area_utilised) || item?.total_land_area_utilised,
+            type_category: item?.type_category,
+          }
+        }) || [],
+        purpose_status_of_land: data?.purpose_status_of_land.map((item) => {
+          return {
+            type: item?.type,
+            total_land_area_utilised: String(item?.total_land_area_utilised) || item?.total_land_area_utilised,
+            type_category: item?.type_category,
+          }
+        }) || [],
+        land_under_use: data?.land_under_use || false,
+        total_purpose: data?.total_purpose || [],
+        status_of_land: data?.status_of_land || [],
       },
     });
   }, [data]);
-  const handleDraft = () => {};
-  const onSubmit = () => {
+  const handleDraft = () => {
     if (values?.land_under_use) {
-      console.log('here');
+      console.log('here2');
       let data = {
+        ...landholding,
+        landholding_id: landholding_id,
         land_under_use: values.land_under_use,
         total_purpose: values.total_purpose,
         purpose_land_utilised_for: values.purpose_land_utilised_for,
       };
+      edit_landholding({ ...data, status: 0 })
     } else {
-      console.log('herew');
+      console.log('herew4');
       let data = {
+        ...landholding,
+        landholding_id: landholding_id,
         land_under_use: values.land_under_use,
         status_of_land: values.status_of_land,
         purpose_status_of_land: values.purpose_status_of_land,
       };
+      edit_landholding({ ...data, status: 0 })
     }
   };
-  if (dropdown_loading) {
+  const onSubmit = () => {
+    if (values?.land_under_use) {
+      console.log('here');
+      let data = {
+        ...landholding,
+        landholding_id: landholding_id,
+        land_under_use: values.land_under_use,
+        total_purpose: values.total_purpose,
+        purpose_land_utilised_for: values.purpose_land_utilised_for,
+      };
+      edit_landholding({ ...data, status: 1 })
+    } else {
+      console.log('herew');
+      let data = {
+        ...landholding,
+        landholding_id: landholding_id,
+        land_under_use: values.land_under_use,
+        status_of_land: values.status_of_land,
+        purpose_status_of_land: values.purpose_status_of_land,
+      };
+      edit_landholding({ ...data, status: 1 })
+    }
+  };
+  if (isLoading) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
       </View>
     );
@@ -300,27 +323,27 @@ const LandSpecification = ({navigation, route}) => {
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
-        <View style={[styles.subArea, {marginTop: '3%'}]}>
+        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+        <View style={[styles.subArea, { marginTop: '3%' }]}>
           <Text
             style={[
               Styles.fieldLabel,
-              {marginTop: 4, alignSelf: 'center', color: '#000'},
+              { marginTop: 4, alignSelf: 'center', color: '#000' },
             ]}>
             {t('landholding specification')}
           </Text>
           <Divider
             bold={true}
-            style={[styles.divider, {width: '54%'}]}
+            style={[styles.divider, { width: '54%' }]}
             horizontalInset={true}
           />
         </View>
         <CustomDropdown
           data={[
-            {id: 1, label: 'Yes', value: true},
-            {id: 2, label: 'No', value: false},
+            { id: 1, label: 'Yes', value: true },
+            { id: 2, label: 'No', value: false },
           ]}
           value={values.land_under_use}
           label={t('Is the Land under use?')}
@@ -337,13 +360,8 @@ const LandSpecification = ({navigation, route}) => {
         {values?.land_under_use ? (
           <>
             <MultiselectDropdown
-              containerStyle={{marginTop: '5%', paddingTop: 0}}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Basketball', name: 'Basketball'},
-                {key: 'Hockey', name: 'Hockey'},
-              ]}
+              containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+              data={landholding_dropdown?.purpose.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
               setSelectedd={item => {
                 setValues({
                   ...values,
@@ -359,22 +377,17 @@ const LandSpecification = ({navigation, route}) => {
             {values?.purpose_land_utilised_for.length > 0 && (
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
-                <View style={{width: '100%'}}>
+                <View style={{ width: '100%' }}>
                   {values.purpose_land_utilised_for.map((item, index) => (
                     <>
                       <MultiselectDropdown
-                        containerStyle={{marginTop: '5%', paddingTop: 0}}
-                        data={[
-                          {key: 'Bat', name: 'Bat'},
-                          {key: 'Ball', name: 'Ball'},
-                          {key: 'Scale', name: 'Scale'},
-                          {key: 'Pencil', name: 'Pencil'},
-                        ]}
+                        containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                        data={landholding_dropdown?.[item?.type].map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
                         setSelectedd={item => {
                           handleFieldChange(index, 'type_category', item);
                         }}
                         selectedd={item.type_category}
-                        infoName={t(`${t('What type of')} ${item?.type}?`)}
+                        infoName={t(`${t('What type of')} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type}?`)}
                       />
                       {errors.purpose_land_utilised_for &&
                         errors.purpose_land_utilised_for[index]
@@ -392,17 +405,17 @@ const LandSpecification = ({navigation, route}) => {
               </View>
             )}
             {values?.total_purpose.length > 0 ? (
-              <View style={[styles.subArea, {marginTop: '3%'}]}>
+              <View style={[styles.subArea, { marginTop: '3%' }]}>
                 <Text
                   style={[
                     Styles.fieldLabel,
-                    {marginTop: 4, alignSelf: 'center', color: '#000'},
+                    { marginTop: 4, alignSelf: 'center', color: '#000' },
                   ]}>
                   {t('land area specification')}
                 </Text>
                 <Divider
                   bold={true}
-                  style={[styles.divider, {width: '54%'}]}
+                  style={[styles.divider, { width: '54%' }]}
                   horizontalInset={true}
                 />
               </View>
@@ -415,7 +428,7 @@ const LandSpecification = ({navigation, route}) => {
                       label={t(
                         `${t(
                           'Kindly mention the total land area utilised by',
-                        )} ${item?.type} `,
+                        )} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                       )}
                       value={item.total_land_area_utilised}
                       placeholder={'0'}
@@ -450,13 +463,8 @@ const LandSpecification = ({navigation, route}) => {
         ) : (
           <>
             <MultiselectDropdown
-              containerStyle={{marginTop: '5%', paddingTop: 0}}
-              data={[
-                {key: 'Cricket', name: 'Cricket'},
-                {key: 'Football', name: 'Football'},
-                {key: 'Basketball', name: 'Basketball'},
-                {key: 'Hockey', name: 'Hockey'},
-              ]}
+              containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+              data={landholding_dropdown?.status.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
               setSelectedd={item => {
                 setValues({
                   ...values,
@@ -474,22 +482,17 @@ const LandSpecification = ({navigation, route}) => {
             {values?.purpose_status_of_land.length > 0 && (
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
-                <View style={{width: '100%'}}>
-                  {values.purpose_status_of_land.map((item, index) => (
-                    <>
+                <View style={{ width: '100%' }}>
+                  {values.purpose_status_of_land.map((item, index) => {
+                    return <>
                       <MultiselectDropdown
-                        containerStyle={{marginTop: '5%', paddingTop: 0}}
-                        data={[
-                          {key: 'Bat', name: 'Bat'},
-                          {key: 'Ball', name: 'Ball'},
-                          {key: 'Scale', name: 'Scale'},
-                          {key: 'Pencil', name: 'Pencil'},
-                        ]}
+                        containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                        data={landholding_dropdown?.[item?.type].map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
                         setSelectedd={item => {
                           handleFieldChangeSecond(index, 'type_category', item);
                         }}
                         selectedd={item.type_category}
-                        infoName={t(`If ${item?.type} ${t('then why')} ?`)}
+                        infoName={t(`If ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} ${t('then why')} ?`)}
                       />
                       {errors.purpose_status_of_land &&
                         errors.purpose_status_of_land[index]?.type_category && (
@@ -498,22 +501,22 @@ const LandSpecification = ({navigation, route}) => {
                           </Text>
                         )}
                     </>
-                  ))}
+                  })}
                 </View>
               </View>
             )}
             {values?.status_of_land.length > 0 ? (
-              <View style={[styles.subArea, {marginTop: '3%'}]}>
+              <View style={[styles.subArea, { marginTop: '3%' }]}>
                 <Text
                   style={[
                     Styles.fieldLabel,
-                    {marginTop: 4, alignSelf: 'center', color: '#000'},
+                    { marginTop: 4, alignSelf: 'center', color: '#000' },
                   ]}>
                   {t('land area specification')}
                 </Text>
                 <Divider
                   bold={true}
-                  style={[styles.divider, {width: '54%'}]}
+                  style={[styles.divider, { width: '54%' }]}
                   horizontalInset={true}
                 />
               </View>
@@ -526,7 +529,7 @@ const LandSpecification = ({navigation, route}) => {
                       label={t(
                         `${t(
                           'Kindly mention the total land area not utilised by',
-                        )} ${item?.type} `,
+                        )} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                       )}
                       value={item.total_land_area_utilised}
                       placeholder={'0'}
@@ -563,27 +566,27 @@ const LandSpecification = ({navigation, route}) => {
       <View
         style={[
           Styles.bottomBtn,
-          {flexDirection: 'row', justifyContent: 'space-between'},
+          { flexDirection: 'row', justifyContent: 'space-between' },
         ]}>
         <CustomButton
           btnText={t('submit')}
-          style={{width: '48%', height: 60}}
+          style={{ width: '48%', height: 60 }}
           onPress={handleSubmit}
         />
         <CustomButton
           btnText={t('save as draft')}
-          style={{width: '48%', height: 60, backgroundColor: borderColor}}
+          style={{ width: '48%', height: 60, backgroundColor: borderColor }}
           onPress={() => {
             setDraftpopup(true);
           }}
-          btnStyle={{color: 'black'}}
+          btnStyle={{ color: 'black' }}
         />
       </View>
       {/* submit popup */}
       <PopupModal
         modalVisible={savePopup}
         setBottomModalVisible={setSavepopup}
-        styleInner={[Styles.savePopup, {width: '90%'}]}>
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
         <View style={Styles.submitPopup}>
           <View style={Styles.noteImage}>
             <Image
@@ -602,7 +605,7 @@ const LandSpecification = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+            // loading={isAddPoultryPending || isEditPoultryPending}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -618,7 +621,7 @@ const LandSpecification = ({navigation, route}) => {
       <PopupModal
         modalVisible={draftPopup}
         setBottomModalVisible={setDraftpopup}
-        styleInner={[Styles.savePopup, {width: '90%'}]}>
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
         <View style={Styles.submitPopup}>
           <View style={Styles.noteImage}>
             <Image
@@ -635,7 +638,7 @@ const LandSpecification = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+            // loading={isAddPoultryPending || isEditPoultryPending}
             />
             <CustomButton
               style={Styles.draftButton}

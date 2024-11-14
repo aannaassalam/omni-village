@@ -8,6 +8,8 @@ import CustomButton from '../Components/CustomButton/CustomButton'
 import { useTranslation } from 'react-i18next'
 import { borderColor, primaryColor, unSelected } from '../styles/colors'
 import { fontFamilyMedium } from '../styles/fontStyle'
+import { useQuery } from '@tanstack/react-query'
+import { getLandholdingByUser } from '../functions/landholding'
 
 const Home = ({ navigation }) => {
   const { fontScale } = useWindowDimensions()
@@ -16,6 +18,7 @@ const Home = ({ navigation }) => {
   const [onItemSeleted, setOnItemSelected] = useState(null)
 
   const { data: user, isLoading } = useUser();
+
 
   const data_available = useMemo(() => user, [user]);
 
@@ -37,6 +40,7 @@ const Home = ({ navigation }) => {
       </View>
     );
   }
+  console.log("usererer", user?.is_landholding_data)
   const ITEMS = [
     {
       title: t('food'),
@@ -50,12 +54,12 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('landholding'),
-      navigation: 'landholdingTotalLand', //FIXME:landholdingUsage
+      navigation: user?.is_landholding_data ?'landSpecificationQuestioner':'landholdingTotalLand',
       image: require('../../assets/landhold.png'),
     },
     {
       title: t('housing'),
-      navigation: 'housing',
+      navigation: user?.is_housing_data ? 'houseSpecificationQuestioner':'housing',
       image: require('../../assets/housing.png'),
     },
     {

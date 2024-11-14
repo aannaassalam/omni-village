@@ -1,70 +1,44 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import { getHousingByUser, getHousingDropdown } from '../../functions/housing'
+import { useQuery } from '@tanstack/react-query'
+import { useFocusEffect } from '@react-navigation/native'
+import { primaryColor } from '../../styles/colors'
 
 const HouseSpecificationQuestioner = ({ navigation, route }) => {
     const { t } = useTranslation()
-    const { total_numbers_of_house, house_requirements } = route.params
-    const [value, setValue] = useState('')
-    const scheme = yup.object().shape({
-         house_names: yup.array().of(
-           yup.object().shape({
-             name: yup.string().required(t('Name is required')),
-           }),
-         ),
-    });
-    const {
-        handleChange,
-        handleSubmit,
-        values,
-        errors,
-        setFieldTouched,
-        touched,
-        resetForm,
-        setValues,
-    } = useFormik({
-        initialValues: {
-             house_names: [],
-        },
-        validationSchema: scheme,
-        onSubmit: async values => {
-            console.log(values);
-        },
-    });
-     useEffect(() => {
-         const totalLands = parseInt(total_numbers_of_house || 0);
-       const newDetailsOfLand = Array(totalLands)
-         .fill()
-         .map((_, index) => ({
-           name: `${t("House")} ${index + 1}`,
-         }));
-
-       setValues(prevValues => ({
-         ...prevValues,
-         house_names: newDetailsOfLand,
-       }));
-     }, [total_numbers_of_house]);
-    const handleFieldChange = (index, field, value) => {
-        const newDetailsOfLand = [...values.house_names];
-        newDetailsOfLand[index][field] = value;
-        setValues({ ...values, house_names: newDetailsOfLand });
-    };
+    const { data: housing, isLoading, refetch } = useQuery({
+        queryKey: ['housing_by_user'],
+        queryFn: () => getHousingByUser(),
+        refetchOnWindowFocus: true,
+    })
+    useFocusEffect(
+        useCallback(() => {
+            refetch()
+        }, [refetch])
+    )
+    if (isLoading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('landholding')}
+                headerName={t('housing')}
                 goBack={() => navigation.goBack()}
             />
             <ScrollView>
 
-                {total_numbers_of_house > 0 ?
+                {housing?.total_numbers_of_house > 0 ?
                     <View style={styles.subArea}>
                         <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
                         <Divider
@@ -77,31 +51,26 @@ const HouseSpecificationQuestioner = ({ navigation, route }) => {
                 }
                 <View style={styles.mainContainer}>
                     {/* {Array.from({ length: total_numbers_of_house }, (_, index) => { */}
-                    {values.house_names.map((item, index) => {
+                    {housing[0].housings.map((item, index) => {
                         return <CustomShowcaseInput
                             key={index}
-                            input={true}
-                            setInputValue={(e) => {
-                                handleFieldChange(index, 'name', e)
-                            }}
-                            inputValue={item.name}
-                            productionName={`${t('House')} ${index + 1}`}
+                            productionName={item?.name_of_the_house == "" ? `${t('House')} ${index + 1}` : item?.name_of_the_house}
                             style={{ width: '100%' }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('housingDetails', { house: item?.name , data: [] })
+                                navigation.navigate('housingDetails', { house: item?.name_of_the_house == "" ? `${t('House')} ${index + 1}` : item?.name_of_the_house, data: { house_id: item?._id } })
                                 // console.log("valyesssss", values)
                             }}
                         />
                     })}
-                    {house_requirements ?
+                    {housing[0]?.house_requirements ?
                         <CustomShowcaseInput
                             key={1}
                             productionName={t(`House Requirements`)}
                             style={{ width: '100%', }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('housingRequirement', { data: [] })
+                                navigation.navigate('housingRequirement')
                             }}
                         />
                         : null

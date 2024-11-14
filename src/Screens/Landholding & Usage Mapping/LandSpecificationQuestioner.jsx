@@ -1,14 +1,34 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
+import { useQuery } from '@tanstack/react-query'
+import { getLandholdingByUser } from '../../functions/landholding'
+import { primaryColor } from '../../styles/colors'
+import { useUser } from '../../Hooks/useUser'
+import { useFocusEffect } from '@react-navigation/native'
 
-const LandSpecificationQuestioner = ({ navigation, route }) => {
+const LandSpecificationQuestioner = ({ navigation }) => {
     const { t } = useTranslation()
-    const { total_numbers_of_lands, land_requirements } = route.params
+    const { data: landholding , isLoading, refetch} = useQuery({
+        queryKey: ['landholding'],
+        queryFn: () => getLandholdingByUser(),
+        refetchOnWindowFocus: true,
+    })
+useFocusEffect(
+    useCallback(()=>{
+        refetch()
+    },[refetch])
+)
+
+    if(isLoading){
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
 
     return (
         <View style={styles.container}>
@@ -19,7 +39,7 @@ const LandSpecificationQuestioner = ({ navigation, route }) => {
             />
             <ScrollView>
 
-            {total_numbers_of_lands > 0 ?
+                {landholding?.total_numbers_of_lands > 0 ?
                 <View style={styles.subArea}>
                     <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
                     <Divider
@@ -31,25 +51,26 @@ const LandSpecificationQuestioner = ({ navigation, route }) => {
                 : null
             }
             <View style={styles.mainContainer}>
-                {Array.from({ length: total_numbers_of_lands }, (_, index) => {
+                    {/* {Array.from({ length: landholding?.landholdings?.length }, (item, index) => { */}
+                    {landholding?.landholdings?.map((item, index) =>{
                     return <CustomShowcaseInput
                         key={index}
                         productionName={`${t('Land')} ${index + 1}`}
                         style={{ width: '100%', }}
                         progressBar={false}
                         onPress={() => {
-                            navigation.navigate('landholdingUsage', { land: `Land ${index + 1}`, data:[] })
+                            navigation.navigate('landholdingUsage', { land: `Land ${index + 1}`, data:{land_id: item } })
                         }}
                     />
                 })}
-                {land_requirements ?
+                    {landholding?.land_requirements ?
                     <CustomShowcaseInput
                         key={1}
                         productionName={t(`Land Requirements`)}
                         style={{ width: '100%', }}
                         progressBar={false}
                         onPress={() => {
-                            navigation.navigate('landholdingLandRequirement',{data:[]})
+                            navigation.navigate('landholdingLandRequirement')
                         }}
                     />
                     : null

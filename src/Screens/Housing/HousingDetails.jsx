@@ -1,10 +1,10 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { useTranslation } from 'react-i18next'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import Input from '../../Components/Inputs/Input'
@@ -13,11 +13,26 @@ import { useUser } from '../../Hooks/useUser'
 import YearPicker from '../../Components/YearPicker/YearPicker'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
+import { useQuery } from '@tanstack/react-query'
+import { getHousing, getHousingDropdown } from '../../functions/housing'
+import { primaryColor } from '../../styles/colors'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 const HousingDetails = ({ navigation, route }) => {
   const { t } = useTranslation()
   const { data: user } = useUser()
   const { house, data } = route.params
   const [houseDetails, setHouseDetails] = useState(true)
+  const { data: housing, isLoading: loading, refetch: refetchHousing } = useQuery({
+    queryKey: ['housing_data'],
+    enabled: data?.house_id? true: false,
+    queryFn: () => getHousing(data?.house_id),
+    refetchOnWindowFocus: true,
+  })
+  const { data: housing_dropdown, isLoading, refetch } = useQuery({
+    queryKey: ['housing'],
+    queryFn: () => getHousingDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const scheme = yup.object().shape({
     name_of_the_house: yup.string().required(t('Name of the house is required')),
     type_of_house: yup.string().required(t('Type of house is required')),
@@ -56,12 +71,51 @@ const HousingDetails = ({ navigation, route }) => {
       year_last_expanded: '',
       type: ''
     },
-    // validationSchema: scheme,
+    validationSchema: scheme,
     onSubmit: async values => {
       console.log(values);
-      navigation.navigate('housingPhoto', {housingData: values, house})
+      let new_data = {
+        name_of_the_house: values.name_of_the_house,
+        type_of_house: values.type_of_house,
+        land_utilised_for_family_housing: parseInt(values.land_utilised_for_family_housing),
+        no_of_units_built:parseInt(values.no_of_units_built),
+        total_built_area: parseInt(values.total_built_area),
+        no_of_floors: parseInt(values.no_of_floors),
+        living_area: parseInt(values.living_area),
+        year_built: values.year_built,
+        year_renovated: values.year_renovated,
+        year_last_expanded: values.year_last_expanded,
+        type: values.type,
+      }
+      navigation.navigate('housingPhoto', { housingData: new_data, house, house_id: data.house_id, housing_data: housing })
     },
   });
+
+  useEffect(()=>{
+    resetForm({
+      values:{
+        name_of_the_house: housing?.name_of_the_house,
+        type_of_house: housing?.type_of_house,
+        land_utilised_for_family_housing: housing?.land_utilised_for_family_housing===null?'':String(housing?.land_utilised_for_family_housing) || '',
+        no_of_units_built: housing?.no_of_units_built === null ? '' : String(housing?.no_of_units_built)||'',
+        total_built_area: housing?.total_built_area === null ? '' : String(housing?.total_built_area)||'',
+        no_of_floors: housing?.no_of_floors === null ? '' : String(housing?.no_of_floors)||'',
+        living_area: housing?.living_area === null ? '' : String(housing?.living_area)||'',
+        year_built: housing?.year_built,
+        year_renovated: housing?.year_renovated,
+        year_last_expanded: housing?.year_last_expanded,
+        type: housing?.type,
+      }
+    }
+    )
+  },[housing])
+  if (isLoading || loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -108,7 +162,10 @@ const HousingDetails = ({ navigation, route }) => {
               <Text style={Styles.error2}>{String(errors?.name_of_the_house)}</Text>
             )}
             <CustomDropdown
-              data={[{ label: 'Month', value: '1' }]}
+              data={[
+                { label: 'Family House', value: 'Family House' },
+                { label: 'Farm House', value: 'Farm House' },
+              ]}
               value={values.type_of_house}
               label={t('Type of House')}
               onChange={(value) => {
@@ -211,7 +268,7 @@ const HousingDetails = ({ navigation, route }) => {
                   <Text style={Styles.error2}>{errors.year_last_expanded}</Text>
                 )}
             <CustomDropdown
-              data={[{label:'Month', value:'1'}]}
+              data={housing_dropdown?.type.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } })}
               value={values.type}
               label={t('Type')}
               onChange={(value) => {

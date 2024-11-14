@@ -6,96 +6,51 @@ import { Styles } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import PopupModal from '../../Components/Popups/PopupModal';
 import { useTranslation } from 'react-i18next';
-import { Divider, TextInput } from 'react-native-paper';
 import { fontFamilyMedium } from '../../styles/fontStyle';
-import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useFormik } from 'formik';
-import { borderColor } from '../../styles/colors';
+import { borderColor, primaryColor } from '../../styles/colors';
 import Input from '../../Components/Inputs/Input';
 import { useUser } from '../../Hooks/useUser';
 import AcresElement from '../../Components/ui/AcresElement';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { editLandholding, editLandholdingSpecification, getLandholdingDropdown, getLandholdingSpecification } from '../../functions/landholding';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
+import { ActivityIndicator } from 'react-native-paper';
 
 const LandholdingLandRequirement = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions()
     const styles = makeStyles(fontScale)
-    const { data } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { t } = useTranslation()
     const { data: user } = useUser()
     const queryClient = useQueryClient()
-    const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
-        queryKey: ['dropdown_data'],
-        queryFn: () => { },
+    const { data: landholding_dropdown, isLoading } = useQuery({
+        queryKey: ['landholding_dropdown'],
+        queryFn: () => getLandholdingDropdown(),
         refetchOnWindowFocus: true,
     })
-    const { mutate: add_landholdingReq } = useMutation({
-        mutationKey: ['add_landholdingReq'],
+    const { data: landholding_requirement, isLoading: isLandholdingLoading } = useQuery({
+        queryKey: ['landholding_requirement'],
+        queryFn: () => getLandholdingSpecification(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_landholding_specification } = useMutation({
+        mutationKey: ['edit_landholding_specification'],
         mutationFn: async (data) => {
-            // addDemographic(data)
+            editLandholdingSpecification(data)
             queryClient.invalidateQueries()
         },
         onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('home') },
         onError: (error) => console.log("error save", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
-    const { mutate: edit_landholdingReq } = useMutation({
-        mutationKey: ['edit_landholdingReq'],
-        mutationFn: async (data) => {
-            // editDemographic(data)
-            queryClient.invalidateQueries()
-        },
-        onSuccess: (data) => { console.log("successsssss edit", data), navigation.replace('home') },
-        onError: (error) => console.log("error edit", error),
-        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    })
     const scheme = yup.object().shape({
         required_area: yup.number().required(t('required area is required')),
         purpose_for_required_land: yup.string().required(t('purpose for required land for is required')),
         urgency_required_land: yup.string().required(t('urgency for required land is required')),
-        // area_allocated_to_village: yup.number().test(
-        //     'area-allocated-village-required',
-        //     t('area allocated to village is required'),
-        //     function (value) {
-        //         if (user?.type == "officer") {
-        //             return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
-        //         }
-        //         return true; // Otherwise, no validation on decreasing_yield
-        //     },
-        // ),
-        // area_allocated_for_community: yup.number().test(
-        //     'area-allocated-community-required',
-        //     t('area allocated for community is required'),
-        //     function (value) {
-        //         if (user?.type == "officer") {
-        //             return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
-        //         }
-        //         return true; // Otherwise, no validation on decreasing_yield
-        //     },
-        // ),
-        // land_owned_by_non_resident: yup.number().test(
-        //     'land-owned-by-non-resident-required',
-        //     t('land owned by non residents is required'),
-        //     function (value) {
-        //         if (user?.type == "officer") {
-        //             return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
-        //         }
-        //         return true; // Otherwise, no validation on decreasing_yield
-        //     },
-        // ),
-        // freehold_village_land: yup.number().test(
-        //     'freehold-village-required',
-        //     t('freehold village land is required'),
-        //     function (value) {
-        //         if (user?.type == "officer") {
-        //             return value ? true : false; // If soil_health is decreasing, decreasing_yield must have a value
-        //         }
-        //         return true; // Otherwise, no validation on decreasing_yield
-        //     },
-        // ),
     });
     const {
         handleChange,
@@ -121,25 +76,36 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-                required_area: '',
-                purpose_for_required_land: '',
-                urgency_required_land: '',
+                required_area: landholding_requirement?.required_area === null ? '' : String(landholding_requirement?.required_area) || '',
+                purpose_for_required_land: landholding_requirement?.purpose_for_required_land || '',
+                urgency_required_land: landholding_requirement?.urgency_required_land || '',
             }
         })
-    }, [data])
+    }, [landholding_requirement])
+    console.log("landholdingggg", landholding_requirement)
     const handleDraft = () => {
-        if (data) {
-
-        } else {
-
-        }
+let newData = {
+    required_area: parseInt(values.required_area),
+    purpose_for_required_land: values.purpose_for_required_land,
+    urgency_required_land: values.urgency_required_land,
+}
+edit_landholding_specification({...newData, status: 0})
+    
     }
     const onSubmit = () => {
-        if (data) {
-
-        } else {
-
-        }
+            let newData = {
+                required_area: parseInt(values.required_area),
+                purpose_for_required_land: values.purpose_for_required_land,
+                urgency_required_land: values.urgency_required_land,
+            }
+            edit_landholding_specification({ ...newData, status: 1 })
+    }
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
     }
     return (
         <View style={styles.container}>
@@ -174,10 +140,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
                         </Text>
                     )}
                 <CustomDropdown
-                    data={[
-                        { id: 1, label: 'Yes', value: true },
-                        { id: 2, label: 'No', value: false },
-                    ]}
+                    data={landholding_dropdown?.purpose_requirement.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } })}
                     value={values.purpose_for_required_land}
                     label={t('Kindly mention the purpose for which the land is required?')}
                     onChange={value => {
@@ -191,10 +154,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
                     <Text style={Styles.error2}>{String(errors?.purpose_for_required_land)}</Text>
                 )}
                 <CustomDropdown
-                    data={[
-                        { id: 1, label: 'Yes', value: true },
-                        { id: 2, label: 'No', value: false },
-                    ]}
+                    data={landholding_dropdown?.urgency_requirement.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } })}
                     value={values.urgency_required_land}
                     label={t('Kindly mention the urgency for the required land ?')}
                     onChange={value => {

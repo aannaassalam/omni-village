@@ -10,13 +10,13 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import {Styles} from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import {useTranslation} from 'react-i18next';
 import Geolocation from 'react-native-geolocation-service';
-import {Divider, TextInput} from 'react-native-paper';
+import {ActivityIndicator, Divider, TextInput} from 'react-native-paper';
 import {fontFamilyMedium} from '../../styles/fontStyle';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -29,13 +29,27 @@ import {useUser} from '../../Hooks/useUser';
 import YearPicker from '../../Components/YearPicker/YearPicker';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
 import {primaryColor} from '../../styles/colors';
+import { useQuery } from '@tanstack/react-query';
+import { getLandholding, getLandholdingDropdown } from '../../functions/landholding';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LandholdingUsage = ({navigation, route}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {land} = route.params;
+  const {land, data} = route.params;
   const {t} = useTranslation();
   const {data: user} = useUser();
+  const { data: landholding_dropdown, isLoading } = useQuery({
+    queryKey: ['landholding_dropdown'],
+    queryFn: () => getLandholdingDropdown(),
+    refetchOnWindowFocus: true,
+  })
+  const { data: landholding, isLoading: isLandholdingLoading, refetch } = useQuery({
+    queryKey: ['landholding'],
+    enabled: data?.land_id? true: false,
+    queryFn: () => getLandholding(data?.land_id),
+    refetchOnWindowFocus: true,
+  })
   const scheme = yup.object().shape({
     land_located: yup.string().required(t('Land Located is required')),
     total_land_area: yup.number().required(t('Total land area is required')),
@@ -56,12 +70,12 @@ const LandholdingUsage = ({navigation, route}) => {
       land_located: '',
       total_land_area: '',
       year_purchased: '',
-      geotag: '',
+      geotag: '22.5678, 84.3456',
     },
-    // validationSchema: scheme,
+    validationSchema: scheme,
     onSubmit: async values => {
       console.log(values);
-      navigation.navigate('landSpecification', {landholding: values, land});
+      navigation.navigate('landSpecification', { landholding: { ...values, total_land_area: parseInt(values?.total_land_area)}, land, landholding_id: data?.land_id, data: landholding });
     },
   });
   const requestLocationPermission = async () => {
@@ -125,6 +139,7 @@ const LandholdingUsage = ({navigation, route}) => {
   };
 
   const getLocation = async () => {
+    console.log("heererre",)
     const result = requestLocationPermission();
     result.then(res => {
       if (res) {
@@ -144,9 +159,33 @@ const LandholdingUsage = ({navigation, route}) => {
           },
           {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
         );
+      }else{
+        console.log('Permission not granted')
       }
-    });
+    }).catch((error) => {
+      console.log(error);
+    })
   };
+  useEffect(()=>{
+    resetForm({
+      values: {
+        land_located: landholding?.land_located,
+        total_land_area: landholding?.total_land_area===null?'': String(landholding?.total_land_area) || '',
+        year_purchased: landholding?.year_purchased,
+        geotag: landholding?.geotag ||'22.5678, 84.3456',
+      }
+    })
+  }, [landholding])
+  useFocusEffect(
+    useCallback(()=>{
+      refetch()
+    },[refetch])
+  )
+  if (isLandholdingLoading || isLoading) {
+    return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+      <ActivityIndicator size={'large'} color={primaryColor} />
+    </View>
+  }
   return (
     <View style={styles.container}>
       <CustomHeader

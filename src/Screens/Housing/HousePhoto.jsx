@@ -1,11 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import DocumentPicker, { types } from 'react-native-document-picker';
 import { fontScale, Styles, width } from '../../styles/globalStyles';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import { borderColor, primaryColor } from '../../styles/colors';
@@ -15,46 +15,54 @@ import ImageView from "react-native-image-viewing";
 import Input from '../../Components/Inputs/Input';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import { getHousingDropdown } from '../../functions/housing';
+import { useQuery } from '@tanstack/react-query';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 
 const HousePhoto = ({ navigation, route }) => {
   const { t } = useTranslation()
-  const { housingData, house } = route.params
+  const { housingData, house, house_id, housing_data } = route.params
   const [uploadPhoto, setUploadPhoto] = useState(true)
   const [visible, setIsVisible] = useState(false);
   const [photo, setPhoto] = useState('')
+  const { data: housing_dropdown, isLoading, refetch } = useQuery({
+    queryKey: ['housing'],
+    queryFn: () => getHousingDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const scheme = yup.object().shape({
     front_photo: yup
       .object().shape({
-        uri: yup.string(),
-        type: yup.string(),
-        name: yup.string(),
+        uri: yup.string().required(t('Front photo of houses is required')),
+        type: yup.string().required(t('Front photo of houses is required')),
+        name: yup.string().required(t('Front photo of houses is required')),
       })
       .required(t('Front photo of houses is required')),
     back_photo: yup
       .object().shape({
-        uri: yup.string(),
-        type: yup.string(),
-        name: yup.string(),
+        uri: yup.string().required(t('Back photo of house is required')),
+        type: yup.string().required(t('Back photo of house is required')),
+        name: yup.string().required(t('Back photo of house is required')),
       })
       .required(t('Back photo of house is required')),
     neighbourhood_photo: yup.object().shape({
-      uri: yup.string(),
-      type: yup.string(),
-      name: yup.string(),
+      uri: yup.string().required(t('Neighbourhood photo of house is required')),
+      type: yup.string().required(t('Neighbourhood photo of house is required')),
+      name: yup.string().required(t('Neighbourhood photo of house is required')),
     })
       .required(t('Neighbourhood photo of house is required')),
     inside_living_photo: yup.object().shape({
-      uri: yup.string(),
-      type: yup.string(),
-      name: yup.string(),
+      uri: yup.string().required(t('Inside living photo of house is required')),
+      type: yup.string().required(t('Inside living photo of house is required')),
+      name: yup.string().required(t('Inside living photo of house is required')),
     }).required(t('Inside living photo of house is required')),
     kitchen_photo: yup.object().shape({
-      uri: yup.string(),
-      type: yup.string(),
-      name: yup.string(),
+      uri: yup.string().required(t('Kitchen photo of house is required')),
+      type: yup.string().required(t('Kitchen photo of house is required')),
+      name: yup.string().required(t('Kitchen photo of house is required')),
     }).required(t('Kitchen photo of house is required')),
     amenities: yup.array().required(t('Amenities is required')),
-  });
+  })
   const {
     handleChange,
     handleSubmit,
@@ -66,12 +74,32 @@ const HousePhoto = ({ navigation, route }) => {
     setValues,
   } = useFormik({
     initialValues: {
-      front_photo: {},
-      back_photo: {},
-      neighbourhood_photo: {},
-      inside_living_photo: {},
-      kitchen_photo: {},
-      amenities:[],
+      front_photo: {
+        uri: '',
+        type: '',
+        name: '',
+      },
+      back_photo: {
+        uri: '',
+        type: '',
+        name: '',
+      },
+      neighbourhood_photo: {
+        uri: '',
+        type: '',
+        name: '',
+      },
+      inside_living_photo: {
+        uri: '',
+        type: '',
+        name: '',
+      },
+      kitchen_photo: {
+        uri: '',
+        type: '',
+        name: '',
+      },
+      amenities: [],
     },
     validationSchema: scheme,
     onSubmit: async values => {
@@ -79,7 +107,9 @@ const HousePhoto = ({ navigation, route }) => {
       navigation.navigate('householdRequirement', {
         housingData,
         house,
-        housingPhoto: values
+        housingPhoto: values,
+        house_id,
+        housing_data
       })
     },
   });
@@ -102,6 +132,22 @@ const HousePhoto = ({ navigation, route }) => {
       console.warn(err);
     }
   }, []);
+  useEffect(()=>{
+    resetForm({
+      values:{
+        ...values,
+        amenities: housing_data?.amenities
+      }
+    })
+  }, [housing_data])
+  console.log("housinggggggg", housing_data)
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -147,7 +193,7 @@ const HousePhoto = ({ navigation, route }) => {
                   onPress={() => {
                     if (values?.front_photo?.name) {
                       setIsVisible(true)
-                      setPhoto([{uri:values?.front_photo?.uri}])
+                      setPhoto([{ uri: values?.front_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("front_photo")
@@ -165,6 +211,10 @@ const HousePhoto = ({ navigation, route }) => {
                     </>
                   }
                 </TouchableOpacity>
+                {errors?.front_photo?.name && touched?.front_photo?.name ?
+                  <Text style={[Styles.error,{marginLeft: 0, marginBottom:0}]}>{errors?.front_photo?.name}</Text>
+                  : null
+                }
                 {/* Back */}
                 <TouchableOpacity
                   style={[styles.add_button, {
@@ -191,6 +241,10 @@ const HousePhoto = ({ navigation, route }) => {
                     </>
                   }
                 </TouchableOpacity>
+                {errors?.back_photo?.name && touched?.back_photo?.name ?
+                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.back_photo?.name}</Text>
+                  : null
+                }
                 {/* NeighbourHood */}
                 <TouchableOpacity
                   style={[styles.add_button, {
@@ -217,6 +271,10 @@ const HousePhoto = ({ navigation, route }) => {
                     </>
                   }
                 </TouchableOpacity>
+                {errors?.neighbourhood_photo?.name && touched?.neighbourhood_photo?.name ?
+                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.neighbourhood_photo?.name}</Text>
+                  : null
+                }
                 {/* Inside living */}
                 <TouchableOpacity
                   style={[styles.add_button, {
@@ -243,6 +301,10 @@ const HousePhoto = ({ navigation, route }) => {
                     </>
                   }
                 </TouchableOpacity>
+                {errors?.neighbourhood_photo?.name && touched?.neighbourhood_photo?.name ?
+                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.neighbourhood_photo?.name}</Text>
+                  : null
+                }
                 {/* Kitchen */}
                 <TouchableOpacity
                   style={[styles.add_button, {
@@ -269,6 +331,10 @@ const HousePhoto = ({ navigation, route }) => {
                     </>
                   }
                 </TouchableOpacity>
+                {errors?.kitchen_photo?.name && touched?.kitchen_photo?.name ?
+                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.kitchen_photo?.name}</Text>
+                  : null
+                }
               </View>
             </View>
           </>
@@ -276,12 +342,7 @@ const HousePhoto = ({ navigation, route }) => {
         }
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            { key: 'Cricket', name: 'Cricket' },
-            { key: 'Football', name: 'Football' },
-            { key: 'Basketball', name: 'Basketball' },
-            { key: 'Hockey', name: 'Hockey' },
-          ]}
+          data={housing_dropdown?.amenities.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
           setSelectedd={item => {
             setValues({
               ...values,
@@ -368,8 +429,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 48,
     marginTop: 16,
-    width:'100%',
-    paddingHorizontal:22
+    width: '100%',
+    paddingHorizontal: 22
   },
   add_button_text: {
     color: '#000',

@@ -1,28 +1,51 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { useTranslation } from 'react-i18next'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import Input from '../../Components/Inputs/Input'
 import AcresElement from '../../Components/ui/AcresElement'
 import { useUser } from '../../Hooks/useUser'
 import PopupModal from '../../Components/Popups/PopupModal'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { editHousingRequirement, getHousingDropdown, getHousingRequirement } from '../../functions/housing'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const HousingRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { data: user } = useUser()
-    const { data } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const [houseDetails, setHouseDetails] = useState(true)
+    const queryClient = useQueryClient()
+    const { data: housing_dropdown, isLoading } = useQuery({
+        queryKey: ['housing_dropdown'],
+        queryFn: () => getHousingDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: housing_requirement, isLoading: isHousingLoading } = useQuery({
+        queryKey: ['housing_requirement'],
+        queryFn: () => getHousingRequirement(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_housing_specification } = useMutation({
+        mutationKey: ['edit_housing_specification'],
+        mutationFn: async (data) => {
+            editHousingRequirement(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('home') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         need_new_unit: yup.boolean(),
         new_unit_purpose: yup.string().required(t('Purpose of new unit is required')),
@@ -47,12 +70,51 @@ const HousingRequirement = ({ navigation, route }) => {
            land_for_new_unit: true,
            required_area:''
         },
-        // validationSchema: scheme,
+        validationSchema: scheme,
         onSubmit: async values => {
             console.log(values)
             setSavepopup(true)
         },
     });
+    useEffect(() => {
+        resetForm({
+            values: {
+                need_new_unit: housing_requirement?.need_new_unit,
+                new_unit_purpose: housing_requirement?.new_unit_purpose,
+                new_unit_urgency: housing_requirement?.new_unit_urgency,
+                land_for_new_unit: housing_requirement?.land_for_new_unit,
+                required_area: housing_requirement?.required_area,
+            }
+        })
+    }, [housing_requirement])
+    const handleDraft = () => {
+        let newData = {
+            need_new_unit: values.need_new_unit,
+            new_unit_purpose: values.new_unit_purpose,
+            new_unit_urgency: values.new_unit_urgency,
+            land_for_new_unit: values.land_for_new_unit,
+            required_area: parseInt(values.required_area),
+        }
+        edit_housing_specification({ ...newData, status: 0 })
+
+    }
+    const onSubmit = () => {
+        let newData = {
+            need_new_unit: values.need_new_unit,
+            new_unit_purpose: values.new_unit_purpose,
+            new_unit_urgency: values.new_unit_urgency,
+            land_for_new_unit: values.land_for_new_unit,
+            required_area: parseInt(values.required_area),
+        }
+        edit_housing_specification({ ...newData, status: 1 })
+    }
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -105,7 +167,7 @@ const HousingRequirement = ({ navigation, route }) => {
                             <Divider style={styles.divider2} />
                             <View style={{ width: '100%' }}>
                                 <CustomDropdown
-                                    data={[{ label: 'Month', value: '1' }]}
+                                    data={[...housing_dropdown?.purpose.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } }),{label:'test', value:'test'}]}
                                     value={values.new_unit_purpose}
                                     label={t('Purpose')}
                                     onChange={(value) => {
@@ -119,7 +181,7 @@ const HousingRequirement = ({ navigation, route }) => {
                                     <Text style={Styles.error2}>{String(errors?.new_unit_purpose)}</Text>
                                 )}
                                 <CustomDropdown
-                                    data={[{ label: 'Month', value: '1' }]}
+                                    data={housing_dropdown?.urgency.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } })}
                                     value={values.new_unit_urgency}
                                     label={t('Urgency')}
                                     onChange={(value) => {

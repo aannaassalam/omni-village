@@ -28,7 +28,7 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
       config.url =
         config.url +
-        `${config?.url.includes('?') ? '&' : '?'}?language=${USER_PREFERRED_LANGUAGE}&country=${user.country || ''}`;
+        `${config?.url.includes('?') ? '&' : '?'}language=${USER_PREFERRED_LANGUAGE}&country=${user?.country || ''}`;
       if (config.data) {
         config.data.language = USER_PREFERRED_LANGUAGE;
       }

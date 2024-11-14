@@ -105,10 +105,28 @@ export const endpoints = {
   },
   dropdown: {
     get_dropdown: '/demographic_dropdown/',
+    get_landholding_dropdown:'/landholding-dropdown',
+    get_housing_dropdown:'/housing-dropdown'
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
     edit_demographic: '/demographic/update_demographic_info_by_id',
     get_demographic: '/demographic/get_demographic_info_by_id',
   },
+  landholding:{
+    get_landholding_by_user:'/landholding-by-user/',
+    add_landholding_by_user:'/landholding-by-user/add-landholding-by-user',
+    get_landholding:'/landholding',
+    update_landholding:'/landholding/update-landholding',
+    update_landspecification: '/landholding-by-user/edit-landholding-requirements',
+    get_landspecification: '/landholding-by-user/landholding-requirements'
+  },
+  housing:{
+    get_housing_by_user:'/housing-by-user/',
+    add_housing_by_user:'/housing-by-user/add-housing-by-user',
+    get_housing:'/housing',
+    update_housing:'/housing/update-housing',
+    get_housing_requirement: '/housing-by-user/housing-requirements',
+    update_housing_requirement: '/housing-by-user/edit-housing-requirements',
+  }
 };
