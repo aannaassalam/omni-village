@@ -1,6 +1,7 @@
 import { Dimensions, Image, PermissionsAndroid, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
+import { useFormik } from 'formik';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { Styles } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
@@ -8,7 +9,6 @@ import PopupModal from '../../Components/Popups/PopupModal';
 import { useTranslation } from 'react-i18next';
 import { fontFamilyMedium } from '../../styles/fontStyle';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useFormik } from 'formik';
 import { borderColor, primaryColor } from '../../styles/colors';
 import Input from '../../Components/Inputs/Input';
 import { useUser } from '../../Hooks/useUser';
@@ -82,7 +82,6 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
             }
         })
     }, [landholding_requirement])
-    console.log("landholdingggg", landholding_requirement)
     const handleDraft = () => {
 let newData = {
     required_area: parseInt(values.required_area),

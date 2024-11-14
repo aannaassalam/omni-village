@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -59,24 +60,9 @@ const LandSpecification = ({ navigation, route }) => {
     onError: (error) => console.log("error save", error),
     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
+
   const scheme = yup.object().shape({
     land_under_use: yup.boolean().required(t('Land used is required')),
-    status_of_land: yup
-      .array()
-      .test(
-        'status-of-land-is-required',
-        t('status of land is required'),
-        function (value) {
-          const { land_under_use } = this.parent; // Accessing other field values
-          if (!land_under_use && (!value || value.length === 0)) {
-            return this.createError({
-              path: 'status_of_land',
-              message: t('At least one status of land is required'),
-            });
-          }
-          return true; // Otherwise, no validation
-        },
-      ),
     purpose_status_of_land: yup
       .array()
       .of(
@@ -99,22 +85,6 @@ const LandSpecification = ({ navigation, route }) => {
             return this.createError({
               path: 'purpose_status_of_land',
               message: t('At least one status of land is required'),
-            });
-          }
-          return true; // Otherwise, no validation
-        },
-      ),
-    total_purpose: yup
-      .array()
-      .test(
-        'land-under-used-is-required',
-        t('Purpose is required'),
-        function (value) {
-          const { land_under_use } = this.parent; // Accessing other field values
-          if (land_under_use && (!value || value.length === 0)) {
-            return this.createError({
-              path: 'total_purpose',
-              message: t('At least one Purpose utilised for is required'),
             });
           }
           return true; // Otherwise, no validation
@@ -159,60 +129,27 @@ const LandSpecification = ({ navigation, route }) => {
     setFieldTouched,
     touched,
     resetForm,
+    setFieldValue,
     setValues,
   } = useFormik({
     initialValues: {
       land_under_use: false,
-      total_purpose: [],
       purpose_land_utilised_for: [],
-      status_of_land: [],
       purpose_status_of_land: [],
     },
     validationSchema: scheme,
     onSubmit: async values => {
       console.log(values);
       // navigation.navigate('landholdingLandRequirement', { landholding, land, specification: values })
+      if(selectedStatus.length > 0||selectedStatusSecond.length > 0) {
       setSavepopup(true);
+      }else{
+        ToastAndroid.show("Please select one value", ToastAndroid.BOTTOM)
+      }
     },
   });
-const handleData = (data) => {
-}
-  useEffect(() => {
-    const land_use = values?.land_under_use;
-    const totalPurpose = land_use
-      ? parseInt(values.total_purpose.length || 0)
-      : [];
-    const totalStatus = !land_use
-      ? parseInt(values?.status_of_land.length || 0)
-      : [];
-    const newDetailsOfLand = land_use
-      ? Array(totalPurpose)
-        .fill()
-        .map((item, index) => ({
-          type: values?.total_purpose[index] || '',
-          total_land_area_utilised: '',
-          type_category: [],
-        }))
-      : Array(totalStatus)
-        .fill()
-        .map((item, index) => ({
-          type: values?.status_of_land[index] || '',
-          total_land_area_utilised: '',
-          type_category: [],
-        }));
-
-    setValues(prevValues => ({
-      ...prevValues,
-      purpose_land_utilised_for: land_use ? newDetailsOfLand : [],
-      purpose_status_of_land: !land_use ? newDetailsOfLand : [],
-    }));
-  }, [
-    values.purpose_land_utilised_for.length,
-    values?.land_under_use,
-    values.total_purpose,
-    values?.status_of_land,
-    values?.purpose_status_of_land?.length,
-  ]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [selectedStatusSecond, setSelectedStatusSecond] = useState([]);
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.purpose_land_utilised_for];
     newDetailsOfLand[index][field] = value;
@@ -223,45 +160,6 @@ const handleData = (data) => {
     newDetailsOfLand[index][field] = value;
     setValues({ ...values, purpose_status_of_land: newDetailsOfLand });
   };
-  useEffect(() => {
-    const land_use = values?.land_under_use;
-    if (land_use) {
-      setValues(prevValues => ({
-        ...prevValues,
-        purpose_status_of_land: [],
-        status_of_land: [],
-      }));
-    } else {
-      setValues(prevValues => ({
-        ...prevValues,
-        purpose_land_utilised_for: [],
-        total_purpose: [],
-      }));
-    }
-  }, [values?.land_under_use]);
-  useEffect(() => {
-    resetForm({
-      values: {
-        purpose_land_utilised_for: data?.purpose_land_utilised_for.map((item) => {
-          return {
-            type: item?.type,
-            total_land_area_utilised: String(item?.total_land_area_utilised) || item?.total_land_area_utilised,
-            type_category: item?.type_category,
-          }
-        }) || [],
-        purpose_status_of_land: data?.purpose_status_of_land.map((item) => {
-          return {
-            type: item?.type,
-            total_land_area_utilised: String(item?.total_land_area_utilised) || item?.total_land_area_utilised,
-            type_category: item?.type_category,
-          }
-        }) || [],
-        land_under_use: data?.land_under_use || false,
-        total_purpose: data?.total_purpose || [],
-        status_of_land: data?.status_of_land || [],
-      },
-    });
-  }, [data]);
   const handleDraft = () => {
     if (values?.land_under_use) {
       console.log('here2');
@@ -269,7 +167,6 @@ const handleData = (data) => {
         ...landholding,
         landholding_id: landholding_id,
         land_under_use: values.land_under_use,
-        total_purpose: values.total_purpose,
         purpose_land_utilised_for: values.purpose_land_utilised_for,
       };
       edit_landholding({ ...data, status: 0 })
@@ -279,7 +176,6 @@ const handleData = (data) => {
         ...landholding,
         landholding_id: landholding_id,
         land_under_use: values.land_under_use,
-        status_of_land: values.status_of_land,
         purpose_status_of_land: values.purpose_status_of_land,
       };
       edit_landholding({ ...data, status: 0 })
@@ -287,26 +183,83 @@ const handleData = (data) => {
   };
   const onSubmit = () => {
     if (values?.land_under_use) {
-      console.log('here');
       let data = {
         ...landholding,
         landholding_id: landholding_id,
         land_under_use: values.land_under_use,
-        total_purpose: values.total_purpose,
         purpose_land_utilised_for: values.purpose_land_utilised_for,
       };
       edit_landholding({ ...data, status: 1 })
     } else {
-      console.log('herew');
       let data = {
         ...landholding,
         landholding_id: landholding_id,
         land_under_use: values.land_under_use,
-        status_of_land: values.status_of_land,
         purpose_status_of_land: values.purpose_status_of_land,
       };
       edit_landholding({ ...data, status: 1 })
     }
+  };
+ useEffect(()=>{
+  resetForm({
+    values:{
+      land_under_use:data.land_under_use,
+      purpose_land_utilised_for: data.purpose_land_utilised_for.map((item) => {
+        return {
+          type: item.type,
+          total_land_area_utilised: String(item.total_land_area_utilised),
+          type_category: item.type_category,
+        }
+      }),
+      purpose_status_of_land: data.purpose_status_of_land.map((item)=>{
+        return{
+          type: item.type,
+          total_land_area_utilised: String(item.total_land_area_utilised),
+          type_category: item.type_category,
+        }
+      }),
+    }
+  })
+   setSelectedStatus(data?.purpose_status_of_land.map(item => item.type)||[])
+   setSelectedStatusSecond(data?.purpose_land_utilised_for.map(item => item.type)||[])
+ }, [data])
+  const handleStatusChange = (selectedItems) => {
+    setSelectedStatus(selectedItems);
+
+    // Update `purpose_status_of_land` based on the selected items
+    const updatedPurposeStatusOfLand = selectedItems.map((item) => {
+      // Check if this `type` already exists in `purpose_status_of_land`
+      const existingEntry = values.purpose_status_of_land.find(
+        entry => entry.type === item
+      );
+
+      return existingEntry || {
+        type: item || '6731cfbb96e51ebd60699bf6', // set `type` as the item's `key`
+        total_land_area_utilised: '',
+        type_category: [],
+      };
+    });
+    // Update the form's purpose_status_of_land field
+    setFieldValue('purpose_status_of_land', updatedPurposeStatusOfLand);
+  };
+  const handleStatusChangeSecond = (selectedItems) => {
+    setSelectedStatus(selectedItems);
+
+    // Update `purpose_status_of_land` based on the selected items
+    const updatedPurposeStatusOfLand = selectedItems.map((item) => {
+      // Check if this `type` already exists in `purpose_status_of_land`
+      const existingEntry = values.purpose_land_utilised_for.find(
+        entry => entry.type === item
+      );
+
+      return existingEntry || {
+        type: item || '6731cfbb96e51ebd60699bf6', // set `type` as the item's `key`
+        total_land_area_utilised: '',
+        type_category: [],
+      };
+    });
+    // Update the form's purpose_status_of_land field
+    setFieldValue('purpose_land_utilised_for', updatedPurposeStatusOfLand);
   };
   if (isLoading) {
     return (
@@ -348,10 +301,21 @@ const handleData = (data) => {
           value={values.land_under_use}
           label={t('Is the Land under use?')}
           onChange={value => {
-            setValues({
-              ...values,
-              land_under_use: value?.value,
-            });
+            if(value?.value===true){
+              setValues(prevValues => ({
+                ...prevValues,
+                land_under_use: value?.value,
+                purpose_status_of_land: [],
+              }));
+              setSelectedStatus([])
+            }else{
+              setValues(prevValues => ({
+                ...prevValues,
+                land_under_use: value?.value,
+                purpose_land_utilised_for: [],
+              }));
+              setSelectedStatusSecond([])
+            }
           }}
         />
         {touched?.land_under_use && errors?.land_under_use && (
@@ -362,18 +326,10 @@ const handleData = (data) => {
             <MultiselectDropdown
               containerStyle={{ marginTop: '5%', paddingTop: 0 }}
               data={landholding_dropdown?.purpose.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
-              setSelectedd={item => {
-                setValues({
-                  ...values,
-                  total_purpose: item,
-                });
-              }}
-              selectedd={values.total_purpose}
+              setSelectedd={handleStatusChangeSecond}
+              selectedd={selectedStatusSecond}
               infoName={t('What are the purposes land utilised for?')}
             />
-            {touched?.total_purpose && errors?.total_purpose && (
-              <Text style={Styles.error2}>{String(errors?.total_purpose)}</Text>
-            )}
             {values?.purpose_land_utilised_for.length > 0 && (
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
@@ -387,7 +343,7 @@ const handleData = (data) => {
                           handleFieldChange(index, 'type_category', item);
                         }}
                         selectedd={item.type_category}
-                        infoName={t(`${t('What type of')} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type}?`)}
+                        infoName={t(`${t('What type of')} ${landholding_dropdown?.purpose.find((i) => item?.type == i?._id) ? landholding_dropdown?.purpose.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type}?`)}
                       />
                       {errors.purpose_land_utilised_for &&
                         errors.purpose_land_utilised_for[index]
@@ -404,7 +360,7 @@ const handleData = (data) => {
                 </View>
               </View>
             )}
-            {values?.total_purpose.length > 0 ? (
+            {values?.purpose_land_utilised_for.length > 0 ? (
               <View style={[styles.subArea, { marginTop: '3%' }]}>
                 <Text
                   style={[
@@ -428,7 +384,7 @@ const handleData = (data) => {
                       label={t(
                         `${t(
                           'Kindly mention the total land area utilised by',
-                        )} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                        )} ${landholding_dropdown?.purpose.find((i) => item?.type == i?._id) ? landholding_dropdown?.status.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                       )}
                       value={item.total_land_area_utilised}
                       placeholder={'0'}
@@ -465,20 +421,10 @@ const handleData = (data) => {
             <MultiselectDropdown
               containerStyle={{ marginTop: '5%', paddingTop: 0 }}
               data={landholding_dropdown?.status.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
-              setSelectedd={item => {
-                setValues({
-                  ...values,
-                  status_of_land: item,
-                });
-              }}
-              selectedd={values.status_of_land}
+                setSelectedd={handleStatusChange}
+                selectedd={selectedStatus}
               infoName={t('What is the status of the land?')}
             />
-            {touched?.status_of_land && errors?.status_of_land && (
-              <Text style={Styles.error2}>
-                {String(errors?.status_of_land)}
-              </Text>
-            )}
             {values?.purpose_status_of_land.length > 0 && (
               <View style={styles.innerInputView}>
                 <Divider style={styles.divider2} />
@@ -492,7 +438,7 @@ const handleData = (data) => {
                           handleFieldChangeSecond(index, 'type_category', item);
                         }}
                         selectedd={item.type_category}
-                        infoName={t(`If ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} ${t('then why')} ?`)}
+                        infoName={t(`If ${landholding_dropdown?.status.find((i) => item?.type == i?._id) ? landholding_dropdown?.status.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} ${t('then why')} ?`)}
                       />
                       {errors.purpose_status_of_land &&
                         errors.purpose_status_of_land[index]?.type_category && (
@@ -505,7 +451,7 @@ const handleData = (data) => {
                 </View>
               </View>
             )}
-            {values?.status_of_land.length > 0 ? (
+              {values?.purpose_status_of_land.length > 0 ? (
               <View style={[styles.subArea, { marginTop: '3%' }]}>
                 <Text
                   style={[
@@ -523,15 +469,15 @@ const handleData = (data) => {
             ) : null}
             {values?.purpose_status_of_land.length > 0 && (
               <View>
-                {values.purpose_status_of_land.map((item, index) => (
-                  <>
+                {values.purpose_status_of_land.map((item, index) => {
+                  return <>
                     <Input
                       label={t(
                         `${t(
                           'Kindly mention the total land area not utilised by',
-                        )} ${landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent) ? landholding_dropdown?.[item?.type].find((i) => item?.type == i?.parent)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                        )} ${landholding_dropdown?.status.find((i) => item?.type == i?._id) ? landholding_dropdown?.status.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                       )}
-                      value={item.total_land_area_utilised}
+                      value={item.total_land_area_utilised||String(item.total_land_area_utilised)||''}
                       placeholder={'0'}
                       fullLength={true}
                       keyboardType="numeric"
@@ -557,7 +503,7 @@ const handleData = (data) => {
                         </Text>
                       )}
                   </>
-                ))}
+})}
               </View>
             )}
           </>

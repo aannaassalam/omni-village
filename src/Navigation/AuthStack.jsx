@@ -37,6 +37,15 @@ import HousePhoto from '../Screens/Housing/HousePhoto';
 import HouseSpecificationQuestioner from '../Screens/Housing/HouseSpecificationQuestioner';
 import HouseholdRequirement from '../Screens/Housing/HouseholdRequirement';
 import HousingRequirement from '../Screens/Housing/HousingRequirement';
+import Water from '../Screens/Water/Water';
+import CookingDrinking from '../Screens/Water/CookingDrinking';
+import WaterHarvesting from '../Screens/Water/WaterHarvesting';
+import WaterDisposal from '../Screens/Water/WaterDisposal';
+import GeneralInformation from '../Screens/Water/GeneralInformation';
+import OtherUsage from '../Screens/Water/OtherUsage';
+import Cleaning from '../Screens/Water/Cleaning';
+import Irrigation from '../Screens/Water/Irrigation';
+import Sanitation from '../Screens/Water/Sanitation';
 
 const Stack = createStackNavigator();
 
@@ -94,6 +103,15 @@ export default function AuthStack({user}) {
       <Stack.Screen name='housingPhoto' component={HousePhoto} />
       <Stack.Screen name='householdRequirement' component={HouseholdRequirement} />
       <Stack.Screen name='housingRequirement' component={HousingRequirement} />
+      <Stack.Screen name='water' component={Water} />
+      <Stack.Screen name='cooking' component={CookingDrinking} />
+      <Stack.Screen name='cleaning' component={Cleaning} />
+      <Stack.Screen name='irrigation' component={Irrigation} />
+      <Stack.Screen name='sanitation' component={Sanitation} />
+      <Stack.Screen name='others' component={OtherUsage} />
+      <Stack.Screen name='waterHarvesting' component={WaterHarvesting} />
+      <Stack.Screen name='waterDisposal' component={WaterDisposal} />
+      <Stack.Screen name='generalInfo' component={GeneralInformation} />
     </Stack.Navigator>
   );
 }

@@ -1,20 +1,165 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { width } from '../../styles/globalStyles'
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { Styles, width } from '../../styles/globalStyles'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { useTranslation } from 'react-i18next'
 import ItemHeader from '../../Components/CustomHeader/ItemHeader'
+import { Divider } from 'react-native-paper'
+import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
+import { getWaterByUser } from '../../functions/water'
+import { useQuery } from '@tanstack/react-query'
+import { useFocusEffect } from '@react-navigation/native'
 
 const Water = ({navigation}) => {
     const {t} = useTranslation()
+    const [usageVisible, setUsagesVisible] = useState(false)
+    const [harvestVisible, setHarvestVisible] = useState(false)
+    const [generalVisible, setGeneralVisible] = useState(false)
+    const { data: water, isLoading, refetch } = useQuery({
+        queryKey: ['water_by_user'],
+        queryFn: () => getWaterByUser(),
+        refetchOnWindowFocus: true,
+    })
+    useFocusEffect(
+        useCallback(()=>{
+            refetch()
+        },[refetch])
+    )
   return (
       <View style={styles.container}>
           <CustomHeader
               backIcon={true}
-              headerName={t('housing')}
+              headerName={t('water')}
               goBack={() => navigation.goBack()}
           />
+          <ScrollView>
+
           <ItemHeader title={t('Water Usage Information')} />
+          {/* Usage */}
+          <View style={[styles.subArea, { marginTop: '3%' }]}>
+              <Text
+                  style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                  ]}>
+                  {t('Usage Information')}
+              </Text>
+              <Divider
+                  bold={true}
+                  style={[styles.divider, { width: '54%' }]}
+                  horizontalInset={true}
+              />
+              <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
+                  {usageVisible ? (
+                      <Image
+                          source={require('../../../assets/arrowUp.png')}
+                          style={styles.uparrow}
+                      />
+                  ) : (
+                      <Image
+                          source={require('../../../assets/arrowDown.png')}
+                          style={styles.uparrow}
+                      />
+                  )}
+              </TouchableOpacity>
+          </View>
+          <CustomShowcaseInput
+              productionName={'Cooking and Drinking'}
+                  onPress={() => navigation.navigate('cooking', { name: 'Cooking and Drinking', water_id: water?.["cooking_and_drinking"]?.water_id, type: 'cooking_and_drinking' })}
+          />
+          <CustomShowcaseInput
+              productionName={'Sanitation and Bathing'}
+                  onPress={() => navigation.navigate('sanitation', { name: 'Sanitation and Bathing', water_id: water?.["sanitation_and_bathing"]?.water_id, type: 'sanitation_and_bathing' })}
+          />
+              <CustomShowcaseInput
+              productionName={'Cleaning'}
+                  onPress={() => navigation.navigate('cleaning', { name: 'Cleaning', water_id: water?.["cleaning"]?.water_id, type: 'cleaning' })}
+              />
+          <CustomShowcaseInput
+              productionName={'Irrigation'}
+                  onPress={() => navigation.navigate('irrigation', { name: 'Irrigation', water_id: water?.["irrigation"]?.water_id, type: 'irrigation' })}
+          />
+          {water?.others.map((item)=>{
+            return(
+                <CustomShowcaseInput
+                    productionName={item?.other_name}
+                    onPress={() => navigation.navigate('others', { name: 'Add other purpose if any', water_id: item?._id, type: 'others' })}
+                />
+            )
+          })}
+          <CustomShowcaseInput
+              productionName={'Add other purpose if any'}
+              onPress={() => navigation.navigate('others', { name: 'Add other purpose if any', water_id: null, type:'others' })}
+          />
+              {/* Harvesting */}
+          <View style={[styles.subArea, { marginTop: '3%' }]}>
+              <Text
+                  style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                  ]}>
+                  {t('Harvest & Wastewater Information')}
+              </Text>
+              <Divider
+                  bold={true}
+                  style={[styles.divider, { width: '28%' }]}
+                  horizontalInset={true}
+              />
+              <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
+                  {usageVisible ? (
+                      <Image
+                          source={require('../../../assets/arrowUp.png')}
+                          style={styles.uparrow}
+                      />
+                  ) : (
+                      <Image
+                          source={require('../../../assets/arrowDown.png')}
+                          style={styles.uparrow}
+                      />
+                  )}
+              </TouchableOpacity>
+          </View>
+          <CustomShowcaseInput
+                  productionName={'Water Harvesting'}
+                  onPress={() => navigation.navigate('waterHarvesting', { name: 'Water Harvesting', water_id: water?.["water_harvesting_capacity"]?.water_id, type: 'water_harvesting_capacity' })}
+          />
+              <CustomShowcaseInput
+                  productionName={'Water Disposal'}
+                  onPress={() => navigation.navigate('waterDisposal', { name: 'Water Disposal', water_id: water?.["waste_water_disposal"]?.water_id, type: 'waste_water_disposal' })}
+              />
+          {/* general information */}
+          <View style={[styles.subArea, { marginTop: '3%' }]}>
+              <Text
+                  style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                  ]}>
+                  {t('General Information')}
+              </Text>
+              <Divider
+                  bold={true}
+                  style={[styles.divider, { width: '50%' }]}
+                  horizontalInset={true}
+              />
+              <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
+                  {usageVisible ? (
+                      <Image
+                          source={require('../../../assets/arrowUp.png')}
+                          style={styles.uparrow}
+                      />
+                  ) : (
+                      <Image
+                          source={require('../../../assets/arrowDown.png')}
+                          style={styles.uparrow}
+                      />
+                  )}
+              </TouchableOpacity>
+          </View>
+          <CustomShowcaseInput
+              productionName={'General Information'}
+                  onPress={() => navigation.navigate('generalInfo', { name: 'General Information', water_id: water?.["general_information"]?.water_id, type: 'general_information' })}
+          />
+          </ScrollView>
     </View>
   )
 }
@@ -44,5 +189,9 @@ const styles = StyleSheet.create({
         height: 1,
         width: '67%',
         color: 'grey',
+    },
+    uparrow: {
+        height: 20,
+        width: 20,
     },
 })

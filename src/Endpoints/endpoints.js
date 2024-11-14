@@ -106,7 +106,8 @@ export const endpoints = {
   dropdown: {
     get_dropdown: '/demographic_dropdown/',
     get_landholding_dropdown:'/landholding-dropdown',
-    get_housing_dropdown:'/housing-dropdown'
+    get_housing_dropdown:'/housing-dropdown',
+    get_water_dropdown:'/water-dropdown',
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
@@ -128,5 +129,28 @@ export const endpoints = {
     update_housing:'/housing/update-housing',
     get_housing_requirement: '/housing-by-user/housing-requirements',
     update_housing_requirement: '/housing-by-user/edit-housing-requirements',
+  },
+  water:{
+    get_water_by_user:'/water/get-water-by-user',
+    water_usage:{
+      get_water_usage:'/water/get-water-usage-info',
+      add_water_usage:'/water/add-water-usage-info',
+      update_water_usage:'/water/edit-water-usage-info',
+    },
+    water_harvesting:{
+      get_water_harvesting:'/water/get-water-harvesting-capacity',
+      add_water_harvesting:'/water/add-water-harvesting-capacity',
+      update_water_harvesting:'/water/edit-water-harvesting-capacity',
+    },
+    water_disposal:{
+      get_water_disposal:'/water/get-wastewater-disposal',
+      add_water_disposal:'/water/add-wastewater-disposal',
+      update_water_disposal:'/water/edit-wastewater-disposal',
+    },
+    general_information:{
+      get_general_information:'/water/get-general-info',
+      add_general_information: '/water/add-general-info',
+      update_general_information:'/water/edit-general-info',
+    }
   }
 };
