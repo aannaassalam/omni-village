@@ -62,7 +62,7 @@ const GeneralInformation = ({ navigation, route }) => {
         water_meter: yup.boolean(),
         water_scarcity: yup.boolean(),
         water_scarcity_severity: yup.string().required(t('Severity is required')),
-        month: yup.array().required(t('Month is required')),
+        month: yup.array().required(t('Month is required')).min(1, t('Atleast one month is required')),
     });
     const {
         handleChange,

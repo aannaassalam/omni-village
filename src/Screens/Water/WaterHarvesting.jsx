@@ -107,7 +107,6 @@ const WaterHarvesting = ({ navigation, route }) => {
         })
         setSelectedStatus(get_usage?.type_of_harvesting.map(item => item.type)||[])
     }, [get_usage])
-    console.log("herererer", get_usage)
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.type_of_harvesting];
         newDetailsOfLand[index][field] = value;

@@ -9,12 +9,13 @@ import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShow
 import { getWaterByUser } from '../../functions/water'
 import { useQuery } from '@tanstack/react-query'
 import { useFocusEffect } from '@react-navigation/native'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const Water = ({navigation}) => {
     const {t} = useTranslation()
-    const [usageVisible, setUsagesVisible] = useState(false)
-    const [harvestVisible, setHarvestVisible] = useState(false)
-    const [generalVisible, setGeneralVisible] = useState(false)
+    const [usageVisible, setUsagesVisible] = useState(true)
+    const [harvestVisible, setHarvestVisible] = useState(true)
+    const [generalVisible, setGeneralVisible] = useState(true)
     const { data: water, isLoading, refetch } = useQuery({
         queryKey: ['water_by_user'],
         queryFn: () => getWaterByUser(),
@@ -46,7 +47,7 @@ const Water = ({navigation}) => {
               </Text>
               <Divider
                   bold={true}
-                  style={[styles.divider, { width: '54%' }]}
+                  style={[styles.divider, { width: USER_PREFERRED_LANGUAGE==="ms"? '48%':'54%' }]}
                   horizontalInset={true}
               />
               <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
@@ -63,20 +64,22 @@ const Water = ({navigation}) => {
                   )}
               </TouchableOpacity>
           </View>
+          {usageVisible ? (
+              <>
           <CustomShowcaseInput
-              productionName={'Cooking and Drinking'}
+              productionName={t('Cooking and Drinking')}
                   onPress={() => navigation.navigate('cooking', { name: 'Cooking and Drinking', water_id: water?.["cooking_and_drinking"]?.water_id, type: 'cooking_and_drinking' })}
           />
           <CustomShowcaseInput
-              productionName={'Sanitation and Bathing'}
+              productionName={t('Sanitation and Bathing')}
                   onPress={() => navigation.navigate('sanitation', { name: 'Sanitation and Bathing', water_id: water?.["sanitation_and_bathing"]?.water_id, type: 'sanitation_and_bathing' })}
           />
               <CustomShowcaseInput
-              productionName={'Cleaning'}
+              productionName={t('Cleaning')}
                   onPress={() => navigation.navigate('cleaning', { name: 'Cleaning', water_id: water?.["cleaning"]?.water_id, type: 'cleaning' })}
               />
           <CustomShowcaseInput
-              productionName={'Irrigation'}
+              productionName={t('Irrigation')}
                   onPress={() => navigation.navigate('irrigation', { name: 'Irrigation', water_id: water?.["irrigation"]?.water_id, type: 'irrigation' })}
           />
           {water?.others.map((item)=>{
@@ -88,9 +91,11 @@ const Water = ({navigation}) => {
             )
           })}
           <CustomShowcaseInput
-              productionName={'Add other purpose if any'}
+              productionName={t('Add other purpose if any')}
               onPress={() => navigation.navigate('others', { name: 'Add other purpose if any', water_id: null, type:'others' })}
           />
+              </>
+          ):null}
               {/* Harvesting */}
           <View style={[styles.subArea, { marginTop: '3%' }]}>
               <Text
@@ -105,8 +110,8 @@ const Water = ({navigation}) => {
                   style={[styles.divider, { width: '28%' }]}
                   horizontalInset={true}
               />
-              <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
-                  {usageVisible ? (
+              <TouchableOpacity onPress={() => setHarvestVisible(!harvestVisible)}>
+                  {harvestVisible ? (
                       <Image
                           source={require('../../../assets/arrowUp.png')}
                           style={styles.uparrow}
@@ -119,14 +124,16 @@ const Water = ({navigation}) => {
                   )}
               </TouchableOpacity>
           </View>
-          <CustomShowcaseInput
-                  productionName={'Water Harvesting'}
-                  onPress={() => navigation.navigate('waterHarvesting', { name: 'Water Harvesting', water_id: water?.["water_harvesting_capacity"]?.water_id, type: 'water_harvesting_capacity' })}
-          />
-              <CustomShowcaseInput
-                  productionName={'Water Disposal'}
-                  onPress={() => navigation.navigate('waterDisposal', { name: 'Water Disposal', water_id: water?.["waste_water_disposal"]?.water_id, type: 'waste_water_disposal' })}
-              />
+          {harvestVisible?<>  
+            <CustomShowcaseInput
+                    productionName={t('Water Harvesting')}
+                    onPress={() => navigation.navigate('waterHarvesting', { name: 'Water Harvesting', water_id: water?.["water_harvesting_capacity"]?.water_id, type: 'water_harvesting_capacity' })}
+            />
+                <CustomShowcaseInput
+                    productionName={t('Water Disposal')}
+                    onPress={() => navigation.navigate('waterDisposal', { name: 'Water Disposal', water_id: water?.["waste_water_disposal"]?.water_id, type: 'waste_water_disposal' })}
+                />
+          </>:null}
           {/* general information */}
           <View style={[styles.subArea, { marginTop: '3%' }]}>
               <Text
@@ -141,8 +148,8 @@ const Water = ({navigation}) => {
                   style={[styles.divider, { width: '50%' }]}
                   horizontalInset={true}
               />
-              <TouchableOpacity onPress={() => setUsagesVisible(!usageVisible)}>
-                  {usageVisible ? (
+              <TouchableOpacity onPress={() => setGeneralVisible(!generalVisible)}>
+                  {generalVisible ? (
                       <Image
                           source={require('../../../assets/arrowUp.png')}
                           style={styles.uparrow}
@@ -155,10 +162,13 @@ const Water = ({navigation}) => {
                   )}
               </TouchableOpacity>
           </View>
+          {generalVisible? 
           <CustomShowcaseInput
-              productionName={'General Information'}
+              productionName={t('General Information')}
                   onPress={() => navigation.navigate('generalInfo', { name: 'General Information', water_id: water?.["general_information"]?.water_id, type: 'general_information' })}
           />
+          :null
+        }
           </ScrollView>
     </View>
   )

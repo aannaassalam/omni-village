@@ -57,8 +57,8 @@ const WaterDisposal = ({ navigation, route }) => {
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
     const scheme = yup.object().shape({
-        wastewater_disposal_methods:yup.array().required(t('waste water disposal methods is required')),
-        water_recycling_methods: yup.array().required(t('water recycling methods is required')),
+        wastewater_disposal_methods: yup.array().required(t('waste water disposal methods is required')).min(1, t('waste water disposal methods is required')),
+        water_recycling_methods: yup.array().required(t('water recycling methods is required')).min(1, t('water recycling methods is required')),
     });
     const {
         handleChange,
