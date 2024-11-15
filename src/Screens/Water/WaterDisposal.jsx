@@ -93,6 +93,7 @@ const WaterDisposal = ({ navigation, route }) => {
         let newData = {
             wastewater_disposal_methods: values.wastewater_disposal_methods,
             water_recycling_methods: values.water_recycling_methods,
+            water_recycle: bool,
             type,
             status:0
         }
@@ -106,8 +107,9 @@ const WaterDisposal = ({ navigation, route }) => {
         let newData = {
             wastewater_disposal_methods: values.wastewater_disposal_methods,
             water_recycling_methods: values.water_recycling_methods,
+            water_recycle: bool,
             type,
-            status:0
+            status:1
         }
         if (water_id) {
             edit_usage({ ...newData, water_id })

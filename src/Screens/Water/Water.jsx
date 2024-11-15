@@ -68,23 +68,33 @@ const Water = ({navigation}) => {
               <>
           <CustomShowcaseInput
               productionName={t('Cooking and Drinking')}
+                          isDrafted={water?.["cooking_and_drinking"]?.isDrafted}
+                          id={water?.["cooking_and_drinking"]?.water_id}
                   onPress={() => navigation.navigate('cooking', { name: 'Cooking and Drinking', water_id: water?.["cooking_and_drinking"]?.water_id, type: 'cooking_and_drinking' })}
           />
           <CustomShowcaseInput
+                          isDrafted={water?.["sanitation_and_bathing"]?.isDrafted}
+                          id={water?.["sanitation_and_bathing"]?.water_id}
               productionName={t('Sanitation and Bathing')}
                   onPress={() => navigation.navigate('sanitation', { name: 'Sanitation and Bathing', water_id: water?.["sanitation_and_bathing"]?.water_id, type: 'sanitation_and_bathing' })}
           />
               <CustomShowcaseInput
+                          isDrafted={water?.["cleaning"]?.isDrafted}
+                          id={water?.["cleaning"]?.water_id}
               productionName={t('Cleaning')}
                   onPress={() => navigation.navigate('cleaning', { name: 'Cleaning', water_id: water?.["cleaning"]?.water_id, type: 'cleaning' })}
               />
           <CustomShowcaseInput
+                          isDrafted={water?.["irrigation"]?.isDrafted}
+                          id={water?.["irrigation"]?.water_id}
               productionName={t('Irrigation')}
                   onPress={() => navigation.navigate('irrigation', { name: 'Irrigation', water_id: water?.["irrigation"]?.water_id, type: 'irrigation' })}
           />
           {water?.others.map((item)=>{
             return(
                 <CustomShowcaseInput
+                    isDrafted={item?.status===1?false: true}
+                    id={item?._id}
                     productionName={item?.other_name}
                     onPress={() => navigation.navigate('others', { name: 'Add other purpose if any', water_id: item?._id, type: 'others' })}
                 />
@@ -127,10 +137,14 @@ const Water = ({navigation}) => {
           {harvestVisible?<>  
             <CustomShowcaseInput
                     productionName={t('Water Harvesting')}
+                      isDrafted={water?.["water_harvesting_capacity"]?.isDrafted}
+                      id={water?.["water_harvesting_capacity"]?.water_id}
                     onPress={() => navigation.navigate('waterHarvesting', { name: 'Water Harvesting', water_id: water?.["water_harvesting_capacity"]?.water_id, type: 'water_harvesting_capacity' })}
             />
                 <CustomShowcaseInput
                     productionName={t('Water Disposal')}
+                      isDrafted={water?.["waste_water_disposal"]?.isDrafted}
+                      id={water?.["waste_water_disposal"]?.water_id}
                     onPress={() => navigation.navigate('waterDisposal', { name: 'Water Disposal', water_id: water?.["waste_water_disposal"]?.water_id, type: 'waste_water_disposal' })}
                 />
           </>:null}
@@ -164,6 +178,8 @@ const Water = ({navigation}) => {
           </View>
           {generalVisible? 
           <CustomShowcaseInput
+                      isDrafted={water?.["general_information"]?.isDrafted}
+                      id={water?.["general_information"]?.water_id}
               productionName={t('General Information')}
                   onPress={() => navigation.navigate('generalInfo', { name: 'General Information', water_id: water?.["general_information"]?.water_id, type: 'general_information' })}
           />

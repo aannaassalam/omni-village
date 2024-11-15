@@ -22,6 +22,8 @@ const CustomShowcaseInput = ({
   input,
   inputValue,
   setInputValue,
+  isDrafted,
+  id
 }) => {
   const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -73,6 +75,10 @@ const CustomShowcaseInput = ({
           </View>
         </>
       ) : null}
+      {isDrafted? 
+        <Image source={require('../../../assets/drafted.png')} style={styles.arrow_right} />
+        : id?<Image source={require('../../../assets/checked.png')} style={styles.arrow_right} />:null
+    }
       {input ?<>
       <Image source={require('../../../assets/e4.png')} style={styles.arrow_right}/>
       </>:null}
@@ -147,5 +153,8 @@ const makeStyles = fontScale =>
       justifyContent: 'center',
       alignSelf: 'center',
       marginRight: '5%',
+      height: 30,
+      width: 30,
+      resizeMode: 'contain',
     }
   });

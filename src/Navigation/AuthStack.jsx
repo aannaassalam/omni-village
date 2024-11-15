@@ -46,6 +46,16 @@ import OtherUsage from '../Screens/Water/OtherUsage';
 import Cleaning from '../Screens/Water/Cleaning';
 import Irrigation from '../Screens/Water/Irrigation';
 import Sanitation from '../Screens/Water/Sanitation';
+import EnergyFuel from '../Screens/EnergyFuel/EnergyFuel';
+import Electricity from '../Screens/EnergyFuel/Electricity';
+import Petrol from '../Screens/EnergyFuel/Petrol';
+import NaturalGas from '../Screens/EnergyFuel/NaturalGas';
+import OtherEnergy from '../Screens/EnergyFuel/OtherEnergy';
+import EnergyGeneralInformation from '../Screens/EnergyFuel/EnergyGeneralInformation';
+import Mobility from '../Screens/Mobility/Mobility';
+import VehicleCount from '../Screens/Mobility/VehicleCount';
+import VehicleDetails from '../Screens/Mobility/VehicleDetails';
+import VehicleRequirement from '../Screens/Mobility/VehicleRequirement';
 
 const Stack = createStackNavigator();
 
@@ -112,6 +122,16 @@ export default function AuthStack({user}) {
       <Stack.Screen name='waterHarvesting' component={WaterHarvesting} />
       <Stack.Screen name='waterDisposal' component={WaterDisposal} />
       <Stack.Screen name='generalInfo' component={GeneralInformation} />
+      <Stack.Screen name='energyFuel' component={EnergyFuel} />
+      <Stack.Screen name='electricity' component={Electricity} />
+      <Stack.Screen name='petrol' component={Petrol} />
+      <Stack.Screen name='naturalGas' component={NaturalGas} />
+      <Stack.Screen name='othersEnergy' component={OtherEnergy} />
+      <Stack.Screen name='energyGeneralInformation' component={EnergyGeneralInformation} />
+      <Stack.Screen name='mobility' component={Mobility} />
+      <Stack.Screen name='vehicleCount' component={VehicleCount} />
+      <Stack.Screen name='vehicleDetails' component={VehicleDetails} />
+      <Stack.Screen name='vehicleRequirements' component={VehicleRequirement} />
     </Stack.Navigator>
   );
 }

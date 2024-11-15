@@ -1,0 +1,198 @@
+import { Image, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
+import CustomHeader from '../../Components/CustomHeader/CustomHeader'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useTranslation } from 'react-i18next'
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import { useUser } from '../../Hooks/useUser'
+import { useQueryClient } from '@tanstack/react-query'
+import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
+import { Styles } from '../../styles/globalStyles'
+import AcresElement from '../../Components/ui/AcresElement'
+import Input from '../../Components/Inputs/Input'
+import { Divider } from 'react-native-paper'
+import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
+import CustomButton from '../../Components/CustomButton/CustomButton'
+import { borderColor } from '../../styles/colors'
+import PopupModal from '../../Components/Popups/PopupModal'
+import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+
+const EnergyGeneralInformation = ({ navigation, route }) => {
+    const { name, type, energy_id } = route.params
+    const { t } = useTranslation()
+    const [savePopup, setSavepopup] = useState(false)
+    const [draftPopup, setDraftpopup] = useState(false)
+    const { data: user } = useUser()
+    const queryClient = useQueryClient()
+    const scheme = yup.object().shape({
+        energy_sufficient: yup.boolean(),
+        extent: yup.string()
+    });
+    const {
+        handleChange,
+        handleSubmit,
+        values,
+        errors,
+        setFieldTouched,
+        setFieldValue,
+        touched,
+        resetForm,
+        setValues
+    } = useFormik({
+        initialValues: {
+            energy_sufficient: false,
+            extent: ''
+        },
+        validationSchema: scheme,
+        onSubmit: async (values) => {
+            console.log(values);
+            setSavepopup(true)
+        },
+    });
+    const handleDraft = () => {
+
+    }
+
+    const onSubmit = () => { }
+    return (
+        <View style={styles.container}>
+            <CustomHeader
+                backIcon={true}
+                headerName={t(`${name}`)}
+                goBack={() => navigation.goBack()}
+            />
+            <KeyboardAwareScrollView
+                style={{ flex: 1 }}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+                <SwitchButton
+                    nolabel={false}
+                    label={t('Is the available energy sufficient?')}
+                    selected={values?.energy_sufficient}
+                    firstBtnPress={() => setValues({ ...values, energy_sufficient: true })}
+                    secondBtnPress={() => setValues({ ...values, energy_sufficient: false, extent: '' })}
+                    firstBtnText={t('yes')}
+                    secondBtntext={t('no')}
+                />
+                {values?.energy_sufficient ?
+                <View style={styles.innerInputView}>
+                    <Divider style={styles.divider2} />
+                    <View style={{ width: '100%' }}>
+                        <CustomDropdown
+                            data={
+                                [{ label: 'Microgrid', value: 'Microgrid' }]
+                            }
+                            value={values?.extent}
+                                label={t('To what extent it’s not sufficient?')}
+                            onChange={value => {
+                                setValues({
+                                    ...values,
+                                    extent: value?.value,
+                                });
+                            }}
+                        />
+                            {touched?.extent && errors?.extent && (
+                                <Text style={Styles.error2}>{String(errors?.extent)}</Text>
+                        )}
+                        </View>
+                        </View>
+                :
+                null
+            }
+            </KeyboardAwareScrollView>
+            <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
+                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+            </View>
+            {/* submit popup */}
+            <PopupModal
+                modalVisible={savePopup}
+                setBottomModalVisible={setSavepopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('confirm')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('submit')}
+                            onPress={() => { onSubmit() }}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => {
+                                setSavepopup(false);
+                            }}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+            {/* draft popup */}
+            <PopupModal
+                modalVisible={draftPopup}
+                setBottomModalVisible={setDraftpopup}
+                styleInner={[Styles.savePopup, { width: '90%' }]}>
+                <View style={Styles.submitPopup}>
+                    <View style={Styles.noteImage}>
+                        <Image
+                            source={require('../../../assets/note.png')}
+                            style={Styles.noteImage}
+                        />
+                    </View>
+                    <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+                    <Text style={Styles.nextText}>
+                        {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+                    </Text>
+                    <View style={Styles.bottomPopupbutton}>
+                        <CustomButton
+                            style={Styles.submitButton}
+                            btnText={t('save')}
+                            onPress={handleDraft}
+                        // loading={isAddPoultryPending || isEditPoultryPending}
+                        />
+                        <CustomButton
+                            style={Styles.draftButton}
+                            btnText={t('cancel')}
+                            onPress={() => setDraftpopup(false)}
+                        />
+                    </View>
+                </View>
+            </PopupModal>
+        </View>
+    )
+}
+
+export default EnergyGeneralInformation
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
+    innerInputView: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '5%',
+        gap: 12,
+        paddingHorizontal: 12,
+    },
+    divider2: {
+        alignSelf: 'flex-start',
+        height: '100%',
+        marginTop: 9,
+        width: '1%',
+        borderRadius: 10,
+    },
+})

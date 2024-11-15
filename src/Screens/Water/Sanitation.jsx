@@ -40,7 +40,7 @@ const Sanitation = ({ navigation, route }) => {
   const { mutate: edit_usage } = useMutation({
     mutationKey: ['edit_usage'],
     mutationFn: async (data) => {
-      editWaterUsage(date)
+      editWaterUsage(data)
       queryClient.invalidateQueries()
     },
     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('water') },
