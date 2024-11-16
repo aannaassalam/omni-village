@@ -14,30 +14,43 @@ import Input from '../../Components/Inputs/Input'
 import { Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor, primaryColor } from '../../styles/colors'
+import { borderColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
-import PurposeInput from '../../Components/PurposeInput/PurposeInput'
 
-const Petrol = ({ navigation, route }) => {
+const TimberNeeds = ({ navigation, route }) => {
   const { name, type, energy_id } = route.params
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const { data: user } = useUser()
   const queryClient = useQueryClient()
-  const [selectedStatus, setSelectedStatus] = useState([]);
   const scheme = yup.object().shape({
-    yearly_petrol_consumption: yup.number().required(t(' Yearly petrol consumption required')),
-    yearly_expenditure_petrol: yup.number().required(t('Yearly expenditure on petrol is required')),
-    purpose_petrol_used_for: yup.array().of(
-      yup.object().shape({
-        type: yup.string().required(t('Type is required')),
-        quantity: yup
-          .string()
-          .required(t('Quantity is required')),
-      }),
-    ).min(t('Purpose petrol used for is required'))
+    timber_needs: yup.boolean().required('Timber needs is required'), // Ensures boolean validation
+    quantity: yup
+      .string()
+      .when('timber_needs', (timberNeeds, schema) =>
+        timberNeeds
+          ? schema.required('Quantity is required') // Required when timber_needs is true
+          : schema // No additional validation otherwise
+      )
+      ,
+    purpose: yup
+      .array()
+      .when('timber_needs', (timberNeeds, schema) =>
+        timberNeeds
+          ? schema
+            .of(yup.string().required('Each purpose is required'))
+            .min(1, 'At least one purpose is required') // Validates at least one item in the array
+          : schema
+      ),
+    urgency: yup
+      .string()
+      .when('timber_needs', (timberNeeds, schema) =>
+        timberNeeds
+          ? schema.required('Urgency is required') // Required when timber_needs is true
+          : schema.nullable() // Optional otherwise
+      ),
   });
   const {
     handleChange,
@@ -51,9 +64,10 @@ const Petrol = ({ navigation, route }) => {
     setValues
   } = useFormik({
     initialValues: {
-      yearly_petrol_consumption: '',
-      yearly_expenditure_petrol: '',
-      purpose_petrol_used_for: []
+      timber_needs: false,
+      quantity: '',
+      purpose:[],
+      urgency:''
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -61,30 +75,6 @@ const Petrol = ({ navigation, route }) => {
       setSavepopup(true)
     },
   });
-  const handleFieldChange = (index, field, value) => {
-    const newDetailsOfLand = [...values.purpose_petrol_used_for];
-    newDetailsOfLand[index][field] = value;
-    setValues({ ...values, purpose_petrol_used_for: newDetailsOfLand });
-  };
-
-  const handleStatusChange = (selectedItems) => {
-    setSelectedStatus(selectedItems);
-
-    // Update `purpose_status_of_land` based on the selected items
-    const updatedPurposeStatusOfLand = selectedItems.map((item) => {
-      // Check if this `type` already exists in `purpose_status_of_land`
-      const existingEntry = values.purpose_petrol_used_for.find(
-        entry => entry.type === item
-      );
-
-      return existingEntry || {
-        type: item,
-        quantity: ''
-      };
-    });
-    // Update the form's purpose_status_of_land field
-    setFieldValue('purpose_petrol_used_for', updatedPurposeStatusOfLand);
-  };
   const handleDraft = () => {
 
   }
@@ -101,87 +91,78 @@ const Petrol = ({ navigation, route }) => {
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
-        <Input
-          label={t(
-            `Yearly consumption of petrol`
-          )}
-          value={values?.yearly_petrol_consumption}
-          placeholder={'0'}
-          fullLength={true}
-          keyboardType="numeric"
-          onChangeText={handleChange('yearly_petrol_consumption')}
-          isRight={
-            <AcresElement title={'Litres'} />
-          }
+        <SwitchButton
+          nolabel={false}
+          label={t('Do you have unfulfilled Timber needs?')}
+          selected={values?.timber_needs}
+          firstBtnPress={() => setValues({ ...values, timber_needs: true })}
+          secondBtnPress={() => setValues({ ...values, timber_needs: false, quantity: '', purpose:[], urgency:'' })}
+          firstBtnText={t('yes')}
+          secondBtntext={t('no')}
         />
-        {errors.yearly_petrol_consumption &&
-          errors.yearly_petrol_consumption && (
-            <Text style={Styles.error2}>
-              {
-                errors.yearly_petrol_consumption
-              }
-            </Text>
-          )}
-        <Input
-          label={t(
-            `Yearly expenditure on petrol`
-          )}
-          value={values?.yearly_expenditure_petrol}
-          placeholder={'0'}
-          fullLength={true}
-          keyboardType="numeric"
-          onChangeText={handleChange('yearly_expenditure_petrol')}
-          isRight={
-            <AcresElement title={user.currency} />
-          }
-        />
-        {errors.yearly_expenditure_petrol &&
-          errors.yearly_expenditure_petrol && (
-            <Text style={Styles.error2}>
-              {
-                errors.yearly_expenditure_petrol
-              }
-            </Text>
-          )}
-        <MultiselectDropdown
-          containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            { name: 'Title', key: 'Title' }, { name: 'Key', key: 'Key' }, { name: 'Value', key: 'Value' }
-          ]}
-          setSelectedd={handleStatusChange}
-          selectedd={selectedStatus}
-          infoName={t('For what purposes is the petrol used for?')}
-        />
-        {values?.purpose_petrol_used_for.length > 0 && (
+        {values?.timber_needs ?
           <View style={styles.innerInputView}>
             <Divider style={styles.divider2} />
             <View style={{ width: '100%' }}>
-              <View style={styles.quantityContainer}>
-                {values.purpose_petrol_used_for.map((item, index) => (
-                  <>
-                    <PurposeInput title={`Quantity ${index + 1}`} value={item.quantity} onChangeText={text =>
-                      handleFieldChange(
-                        index,
-                        'quantity',
-                        parseInt(text),
-                      )
-                    } unit={'Litre'}/>
-                    {errors.purpose_petrol_used_for &&
-                      errors.purpose_petrol_used_for[index]
-                        ?.quantity && (
-                        <Text style={Styles.error2}>
-                          {
-                            errors.purpose_petrol_used_for[index]
-                              .quantity
-                          }
-                        </Text>
-                      )}
-                  </>
-                ))}
-              </View>
+              <Input
+                label={t(
+                  `Quantity`
+                )}
+                value={values?.quantity}
+                placeholder={'0'}
+                fullLength={true}
+                keyboardType="numeric"
+                onChangeText={handleChange('quantity')}
+                isRight={
+                  <AcresElement title={'Unit'} />
+                }
+              />
+              {errors.quantity &&
+                errors.quantity && (
+                  <Text style={Styles.error2}>
+                    {
+                    errors.quantity
+                    }
+                  </Text>
+                )}
+              <MultiselectDropdown
+                containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                data={
+                [
+                  { key: 1, name: 'Timber for construction' },
+                  { key: 2, name: 'Timber for furniture' },
+                ]
+                }
+                setSelectedd={(value) => {
+                  setValues({ ...values, purpose: value })
+                }}
+                selectedd={values?.purpose}
+                infoName={t('Purpose')}
+              />
+              {touched?.purpose && errors?.purpose && (
+                <Text style={Styles.error2}>{String(errors?.purpose)}</Text>
+              )}
+              <CustomDropdown
+                data={
+                  [{ label: 'Microgrid', value: 'Microgrid' }]
+                }
+                value={values?.urgency}
+                label={t('Urgency')}
+                onChange={value => {
+                  setValues({
+                    ...values,
+                    urgency: value?.value,
+                  });
+                }}
+              />
+              {touched?.urgency && errors?.urgency && (
+                <Text style={Styles.error2}>{String(errors?.urgency)}</Text>
+              )}
             </View>
           </View>
-        )}
+          :
+          null
+        }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
         <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
@@ -255,7 +236,7 @@ const Petrol = ({ navigation, route }) => {
   )
 }
 
-export default Petrol
+export default TimberNeeds
 
 const styles = StyleSheet.create({
   container: {
@@ -277,14 +258,4 @@ const styles = StyleSheet.create({
     width: '1%',
     borderRadius: 10,
   },
-  quantityContainer: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: primaryColor,
-    paddingHorizontal: 12,
-    width: '100%',
-    paddingVertical: 6,
-    alignSelf: 'center',
-    marginTop: '4%'
-  }
 })

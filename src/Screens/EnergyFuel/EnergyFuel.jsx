@@ -36,6 +36,14 @@ const EnergyFuel = ({navigation}) => {
               key: 'petrol',
             },
             {
+              name: 'Diesel',
+              key: 'diesel',
+            },
+            {
+              name: 'Natural gas',
+              key: 'naturalGas',
+            },
+            {
               name: 'Others',
               key: 'othersEnergy',
             },

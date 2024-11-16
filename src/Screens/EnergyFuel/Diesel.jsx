@@ -14,9 +14,10 @@ import Input from '../../Components/Inputs/Input'
 import { Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+import PurposeInput from '../../Components/PurposeInput/PurposeInput'
 
 const Diesel = ({ navigation, route }) => {
     const { name, type, energy_id } = route.params
@@ -145,7 +146,7 @@ const Diesel = ({ navigation, route }) => {
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                     data={[
-                        { name: 'Title', key: 'Title' }
+                        { name: 'Title', key: 'Title' }, { name: 'Key', key: 'Key' }, { name: 'Value', key: 'Value' }
                     ]}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
@@ -155,42 +156,29 @@ const Diesel = ({ navigation, route }) => {
                     <View style={styles.innerInputView}>
                         <Divider style={styles.divider2} />
                         <View style={{ width: '100%' }}>
-                            {values.purpose_petrol_used_for.map((item, index) => (
-                                <>
-                                    <Input
-                                        label={t(
-                                            `${t(
-                                                'Mention the quantity for',
-                                            )} `
-                                            // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
-                                        )}
-                                        value={item.quantity}
-                                        placeholder={'0'}
-                                        fullLength={true}
-                                        keyboardType="numeric"
-                                        onChangeText={text =>
+                            <View style={styles.quantityContainer}>
+                                {values.purpose_petrol_used_for.map((item, index) => (
+                                    <>
+                                        <PurposeInput title={`Quantity ${index + 1}`} value={item.quantity} onChangeText={text =>
                                             handleFieldChange(
                                                 index,
                                                 'quantity',
                                                 parseInt(text),
                                             )
-                                        }
-                                        isRight={
-                                            <AcresElement title={'Unit'} />
-                                        }
-                                    />
-                                    {errors.purpose_petrol_used_for &&
-                                        errors.purpose_petrol_used_for[index]
-                                            ?.quantity && (
-                                            <Text style={Styles.error2}>
-                                                {
-                                                    errors.purpose_petrol_used_for[index]
-                                                        .quantity
-                                                }
-                                            </Text>
-                                        )}
-                                </>
-                            ))}
+                                        } unit={'Litre'}/>
+                                        {errors.purpose_petrol_used_for &&
+                                            errors.purpose_petrol_used_for[index]
+                                                ?.quantity && (
+                                                <Text style={Styles.error2}>
+                                                    {
+                                                        errors.purpose_petrol_used_for[index]
+                                                            .quantity
+                                                    }
+                                                </Text>
+                                            )}
+                                    </>
+                                ))}
+                            </View>
                         </View>
                     </View>
                 )}
@@ -289,4 +277,14 @@ const styles = StyleSheet.create({
         width: '1%',
         borderRadius: 10,
     },
+    quantityContainer: {
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: primaryColor,
+        paddingHorizontal: 12,
+        width: '100%',
+        paddingVertical: 6,
+        alignSelf: 'center',
+        marginTop: '4%'
+    }
 })

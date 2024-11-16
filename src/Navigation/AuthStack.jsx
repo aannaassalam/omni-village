@@ -56,6 +56,11 @@ import Mobility from '../Screens/Mobility/Mobility';
 import VehicleCount from '../Screens/Mobility/VehicleCount';
 import VehicleDetails from '../Screens/Mobility/VehicleDetails';
 import VehicleRequirement from '../Screens/Mobility/VehicleRequirement';
+import Diesel from '../Screens/EnergyFuel/Diesel';
+import ForestryOtherNeeds from '../Screens/ForestTimber/ForestryOtherNeeds';
+import TimberNeeds from '../Screens/ForestTimber/TimberNeeds';
+import ForestryGeneralInformation from '../Screens/ForestTimber/ForestryGeneralInformation';
+import ForestTimber from '../Screens/ForestTimber/ForestTimber';
 
 const Stack = createStackNavigator();
 
@@ -125,6 +130,7 @@ export default function AuthStack({user}) {
       <Stack.Screen name='energyFuel' component={EnergyFuel} />
       <Stack.Screen name='electricity' component={Electricity} />
       <Stack.Screen name='petrol' component={Petrol} />
+      <Stack.Screen name='diesel' component={Diesel} />
       <Stack.Screen name='naturalGas' component={NaturalGas} />
       <Stack.Screen name='othersEnergy' component={OtherEnergy} />
       <Stack.Screen name='energyGeneralInformation' component={EnergyGeneralInformation} />
@@ -132,6 +138,10 @@ export default function AuthStack({user}) {
       <Stack.Screen name='vehicleCount' component={VehicleCount} />
       <Stack.Screen name='vehicleDetails' component={VehicleDetails} />
       <Stack.Screen name='vehicleRequirements' component={VehicleRequirement} />
+      <Stack.Screen name='forestryTimber' component={ForestTimber} />
+      <Stack.Screen name='forestryGeneralInformation' component={ForestryGeneralInformation} />
+      <Stack.Screen name='timberNeeds' component={TimberNeeds} />
+      <Stack.Screen name='forestryOtherNeeds' component={ForestryOtherNeeds} />
     </Stack.Navigator>
   );
 }

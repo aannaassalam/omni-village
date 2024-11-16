@@ -117,7 +117,8 @@ const Input = ({
           style={[
             styles.inputBox,
             {
-              width: width_ ? width_ : fullLength ? '100%' : (width - 88) / 2,
+
+              width: width_ ? width_ : main_width? main_width:fullLength ? '100%' : (width - 88) / 2,
               height:
                 longText && boxHeight < 100
                   ? 150
