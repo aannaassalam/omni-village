@@ -108,6 +108,7 @@ export const endpoints = {
     get_landholding_dropdown:'/landholding-dropdown',
     get_housing_dropdown:'/housing-dropdown',
     get_water_dropdown:'/water-dropdown',
+    get_energy_dropdown:'/energy-dropdown',
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
@@ -151,6 +152,25 @@ export const endpoints = {
       get_general_information:'/water/get-general-info',
       add_general_information: '/water/add-general-info',
       update_general_information:'/water/edit-general-info',
+    }
+  },
+  energyFuel:{
+    get_energy_by_type:'/energy/get-energy-information',
+    electricity:{
+      add_electricity:'/energy/add-electricity-information',
+      edit_electricity:'/energy/edit-electricity-information',
+    },
+    petrol_diesel_natural_gas:{
+      add_petrol_diesel_natural_gas:'/energy/add-petrol-diesel-information',
+      edit_petrol_diesel_natural_gas:'/energy/edit-petrol-diesel-information',
+    },
+    other:{
+      add_other_energy:'/energy/add-other-information',
+      edit_other_energy:'/energy/edit-other-information',
+    },
+    general_information:{
+      add_general_information: '/energy/add-general-info',
+      edit_general_information:'/energy/edit-general-info',
     }
   }
 };

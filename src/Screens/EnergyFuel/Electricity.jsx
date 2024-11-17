@@ -1,12 +1,12 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
@@ -16,14 +16,40 @@ import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import { borderColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
+import { addElectricty, editElectricty, getEnergyByType } from '../../functions/energyFuel'
 
 const Electricity = ({ navigation, route }) => {
-  const { name, type, energy_id } = route.params
+  const { name, type } = route.params
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: get_type, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_type ${type}`],
+    queryFn: () => getEnergyByType(type),
+    refetchOnWindowFocus: true,
+  })
+  const { mutate: edit_electricity } = useMutation({
+    mutationKey: ['edit_electricity'],
+    mutationFn: async (data) => {
+      editElectricty(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_electricity } = useMutation({
+    mutationKey: ['add_electricity'],
+    mutationFn: async (data) => {
+      addElectricty(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     electric_grid: yup.bool(),
     yearly_electricity_consumption: yup.number().required(t('Yearly electricity consumption is required')),
@@ -60,11 +86,58 @@ const Electricity = ({ navigation, route }) => {
       setSavepopup(true)
     },
   });
-  const handleDraft = () =>{
-
+  const handleDraft = () => {
+    let new_data = {
+      electric_grid: values?.electric_grid,
+      yearly_electricity_consumption: parseInt(values?.yearly_electricity_consumption),
+      yearly_expenditure_electricity: parseInt(values?.yearly_expenditure_electricity),
+      electricity_stable: values?.electricity_stable,
+      microgrid_installed: values?.microgrid_installed,
+      microgrid_type: values?.type,
+      usage: parseInt(values?.usage),
+      installation_cost: parseInt(values?.installation_cost),
+      status: 0
+    }
+    if (get_type?._id) {
+      edit_electricity({ ...new_data, energy_id: get_type._id })
+    } else {
+      add_electricity({ ...new_data })
+    }
   }
 
-  const onSubmit = ()=>{}
+  const onSubmit = () => { 
+    let new_data = {
+      electric_grid: values?.electric_grid,
+      yearly_electricity_consumption: parseInt(values?.yearly_electricity_consumption),
+      yearly_expenditure_electricity: parseInt(values?.yearly_expenditure_electricity),
+      electricity_stable: values?.electricity_stable,
+      microgrid_installed: values?.microgrid_installed,
+      microgrid_type: values?.type,
+      usage: parseInt(values?.usage),
+      installation_cost: parseInt(values?.installation_cost),
+      status: 1
+    }
+    if (get_type?._id) {
+      edit_electricity({ ...new_data, energy_id: get_type._id })
+    } else {
+      add_electricity({ ...new_data })
+    }
+  }
+  useEffect(() => {
+    resetForm({
+      values: {
+        electric_grid: get_type?.electric_grid || false,
+        yearly_electricity_consumption: String(get_type?.yearly_electricity_consumption || '') || '',
+        yearly_expenditure_electricity: String(get_type?.yearly_expenditure_electricity || '') || '',
+        electricity_stable: get_type?.electricity_stable || false,
+        microgrid_installed: get_type?.microgrid_installed || false,
+        type: get_type?.microgrid_type || '',
+        usage: String(get_type?.usage || '') || '',
+        installation_cost: String(get_type?.installation_cost || '') || '',
+      }
+    })
+  }, [get_type])
+  console.log("get_type", get_type)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -80,13 +153,13 @@ const Electricity = ({ navigation, route }) => {
           nolabel={false}
           label={t('Connected to electric grid?')}
           selected={values?.electric_grid}
-          firstBtnPress={() => setValues({...values, electric_grid: true})}
-          secondBtnPress={() => setValues({ ...values, electric_grid: false, yearly_electricity_consumption:'', yearly_expenditure_electricity:'' })}
+          firstBtnPress={() => setValues({ ...values, electric_grid: true })}
+          secondBtnPress={() => setValues({ ...values, electric_grid: false, yearly_electricity_consumption: '', yearly_expenditure_electricity: '' })}
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
-        {values?.electric_grid?
-      <>
+        {values?.electric_grid ?
+          <>
             <Input
               label={t(
                 `Yearly Household electricity consumption`
@@ -104,7 +177,7 @@ const Electricity = ({ navigation, route }) => {
               errors.yearly_electricity_consumption && (
                 <Text style={Styles.error2}>
                   {
-                  errors.yearly_electricity_consumption
+                    errors.yearly_electricity_consumption
                   }
                 </Text>
               )}
@@ -125,19 +198,19 @@ const Electricity = ({ navigation, route }) => {
               errors.yearly_expenditure_electricity && (
                 <Text style={Styles.error2}>
                   {
-                  errors.yearly_expenditure_electricity
+                    errors.yearly_expenditure_electricity
                   }
                 </Text>
               )}
-      </>  
-      :null
-      }
+          </>
+          : null
+        }
         <SwitchButton
           nolabel={false}
           label={t('Is the electricity stable?')}
           selected={values?.electricity_stable}
           firstBtnPress={() => setValues({ ...values, electricity_stable: true })}
-          secondBtnPress={() => setValues({ ...values, electricity_stable: false})}
+          secondBtnPress={() => setValues({ ...values, electricity_stable: false })}
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
@@ -146,17 +219,17 @@ const Electricity = ({ navigation, route }) => {
           label={t('Any renewable microgrid installed')}
           selected={values?.microgrid_installed}
           firstBtnPress={() => setValues({ ...values, microgrid_installed: true })}
-          secondBtnPress={() => setValues({ ...values, microgrid_installed: false, type: '', usage:'', installation_cost:'' })}
+          secondBtnPress={() => setValues({ ...values, microgrid_installed: false, type: '', usage: '', installation_cost: '' })}
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
-        {values?.microgrid_installed?
+        {values?.microgrid_installed ?
           <View style={styles.innerInputView}>
             <Divider style={styles.divider2} />
             <View style={{ width: '100%' }}>
               <CustomDropdown
                 data={
-                 [{label: 'Microgrid',value:'Microgrid'}]
+                  [{ label: 'Microgrid', value: '6736117ecb51156c2f52383e' }]
                 }
                 value={values?.type}
                 label={t('What is the type?')}
@@ -187,7 +260,7 @@ const Electricity = ({ navigation, route }) => {
                 errors.usage && (
                   <Text style={Styles.error2}>
                     {
-                    errors.usage
+                      errors.usage
                     }
                   </Text>
                 )}
@@ -208,14 +281,14 @@ const Electricity = ({ navigation, route }) => {
                 errors.installation_cost && (
                   <Text style={Styles.error2}>
                     {
-                    errors.installation_cost
+                      errors.installation_cost
                     }
                   </Text>
                 )}
-              </View>
-              </View>
-              :null 
-      }
+            </View>
+          </View>
+          : null
+        }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
         <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />

@@ -1,35 +1,60 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, ToastAndroid, View } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PurposeInput from '../../Components/PurposeInput/PurposeInput'
-
+import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType } from '../../functions/energyFuel'
 const Diesel = ({ navigation, route }) => {
-    const { name, type, energy_id } = route.params
+    const { name, type } = route.params
     const { t } = useTranslation()
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { data: user } = useUser()
     const queryClient = useQueryClient()
     const [selectedStatus, setSelectedStatus] = useState([]);
+    const { data: get_type, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`get_type ${type}`],
+        queryFn: () => getEnergyByType(type),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_petrol_diesel } = useMutation({
+        mutationKey: ['edit_petrol_diesel'],
+        mutationFn: async (data) => {
+            editPetrolDieselNatural(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_petrol_diesel } = useMutation({
+        mutationKey: ['add_petrol_diesel'],
+        mutationFn: async (data) => {
+            addPetrolDieselNatural(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
-        yearly_petrol_consumption: yup.number().required(t(' Yearly petrol consumption required')),
-        yearly_expenditure_petrol: yup.number().required(t('Yearly expenditure on petrol is required')),
+        yearly_petrol_consumption: yup.number().required(t(' Yearly diesel consumption required')),
+        yearly_expenditure_petrol: yup.number().required(t('Yearly expenditure on diesel is required')),
         purpose_petrol_used_for: yup.array().of(
             yup.object().shape({
                 type: yup.string().required(t('Type is required')),
@@ -37,7 +62,7 @@ const Diesel = ({ navigation, route }) => {
                     .string()
                     .required(t('Quantity is required')),
             }),
-        ).min(t('Purpose petrol used for is required'))
+        )
     });
     const {
         handleChange,
@@ -58,7 +83,11 @@ const Diesel = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            setSavepopup(true)
+            if(selectedStatus.length > 0){
+                setSavepopup(true)
+            }else{
+                ToastAndroid.show("Please select one purpose", ToastAndroid.BOTTOM)
+            }
         },
     });
     const handleFieldChange = (index, field, value) => {
@@ -86,10 +115,57 @@ const Diesel = ({ navigation, route }) => {
         setFieldValue('purpose_petrol_used_for', updatedPurposeStatusOfLand);
     };
     const handleDraft = () => {
-
+        let new_data = {
+            yearly_petrol_consumption: parseInt(values?.yearly_petrol_consumption),
+            yearly_expenditure_petrol: parseInt(values?.yearly_expenditure_petrol),
+            purpose_petrol_used_for: values?.purpose_petrol_used_for,
+            status: 0,
+            type
+        }
+        if (get_type?._id) {
+            edit_petrol_diesel({ ...new_data, energy_id: get_type._id })
+        } else {
+            add_petrol_diesel({...new_data})
+        }
     }
 
-    const onSubmit = () => { }
+    const onSubmit = () => {
+        let new_data = {
+            yearly_petrol_consumption: parseInt(values?.yearly_petrol_consumption),
+            yearly_expenditure_petrol: parseInt(values?.yearly_expenditure_petrol),
+            purpose_petrol_used_for: values?.purpose_petrol_used_for,
+            type,
+            status: 1
+        }
+        if (get_type?._id) {
+            edit_petrol_diesel({ ...new_data, energy_id: get_type._id })
+        } else {
+            add_petrol_diesel({...new_data})
+        }
+    }
+    useEffect(() => {
+        resetForm({
+            values: {
+                yearly_petrol_consumption: String(get_type?.yearly_petrol_consumption || ''),
+                yearly_expenditure_petrol: String(get_type?.yearly_expenditure_petrol || ''),
+                purpose_petrol_used_for: get_type?.purpose_petrol_used_for.map(item => {
+                    return {
+                        type: item.type,
+                        quantity: String(item.quantity)
+                    }
+                }) || []
+            }
+        })
+        setSelectedStatus(get_type?.purpose_petrol_used_for.map(item => item.type) || [])
+    }, [get_type])
+    console.log("errrr", errors)
+    if (isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -103,7 +179,7 @@ const Diesel = ({ navigation, route }) => {
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <Input
                     label={t(
-                        `Yearly consumption of petrol`
+                        `Yearly consumption of diesel`
                     )}
                     value={values?.yearly_petrol_consumption}
                     placeholder={'0'}
@@ -124,7 +200,7 @@ const Diesel = ({ navigation, route }) => {
                     )}
                 <Input
                     label={t(
-                        `Yearly expenditure on petrol`
+                        `Yearly expenditure on diesel`
                     )}
                     value={values?.yearly_expenditure_petrol}
                     placeholder={'0'}
@@ -146,11 +222,11 @@ const Diesel = ({ navigation, route }) => {
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                     data={[
-                        { name: 'Title', key: 'Title' }, { name: 'Key', key: 'Key' }, { name: 'Value', key: 'Value' }
+                        { name: 'Title', key: '6736117ecb51156c2f52383e' }, { name: 'Key', key: '6736117ecb51153c2f52383e' }, { name: 'Value', key: '6736117ecb51356c2f52383e' }
                     ]}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
-                    infoName={t('For what purposes is the petrol used for?')}
+                    infoName={t('For what purposes is the diesel used for?')}
                 />
                 {values?.purpose_petrol_used_for.length > 0 && (
                     <View style={styles.innerInputView}>

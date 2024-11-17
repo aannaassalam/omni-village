@@ -1,30 +1,56 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+import { addGeneralInformation, editGeneralInformation, getEnergyByType } from '../../functions/energyFuel'
 
 const EnergyGeneralInformation = ({ navigation, route }) => {
-    const { name, type, energy_id } = route.params
+    const { name, type } = route.params
     const { t } = useTranslation()
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { data: user } = useUser()
     const queryClient = useQueryClient()
+    const { data: get_type, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`get_type ${type}`],
+        queryFn: () => getEnergyByType(type),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_general_information } = useMutation({
+        mutationKey: ['edit_general_information'],
+        mutationFn: async (data) => {
+            editGeneralInformation(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_general_information } = useMutation({
+        mutationKey: ['add_general_information'],
+        mutationFn: async (data) => {
+            addGeneralInformation(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         energy_sufficient: yup.boolean(),
         extent: yup.string()
@@ -51,10 +77,45 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
         },
     });
     const handleDraft = () => {
-
+        let new_data = {
+            energy_sufficient: values?.energy_sufficient,
+            extent: values?.extent,
+            status: 0
+        }
+        if (get_type?._id) {
+            edit_general_information({ ...new_data })
+        } else {
+            add_general_information({ ...new_data })
+        }
     }
 
-    const onSubmit = () => { }
+    const onSubmit = () => {
+        let new_data = {
+        energy_sufficient: values?.energy_sufficient,
+        extent: values?.extent,
+            status: 1
+        }
+        if (get_type?._id) {
+            edit_general_information({ ...new_data })
+        } else {
+            add_general_information({ ...new_data })
+        }
+    }
+    useEffect(() => {
+        resetForm({
+            values: {
+                energy_sufficient: get_type?.energy_sufficient || false,
+                extent: get_type?.extent||''
+            }
+        })
+    }, [get_type])
+    if (isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -81,7 +142,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
                     <View style={{ width: '100%' }}>
                         <CustomDropdown
                             data={
-                                [{ label: 'Microgrid', value: 'Microgrid' }]
+                                    [{ label: 'Microgrid', value: '6736117ecb51156c2f52383e' }]
                             }
                             value={values?.extent}
                                 label={t('To what extent it’s not sufficient?')}

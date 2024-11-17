@@ -24,7 +24,7 @@ const EnergyFuel = ({navigation}) => {
         <ItemHeader title={t('energy')} />
       <ScrollView>
         <View style={styles.mainContainer}>
-        <MultiselectDropdown
+        {/* <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[
             {
@@ -51,7 +51,7 @@ const EnergyFuel = ({navigation}) => {
           setSelectedd={(value)=>setSelectedItems(value)}
           selectedd={selectedItems}
           infoName={t('Select all the major energy sources that you use')}
-        />
+        /> */}
         </View>
           <View style={[styles.subArea, { marginTop: '3%' }]}>
             <Text
@@ -80,16 +80,41 @@ const EnergyFuel = ({navigation}) => {
               )}
             </TouchableOpacity>
           </View>
-          {selectedItems.map((item) => {
-            return (
-              <CustomShowcaseInput
-                // isDrafted={item?.status === 1 ? false : true}
-                // id={item?._id}
-                productionName={item}
-                onPress={() => navigation.navigate(item, { name: item, energy_id: item, type: item })}
-              />
-            )
-          })}
+          {enterInfo && (
+            <>
+        <CustomShowcaseInput
+          // isDrafted={item?.status === 1 ? false : true}
+          // id={item?._id}
+          productionName={t('Electricity')}
+          onPress={() => navigation.navigate('electricity', { name: t('Electricity'), type: 'electricity' })}
+        />
+        <CustomShowcaseInput
+          // isDrafted={item?.status === 1 ? false : true}
+          // id={item?._id}
+          productionName={t('Petrol')}
+          onPress={() => navigation.navigate('petrol', { name: t('Petrol'), type: 'petrol' })}
+        />
+
+        <CustomShowcaseInput
+          // isDrafted={item?.status === 1 ? false : true}
+          // id={item?._id}
+          productionName={t('Diesel')}
+          onPress={() => navigation.navigate('diesel', { name: t('Diesel'), type: 'diesel' })}
+        />
+        <CustomShowcaseInput
+          // isDrafted={item?.status === 1 ? false : true}
+          // id={item?._id}
+          productionName={t('Natural gas')}
+          onPress={() => navigation.navigate('naturalGas', { name: t('Natural gas'), type: 'natural_gas' })}
+        />
+        <CustomShowcaseInput
+          // isDrafted={item?.status === 1 ? false : true}
+          // id={item?._id}
+          productionName={t('Others')}
+          onPress={() => navigation.navigate('othersEnergy', { name: t('Others'), type: 'other' })}
+        />
+            </>
+          )}
         <View style={[styles.subArea, { marginTop: '3%' }]}>
           <Text
             style={[
@@ -108,7 +133,7 @@ const EnergyFuel = ({navigation}) => {
           // isDrafted={item?.status === 1 ? false : true}
           // id={item?._id}
           productionName={t('Enter Other Information')}
-          onPress={() => navigation.navigate('energyGeneralInformation', { name: 'General information', energy_id: '1', type: 'general_information' })}
+          onPress={() => navigation.navigate('energyGeneralInformation', { name: t('General information'), type: 'general_info' })}
         />
         </ScrollView>
     </View>

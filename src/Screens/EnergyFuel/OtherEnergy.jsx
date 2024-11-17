@@ -18,9 +18,10 @@ import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarvesting } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import { addOthers, editOthers, getEnergyByType } from '../../functions/energyFuel'
 
 const OtherEnergy = ({ navigation, route }) => {
-    const { name, water_id, type } = route.params
+    const { name, type } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { t } = useTranslation()
@@ -31,33 +32,31 @@ const OtherEnergy = ({ navigation, route }) => {
     //     queryFn: () => {},
     //     refetchOnWindowFocus: true,
     // })
-    const get_usage ={}
-    // const { data: get_usage, isLoading: isUsageLoading } = useQuery({
-    //     queryKey: ['get_harvesting'],
-    //     enabled: water_id ? true : false,
-    //     queryFn: () => getWaterHarvesting(water_id),
-    //     refetchOnWindowFocus: true,
-    // })
-    // const { mutate: edit_usage } = useMutation({
-    //     mutationKey: ['edit_usage'],
-    //     mutationFn: async (data) => {
-    //         editWaterHarvesting(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('water') },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
-    // const { mutate: add_usage } = useMutation({
-    //     mutationKey: ['add_usage'],
-    //     mutationFn: async (data) => {
-    //         addWaterHarvesting(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('water') },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
+    const { data: get_type, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`get_type ${type}`],
+        queryFn: () => getEnergyByType(type),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_others } = useMutation({
+        mutationKey: ['edit_others'],
+        mutationFn: async (data) => {
+            editOthers(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_others } = useMutation({
+        mutationKey: ['add_others'],
+        mutationFn: async (data) => {
+            addOthers(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('energyFuel') },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const [selectedStatus, setSelectedStatus] = useState([]);
     const scheme = yup.object().shape({
         source_of_fuels_used: yup
@@ -65,11 +64,11 @@ const OtherEnergy = ({ navigation, route }) => {
             .of(
                 yup.object().shape({
                     type: yup.string().required(t('Type is required')),
-                    purpose: yup.string().required(t('Purpose is required')),
+                    purpose: yup.array().required(t('Purpose is required')),
                     expenditures: yup.string().required(t('Expenditure is required')),
                     quantity: yup
                         .string()
-                        .required(t('quantity is required')),
+                        .required(t('Quantity is required')),
                 }),
             )
     });
@@ -97,22 +96,7 @@ const OtherEnergy = ({ navigation, route }) => {
             }
         },
     });
-    useEffect(() => {
-        resetForm({
-            values: {
-                // source_of_fuels_used: get_usage?.source_of_fuels_used.map((item) => {
-                //     return {
-                //         type: item.type,
-                //         purpose: item.purpose,
-                //         expenditures: String(item.expenditures),
-                //         quantity: String(item.quantity)
-                //     }
-                // }) || []
-                source_of_fuels_used: []
-            }
-        })
-        // setSelectedStatus(get_usage?.type_of_harvesting.map(item => item.type) || [])
-    }, [])
+  
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.source_of_fuels_used];
         newDetailsOfLand[index][field] = value;
@@ -131,9 +115,9 @@ const OtherEnergy = ({ navigation, route }) => {
 
             return existingEntry || {
                 type: item,
-                purpose: "",
+                purpose: [],
                 expenditures: "",
-                capacity: ''
+                quantity: ''
             };
         });
         // Update the form's purpose_status_of_land field
@@ -142,34 +126,50 @@ const OtherEnergy = ({ navigation, route }) => {
     const handleDraft = () => {
         let newData = {
             source_of_fuels_used: values?.source_of_fuels_used,
-            type: type,
+            // type: type,
             status: 0
         }
-        if (water_id) {
-            // edit_usage({ ...newData, water_id })
+        if (get_type?._id) {
+            edit_others({ ...newData, energy_id: get_type._id })
         } else {
-            // add_usage({ ...newData })
+            add_others({ ...newData })
         }
     }
     const onSubmit = () => {
         let newData = {
             source_of_fuels_used: values?.source_of_fuels_used,
-            type: type,
+            // type: type,
             status: 1
         }
-        if (water_id) {
-            // edit_usage({ ...newData, water_id })
+        if (get_type?._id) {
+            edit_others({ ...newData, energy_id: get_type._id })
         } else {
-            // add_usage({ ...newData })
+            add_others({ ...newData })
         }
     }
-    // if (isLoading || isUsageLoading) {
-    //     return (
-    //         <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //             <ActivityIndicator size={'large'} color={primaryColor} />
-    //         </View>
-    //     );
-    // }
+    useEffect(() => {
+        resetForm({
+            values: {
+                source_of_fuels_used: get_type?.source_of_fuels_used.map((item) => {
+                    return {
+                        type: item.type,
+                        purpose: item.purpose,
+                        expenditures: String(item.expenditures),
+                        quantity: String(item.quantity || '')
+                    }
+                }) || []
+            }
+        })
+        setSelectedStatus(get_type?.source_of_fuels_used.map(item => item.type) || [])
+    }, [get_type])
+    console.log("getyyyy", values)
+    if (isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -185,10 +185,10 @@ const OtherEnergy = ({ navigation, route }) => {
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                     data={[{
                         name:'keyboard',
-                        key: 'keyboard'
+                        key: '6736117ecb51156c2f92383e'
                     }, {
                             name: 'mouse',
-                            key: 'mouse'
+                        key: '6736117ecb51156c2f52383e'
                         }]}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
@@ -203,7 +203,7 @@ const OtherEnergy = ({ navigation, route }) => {
                                     <MultiselectDropdown
                                         containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                         data={[
-                                            { name: 'Title', key: 'Title' }
+                                            { name: 'Title', key: '6736117ecb51156c2f52683e' }
                                         ]}
                                         setSelectedd={(value) => {
                                             handleFieldChange(
@@ -228,9 +228,9 @@ const OtherEnergy = ({ navigation, route }) => {
                                     <Input
                                         label={t(
                                             `${t(
-                                                'Enter Qunatity for')}`
+                                                'Enter Quantity for')}`
                                         )}
-                                        value={item.capacity}
+                                        value={item.quantity}
                                         placeholder={'0'}
                                         fullLength={true}
                                         keyboardType="numeric"
@@ -261,14 +261,14 @@ const OtherEnergy = ({ navigation, route }) => {
                                                 'Total Expenditure',
                                             )}`
                                         )}
-                                        value={item.expenditure}
+                                        value={item.expenditures}
                                         placeholder={'0'}
                                         fullLength={true}
                                         keyboardType="numeric"
                                         onChangeText={text =>
                                             handleFieldChange(
                                                 index,
-                                                'expenditure',
+                                                'expenditures',
                                                 parseInt(text),
                                             )
                                         }
