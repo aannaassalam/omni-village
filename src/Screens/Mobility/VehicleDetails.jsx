@@ -1,30 +1,52 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import { editMobility, getMobility, getMobilityDropdown } from '../../functions/mobility'
 
 const VehicleDetails = ({ navigation, route }) => {
-    const { name, type, energy_id } = route.params
+    const { name, mobility_id } = route.params
     const { t } = useTranslation()
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const { data: user } = useUser()
     const queryClient = useQueryClient()
+    const { data: mobility, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`mobility`],
+        queryFn: () => getMobilityDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: get_mobility, isLoading: isLoading } = useQuery({
+        queryKey: [`get_mobility`],
+        enabled: mobility_id? true: false,
+        queryFn: () => getMobility(mobility_id),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_mobility } = useMutation({
+        mutationKey: ['edit_mobility'],
+        mutationFn: async (data) => {
+            editMobility(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('vehicleCount') },
+        onError: (error) => console.log("error save", error),
+    })
     const scheme = yup.object().shape({
             type: yup.string().required(t('Type is required')),
             distance_travelled_within_village: yup.number().required(t('Distance travelled inside village is required')),
@@ -57,10 +79,46 @@ const VehicleDetails = ({ navigation, route }) => {
         },
     });
     const handleDraft = () => {
-
+let new_data={
+    type:values?.type,
+    distance_travelled_within_village:values?.distance_travelled_within_village,
+    distance_travelled_outside:parseInt(values?.distance_travelled_outside),
+    purpose_use_of_vehicle:values?.purpose_use_of_vehicle,
+    frequency_of_usage:values?.frequency_of_usage,
+    // status:0
+}
+    edit_mobility({ ...new_data, mobility_id })
     }
 
-    const onSubmit = () => { }
+    const onSubmit = () => {
+        let new_data = {
+            type: values?.type,
+            distance_travelled_within_village: values?.distance_travelled_within_village,
+            distance_travelled_outside: parseInt(values?.distance_travelled_outside),
+            purpose_use_of_vehicle: values?.purpose_use_of_vehicle,
+            frequency_of_usage: values?.frequency_of_usage,
+            // status: 1
+        }
+            edit_mobility({ ...new_data, mobility_id })
+        }
+    useEffect(() => {
+        resetForm({
+            values: {
+                type: get_mobility?.type,
+                distance_travelled_within_village: String(get_mobility?.distance_travelled_within_village || '') || '',
+                distance_travelled_outside: String(get_mobility?.distance_travelled_outside || '') || '',
+                purpose_use_of_vehicle: get_mobility?.purpose_use_of_vehicle,
+                frequency_of_usage: get_mobility?.frequency_of_usage,
+            }
+        })
+    }, [get_mobility])
+    if (isTypeLoading || isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -74,7 +132,7 @@ const VehicleDetails = ({ navigation, route }) => {
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                        [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
                     }
                     value={values?.type}
                     label={t('Type')}
@@ -132,16 +190,14 @@ const VehicleDetails = ({ navigation, route }) => {
                     )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[
-                        { name: 'Title', key: 'Title' }
-                    ]}
+                    data={mobility.methods_of_mobility.map((item) => { return { key: item._id, name: item.name[USER_PREFERRED_LANGUAGE] } })}
                     setSelectedd={(value)=>setValues({...values, purpose_use_of_vehicle: value })}
                     selectedd={values?.purpose_use_of_vehicle}
                     infoName={t('Select the purposes you use this vehicle for')}
                 />
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                        [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
                     }
                     value={values?.frequency_of_usage}
                     label={t('Frequency of usage')}

@@ -18,7 +18,8 @@ import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PurposeInput from '../../Components/PurposeInput/PurposeInput'
-import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType } from '../../functions/energyFuel'
+import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 const Diesel = ({ navigation, route }) => {
     const { name, type } = route.params
     const { t } = useTranslation()
@@ -27,6 +28,11 @@ const Diesel = ({ navigation, route }) => {
     const { data: user } = useUser()
     const queryClient = useQueryClient()
     const [selectedStatus, setSelectedStatus] = useState([]);
+    const { data: energy, isLoading: isDropdownLoading } = useQuery({
+        queryKey: [`energy`],
+        queryFn: () => getEnergyDropdown(),
+        refetchOnWindowFocus: true,
+    })
     const { data: get_type, isLoading: isTypeLoading } = useQuery({
         queryKey: [`get_type ${type}`],
         queryFn: () => getEnergyByType(type),
@@ -53,7 +59,7 @@ const Diesel = ({ navigation, route }) => {
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
     const scheme = yup.object().shape({
-        yearly_petrol_consumption: yup.number().required(t(' Yearly diesel consumption required')),
+        yearly_petrol_consumption: yup.number().required(t('Yearly diesel consumption required')),
         yearly_expenditure_petrol: yup.number().required(t('Yearly expenditure on diesel is required')),
         purpose_petrol_used_for: yup.array().of(
             yup.object().shape({
@@ -158,8 +164,7 @@ const Diesel = ({ navigation, route }) => {
         })
         setSelectedStatus(get_type?.purpose_petrol_used_for.map(item => item.type) || [])
     }, [get_type])
-    console.log("errrr", errors)
-    if (isTypeLoading) {
+    if (isTypeLoading||isDropdownLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -221,9 +226,9 @@ const Diesel = ({ navigation, route }) => {
                     )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[
-                        { name: 'Title', key: '6736117ecb51156c2f52383e' }, { name: 'Key', key: '6736117ecb51153c2f52383e' }, { name: 'Value', key: '6736117ecb51356c2f52383e' }
-                    ]}
+                    data={energy?.purpose_diesel.map((item) => {
+                        return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                    })}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
                     infoName={t('For what purposes is the diesel used for?')}
@@ -235,7 +240,7 @@ const Diesel = ({ navigation, route }) => {
                             <View style={styles.quantityContainer}>
                                 {values.purpose_petrol_used_for.map((item, index) => (
                                     <>
-                                        <PurposeInput title={`Quantity ${index + 1}`} value={item.quantity} onChangeText={text =>
+                                        <PurposeInput title={`${t('Quantity')} ${index + 1}`} value={item.quantity} onChangeText={text =>
                                             handleFieldChange(
                                                 index,
                                                 'quantity',

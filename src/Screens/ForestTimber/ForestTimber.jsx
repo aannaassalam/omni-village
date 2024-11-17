@@ -11,7 +11,7 @@ const ForestTimber = ({navigation}) => {
       <View style={styles.container}>
           <CustomHeader
               backIcon={true}
-              headerName={t('water')}
+              headerName={t('forestry')}
               goBack={() => navigation.goBack()}
           />
           <ScrollView>

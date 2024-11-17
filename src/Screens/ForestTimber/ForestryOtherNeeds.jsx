@@ -240,7 +240,7 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                       Styles.fieldLabel,
                       { marginTop: 4, alignSelf: 'center' },
                     ]}>
-                    {t(`Type ${index + 1}`)}
+                    {t(`${t('Type')} ${index + 1}`)}
                   </Text>
                   <Divider
                     bold={true}

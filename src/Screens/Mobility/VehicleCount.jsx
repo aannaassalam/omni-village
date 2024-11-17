@@ -11,61 +11,35 @@ import { getHousingByUser, getHousingDropdown } from '../../functions/housing'
 import { useQuery } from '@tanstack/react-query'
 import { useFocusEffect } from '@react-navigation/native'
 import { primaryColor } from '../../styles/colors'
+import { getMobilityByUser } from '../../functions/mobility'
 
 const VehicleCount = ({ navigation, route }) => {
     const { t } = useTranslation()
-    // const { data: housing, isLoading, refetch } = useQuery({
-    //     queryKey: ['housing_by_user'],
-    //     queryFn: () => getHousingByUser(),
-    //     refetchOnWindowFocus: true,
-    // })
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         refetch()
-    //     }, [refetch])
-    // )
-    // if (isLoading) {
-    //     return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //         <ActivityIndicator size={'large'} color={primaryColor} />
-    //     </View>
-    // }
-    const housing = [
-        {
-            housings: [
-                {
-                    _id: '1',
-                    name_of_the_house: 'House 1'
-                },
-                {
-                    _id: '2',
-                    name_of_the_house: 'House 2'
-                },
-                {
-                    _id: '3',
-                    name_of_the_house: 'House 3'
-                },
-                {
-                    _id: '4',
-                    name_of_the_house: 'House 4'
-                },
-                {
-                    _id: '5',
-                    name_of_the_house: 'House 5'
-                },
-            ],
-            house_requirements: true
-        }
-    ]
+    const { data: get_mobility_by_user, isLoading, refetch } = useQuery({
+        queryKey: ['get_mobility_by_user'],
+        queryFn: () => getMobilityByUser(),
+        refetchOnWindowFocus: true,
+    })
+    useFocusEffect(
+        useCallback(() => {
+            refetch()
+        }, [refetch])
+    )
+    if (isLoading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t('housing')}
+                headerName={t('mobility')}
                 goBack={() => navigation.goBack()}
             />
             <ScrollView>
 
-                {housing?.total_numbers_of_house > 0 ?
+                {get_mobility_by_user?.mobilities > 0 ?
                     <View style={styles.subArea}>
                         <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
                         <Divider
@@ -78,26 +52,26 @@ const VehicleCount = ({ navigation, route }) => {
                 }
                 <View style={styles.mainContainer}>
                     {/* {Array.from({ length: total_numbers_of_house }, (_, index) => { */}
-                    {housing[0].housings.map((item, index) => {
+                    {get_mobility_by_user.mobilities.map((item, index) => {
                         return <CustomShowcaseInput
                             key={index}
                             productionName={`${t('Vehicle')} ${index + 1}`}
                             style={{ width: '100%' }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('vehicleDetails', { name: `${t('Vehicle')} ${index + 1}`, data: { vehicle_id: item?._id } })
+                                navigation.navigate('vehicleDetails', { name: `${t('Vehicle')} ${index + 1}`,  mobility_id: item  })
                                 // console.log("valyesssss", values)
                             }}
                         />
                     })}
-                    {housing[0]?.house_requirements ?
+                    {get_mobility_by_user?.vehicle_requirement ?
                         <CustomShowcaseInput
                             key={1}
                             productionName={t(`On Vehicle Requirements`)}
                             style={{ width: '100%', }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('vehicleRequirements',{name:'Vehicle Requirement',})
+                                navigation.navigate('vehicleRequirements',{name:t('Vehicle Requirement'),})
                             }}
                         />
                         : null

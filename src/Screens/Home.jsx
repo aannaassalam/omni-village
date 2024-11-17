@@ -74,7 +74,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('mobility'),
-      navigation: 'mobility',
+      navigation: user?.is_mobility_data?'vehicleCount':'mobility',
       image: require('../../assets/mobility.png'),
     },
     {

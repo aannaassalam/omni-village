@@ -18,40 +18,12 @@ const EnergyFuel = ({navigation}) => {
     <View style={styles.container}>
       <CustomHeader
         backIcon={true}
-        headerName={t('water')}
+        headerName={t('energy')}
         goBack={() => navigation.goBack()}
       />
         <ItemHeader title={t('energy')} />
       <ScrollView>
         <View style={styles.mainContainer}>
-        {/* <MultiselectDropdown
-          containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            {
-              name: 'Electricity',
-              key: 'electricity',
-            },
-            {
-              name: 'Petrol',
-              key: 'petrol',
-            },
-            {
-              name: 'Diesel',
-              key: 'diesel',
-            },
-            {
-              name: 'Natural gas',
-              key: 'naturalGas',
-            },
-            {
-              name: 'Others',
-              key: 'othersEnergy',
-            },
-          ]}
-          setSelectedd={(value)=>setSelectedItems(value)}
-          selectedd={selectedItems}
-          infoName={t('Select all the major energy sources that you use')}
-        /> */}
         </View>
           <View style={[styles.subArea, { marginTop: '3%' }]}>
             <Text
@@ -63,7 +35,7 @@ const EnergyFuel = ({navigation}) => {
             </Text>
             <Divider
               bold={true}
-              style={[styles.divider, { width: USER_PREFERRED_LANGUAGE === "ms" ? '8%' : '4%' }]}
+              style={[styles.divider, { width: '4%' }]}
               horizontalInset={true}
             />
             <TouchableOpacity onPress={() => setEnterInfo(!enterInfo)}>
@@ -133,7 +105,7 @@ const EnergyFuel = ({navigation}) => {
           // isDrafted={item?.status === 1 ? false : true}
           // id={item?._id}
           productionName={t('Enter Other Information')}
-          onPress={() => navigation.navigate('energyGeneralInformation', { name: t('General information'), type: 'general_info' })}
+          onPress={() => navigation.navigate('energyGeneralInformation', { name: t('General Information'), type: 'general_info' })}
         />
         </ScrollView>
     </View>

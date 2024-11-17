@@ -109,6 +109,7 @@ export const endpoints = {
     get_housing_dropdown:'/housing-dropdown',
     get_water_dropdown:'/water-dropdown',
     get_energy_dropdown:'/energy-dropdown',
+    get_mobility_dropdown:'/mobility-dropdown',
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
@@ -172,5 +173,13 @@ export const endpoints = {
       add_general_information: '/energy/add-general-info',
       edit_general_information:'/energy/edit-general-info',
     }
+  },
+  mobility:{
+    get_mobility_by_user:'/mobility-by-user/',
+    add_mobility_by_user:'/mobility-by-user/add-mobility-by-user',
+    get_mobility:'/mobility',
+    update_mobility:'/mobility/update-mobility',
+    get_mobility_requirement: '/mobility-by-user/mobility-requirements',
+    update_mobility_requirement: '/mobility-by-user/edit-mobility-requirements',
   }
 };

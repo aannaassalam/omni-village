@@ -9,19 +9,36 @@ import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addHousingByUser } from '../../functions/housing';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
+import { addMobility, getMobilityDropdown } from '../../functions/mobility';
+import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 
 const Mobility = ({ navigation }) => {
     const { t } = useTranslation()
+
     const queryClient = useQueryClient()
+    const { data: mobility, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`mobility`],
+        queryFn: () => getMobilityDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: add_mobility_by_user } = useMutation({
+        mutationKey: ['add_mobility_by_user'],
+        mutationFn: async (data) => {
+            addMobility(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.navigate('vehicleCount') },
+        onError: (error) => console.log("error save", error),
+    })
     const scheme = yup.object().shape({
         methods_of_mobility: yup.array().required(t('Methods of mobility is required')).min(1, t('Atleast one Methods of mobility is required')),
-        access_to_public_transport: yup.boolean(),
+        access_to_public_transport: yup.string().required(t('Access to public transport is required')),
         number_of_vehicles: yup.number().required(t('Number of vehicles is required')),
-        vehicle_requirement: yup.boolean().required(t('Vehicle requirement is required'))
+        vehicle_requirement: yup.string().required(t('Vehicle requirement is required'))
     });
     const {
         handleChange,
@@ -49,7 +66,7 @@ const Mobility = ({ navigation }) => {
                 vehicle_requirement: values.vehicle_requirement
 
             }
-navigation.navigate('vehicleCount')
+            add_mobility_by_user(new_data)
         },
     });
     return (
@@ -63,21 +80,8 @@ navigation.navigate('vehicleCount')
             <View style={styles.mainContainer}>
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[
-                        {
-                            name: 'Electricity',
-                            key: 'electricity',
-                        },
-                        {
-                            name: 'Petrol',
-                            key: 'petrol',
-                        },
-                        {
-                            name: 'Others',
-                            key: 'othersEnergy',
-                        },
-                    ]}
-                    setSelectedd={(value) => setValues({...values, methods_of_mobility: value})}
+                    data={mobility.methods_of_mobility.map((item) => { return { key: item._id, name: item.name[USER_PREFERRED_LANGUAGE] }})}
+                    setSelectedd={(value) => setValues({ ...values, methods_of_mobility: value })}
                     selectedd={values?.methods_of_mobility}
                     infoName={t('Select all the methods of Mobility that you use')}
                 />
@@ -86,7 +90,7 @@ navigation.navigate('vehicleCount')
                 )}
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: true }, { label: 'No', value: false}]
+                        [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]
                     }
                     value={values?.access_to_public_transport}
                     label={t('Access to Public Transport within 5 KM')}
@@ -114,13 +118,13 @@ navigation.navigate('vehicleCount')
                     errors.number_of_vehicles && (
                         <Text style={Styles.error2}>
                             {
-                            errors.number_of_vehicles
+                                errors.number_of_vehicles
                             }
                         </Text>
                     )}
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                        [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]
                     }
                     value={values?.vehicle_requirement}
                     label={t('Do you have any new Vehicle Requirement?')}

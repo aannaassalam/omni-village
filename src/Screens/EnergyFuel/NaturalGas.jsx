@@ -18,7 +18,8 @@ import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PurposeInput from '../../Components/PurposeInput/PurposeInput'
-import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType } from '../../functions/energyFuel'
+import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const NaturalGas = ({ navigation, route }) => {
   const { name, type } = route.params
@@ -28,6 +29,11 @@ const NaturalGas = ({ navigation, route }) => {
   const { data: user } = useUser()
   const queryClient = useQueryClient()
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const { data: energy, isLoading: isDropdownLoading } = useQuery({
+    queryKey: [`energy`],
+    queryFn: () => getEnergyDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_type, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_type ${type}`],
     queryFn: () => getEnergyByType(type),
@@ -54,7 +60,7 @@ const NaturalGas = ({ navigation, route }) => {
     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
   const scheme = yup.object().shape({
-    yearly_petrol_consumption: yup.number().required(t(' Yearly natural gas consumption required')),
+    yearly_petrol_consumption: yup.number().required(t('Yearly natural gas consumption required')),
     yearly_expenditure_petrol: yup.number().required(t('Yearly expenditure on natural gas is required')),
     purpose_petrol_used_for: yup.array().of(
       yup.object().shape({
@@ -159,7 +165,7 @@ const NaturalGas = ({ navigation, route }) => {
     })
     setSelectedStatus(get_type?.purpose_petrol_used_for.map(item => item.type) || [])
   }, [get_type])
-  if (isTypeLoading) {
+  if (isTypeLoading ||  isDropdownLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -221,9 +227,9 @@ const NaturalGas = ({ navigation, route }) => {
           )}
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            { name: 'Title', key: '6736117ecb51156c2f52383e' }, { name: 'Key', key: '6736117ecb51156c2f55383e' }, { name: 'Value', key: '6736117ecb51156c2f92383e' }
-          ]}
+          data={energy?.purpose_natural_gas.map((item) => {
+            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+          })}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
           infoName={t('For what purposes is the natural gas used for?')}
@@ -235,7 +241,7 @@ const NaturalGas = ({ navigation, route }) => {
               <View style={styles.quantityContainer}>
                 {values.purpose_petrol_used_for.map((item, index) => (
                   <>
-                    <PurposeInput title={`Quantity ${index + 1}`} value={item.quantity} onChangeText={text =>
+                    <PurposeInput title={`${t('Quantity')} ${index + 1}`} value={item.quantity} onChangeText={text =>
                       handleFieldChange(
                         index,
                         'quantity',

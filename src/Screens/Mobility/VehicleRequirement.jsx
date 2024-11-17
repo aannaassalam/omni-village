@@ -18,6 +18,7 @@ import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarvesting } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import { editMobilityRequirement, getMobilityRequirement } from '../../functions/mobility'
 
 const VehicleRequirement = ({ navigation, route }) => {
     const { name } = route.params
@@ -27,38 +28,26 @@ const VehicleRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { data: user } = useUser()
     const queryClient = useQueryClient()
-    // const { data: water_dropdown, isLoading } = useQuery({
-    //     queryKey: ['energy_dropdown'],
-    //     queryFn: () => {},
-    //     refetchOnWindowFocus: true,
-    // })
-    // const { data: get_usage, isLoading: isUsageLoading } = useQuery({
-    //     queryKey: ['get_harvesting'],
-    //     enabled: water_id ? true : false,
-    //     queryFn: () => getWaterHarvesting(water_id),
-    //     refetchOnWindowFocus: true,
-    // })
-    // const { mutate: edit_usage } = useMutation({
-    //     mutationKey: ['edit_usage'],
-    //     mutationFn: async (data) => {
-    //         editWaterHarvesting(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('water') },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
-    // const { mutate: add_usage } = useMutation({
-    //     mutationKey: ['add_usage'],
-    //     mutationFn: async (data) => {
-    //         addWaterHarvesting(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('water') },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
-    const [selectedStatus, setSelectedStatus] = useState([]);
+    const { data: mobility, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`mobility`],
+        queryFn: () => getMobilityDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: get_mobility_requirement, isLoading: isLoading } = useQuery({
+        queryKey: [`get_mobility_requirement`],
+        queryFn: () => getMobilityRequirement(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_mobility_requirement } = useMutation({
+        mutationKey: ['edit_mobility_requirement'],
+        mutationFn: async (data) => {
+            editMobilityRequirement(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('vehicleCount') },
+        onError: (error) => console.log("error save", error),
+    })
+    const [selectedStatus, setSelectedStatus] = useState(0);
     const scheme = yup.object().shape({
         vehicles_needed: yup
             .array()
@@ -98,19 +87,16 @@ const VehicleRequirement = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-                // source_of_fuels_used: get_usage?.source_of_fuels_used.map((item) => {
-                //     return {
-                //         type: item.type,
-                //         purpose: item.purpose,
-                //         expenditures: String(item.expenditures),
-                //         quantity: String(item.quantity)
-                //     }
-                // }) || []
-                vehicles_needed: []
+                vehicles_needed: get_mobility_requirement?.vehicles_needed.map(item => ({
+                    vehicle_number: item.vehicle_number,
+                    vehicle_type: item.vehicle_type,
+                    purpose: item.purpose,
+                    urgency: item.urgency,
+                }))
             }
         })
-        // setSelectedStatus(get_usage?.type_of_harvesting.map(item => item.type) || [])
-    }, [])
+        setSelectedStatus(String(get_mobility_requirement?.vehicles_needed.length) || 0)
+    }, [get_mobility_requirement])
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.vehicles_needed];
         newDetailsOfLand[index][field] = value;
@@ -157,33 +143,32 @@ const VehicleRequirement = ({ navigation, route }) => {
     };
     const handleDraft = () => {
         let newData = {
-            vehicles_needed: values?.source_of_fuels_used,
-            status: 0
+            vehicle_requirement: true,
+            vehicles_needed: values?.vehicles_needed,
+            // status: 0
         }
-        if (water_id) {
-            // edit_usage({ ...newData, water_id })
-        } else {
-            // add_usage({ ...newData })
-        }
+        edit_mobility_requirement(newData)
     }
     const onSubmit = () => {
         let newData = {
-            vehicles_needed: values?.source_of_fuels_used,
-            status: 1
+            vehicle_requirement: true,
+            vehicles_needed: values?.vehicles_needed,
+            // status: 1
         }
-        if (water_id) {
-            // edit_usage({ ...newData, water_id })
-        } else {
-            // add_usage({ ...newData })
-        }
+        edit_mobility_requirement(newData)
+        // if (water_id) {
+        //     // edit_usage({ ...newData, water_id })
+        // } else {
+        //     // add_usage({ ...newData })
+        // }
     }
-    // if (isLoading || isUsageLoading) {
-    //     return (
-    //         <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //             <ActivityIndicator size={'large'} color={primaryColor} />
-    //         </View>
-    //     );
-    // }
+    if (isLoading || isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -218,7 +203,7 @@ const VehicleRequirement = ({ navigation, route }) => {
                     keyboardType="numeric"
                     onChangeText={(e)=> handleStatusChange(e)}
                 />
-                {values?.vehicles_needed.length > 0 &&
+                {values?.vehicles_needed?.length > 0 &&
                     <>
                         {values?.vehicles_needed.map((item, index) =>{
                             return <>
@@ -255,7 +240,7 @@ const VehicleRequirement = ({ navigation, route }) => {
                                     <View style={{ width: '100%' }}>
                                         <CustomDropdown
                                             data={
-                                                [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
                                             }
                                             value={item?.vehicle_type}
                                             label={t('Type of Vehicle Required')}
@@ -279,7 +264,7 @@ const VehicleRequirement = ({ navigation, route }) => {
                                             )}
                                         <CustomDropdown
                                             data={
-                                                [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
                                             }
                                             value={item?.purpose}
                                             label={t('Purpose')}
@@ -304,10 +289,10 @@ const VehicleRequirement = ({ navigation, route }) => {
 
                                         <CustomDropdown
                                             data={
-                                                [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
                                             }
                                             value={item?.urgency}
-                                            label={t('urgency')}
+                                            label={t('Urgency')}
                                             onChange={value => {
                                                 handleFieldChange(
                                                     index,

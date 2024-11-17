@@ -18,7 +18,7 @@ import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarvesting } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
-import { addOthers, editOthers, getEnergyByType } from '../../functions/energyFuel'
+import { addOthers, editOthers, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
 
 const OtherEnergy = ({ navigation, route }) => {
     const { name, type } = route.params
@@ -27,11 +27,11 @@ const OtherEnergy = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { data: user } = useUser()
     const queryClient = useQueryClient()
-    // const { data: water_dropdown, isLoading } = useQuery({
-    //     queryKey: ['energy_dropdown'],
-    //     queryFn: () => {},
-    //     refetchOnWindowFocus: true,
-    // })
+    const { data: energy, isLoading: isDropdownLoading } = useQuery({
+        queryKey: [`energy`],
+        queryFn: () => getEnergyDropdown(),
+        refetchOnWindowFocus: true,
+    })
     const { data: get_type, isLoading: isTypeLoading } = useQuery({
         queryKey: [`get_type ${type}`],
         queryFn: () => getEnergyByType(type),
@@ -162,8 +162,7 @@ const OtherEnergy = ({ navigation, route }) => {
         })
         setSelectedStatus(get_type?.source_of_fuels_used.map(item => item.type) || [])
     }, [get_type])
-    console.log("getyyyy", values)
-    if (isTypeLoading) {
+    if (isTypeLoading ||  isDropdownLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -228,7 +227,7 @@ const OtherEnergy = ({ navigation, route }) => {
                                     <Input
                                         label={t(
                                             `${t(
-                                                'Enter Quantity for')}`
+                                                'Enter Quantity')}`
                                         )}
                                         value={item.quantity}
                                         placeholder={'0'}

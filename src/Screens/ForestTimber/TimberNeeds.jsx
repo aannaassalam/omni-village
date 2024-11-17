@@ -31,7 +31,7 @@ const TimberNeeds = ({ navigation, route }) => {
       .string()
       .when('timber_needs', (timberNeeds, schema) =>
         timberNeeds
-          ? schema.required('Quantity is required') // Required when timber_needs is true
+          ? schema.required(t('Quantity is required')) // Required when timber_needs is true
           : schema // No additional validation otherwise
       )
       ,
@@ -40,15 +40,15 @@ const TimberNeeds = ({ navigation, route }) => {
       .when('timber_needs', (timberNeeds, schema) =>
         timberNeeds
           ? schema
-            .of(yup.string().required('Each purpose is required'))
-            .min(1, 'At least one purpose is required') // Validates at least one item in the array
+            .of(yup.string().required(t('Each purpose is required')))
+            .min(1, t('At least one purpose is required')) // Validates at least one item in the array
           : schema
       ),
     urgency: yup
       .string()
       .when('timber_needs', (timberNeeds, schema) =>
         timberNeeds
-          ? schema.required('Urgency is required') // Required when timber_needs is true
+          ? schema.required(t('Urgency is required')) // Required when timber_needs is true
           : schema.nullable() // Optional otherwise
       ),
   });

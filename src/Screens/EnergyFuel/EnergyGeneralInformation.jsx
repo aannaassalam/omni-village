@@ -17,7 +17,7 @@ import CustomButton from '../../Components/CustomButton/CustomButton'
 import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
-import { addGeneralInformation, editGeneralInformation, getEnergyByType } from '../../functions/energyFuel'
+import { addGeneralInformation, editGeneralInformation, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
 
 const EnergyGeneralInformation = ({ navigation, route }) => {
     const { name, type } = route.params
@@ -26,6 +26,11 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
     const [draftPopup, setDraftpopup] = useState(false)
     const { data: user } = useUser()
     const queryClient = useQueryClient()
+    const { data: energy, isLoading: isDropdownLoading } = useQuery({
+        queryKey: [`energy`],
+        queryFn: () => getEnergyDropdown(),
+        refetchOnWindowFocus: true,
+    })
     const { data: get_type, isLoading: isTypeLoading } = useQuery({
         queryKey: [`get_type ${type}`],
         queryFn: () => getEnergyByType(type),
@@ -34,6 +39,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
     const { mutate: edit_general_information } = useMutation({
         mutationKey: ['edit_general_information'],
         mutationFn: async (data) => {
+            console.log("dataaa", data)
             editGeneralInformation(data)
             queryClient.invalidateQueries()
         },
@@ -53,7 +59,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
     })
     const scheme = yup.object().shape({
         energy_sufficient: yup.boolean(),
-        extent: yup.string()
+        extent: yup.string().nullable()
     });
     const {
         handleChange,
@@ -83,7 +89,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
             status: 0
         }
         if (get_type?._id) {
-            edit_general_information({ ...new_data })
+            edit_general_information({ ...new_data, energy_id: get_type?._id })
         } else {
             add_general_information({ ...new_data })
         }
@@ -93,10 +99,10 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
         let new_data = {
         energy_sufficient: values?.energy_sufficient,
         extent: values?.extent,
-            status: 1
+        status: 1
         }
         if (get_type?._id) {
-            edit_general_information({ ...new_data })
+            edit_general_information({ ...new_data, energy_id:get_type?._id })
         } else {
             add_general_information({ ...new_data })
         }
@@ -109,7 +115,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
             }
         })
     }, [get_type])
-    if (isTypeLoading) {
+    if (isTypeLoading||isDropdownLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -120,7 +126,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t(`${name}`)}
+                headerName={`${name}`}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -132,7 +138,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
                     label={t('Is the available energy sufficient?')}
                     selected={values?.energy_sufficient}
                     firstBtnPress={() => setValues({ ...values, energy_sufficient: true })}
-                    secondBtnPress={() => setValues({ ...values, energy_sufficient: false, extent: '' })}
+                    secondBtnPress={() => setValues({ ...values, energy_sufficient: false, extent: null })}
                     firstBtnText={t('yes')}
                     secondBtntext={t('no')}
                 />

@@ -11,12 +11,13 @@ import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
-import { addElectricty, editElectricty, getEnergyByType } from '../../functions/energyFuel'
+import { addElectricty, editElectricty, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const Electricity = ({ navigation, route }) => {
   const { name, type } = route.params
@@ -25,6 +26,11 @@ const Electricity = ({ navigation, route }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: energy, isLoading: isDropdownLoading } = useQuery({
+    queryKey: [`energy`],
+    queryFn: () => getEnergyDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_type, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_type ${type}`],
     queryFn: () => getEnergyByType(type),
@@ -137,7 +143,13 @@ const Electricity = ({ navigation, route }) => {
       }
     })
   }, [get_type])
-  console.log("get_type", get_type)
+  if (isTypeLoading || isDropdownLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -229,7 +241,11 @@ const Electricity = ({ navigation, route }) => {
             <View style={{ width: '100%' }}>
               <CustomDropdown
                 data={
-                  [{ label: 'Microgrid', value: '6736117ecb51156c2f52383e' }]
+                  energy?.microgrid_type.map((item) => {
+                    return {
+                      label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                    }
+                  })
                 }
                 value={values?.type}
                 label={t('What is the type?')}
