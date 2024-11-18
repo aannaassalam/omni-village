@@ -84,19 +84,19 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('other personal'),
-      navigation: 'others',
+      navigation: 'otherPersonalHousehold',
       image: require('../../assets/household.png'),
     },
     {
       title: t('business'),
-      navigation: 'busniess',
+      navigation: 'businessCommercial',
       image: require('../../assets/business.png'),
     },
-    {
-      title: t('community'),
-      navigation: 'community',
-      image: require('../../assets/community.png'),
-    },
+    // {
+    //   title: t('community'),
+    //   navigation: 'community',
+    //   image: require('../../assets/community.png'),
+    // },
   ]
   return (
     <View

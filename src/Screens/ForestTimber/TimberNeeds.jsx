@@ -1,22 +1,23 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
+import { addForestryTimberNeeds, editForestryTimberNeeds, getForestry } from '../../functions/forestry'
 
 const TimberNeeds = ({ navigation, route }) => {
   const { name, type, energy_id } = route.params
@@ -25,33 +26,50 @@ const TimberNeeds = ({ navigation, route }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_forestry ${type}`],
+    queryFn: () => getForestry(type),
+    refetchOnWindowFocus: true,
+  })
+  const { mutate: edit_forestry_timber } = useMutation({
+    mutationKey: ['edit_forestry_timber'],
+    mutationFn: async (data) => {
+      editForestryTimberNeeds(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data, navigation.replace('forestryTimber')) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_forestry_timber } = useMutation({
+    mutationKey: ['add_forestry_timber'],
+    mutationFn: async (data) => {
+      addForestryTimberNeeds(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('forestryTimber') },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     timber_needs: yup.boolean().required('Timber needs is required'), // Ensures boolean validation
     quantity: yup
-      .string()
-      .when('timber_needs', (timberNeeds, schema) =>
-        timberNeeds
-          ? schema.required(t('Quantity is required')) // Required when timber_needs is true
-          : schema // No additional validation otherwise
-      )
-      ,
+      .string().test('is-required', 'Quantity is required when Timber Needs is true', function (value) {
+        const { timber_needs } = this.parent; // Access the parent object to check `timber_needs`
+        return timber_needs ? !!value : true; // If `timber_needs` is true, `value` must be present
+      })
+    ,
     purpose: yup
-      .array()
-      .when('timber_needs', (timberNeeds, schema) =>
-        timberNeeds
-          ? schema
-            .of(yup.string().required(t('Each purpose is required')))
-            .min(1, t('At least one purpose is required')) // Validates at least one item in the array
-          : schema
-      ),
+      .array().test('is-required', 'Purpose is required when Timber Needs is true', function (value) {
+        const { timber_needs } = this.parent;
+        return timber_needs ? (value && value.length > 0) : true; // If `timber_needs` is true, `value` must not be empty
+      }),
     urgency: yup
-      .string()
-      .when('timber_needs', (timberNeeds, schema) =>
-        timberNeeds
-          ? schema.required(t('Urgency is required')) // Required when timber_needs is true
-          : schema.nullable() // Optional otherwise
-      ),
-  });
+      .string().test('is-required', 'Urgency is required when Timber Needs is true', function (value) {
+        const { timber_needs } = this.parent;
+        return timber_needs ? !!value : true;
+      }),
+  })
   const {
     handleChange,
     handleSubmit,
@@ -66,8 +84,8 @@ const TimberNeeds = ({ navigation, route }) => {
     initialValues: {
       timber_needs: false,
       quantity: '',
-      purpose:[],
-      urgency:''
+      purpose: [],
+      urgency: ''
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -75,11 +93,54 @@ const TimberNeeds = ({ navigation, route }) => {
       setSavepopup(true)
     },
   });
-  const handleDraft = () => {
+  console.log("erroro", errors)
 
+  const handleDraft = () => {
+    let newData = {
+      timber_needs: values.timber_needs,
+      quantity: values.quantity,
+      purpose: values.purpose,
+      urgency: values.urgency,
+      status: 0
+    }
+    if (get_forestry?._id) {
+      edit_forestry_timber({ ...newData, forestry_id: get_forestry?._id })
+    } else {
+      add_forestry_timber({ ...newData })
+    }
   }
 
-  const onSubmit = () => { }
+  const onSubmit = () => {
+    let newData = {
+      timber_needs: values.timber_needs,
+      quantity: values.quantity,
+      purpose: values.purpose,
+      urgency: values.urgency,
+      status: 1
+    }
+    if (get_forestry?._id) {
+      edit_forestry_timber({ ...newData, forestry_id: get_forestry?._id })
+    } else {
+      add_forestry_timber({ ...newData })
+    }
+  }
+  useEffect(() => {
+    resetForm({
+      values: {
+        timber_needs: get_forestry?.timber_needs || false,
+        quantity: String(get_forestry?.quantity) || '',
+        purpose: get_forestry?.purpose || [],
+        urgency: get_forestry?.urgency || '',
+      }
+    })
+  }, [get_forestry])
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -96,7 +157,7 @@ const TimberNeeds = ({ navigation, route }) => {
           label={t('Do you have unfulfilled Timber needs?')}
           selected={values?.timber_needs}
           firstBtnPress={() => setValues({ ...values, timber_needs: true })}
-          secondBtnPress={() => setValues({ ...values, timber_needs: false, quantity: '', purpose:[], urgency:'' })}
+          secondBtnPress={() => setValues({ ...values, timber_needs: false, quantity: '', purpose: [], urgency: '' })}
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
@@ -121,17 +182,20 @@ const TimberNeeds = ({ navigation, route }) => {
                 errors.quantity && (
                   <Text style={Styles.error2}>
                     {
-                    errors.quantity
+                      errors.quantity
                     }
                   </Text>
                 )}
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={
-                [
-                  { key: 1, name: 'Timber for construction' },
-                  { key: 2, name: 'Timber for furniture' },
-                ]
+                  [{
+                    name: 'keyboard',
+                    key: '6739df18a4cfd8cc1f107ef9'
+                  }, {
+                      name: 'mouse',
+                      key: '6739df18a4cfd8cc1f108ef9'
+                    }]
                 }
                 setSelectedd={(value) => {
                   setValues({ ...values, purpose: value })
@@ -144,7 +208,7 @@ const TimberNeeds = ({ navigation, route }) => {
               )}
               <CustomDropdown
                 data={
-                  [{ label: 'Microgrid', value: 'Microgrid' }]
+                  [{ label: 'To urgent', value: '6739df18a4cfd8cc1f108ef9' }]
                 }
                 value={values?.urgency}
                 label={t('Urgency')}

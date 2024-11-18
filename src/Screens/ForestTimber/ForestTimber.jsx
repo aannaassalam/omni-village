@@ -19,15 +19,15 @@ const ForestTimber = ({navigation}) => {
               <ItemHeader title={t('forestry')} />
               <CustomShowcaseInput
                productionName={t('General Information')}
-                  onPress={() => navigation.navigate('forestryGeneralInformation', { name: t('General Information'), type: 'general_information', forestry_id:1})}
+                  onPress={() => navigation.navigate('forestryGeneralInformation', { name: t('General Information'), type: 'general',})}
               />
               <CustomShowcaseInput
                   productionName={t('Timber Needs')}
-                  onPress={() => navigation.navigate('timberNeeds', { name: t('Timber Needs'), type: 'timber_needs', forestry_id: 1 })}
+                  onPress={() => navigation.navigate('timberNeeds', { name: t('Timber Needs'), type: 'timber_needs' })}
               />
               <CustomShowcaseInput
                   productionName={t('Other Needs')}
-                  onPress={() => navigation.navigate('forestryOtherNeeds', { name: t('Other Needs'), type: 'other_needs', forestry_id: 1 })}
+                  onPress={() => navigation.navigate('forestryOtherNeeds', { name: t('Other Needs'), type: 'other_needs',})}
               />
               </ScrollView>
 

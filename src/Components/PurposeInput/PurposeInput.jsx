@@ -6,13 +6,13 @@ import Input from '../Inputs/Input'
 import AcresElement from '../ui/AcresElement'
 import { primaryColor } from '../../styles/colors'
 
-const PurposeInput = ({ title, onChangeText, value, unit }) => {
+const PurposeInput = ({ title, onChangeText, value, unit, placeholder }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headingText}>{title}</Text>
       <Input
       fullLength={false}
-      placeholder="Enter purpose"
+      placeholder={placeholder? placeholder: 'Enter a value'}
       noLabel={true}
       main_width={'87%'}
       onChangeText={onChangeText}
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         gap:12,
-        marginVertical: 8
+        marginVertical: 8,
+        justifyContent:'space-between'
     },
     headingText:{
         fontFamily: fontFamilyMedium,

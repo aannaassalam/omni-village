@@ -61,6 +61,15 @@ import ForestryOtherNeeds from '../Screens/ForestTimber/ForestryOtherNeeds';
 import TimberNeeds from '../Screens/ForestTimber/TimberNeeds';
 import ForestryGeneralInformation from '../Screens/ForestTimber/ForestryGeneralInformation';
 import ForestTimber from '../Screens/ForestTimber/ForestTimber';
+import OtherPersonalHousehold from '../Screens/OtherPersonalHouseholdItems/OtherPersonalHousehold';
+import PersonalCareItem from '../Screens/OtherPersonalHouseholdItems/PersonalCareItems';
+import CleaningProduct from '../Screens/OtherPersonalHouseholdItems/CleaningProduct';
+import OfficeSupplies from '../Screens/OtherPersonalHouseholdItems/OfficeSupplies';
+import Medicine from '../Screens/OtherPersonalHouseholdItems/Medicine';
+import KitchenItems from '../Screens/OtherPersonalHouseholdItems/KitchenItems';
+import OtherItems from '../Screens/OtherPersonalHouseholdItems/OtherItems';
+import BusinessCommercial from '../Screens/BusinessCommercialEstablishment/BusinessCommercial';
+import BusinessCount from '../Screens/BusinessCommercialEstablishment/BusinessCount';
 
 const Stack = createStackNavigator();
 
@@ -142,6 +151,15 @@ export default function AuthStack({user}) {
       <Stack.Screen name='forestryGeneralInformation' component={ForestryGeneralInformation} />
       <Stack.Screen name='timberNeeds' component={TimberNeeds} />
       <Stack.Screen name='forestryOtherNeeds' component={ForestryOtherNeeds} />
+      <Stack.Screen name='otherPersonalHousehold' component={OtherPersonalHousehold} />
+      <Stack.Screen name='personalCare' component={PersonalCareItem} />
+      <Stack.Screen name='cleaningProduct' component={CleaningProduct} />
+      <Stack.Screen name='officeSupplies' component={OfficeSupplies} />
+      <Stack.Screen name='medicine' component={Medicine} />
+      <Stack.Screen name='kitchenItems' component={KitchenItems} />
+      <Stack.Screen name='otherItems' component={OtherItems} />
+      <Stack.Screen name='businessCommercial' component={BusinessCommercial} />
+      <Stack.Screen name='businessCount' component={BusinessCount} />
     </Stack.Navigator>
   );
 }

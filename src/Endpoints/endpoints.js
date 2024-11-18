@@ -110,6 +110,8 @@ export const endpoints = {
     get_water_dropdown:'/water-dropdown',
     get_energy_dropdown:'/energy-dropdown',
     get_mobility_dropdown:'/mobility-dropdown',
+    get_forestry_dropdown:'/forestry-dropdown',
+    get_other_personal: '/other-personal-dropdown',
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
@@ -181,5 +183,25 @@ export const endpoints = {
     update_mobility:'/mobility/update-mobility',
     get_mobility_requirement: '/mobility-by-user/mobility-requirements',
     update_mobility_requirement: '/mobility-by-user/edit-mobility-requirements',
+  },
+  forestry_timber:{
+    get_forestry_timber:'/forestry',
+    general_information:{
+      add_general_information: '/forestry/add-general-information',
+      edit_general_information:'/forestry/edit-general-information',
+    },
+    timber_needs:{
+      add_timber_needs:'/forestry/add-timber-needs',
+      edit_timber_needs:'/forestry/edit-timber-needs',
+    },
+    other_needs:{
+      add_other_needs:'/forestry/add-other-needs',
+      edit_other_needs:'/forestry/edit-other-needs',
+    }
+  },
+  other_personal_household:{
+    get_other_personal_household:'/other-personal-household-items',
+    add_other_personal_household:'/other-personal-household-items/add-personal-household-items',
+    update_other_personal_household:'/other-personal-household-items/edit-personal-household-items',
   }
 };

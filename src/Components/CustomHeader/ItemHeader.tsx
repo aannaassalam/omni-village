@@ -28,7 +28,8 @@ const styles = StyleSheet.create({
   title:{
     color: primaryColor,
     fontSize: 18/fontScale,
-    fontFamily: fontFamilyMedium
+    fontFamily: fontFamilyMedium,
+    textAlign:'center'
   },
   subText:{
     color: '#000',

@@ -1,23 +1,24 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useTranslation } from 'react-i18next'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useUser } from '../../Hooks/useUser'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { Styles, width } from '../../styles/globalStyles'
 import AcresElement from '../../Components/ui/AcresElement'
 import Input from '../../Components/Inputs/Input'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import { addForestryGeneralInformation, editForestryGeneralInformation, getForestry } from '../../functions/forestry'
 
 const ForestryGeneralInformation = ({ navigation, route }) => {
   const { name, type, forestry_id } = route.params
@@ -27,6 +28,31 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_forestry ${type}`],
+      queryFn: () => getForestry(type),
+      refetchOnWindowFocus: true,
+  })
+  const { mutate: edit_forestry_general } = useMutation({
+    mutationKey: ['edit_forestry_general'],
+      mutationFn: async (data) => {
+          editForestryGeneralInformation(data)
+          queryClient.invalidateQueries()
+      },
+      onSuccess: (data) => { console.log("successsssss save", data, navigation.replace('forestryTimber')) },
+      onError: (error) => console.log("error save", error),
+      onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_forestry_general } = useMutation({
+    mutationKey: ['add_forestry_general'],
+      mutationFn: async (data) => {
+          addForestryGeneralInformation(data)
+          queryClient.invalidateQueries()
+      },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('forestryTimber') },
+      onError: (error) => console.log("error save", error),
+      onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     land_owned_under_forest_cover: yup.string().required(t('Land owned under forest cover is required')),
     timber_logs_harvested: yup.number().required(t('Number logs is required')),
@@ -65,9 +91,35 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
     },
   });
   const handleDraft = () => {
-
+    let newData ={
+  land_owned_under_forest_cover: values.land_owned_under_forest_cover,
+  timber_logs_harvested: values.timber_logs_harvested,
+  own_forest_cover_land: values.own_forest_cover_land,
+  community_forest: values.community_forest,
+  other_produced_harvested_from_forest: values.other_produced_harvested_from_forest,
+  status:0
+}
+    if (get_forestry?._id) {
+      edit_forestry_general({ ...newData, forestry_id: get_forestry?._id })
+    } else {
+      add_forestry_general({ ...newData })
+    }
   }
-  const onSubmit = () => { }
+  const onSubmit = () => {
+    let newData = {
+      land_owned_under_forest_cover: values.land_owned_under_forest_cover,
+      timber_logs_harvested: values.timber_logs_harvested,
+      own_forest_cover_land: values.own_forest_cover_land,
+      community_forest: values.community_forest,
+      other_produced_harvested_from_forest: values.other_produced_harvested_from_forest,
+      status: 1
+    }
+    if (get_forestry?._id) {
+      edit_forestry_general({ ...newData, forestry_id: get_forestry?._id })
+    } else {
+      add_forestry_general({ ...newData })
+    }
+}
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.other_produced_harvested_from_forest];
     newDetailsOfLand[index][field] = value;
@@ -93,6 +145,33 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
     // Update the form's purpose_status_of_land field
     setFieldValue('other_produced_harvested_from_forest', updatedPurposeStatusOfLand);
   };
+
+  useEffect(()=>{
+resetForm({
+  values:{
+    land_owned_under_forest_cover: String(get_forestry?.land_owned_under_forest_cover)||'',
+    timber_logs_harvested: String(get_forestry?.timber_logs_harvested)|| '',
+    own_forest_cover_land: String(get_forestry?.own_forest_cover_land)|| '',
+    community_forest: String(get_forestry?.community_forest)|| '',
+    other_produced_harvested_from_forest: get_forestry?.other_produced_harvested_from_forest.map((item)=>{
+      return{
+        type:item.type,
+        quantity:String(item.quantity),
+        purpose: item.purpose
+      }
+    })||[]
+  }
+})
+    setSelectedStatus(get_forestry?.other_produced_harvested_from_forest.map((item)=>{return item?.type}))
+  },[get_forestry])
+  if (isTypeLoading) {
+      return (
+          <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+              <ActivityIndicator size={'large'} color={primaryColor} />
+          </View>
+      );
+  }
+  console.log("get foreeee", get_forestry)
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -202,10 +281,10 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[{
             name: 'keyboard',
-            key: 'keyboard'
+            key: '6739df18a4cfd8cc1f107ef9'
           }, {
             name: 'mouse',
-            key: 'mouse'
+            key: '6739df18a4cfd8cc1f108ef9'
           }]}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
@@ -248,10 +327,10 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                     data={[{
                       name: 'keyboard',
-                      key: 'keyboard'
+                      key: '6739df18a4cfd8cc1f107ef9'
                     }, {
                       name: 'mouse',
-                      key: 'mouse'
+                      key: '6739df18a4cfd8cc1f108ef9'
                     }]}
                     setSelectedd={(value) => handleFieldChange(
                       index,
