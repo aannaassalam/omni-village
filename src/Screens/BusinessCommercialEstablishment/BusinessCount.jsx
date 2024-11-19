@@ -63,7 +63,7 @@ const BusinessCount = ({ navigation, route }) => {
                             style={{ width: '100%' }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('vehicleDetails', { name: `${t('Vehicle')} ${index + 1}`, mobility_id: item })
+                                navigation.navigate('businessName', { name: item?.name? item?.name:`${t('Business')} ${index + 1}`, id: item })
                                 // console.log("valyesssss", values)
                             }}
                         />
@@ -75,7 +75,7 @@ const BusinessCount = ({ navigation, route }) => {
                             style={{ width: '100%', }}
                             progressBar={false}
                             onPress={() => {
-                                navigation.navigate('vehicleRequirements', { name: t('Vehicle Requirement'), })
+                                navigation.navigate('newBusinessDetails', { name: t('New Business Details'), })
                             }}
                         />
                         : null

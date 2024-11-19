@@ -70,6 +70,11 @@ import KitchenItems from '../Screens/OtherPersonalHouseholdItems/KitchenItems';
 import OtherItems from '../Screens/OtherPersonalHouseholdItems/OtherItems';
 import BusinessCommercial from '../Screens/BusinessCommercialEstablishment/BusinessCommercial';
 import BusinessCount from '../Screens/BusinessCommercialEstablishment/BusinessCount';
+import NewBusinessDetails from '../Screens/BusinessCommercialEstablishment/NewBusinessDetails';
+import BusinessRequirement from '../Screens/BusinessCommercialEstablishment/BusinessRequirement';
+import BusinessInvestment from '../Screens/BusinessCommercialEstablishment/BusinessInvestment';
+import BusinessEmployee from '../Screens/BusinessCommercialEstablishment/BusinessEmployee';
+import BusinessName from '../Screens/BusinessCommercialEstablishment/BusinessName';
 
 const Stack = createStackNavigator();
 
@@ -160,6 +165,11 @@ export default function AuthStack({user}) {
       <Stack.Screen name='otherItems' component={OtherItems} />
       <Stack.Screen name='businessCommercial' component={BusinessCommercial} />
       <Stack.Screen name='businessCount' component={BusinessCount} />
+      <Stack.Screen name='businessName' component={BusinessName} />
+      <Stack.Screen name='businessEmployee' component={BusinessEmployee} />
+      <Stack.Screen name='businessInvestment' component={BusinessInvestment} />
+      <Stack.Screen name='businessRequirement' component={BusinessRequirement} />
+      <Stack.Screen name='newBusinessDetails' component={NewBusinessDetails} />
     </Stack.Navigator>
   );
 }
