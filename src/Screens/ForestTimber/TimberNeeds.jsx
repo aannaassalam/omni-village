@@ -17,7 +17,8 @@ import CustomButton from '../../Components/CustomButton/CustomButton'
 import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
-import { addForestryTimberNeeds, editForestryTimberNeeds, getForestry } from '../../functions/forestry'
+import { addForestryTimberNeeds, editForestryTimberNeeds, getForestry, getForestryDropdown } from '../../functions/forestry'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const TimberNeeds = ({ navigation, route }) => {
   const { name, type, energy_id } = route.params
@@ -26,6 +27,11 @@ const TimberNeeds = ({ navigation, route }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: forestry, isLoading } = useQuery({
+    queryKey: ['forestry_dropdown'],
+    queryFn: () => getForestryDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_forestry ${type}`],
     queryFn: () => getForestry(type),
@@ -134,7 +140,7 @@ const TimberNeeds = ({ navigation, route }) => {
       }
     })
   }, [get_forestry])
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -189,13 +195,9 @@ const TimberNeeds = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={
-                  [{
-                    name: 'keyboard',
-                    key: '6739df18a4cfd8cc1f107ef9'
-                  }, {
-                      name: 'mouse',
-                      key: '6739df18a4cfd8cc1f108ef9'
-                    }]
+                  forestry?.timber_needs_purpose.map((item) => {
+                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                  })
                 }
                 setSelectedd={(value) => {
                   setValues({ ...values, purpose: value })
@@ -208,7 +210,11 @@ const TimberNeeds = ({ navigation, route }) => {
               )}
               <CustomDropdown
                 data={
-                  [{ label: 'To urgent', value: '6739df18a4cfd8cc1f108ef9' }]
+                  forestry?.timber_needs_urgency.map((item) => {
+                    return {
+                      label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                    }
+                  })
                 }
                 value={values?.urgency}
                 label={t('Urgency')}

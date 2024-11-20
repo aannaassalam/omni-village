@@ -8,21 +8,34 @@ import { useTranslation } from 'react-i18next';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { useUser } from '../../Hooks/useUser';
 import AcresElement from '../../Components/ui/AcresElement';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
+import { primaryColor } from '../../styles/colors';
+import { getBusiness, getBusinessDropdown } from '../../functions/business';
+import { useQuery } from '@tanstack/react-query';
 
 const BusinessEmployee = ({ navigation, route }) => {
     const { businessName, name, id } = route.params;
     const { t } = useTranslation()
     const { data: user } = useUser()
+    const { data: business_dropdown, isLoading, refetch } = useQuery({
+        queryKey: ['business_dropdown'],
+        queryFn: () => getBusinessDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: business, isLoading: isBusinessLoading } = useQuery({
+        queryKey: ['business'],
+        queryFn: () => getBusiness(id),
+        refetchOnWindowFocus: true,
+    })
     const scheme = yup.object().shape({
         total_employee: yup.number().required(t('Total employee is required')).test(
             'coworkers-check',
-            'Total coworkers inside and outside the village should not exceed total employees.',
+            t('Total coworkers inside and outside the village should not exceed total employees.'),
             function (value) {
                 const { coworker_inside_village, coworker_outside_village } = this.parent;
                 return (
@@ -58,7 +71,7 @@ const BusinessEmployee = ({ navigation, route }) => {
             total_profit: '',
             total_loss: ''
         },
-        // validationSchema: scheme,
+        validationSchema: scheme,
         onSubmit: async values => {
             console.log(values);
             let new_data = {
@@ -77,11 +90,23 @@ const BusinessEmployee = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-
-
+                total_employee: String(business?.total_employee || '') || '',
+                coworker_inside_village: String(business?.coworker_inside_village || '') || '',
+                coworker_outside_village: String(business?.coworker_outside_village || '') ||
+                    '',
+                legal_structure: business?.legal_structure || '',
+                annual_turnover: String(business?.annual_turnover || '') || '',
+                made_profit: business?.made_profit || false,
+                total_profit: String(business?.total_profit || '') || '',
+                total_loss: String(business?.total_loss || '') || ''
             }
         })
-    }, [])
+    }, [business])
+    if (isBusinessLoading || isLoading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -154,7 +179,12 @@ const BusinessEmployee = ({ navigation, route }) => {
                 </View>
                 <CustomDropdown
                     data={
-                        [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                        business_dropdown?.legal_structure.map((item) => {
+                            return {
+                                label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                            }
+                        })
+                        // [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
                     }
                     value={values?.legal_structure}
                     label={t('Legal structure')}

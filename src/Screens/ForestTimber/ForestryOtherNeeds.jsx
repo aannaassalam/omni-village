@@ -19,7 +19,7 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarvesting } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
-import { addForestryOtherNeeds, editForestryOtherNeeds, getForestry } from '../../functions/forestry'
+import { addForestryOtherNeeds, editForestryOtherNeeds, getForestry, getForestryDropdown } from '../../functions/forestry'
 
 const ForestryOtherNeeds = ({ navigation, route }) => {
   const { type, name } = route.params
@@ -29,11 +29,11 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
   const { t } = useTranslation()
   const { data: user } = useUser()
   const queryClient = useQueryClient()
-  // const { data: water_dropdown, isLoading } = useQuery({
-  //     queryKey: ['energy_dropdown'],
-  //     queryFn: () => {},
-  //     refetchOnWindowFocus: true,
-  // })
+  const { data: forestry, isLoading } = useQuery({
+    queryKey: ['forestry_dropdown'],
+    queryFn: () => getForestryDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_forestry ${type}`],
     queryFn: () => getForestry(type),
@@ -194,7 +194,7 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
       add_forestry_other({ ...newData })
     }
   }
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -225,13 +225,9 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
           <View>
             <MultiselectDropdown
               containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-              data={[{
-                name: 'keyboard',
-                key: '6739df18a4cfd8cc1f107ef9'
-              }, {
-                name: 'mouse',
-                key: '6739df18a4cfd8cc1f108ef9'
-              }]}
+              data={forestry?.other_needs_type.map((item) => {
+                return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+              })}
               setSelectedd={handleStatusChange}
               selectedd={selectedStatus}
               infoName={t('What is the Type?')}
@@ -315,13 +311,9 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                           <MultiselectDropdown
                             containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                             data={
-                              [{
-                                name: 'keyboard',
-                                key: '6739df18a4cfd8cc1f107ef9'
-                              }, {
-                                name: 'mouse',
-                                key: '6739df18a4cfd8cc1f108ef9'
-                              }]
+                              forestry?.other_needs_purpose.map((item) => {
+                                return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                              })
                             }
                             setSelectedd={(value) => {
                               handleFieldChange(
@@ -346,7 +338,11 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
 
                           <CustomDropdown
                             data={
-                              [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]
+                              forestry?.other_needs_urgency.map((item) => {
+                                return {
+                                  label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                                }
+                              })
                             }
                             value={item?.urgency}
                             label={t('Urgency')}

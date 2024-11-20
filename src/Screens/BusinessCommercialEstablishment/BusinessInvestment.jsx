@@ -10,11 +10,13 @@ import { Styles, width } from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import PurposeInput from '../../Components/PurposeInput/PurposeInput';
-import { Divider } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 import Input from '../../Components/Inputs/Input';
 import AcresElement from '../../Components/ui/AcresElement';
 import { useUser } from '../../Hooks/useUser';
 import { primaryColor } from '../../styles/colors';
+import { useQuery } from '@tanstack/react-query';
+import { getBusiness, getBusinessDropdown } from '../../functions/business';
 
 const BusinessInvestment = ({ navigation, route }) => {
     const { businessEmployee, businessName, name, id } = route.params;
@@ -22,12 +24,27 @@ const BusinessInvestment = ({ navigation, route }) => {
     const [selectedStatus, setSelectedStatus] = useState([]);
     const [selectedStatusSecond, setSelectedStatusSecond] = useState([]);
     const { data: user } = useUser()
+    const { data: business_dropdown, isLoading, refetch } = useQuery({
+        queryKey: ['business_dropdown'],
+        queryFn: () => getBusinessDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: business, isLoading: isBusinessLoading } = useQuery({
+        queryKey: ['business'],
+        queryFn: () => getBusiness(id),
+        refetchOnWindowFocus: true,
+    })
     const scheme = yup.object().shape({
         investment_need_so_far: yup.string().required('Investment need so far is required'),
         water_consumption: yup.number().required('Water consumption is required'),
         energy_consumption: yup.number().required('Energy consumption is required'),
-        raw_material_consumption: yup.array().of(yup.string()).required('Raw material consumption is required'),
-        fuel_source: yup.array().of(yup.string()).required('Fuel source is required'),
+        raw_material_consumption: yup.array().of(yup.object().shape({
+            item: yup.string().required(t('Type is required')),
+            quantity: yup.string().required(t('Quantity is required'))})).required('Raw material consumption is required'),
+        fuel_source: yup.array().of(yup.object().shape({
+            item: yup.string().required(t('Type is required')),
+            quantity: yup.string().required(t('Quantity is required'))
+        })).required('Fuel source is required'),
         type_of_infrastructure: yup.array().of(yup.string()).required('Infrastructure is required'),
         machine_equipment_installed: yup.string().required('Machine and equipment installed is required'),
     })
@@ -51,7 +68,7 @@ const BusinessInvestment = ({ navigation, route }) => {
             type_of_infrastructure: [],
             machine_equipment_installed: ''
         },
-        // validationSchema: scheme,
+        validationSchema: scheme,
         onSubmit: async values => {
             console.log(values);
             let new_data = {
@@ -82,7 +99,7 @@ const BusinessInvestment = ({ navigation, route }) => {
             );
 
             return existingEntry || {
-                type: item,
+                item: item,
                 quantity: ''
             };
         });
@@ -95,7 +112,7 @@ const BusinessInvestment = ({ navigation, route }) => {
         setValues({ ...values, fuel_source: newDetailsOfLand });
     };
     const handleStatusChangeSecond = (selectedItems) => {
-        setSelectedStatus(selectedItems);
+        setSelectedStatusSecond(selectedItems);
 
         // Update `purpose_status_of_land` based on the selected items
         const updatedPurposeStatusOfLand = selectedItems.map((item) => {
@@ -105,7 +122,7 @@ const BusinessInvestment = ({ navigation, route }) => {
             );
 
             return existingEntry || {
-                type: item,
+                item: item,
                 quantity: ''
             };
         });
@@ -115,11 +132,34 @@ const BusinessInvestment = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-
-
+                investment_need_so_far: String(business?.investment_need_so_far || '') || '',
+                water_consumption: String(business?.water_consumption || '') || '',
+                energy_consumption: String(business?.energy_consumption || '') || '',
+                raw_material_consumption: business?.raw_material_consumption?.length > 0 ? business?.raw_material_consumption.map((item)=>{
+                    return {
+                        item: item.item,
+                        quantity: String(item.quantity)
+                    }
+                }) : [],
+                fuel_source: business?.fuel_source?.length>0 ?business?.fuel_source.map((item) => {
+                    return {
+                        item: item.item,
+                        quantity: String(item.quantity)
+                    }
+                }): [],
+                type_of_infrastructure: business?.type_of_infrastructure||[],
+                machine_equipment_installed: business?.machine_equipment_installed || ''
             }
         })
-    }, [])
+        setSelectedStatus(business?.raw_material_consumption.map((item)=> item?.item))
+        setSelectedStatusSecond(business?.fuel_source.map((item) => item?.item))
+    }, [business])
+    if (isBusinessLoading || isLoading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
+    console.log(errors)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -190,13 +230,9 @@ const BusinessInvestment = ({ navigation, route }) => {
                     )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[{
-                        name: 'keyboard',
-                        key: '6739df18a4cfd8cc1f107ef9'
-                    }, {
-                        name: 'mouse',
-                        key: '6739df18a4cfd8cc1f108ef9'
-                    }]}
+                    data={business_dropdown?.raw_materials.map((item) => {
+                        return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                    })}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
                     infoName={t('Raw materials consumption')}
@@ -215,7 +251,7 @@ const BusinessInvestment = ({ navigation, route }) => {
                                                 'quantity',
                                                 parseInt(text),
                                             )
-                                        } unit={'Kg'} placeholder={'Quantity'} />
+                                        } unit={'Kg'} placeholder={t('Quantity')} />
                                         {errors.raw_material_consumption &&
                                             errors.raw_material_consumption[index]
                                                 ?.quantity && (
@@ -234,13 +270,9 @@ const BusinessInvestment = ({ navigation, route }) => {
                 )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[{
-                        name: 'keyboard',
-                        key: '6739df18a4cfd8cc1f107ef9'
-                    }, {
-                        name: 'mouse',
-                        key: '6739df18a4cfd8cc1f108ef9'
-                    }]}
+                    data={business_dropdown?.fuel_sources.map((item) => {
+                        return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                    })}
                     setSelectedd={handleStatusChangeSecond}
                     selectedd={selectedStatusSecond}
                     infoName={t('Select your Fuel sources if any')}
@@ -254,12 +286,12 @@ const BusinessInvestment = ({ navigation, route }) => {
                                 {values.fuel_source.map((item, index) => (
                                     <>
                                         <PurposeInput title={`${t('Item')} ${index + 1}`} value={item.quantity} onChangeText={text =>
-                                            handleFieldChange(
+                                            handleFieldChangeSecond(
                                                 index,
                                                 'quantity',
                                                 parseInt(text),
                                             )
-                                        } unit={'Liter'} placeholder={'Quantity'} />
+                                        } unit={'Litre'} placeholder={t('Quantity')} />
                                         {errors.fuel_source &&
                                             errors.fuel_source[index]
                                                 ?.quantity && (
@@ -278,14 +310,10 @@ const BusinessInvestment = ({ navigation, route }) => {
                 )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[{
-                        name: 'keyboard',
-                        key: '6739df18a4cfd8cc1f107ef9'
-                    }, {
-                        name: 'mouse',
-                        key: '6739df18a4cfd8cc1f108ef9'
-                    }]}
-                    setSelectedd={(value) => setValues({ ...values, type_of_infrastructure: value })}
+                    data={business_dropdown?.type_of_infrastructure.map((item) => {
+                        return { key: item?._id, name: item?.name?.[USER_PREFERRED_LANGUAGE] }
+                    })}
+                    setSelectedd={(value) => {setValues({ ...values, type_of_infrastructure: value }), console.log("value", value)}}
                     selectedd={values?.type_of_infrastructure}
                     infoName={t('Type of infrastructure')}
                 />

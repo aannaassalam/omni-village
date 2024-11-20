@@ -10,9 +10,25 @@ import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import Input from '../../Components/Inputs/Input'
 import { Styles } from '../../styles/globalStyles'
 import CustomButton from '../../Components/CustomButton/CustomButton'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { addBusinessByUser } from '../../functions/business'
 
 const BusinessCommercial = ({ navigation }) => {
     const { t } = useTranslation()
+    const queryClient = useQueryClient()
+    const { mutate: add_business_by_user } = useMutation({
+        mutationKey: ['add_business_by_user'],
+        mutationFn: async (data) => {
+            addBusinessByUser(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => {
+            console.log("successsssss save", data)
+            navigation.navigate('businessCount')
+        },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { }
+    })
     const scheme = yup.object().shape({
         number_of_business: yup.number(),
         other_business_apart_farming: yup.boolean(),
@@ -37,7 +53,7 @@ const BusinessCommercial = ({ navigation }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            navigation.navigate('businessCount')
+           add_business_by_user({...values, number_of_business: parseInt(values?.number_of_business)})
         }
     });
     return (

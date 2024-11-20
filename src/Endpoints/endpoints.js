@@ -112,6 +112,7 @@ export const endpoints = {
     get_mobility_dropdown:'/mobility-dropdown',
     get_forestry_dropdown:'/forestry-dropdown',
     get_other_personal: '/other-personal-dropdown',
+    get_business_dropdown:'/business-dropdown',
   },
   demographic: {
     add_demographic: '/demographic/add_demographic_info',
@@ -203,5 +204,15 @@ export const endpoints = {
     get_other_personal_household:'/other-personal-household-items',
     add_other_personal_household:'/other-personal-household-items/add-personal-household-items',
     update_other_personal_household:'/other-personal-household-items/edit-personal-household-items',
+  },
+  business_commercial:{
+    get_business_by_user:'/business-by-user/',
+    add_business_by_user:'/business-by-user/add-business-by-user',
+    get_business:'/business-commercial',
+    update_business:'/business-commercial/update-business',
+    business_requirement:{
+      get_business_requirement: '/business-by-user/business-requirements',
+      edit_business_requirement:'/business-by-user/edit-business-requirements',
+    },
   }
 };

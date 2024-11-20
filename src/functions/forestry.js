@@ -2,7 +2,7 @@ import axiosInstance from '../Helper/Helper';
 import { endpoints } from '../Endpoints/endpoints';
 export const getForestryDropdown = async () => {
     const res = await axiosInstance.get(
-        endpoints.dropdown.get_energy_dropdown
+        endpoints.dropdown.get_forestry_dropdown
     );
     return res.data;
 };

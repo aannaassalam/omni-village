@@ -4,12 +4,12 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { useTranslation } from 'react-i18next'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PopupModal from '../../Components/Popups/PopupModal'
 import { editHousing, getHousingDropdown } from '../../functions/housing'
@@ -17,6 +17,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import Input from '../../Components/Inputs/Input'
+import { editBusiness, getBusiness, getBusinessDropdown, getBusinessRequirement } from '../../functions/business'
 
 const BusinessRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
@@ -24,29 +25,34 @@ const BusinessRequirement = ({ navigation, route }) => {
     const [houseDetails, setHouseDetails] = useState(true)
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
-    // const queryClient = useQueryClient()
-    // const { data: housing_dropdown, isLoading, refetch } = useQuery({
-    //     queryKey: ['housing'],
-    //     queryFn: () => getHousingDropdown(),
-    //     refetchOnWindowFocus: true,
-    // })
-    // const { mutate: edit_housing } = useMutation({
-    //     mutationKey: ['edit_housing'],
-    //     mutationFn: async (data) => {
-    //         editHousing(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => {
-    //         navigation.replace('houseSpecificationQuestioner')
-    //     },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
+    const queryClient = useQueryClient()
+    const { data: business_dropdown, isLoading, refetch } = useQuery({
+        queryKey: ['business_dropdown'],
+        queryFn: () => getBusinessDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: business, isLoading:isBusinessLoading } = useQuery({
+        queryKey: ['business'],
+        queryFn: () => getBusiness(id),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_business } = useMutation({
+        mutationKey: ['edit_business'],
+        mutationFn: async (data) => {
+            editBusiness(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => {
+            navigation.replace('businessCount')
+        },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         skill_requirement: yup.boolean(),
         type_of_skill: yup.string().nullable().test(
             'type-of-skill-required',
-            'Type of skill is required when skill requirement is true',
+            t('Type of skill is required when skill requirement is true'),
             function (value) {
                 const { skill_requirement } = this.parent;
                 return skill_requirement ? !!value : true;
@@ -54,16 +60,16 @@ const BusinessRequirement = ({ navigation, route }) => {
         ),
         skill_urgency: yup.string().nullable().test(
             'skill-urgency-required',
-            'Skill urgency is required when skill requirement is true',
+            t('Skill urgency is required when skill requirement is true'),
             function (value) {
                 const { skill_requirement } = this.parent;
                 return skill_requirement ? !!value : true;
             }
         ),
         manpower_requirement: yup.boolean(),
-        number_of_manpower: yup.number().nullable().test(
+        number_of_manpower: yup.string().nullable().test(
             'number-of-manpower-required',
-            'Number of manpower is required when manpower requirement is true',
+            t('Number of manpower is required when manpower requirement is true'),
             function (value) {
                 const { manpower_requirement } = this.parent;
                 return manpower_requirement ? !!value : true;
@@ -71,7 +77,7 @@ const BusinessRequirement = ({ navigation, route }) => {
         ),
         manpower_urgency: yup.string().nullable().test(
             'manpower-urgency-required',
-            'Manpower urgency is required when manpower requirement is true',
+            t('Manpower urgency is required when manpower requirement is true'),
             function (value) {
                 const { manpower_requirement } = this.parent;
                 return manpower_requirement ? !!value : true;
@@ -80,7 +86,7 @@ const BusinessRequirement = ({ navigation, route }) => {
         equipment_requirement: yup.boolean(),
         equipment_type: yup.string().nullable().test(
             'equipment-type-required',
-            'Equipment type is required when equipment requirement is true',
+            t('Equipment type is required when equipment requirement is true'),
             function (value) {
                 const { equipment_requirement } = this.parent;
                 return equipment_requirement ? !!value : true;
@@ -88,7 +94,7 @@ const BusinessRequirement = ({ navigation, route }) => {
         ),
         equipment_urgency: yup.string().nullable().test(
             'equipment-urgency-required',
-            'Equipment urgency is required when equipment requirement is true',
+            t('Equipment urgency is required when equipment requirement is true'),
             function (value) {
                 const { equipment_requirement } = this.parent;
                 return equipment_requirement ? !!value : true;
@@ -97,7 +103,7 @@ const BusinessRequirement = ({ navigation, route }) => {
         other: yup.string().nullable(),
         urgency: yup.string().nullable().test(
             'urgency-required',
-            'Urgency is required when other has a value',
+            t('Urgency is required when other has a value'),
             function (value) {
                 const { other } = this.parent;
                 return other ? !!value : true;
@@ -135,36 +141,45 @@ const BusinessRequirement = ({ navigation, route }) => {
         },
     });
     const handleDraft = () => {
+        let new_data ={
+            ...businessEmployee, ...businessInvestment, ...businessName, ...values, 
+            status:0
+        }
+            edit_business({...new_data, business_id: id })
 
     }
 
     const onSubmit = () => {
-
+        let new_data = {
+            ...businessEmployee, ...businessInvestment, ...businessName, ...values, 
+            status: 1
+        }
+        edit_business({ ...new_data, business_id: id })
     }
     useEffect(() => {
         resetForm({
             values: {
-                skill_requirement: false,
-                type_of_skill: '',
-                skill_urgency: '',
-                manpower_requirement: false,
-                number_of_manpower: '',
-                manpower_urgency: '',
-                equipment_requirement: false,
-                equipment_type: '',
-                equipment_urgency: '',
-                other: '',
-                urgency: ''
+                skill_requirement: business?.skill_requirement|| false,
+                type_of_skill: business?.type_of_skill||'',
+                skill_urgency: business?.skill_urgency||'',
+                manpower_requirement: business?.manpower_requirement||false,
+                number_of_manpower: String(business?.number_of_manpower || '')||'',
+                manpower_urgency: business?.manpower_urgency||'',
+                equipment_requirement: business?.equipment_requirement||false,
+                equipment_type: business?.equipment_type||'',
+                equipment_urgency: business?.equipment_urgency||'',
+                other: business?.other||'',
+                urgency: business?.urgency||''
             }
         })
-    }, [])
-    // if (isLoading) {
-    //     return (
-    //         <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //             <ActivityIndicator size={'large'} color={primaryColor} />
-    //         </View>
-    //     );
-    // }
+    }, [business])
+    if (isLoading||isBusinessLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader

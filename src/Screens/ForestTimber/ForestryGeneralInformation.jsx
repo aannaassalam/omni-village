@@ -18,7 +18,7 @@ import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
-import { addForestryGeneralInformation, editForestryGeneralInformation, getForestry } from '../../functions/forestry'
+import { addForestryGeneralInformation, editForestryGeneralInformation, getForestry, getForestryDropdown } from '../../functions/forestry'
 
 const ForestryGeneralInformation = ({ navigation, route }) => {
   const { name, type, forestry_id } = route.params
@@ -28,6 +28,11 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const { data: user } = useUser()
   const queryClient = useQueryClient()
+  const { data: forestry, isLoading } = useQuery({
+    queryKey: ['forestry_dropdown'],
+    queryFn: () => getForestryDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_forestry ${type}`],
       queryFn: () => getForestry(type),
@@ -164,7 +169,7 @@ resetForm({
 })
     setSelectedStatus(get_forestry?.other_produced_harvested_from_forest.map((item)=>{return item?.type}))
   },[get_forestry])
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
       return (
           <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
               <ActivityIndicator size={'large'} color={primaryColor} />
@@ -279,13 +284,9 @@ resetForm({
         </View>
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[{
-            name: 'keyboard',
-            key: '6739df18a4cfd8cc1f107ef9'
-          }, {
-            name: 'mouse',
-            key: '6739df18a4cfd8cc1f108ef9'
-          }]}
+          data={forestry?.other_produce_from_forest.map((item) => {
+            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+          })}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
           infoName={t('Type of other produce harvested from forest')}
@@ -325,13 +326,9 @@ resetForm({
                     )}
                   <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[{
-                      name: 'keyboard',
-                      key: '6739df18a4cfd8cc1f107ef9'
-                    }, {
-                      name: 'mouse',
-                      key: '6739df18a4cfd8cc1f108ef9'
-                    }]}
+                    data={forestry?.general_purpose.map((item) => {
+                      return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                    })}
                     setSelectedd={(value) => handleFieldChange(
                       index,
                       'purpose',

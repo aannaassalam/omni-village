@@ -15,18 +15,31 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import { primaryColor } from '../../styles/colors';
 import AcresElement from '../../Components/ui/AcresElement';
 import { useUser } from '../../Hooks/useUser';
+import { useQuery } from '@tanstack/react-query';
+import { getBusiness, getBusinessDropdown } from '../../functions/business';
+import { ActivityIndicator } from 'react-native-paper';
 
 const BusinessName = ({navigation, route}) => {
     const { name, id } = route.params;
     const {t} = useTranslation()
     const {data: user} = useUser()
+    const { data: business_dropdown, isLoading, refetch } = useQuery({
+        queryKey: ['business_dropdown'],
+        queryFn: () => getBusinessDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: business, isLoading: isBusinessLoading } = useQuery({
+        queryKey: ['business'],
+        queryFn: () => getBusiness(id),
+        refetchOnWindowFocus: true,
+    })
     const scheme = yup.object().shape({
         business_name: yup.string().required(t('Business Name is Required')),
         business_type: yup.string().required(t('Business Type is required')),
         year_started: yup.string().required(t('Year Started is required')),
         brief_description: yup.string().required(t('Brief Description is required')),
         segment_served: yup.string().required(t('Segment Served is required')),
-        geotag: yup.string().required(t('Location is required')),
+        location: yup.string().required(t('Location is required')),
         land_area_utilised: yup.string().required(t('Land Area Utilised is required')),
         built_up_area: yup.string().required(t('Built Up Area is required')),
 
@@ -44,11 +57,11 @@ const BusinessName = ({navigation, route}) => {
                     setCoordinates: coords =>
                         setValues({
                             ...values,
-                            geotag: `${coords.latitude},${coords.longitude}`,
+                            location: `${coords.latitude},${coords.longitude}`,
                         }),
                     my_location: {
-                        lat: parseFloat(values?.geotag.split(',')[0]) || null,
-                        lng: parseFloat(values?.geotag.split(',')[1]) || null,
+                        lat: parseFloat(values?.location.split(',')[0]) || null,
+                        lng: parseFloat(values?.location.split(',')[1]) || null,
                     },
                 });
                 return true;
@@ -73,11 +86,11 @@ const BusinessName = ({navigation, route}) => {
                         setCoordinates: coords =>
                             setValues({
                                 ...values,
-                                geotag: `${coords.latitude},${coords.longitude}`,
+                                location: `${coords.latitude},${coords.longitude}`,
                             }),
                         my_location: {
-                            lat: parseFloat(values?.geotag.split(',')[0]) || null,
-                            lng: parseFloat(values?.geotag.split(',')[1]) || null,
+                            lat: parseFloat(values?.location.split(',')[0]) || null,
+                            lng: parseFloat(values?.location.split(',')[1]) || null,
                         },
                     });
                     return true;
@@ -99,16 +112,16 @@ const BusinessName = ({navigation, route}) => {
                 Geolocation.getCurrentPosition(
                     position => {
                         console.log(position);
-                        if (!values?.geotag.length)
+                        if (!values?.location.length)
                             setValues({
                                 ...values,
-                                geotag: `${position.coords.latitude},${position.coords.longitude}`,
+                                location: `${position.coords.latitude},${position.coords.longitude}`,
                             });
                     },
                     error => {
                         // See error code charts below.
                         console.log(error.code, error.message);
-                        setValues({ ...values, address: '' });
+                        setValues({ ...values, location: '' });
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
                 );
@@ -139,7 +152,7 @@ const BusinessName = ({navigation, route}) => {
           land_area_utilised:'',
           built_up_area:''
         },
-        // validationSchema: scheme,
+        validationSchema: scheme,
         onSubmit: async values => {
             console.log(values);
             let new_data = {
@@ -148,7 +161,7 @@ const BusinessName = ({navigation, route}) => {
                 year_started: values.year_started,
                 brief_description: values.brief_description,
                 segment_served: values.segment_served,
-                geotag: values.geotag,
+                location: values.location,
                 land_area_utilised: parseInt(values.land_area_utilised),
                 built_up_area: parseInt(values.built_up_area),
             }
@@ -158,11 +171,23 @@ const BusinessName = ({navigation, route}) => {
     useEffect(() => {
         resetForm({
             values: {
-
-
+                business_name: business?.business_name||'',
+                business_type: business?.business_type||'',
+                year_started: business?.year_started||'',
+                brief_description: business?.brief_description||'',
+                segment_served: business?.segment_served||'',
+                location: business?.location||'22.7890,88.3456',
+                land_area_utilised: String(business?.land_area_utilised || '')||'',
+                built_up_area: String(business?.built_up_area || '')||'',
             }
         })
-    }, [])
+    }, [business])
+    console.log("businessss", business)
+    if (isBusinessLoading || isLoading){
+       return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+    }
   return (
       <View style={styles.container}>
           <CustomHeader
@@ -194,7 +219,12 @@ const BusinessName = ({navigation, route}) => {
                   )}
               <CustomDropdown
                   data={
-                      [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                      business_dropdown?.type_of_business.map((item) => {
+                          return {
+                              label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                          }
+                      })
+                    //   [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
                   }
                   value={values?.business_type}
                   label={t('Type')}
@@ -238,7 +268,12 @@ const BusinessName = ({navigation, route}) => {
                   )}
               <CustomDropdown
                   data={
-                      [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                      business_dropdown?.segment_served.map((item) => {
+                          return {
+                              label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                          }
+                      })
+                    //   [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
                   }
                   value={values?.segment_served}
                   label={t('Segmented Served')}

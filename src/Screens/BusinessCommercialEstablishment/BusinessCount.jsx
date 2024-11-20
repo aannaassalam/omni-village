@@ -12,27 +12,24 @@ import { useQuery } from '@tanstack/react-query'
 import { useFocusEffect } from '@react-navigation/native'
 import { primaryColor } from '../../styles/colors'
 import { getMobilityByUser } from '../../functions/mobility'
+import { getBusinessByUser } from '../../functions/business'
 
 const BusinessCount = ({ navigation, route }) => {
     const { t } = useTranslation()
-    // const { data: get_business_by_user, isLoading, refetch } = useQuery({
-    //     queryKey: ['get_business_by_user'],
-    //     queryFn: () => getMobilityByUser(),
-    //     refetchOnWindowFocus: true,
-    // })
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         refetch()
-    //     }, [refetch])
-    // )
-    // if (isLoading) {
-    //     return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //         <ActivityIndicator size={'large'} color={primaryColor} />
-    //     </View>
-    // }
-    const get_mobility_by_user={
-        mobilities:[1,2,3],
-        vehicle_requirement: true
+    const { data: get_business_by_user, isLoading, refetch } = useQuery({
+        queryKey: ['get_business_by_user'],
+        queryFn: () => getBusinessByUser(),
+        refetchOnWindowFocus: true,
+    })
+    useFocusEffect(
+        useCallback(() => {
+            refetch()
+        }, [refetch])
+    )
+    if (isLoading) {
+        return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+            <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
     }
     return (
         <View style={styles.container}>
@@ -43,7 +40,7 @@ const BusinessCount = ({ navigation, route }) => {
             />
             <ScrollView>
 
-                {get_mobility_by_user?.mobilities > 0 ?
+                {get_business_by_user?.businesses > 0 ?
                     <View style={styles.subArea}>
                         <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
                         <Divider
@@ -56,19 +53,21 @@ const BusinessCount = ({ navigation, route }) => {
                 }
                 <View style={styles.mainContainer}>
                     {/* {Array.from({ length: total_numbers_of_house }, (_, index) => { */}
-                    {get_mobility_by_user.mobilities.map((item, index) => {
+                    {get_business_by_user?.businesses.map((item, index) => {
                         return <CustomShowcaseInput
                             key={index}
-                            productionName={`${t('Business')} ${index + 1}`}
+                            productionName={item?.business_name ? item?.business_name:`${t('Business')} ${index + 1}`}
                             style={{ width: '100%' }}
                             progressBar={false}
+                            isDrafted={item?.status === 1 ? false : true}
+                            id={item?.status === 1 && item?.business_name!==null && item?._id}
                             onPress={() => {
-                                navigation.navigate('businessName', { name: item?.name? item?.name:`${t('Business')} ${index + 1}`, id: item })
+                                navigation.navigate('businessName', { name: item?.business_name ? item?.business_name :`${t('Business')} ${index + 1}`, id: item?._id })
                                 // console.log("valyesssss", values)
                             }}
                         />
                     })}
-                    {get_mobility_by_user?.vehicle_requirement ?
+                    {get_business_by_user?.plan_to_start_business ?
                         <CustomShowcaseInput
                             key={1}
                             productionName={t(`New Business Details`)}

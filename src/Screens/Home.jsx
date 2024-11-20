@@ -89,7 +89,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('business'),
-      navigation: 'businessCommercial',
+      navigation: user?.is_business_data?'businessCount':'businessCommercial',
       image: require('../../assets/business.png'),
     },
     // {

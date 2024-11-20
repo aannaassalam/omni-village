@@ -4,18 +4,19 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { useTranslation } from 'react-i18next'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Styles, width } from '../../styles/globalStyles'
-import { Divider } from 'react-native-paper'
+import { ActivityIndicator, Divider } from 'react-native-paper'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import CustomButton from '../../Components/CustomButton/CustomButton'
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
-import { borderColor } from '../../styles/colors'
+import { borderColor, primaryColor } from '../../styles/colors'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PopupModal from '../../Components/Popups/PopupModal'
 import { editHousing, getHousingDropdown } from '../../functions/housing'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import Input from '../../Components/Inputs/Input'
+import { editBusinessRequirement, getBusinessDropdown, getBusinessRequirement } from '../../functions/business'
 
 const NewBusinessDetails = ({ navigation, route }) => {
     const { t } = useTranslation()
@@ -23,24 +24,29 @@ const NewBusinessDetails = ({ navigation, route }) => {
     const [houseDetails, setHouseDetails] = useState(true)
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
-    // const queryClient = useQueryClient()
-    // const { data: housing_dropdown, isLoading, refetch } = useQuery({
-    //     queryKey: ['housing'],
-    //     queryFn: () => getHousingDropdown(),
-    //     refetchOnWindowFocus: true,
-    // })
-    // const { mutate: edit_housing } = useMutation({
-    //     mutationKey: ['edit_housing'],
-    //     mutationFn: async (data) => {
-    //         editHousing(data)
-    //         queryClient.invalidateQueries()
-    //     },
-    //     onSuccess: (data) => {
-    //         navigation.replace('houseSpecificationQuestioner')
-    //     },
-    //     onError: (error) => console.log("error save", error),
-    //     onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    // })
+    const queryClient = useQueryClient()
+    const { data: business_dropdown, isLoading, refetch } = useQuery({
+        queryKey: ['business'],
+        queryFn: () => getBusinessDropdown(),
+        refetchOnWindowFocus: true,
+    })
+    const { data: business_requirement, } = useQuery({
+        queryKey: ['business_requirement'],
+        queryFn: () => getBusinessRequirement(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: edit_business_requirement } = useMutation({
+        mutationKey: ['edit_business'],
+        mutationFn: async (data) => {
+            editBusinessRequirement(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => {
+            navigation.replace('businessCount')
+        },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         business_wish_to_start: yup.string().required(t('Business wish to start is required')),
         require_land: yup.string().required(t('Require land is required')),
@@ -70,31 +76,52 @@ const NewBusinessDetails = ({ navigation, route }) => {
         },
     });
     const handleDraft = () => {
+        let newData = {
+            business_wish_to_start: values.business_wish_to_start,
+            require_land: values.require_land,
+            land_already_owned: values.land_already_owned,
+            purpose_of_business: values.purpose_of_business,
+            status: 0
+        }
+        if(business_requirement?._id){
+            edit_business_requirement({ ...newData, business_id: business_requirement?._id })
+        }else{
+            edit_business_requirement({ ...newData, business_id: business_requirement?._id })
+        }
 
     }
 
     const onSubmit = () => {
-
+        let newData = {
+            business_wish_to_start: values.business_wish_to_start,
+            require_land: values.require_land,
+            land_already_owned: values.land_already_owned,
+            purpose_of_business: values.purpose_of_business,
+            status: 0
+        }
+        if (business_requirement?._id) {
+            edit_business_requirement({ ...newData, business_id: business_requirement?._id })
+        } else {
+            edit_business_requirement({ ...newData, business_id: business_requirement?._id })
+        }
     }
     useEffect(() => {
         resetForm({
             values: {
-                // equipment: housing_data.equipment,
-                // furnishing: housing_data.furnishing,
-                // renovation_requirement: housing_data.renovation_requirement,
-                // renovation_urgency: housing_data.renovation_urgency,
-                // expansion_requirement: housing_data.expansion_requirement,
-                // expansion_urgency: housing_data.expansion_urgency,
+                business_wish_to_start: business_requirement?.business_wish_to_start || '',
+                require_land: business_requirement?.require_land || '',
+                land_already_owned: business_requirement?.land_already_owned || '',
+                purpose_of_business: business_requirement?.purpose_of_business || '',
             }
         })
-    }, [])
-    // if (isLoading) {
-    //     return (
-    //         <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //             <ActivityIndicator size={'large'} color={primaryColor} />
-    //         </View>
-    //     );
-    // }
+    }, [business_requirement])
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
