@@ -75,23 +75,54 @@ import BusinessRequirement from '../Screens/BusinessCommercialEstablishment/Busi
 import BusinessInvestment from '../Screens/BusinessCommercialEstablishment/BusinessInvestment';
 import BusinessEmployee from '../Screens/BusinessCommercialEstablishment/BusinessEmployee';
 import BusinessName from '../Screens/BusinessCommercialEstablishment/BusinessName';
+import LoginWithOtpFieldOfficer from '../Screens/AuthScreens/LoginWithOtpFieldOfficer';
+import LoginFieldOfficer from '../Screens/AuthScreens/LoginFieldOfficer';
+import PendingScreen from '../Screens/AuthScreens/PendingScreen';
+import Village from '../Screens/AuthScreens/Village';
+import RejectScreen from '../Screens/AuthScreens/RejectScreen';
+import LoginFieldOfficerSuccessfull from '../Screens/AuthScreens/LoginFieldOfficerSuccess';
 
 const Stack = createStackNavigator();
 
-export default function AuthStack({user}) {
+export default function AuthStack({user, moderator}) {
   const type = storage.getString('type');
+  console.log("moderatorrrr", moderator, type)
   const renderScreen = useCallback(() => {
-    if (!user) {
-      return 'startup';
-    } else if (type==="villager"&&user?.first_name === '-') {
-      return 'registerdetails';
-    } else if (type === "officer" && user?.first_name === '-'){
-      return 'registerDetailsFieldOfficer';
-    }else {
-      // return 'registerdetails';
-      return 'home';
+    if(type==="officer"){
+      // console.log("herererre")
+      if(!moderator){
+        // console.log("hereeeeeeee12")
+        return 'startup';
+      } else if (moderator?.first_name === '-'){
+        // console.log("hereeeeeeee13")
+        return 'registerDetailsFieldOfficer';
+      } else if (moderator?.status === 0) {
+        // console.log("hereeeeeeee16")
+        return 'pending';
+      } else if (moderator?.status === 2) {
+        // console.log("hereeeeeeee16")
+        return 'reject';
+      } else if (moderator?.status === 1) {
+        // console.log("hereeeeeeee14")
+        return 'village'
+      }else{
+        return 'startup'
+      }
+    }else if(type==="villager"){
+      // console.log("herereer3")
+      if (!user) {
+        return 'startup';
+      } else if (user?.first_name === '-') {
+        return 'registerdetails';
+      } else {
+        return 'home';
+      }
     }
-  }, [user]);
+    else {
+      console.log("hereerrererere9088")
+      return 'startup'
+    }
+  }, [user, moderator, type]);
 
   return (
     <Stack.Navigator
@@ -102,12 +133,18 @@ export default function AuthStack({user}) {
       <Stack.Screen name="registerDetailsFieldOfficer" component={RegisterDetailsFieldOfficer} />
       <Stack.Screen name="startup" component={StartupScreen} />
       <Stack.Screen name="login" component={Login} />
-      <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="loginotp" component={LoginWithOtp} />
+      <Stack.Screen name="loginFieldOfficer" component={LoginFieldOfficer} />
+      <Stack.Screen name="loginotpFieldOfficer" component={LoginWithOtpFieldOfficer} />
+      <Stack.Screen name="register" component={Register} />
       <Stack.Screen name="registerotp" component={RegisterWithOtp} />
       <Stack.Screen name="registerFieldOfficerOtp" component={RegisterFieldOfficerOtp} />
       <Stack.Screen name="loginsuccess" component={LoginSuccessfull} />
+      <Stack.Screen name="loginfieldsuccess" component={LoginFieldOfficerSuccessfull} />
       <Stack.Screen name="registersuccess" component={RegisterSuccessfull} />
+      <Stack.Screen name="pending" component={PendingScreen} />
+      <Stack.Screen name="reject" component={RejectScreen} />
+      <Stack.Screen name="village" component={Village} />
       <Stack.Screen name="home" component={Home} />
       <Stack.Screen name="foodHome" component={FoodHome} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />

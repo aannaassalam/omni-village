@@ -8,6 +8,14 @@ export const endpoints = {
     landAllocation: '/user/land_allocation',
     cultivationLandAllocation: '/user/cultivation_land_allocation',
   },
+  moderator:{
+    otp: '/moderator/send_otp',
+    register: '/moderator/register',
+    login: '/moderator/login',
+    editModerator: '/moderator/edit_moderator',
+    getModerator: '/moderator/current_moderator',
+    deleteModerator: '/moderator/delete_moderator'
+  },
   cultivation: {
     fetchCultivation: '/cultivation',
     addCultivation: '/cultivation/add_cultivation',

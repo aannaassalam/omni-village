@@ -40,7 +40,7 @@ const Home = ({ navigation }) => {
       </View>
     );
   }
-  console.log("usererer", user?.is_landholding_data)
+  // console.log("usererer", user?.is_landholding_data)
   const ITEMS = [
     {
       title: t('food'),

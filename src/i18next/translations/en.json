@@ -739,5 +739,14 @@
   "Business wish to start is required":"Business wish to start is required",
   "Require land is required":"Require land is required",
   "land already owned is required":"land already owned is required",
-  "Purpose of business is required":"Purpose of business is required"
+  "Purpose of business is required":"Purpose of business is required",
+
+  "login as field officer":"Login as field officer",
+  "already have an account as field officer":"Already have an account as field officer?",
+  "don't have an account as a field officer":"Don't have an account as a field officer?",
+  "login as a villager":"Login as a villager",
+  "Under Verification!":"Under Verification!",
+  "Please wait while we are verifying your account.":"Please wait while we are verifying your account.",
+  "Account Rejected!":"Account Rejected!",
+  "Your Account has been rejected":"Your Account has been rejected"
 }

@@ -16,14 +16,13 @@ import CountryPicker from 'react-native-country-picker-modal';
 import * as yup from 'yup';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
-import { Scale } from '../../Helper/utils';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import { sentOtp, sentOtpModerator } from '../../functions/AuthScreens';
-import { fontFamilyMedium } from '../../styles/fontStyle';
 
-export default function RegisterFieldOfficer({ navigation, route }) {
+export default function LoginFieldOfficer({ navigation, route }) {
     const [inputVal, setInputVal] = useState('');
     const [api_err, setApi_err] = useState('');
+
     const [selectedCountry, setSelectedCountry] = useState({
         callingCode: ['60'],
         cca2: 'MY',
@@ -39,9 +38,6 @@ export default function RegisterFieldOfficer({ navigation, route }) {
     const onSelectCountry = country => {
         setSelectedCountry(country);
     };
-    const InputValueCallback = data => {
-        setInputVal(data);
-    };
 
     const loginSchema = yup
         .object()
@@ -54,35 +50,32 @@ export default function RegisterFieldOfficer({ navigation, route }) {
         handleSubmit,
         setValue,
         control,
+        watch,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
-
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
 
-    const { mutate, isPending } = useMutation({
+    const { isPending, mutate } = useMutation({
         mutationFn: sentOtpModerator,
         onSuccess: (data, variables) => {
-            console.log("datata", data)
-            navigation.navigate('registerFieldOfficerOtp', variables)
+            navigation.navigate('loginotpFieldOfficer', variables);
         },
         onError: err => {
             if (err.response.status === 400) {
                 setApi_err(err.response.data.message);
             }
-            console.log(err.response);
+            console.log(err.response.data.message);
         },
     });
 
-    const FormSubmit = async data => {
+    const FormSubmit = data => {
         mutate({
             ...data,
-            currency: selectedCountry?.currency[0],
             country_code: `+${selectedCountry?.callingCode[0]}`,
-            country: selectedCountry?.name,
-            type: 'register',
+            type: 'login',
         });
     };
 
@@ -91,23 +84,14 @@ export default function RegisterFieldOfficer({ navigation, route }) {
             <>
                 <View style={styles.form_section}>
                     <View style={styles.form_head}>
-                        <Text style={styles.LoginHead}>{t('register as field officer')}</Text>
-                        <Text style={styles.subtitle}>{t('register with sent OTP')}</Text>
+                        <Text style={styles.LoginHead}>{t('login as field officer')}</Text>
+                        <Text style={[styles.subtitle,{textAlign:'center'}]}>{t('login with sent OTP')}</Text>
                     </View>
                     <View style={styles.login_input}>
                         <Controller
                             control={control}
                             name={'phone'}
                             render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                                // <InputWithoutRightElement
-                                //   label={'Phone Number'}
-                                //   onChangeText={e => {
-                                //     setApi_err('');
-                                //     onChange(e);
-                                //   }}
-                                //   value={value}
-                                //   keyboardType="number-pad"
-                                // />
                                 <LoginInput
                                     placeholder={t('phone number')}
                                     // label={'Phone Number'}
@@ -117,7 +101,7 @@ export default function RegisterFieldOfficer({ navigation, route }) {
                                         setApi_err('');
                                     }}
                                     value={value}
-                                    keyboardType="number-pad"
+                                    keyboardType="phone-pad"
                                     countryCode={
                                         selectedCountry !== null
                                             ? '+' + selectedCountry?.callingCode[0]
@@ -148,18 +132,71 @@ export default function RegisterFieldOfficer({ navigation, route }) {
                                 {api_err}
                             </Text>
                         )}
+                        {/* <TextInput
+            placeholder={'Phone Number'}
+            onChangeText={setInputVal}
+            value={inputVal.toString()}
+            keyboardType="number-pad"
+          /> */}
                     </View>
                     <View style={styles.login_submit}>
                         <CustomButton
-                            btnText={t('register')}
+                            btnText={t('login')}
                             onPress={handleSubmit(FormSubmit)}
                             loading={isPending}
                         />
                     </View>
+                    <CountryPicker
+                        withCountryNameButton={false}
+                        containerButtonStyle={{
+                            display: 'none',
+                        }}
+                        withCurrency
+                        onClose={() => {
+                            setCountryModal(false);
+                        }}
+                        modalProps={{
+                            visible: countryModal,
+                        }}
+                        flatListProps={{
+                            renderItem: ({ item }) => {
+                                return (
+                                    <TouchableOpacity
+                                        style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            padding: 10,
+                                        }}
+                                        onPress={() => {
+                                            onSelectCountry(item);
+                                            setCountryModal(false);
+                                        }}>
+                                        <Image
+                                            source={{ uri: item?.flag }}
+                                            resizeMode="contain"
+                                            style={{
+                                                width: 30,
+                                                height: 35,
+                                                marginRight: 10,
+                                            }}
+                                        />
+                                        <Text style={styles.text}> +{item?.callingCode}</Text>
+                                        <Text style={styles.text}> {item?.name}</Text>
+                                        <Text style={styles.text}> ({item.currency[0]})</Text>
+                                    </TouchableOpacity>
+                                );
+                            },
+                        }}
+                        countryCodes={['IN', 'BT', 'MY']}
+                        onSelect={onSelectCountry}
+                        withCallingCode
+                        withEmoji={false}
+                        withFilter
+                    />
                 </View>
                 {/* <View style={styles.form_btm}>
         <View style={styles.form_btm_text}>
-          <Text style={styles.login_text}>Or register with</Text>
+          <Text style={styles.login_text}>Or login with</Text>
           <View style={styles.line_border}></View>
         </View>
         <View style={styles.social_btn}>
@@ -170,69 +207,26 @@ export default function RegisterFieldOfficer({ navigation, route }) {
         </View>
       </View> */}
                 <View style={{ position: 'absolute', alignContent: 'center', alignSelf: 'center', bottom: 60 }}>
-                    <View style={styles.register_text}>
-                <Text
-                    varint="body1"
-                    style={[styles.register_txt, { color: 'black' }]}>
-                    {t('Are you a villager ?')} <Text style={{ color: '#268C43', fontFamily: fontFamilyMedium }} onPress={() => navigation.navigate('register', { edit: false })}>{t('register')}</Text>
-                </Text>
-        </View>
                 <View style={styles.register_text}>
                     <Text style={styles.register_text_frst}>
-                        {t('already have an account as field officer')}
+                        {t("don't have an account as a field officer")}
                     </Text>
-                        <Pressable onPress={() => navigation.navigate('loginFieldOfficer')}>
+                        <Pressable onPress={() => navigation.navigate('registerFieldOfficer')}>
+                        <Text style={styles.register_text_scnd}>{t('register')}</Text>
+                    </Pressable>
+
+                </View>
+                    <View style={[styles.register_text, { marginTop: '5%' }]}>
+                    <Text style={styles.register_text_frst}>
+                        {t("login as a villager")}
+                    </Text>
+                    <Pressable onPress={() => navigation.navigate('login')}>
                         <Text style={styles.register_text_scnd}>{t('login')}</Text>
                     </Pressable>
+
                 </View>
-      </View>
+                </View>
             </>
-            <CountryPicker
-                withCurrency
-                onClose={() => {
-                    setCountryModal(false);
-                }}
-                containerButtonStyle={{
-                    display: 'none',
-                }}
-                modalProps={{
-                    visible: countryModal,
-                }}
-                flatListProps={{
-                    renderItem: ({ item }) => {
-                        return (
-                            <TouchableOpacity
-                                style={{
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    padding: 10,
-                                }}
-                                onPress={() => {
-                                    onSelectCountry(item);
-                                    setCountryModal(false);
-                                }}>
-                                <Image
-                                    source={{ uri: item?.flag }}
-                                    resizeMode="contain"
-                                    style={{
-                                        width: 30,
-                                        height: 35,
-                                        marginRight: 10,
-                                    }}
-                                />
-                                <Text style={styles.text}> +{item?.callingCode}</Text>
-                                <Text style={styles.text}> {item?.name}</Text>
-                                <Text style={styles.text}> ({item.currency[0]})</Text>
-                            </TouchableOpacity>
-                        );
-                    },
-                }}
-                countryCodes={['IN', 'BT', 'MY']}
-                onSelect={onSelectCountry}
-                withCallingCode
-                withEmoji={false}
-                withFilter
-            />
         </LoginWrapper>
     );
 }
@@ -251,11 +245,15 @@ const makeStyles = fontScale =>
             textAlign: 'center',
             fontFamily: 'ubuntu-medium',
         },
+        text: {
+            color: '#000',
+            marginHorizontal: 2,
+            fontSize: 16 / fontScale,
+        },
         subtitle: {
             fontFamily: 'ubuntu',
             color: '#36393B',
             fontSize: 14 / fontScale,
-            textAlign:'center'
         },
         login_input: {
             width: '100%',
@@ -279,7 +277,7 @@ const makeStyles = fontScale =>
             height: 28,
             backgroundColor: '#fff',
             width: 100,
-            fontSize: Scale(12),
+            fontSize: 14 / fontScale,
             color: '#5C6066',
             fontFamily: 'ubuntu-medium',
         },
@@ -303,8 +301,7 @@ const makeStyles = fontScale =>
         register_text: {
             flexDirection: 'row',
             justifyContent: 'center',
-            paddingVertical: 10,
-            // marginTop: 'auto',
+            marginTop: 'auto',
             // alignSelf: 'center',
             alignItems: 'center',
         },
@@ -318,16 +315,5 @@ const makeStyles = fontScale =>
             fontSize: 14 / fontScale,
             marginLeft: 5,
             fontFamily: 'ubuntu-medium',
-        },
-        text: {
-            color: '#000',
-            marginHorizontal: 2,
-            fontSize: 16 / fontScale,
-        },
-        register_txt: {
-            color: '#268C43',
-            fontSize: 14 / fontScale,
-            fontFamily: 'ubuntu-regular',
-            marginTop: '5%'
         },
     });

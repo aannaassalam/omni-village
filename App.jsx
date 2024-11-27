@@ -8,13 +8,14 @@
 import {NavigationContainer} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {storage} from './src/Helper/Storage';
-import {useUser} from './src/Hooks/useUser';
+import {useModerator, useUser} from './src/Hooks/useUser';
 import AuthStack from './src/Navigation/AuthStack';
 import {SplashScreen} from './src/Screens/AuthScreens/splashScreen';
 import './src/i18next';
 
 function App() {
   const {data: user, error, isLoading} = useUser();
+  const {data: moderator, error: moderatorError} = useModerator();
 
   useEffect(() => {
     if (error) {
@@ -26,7 +27,7 @@ function App() {
   return (
     <SplashScreen isAppReady={!isLoading}>
       <NavigationContainer>
-        <AuthStack user={user} />
+        <AuthStack user={user} moderator={moderator}/>
         {/* <RegisterSuccessfull /> */}
         {/* <CultivationLand /> */}
         {/* <CultivationThrice/> */}

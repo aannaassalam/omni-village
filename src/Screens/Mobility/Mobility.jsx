@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
@@ -15,6 +15,7 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
 import { addMobility, getMobilityDropdown } from '../../functions/mobility';
 import { USER_PREFERRED_LANGUAGE } from '../../i18next';
+import { primaryColor } from '../../styles/colors';
 
 const Mobility = ({ navigation }) => {
     const { t } = useTranslation()
@@ -69,6 +70,13 @@ const Mobility = ({ navigation }) => {
             add_mobility_by_user(new_data)
         },
     });
+    if (isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader

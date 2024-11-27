@@ -38,6 +38,7 @@ export default function LoginWithOtp({navigation, route}) {
     onSuccess: data => {
       storage.set('token', data?.data?.token);
       storage.set('refresh_token', data?.data?.refreshToken);
+      storage.set('type', 'villager');
       queryClient.invalidateQueries();
       if (user?.first_name === '-') {
         navigation.replace('registerdetails');

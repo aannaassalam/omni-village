@@ -17,3 +17,18 @@ export const useUser = () => {
     // gcTime: 0,
   });
 };
+
+export const useModerator = () => {
+  const token = storage.getString('token');
+  return useQuery({
+    queryKey: ['moderator'],
+    queryFn: async () => {
+      const res = await axiosInstance.get(endpoints.moderator.getModerator);
+      return res.data;
+    },
+    enabled: !!token,
+    refetchOnWindowFocus: 'always',
+    staleTime: 0,
+    // gcTime: 0,
+  });
+};

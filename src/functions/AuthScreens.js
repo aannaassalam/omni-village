@@ -32,6 +32,37 @@ export const editUser = async body => {
   return res?.data;
 };
 
+export const sentOtpModerator = async body => {
+  const res = await axiosInstance.post(endpoints?.moderator?.otp, body);
+  return res;
+};
+
+export const loginModerator = async body => {
+  const res = await axiosInstance.post(endpoints?.moderator?.login, body);
+  return res;
+};
+
+export const registerModerator = async body => {
+  const res = await axiosInstance.post(endpoints.moderator.register, body);
+  return res.data;
+};
+
+export const editModerator = async body => {
+  const res = await axiosInstance.post(
+    endpoints.moderator.editModerator,
+    body.data,
+    !body.edit && {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data, error) => {
+        return body.data;
+      },
+    },
+  );
+  return res?.data;
+};
+
 export const saveLand = async body => {
   let res = await axiosInstance?.post(endpoints?.auth?.landAllocation, body);
   return res?.data;

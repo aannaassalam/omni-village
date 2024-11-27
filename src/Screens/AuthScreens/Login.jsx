@@ -18,6 +18,7 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import LoginInput from '../../Components/CustomInputField/LoginInput';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import {sentOtp} from '../../functions/AuthScreens';
+import { Divider } from 'react-native-paper';
 
 export default function Login({navigation, route}) {
   const [inputVal, setInputVal] = useState('');
@@ -146,6 +147,18 @@ export default function Login({navigation, route}) {
               loading={isPending}
             />
           </View>
+          {/* <View style={{flexDirection:'row', gap: 12, alignItems:'center',alignSelf:'center', marginVertical: '16%'}}>
+            <Divider style={{width: '40%'}}/>
+            <Text style={{fontSize: 16/fontScale, color: '#000'}}>Or</Text>
+            <Divider style={{ width: '40%' }} />
+          </View>
+          <View style={styles.login_submit}>
+            <CustomButton
+              btnText={t('login as Field officer')}
+              onPress={() => navigation.navigate('loginFieldOfficer')}
+              loading={isPending}
+            />
+          </View> */}
           <CountryPicker
             withCountryNameButton={false}
             containerButtonStyle={{
@@ -206,6 +219,7 @@ export default function Login({navigation, route}) {
           />
         </View>
       </View> */}
+        <View style={{ position: 'absolute', alignContent: 'center', alignSelf: 'center', bottom: 60 }}>
         <View style={styles.register_text}>
           <Text style={styles.register_text_frst}>
             {t("don't have an account")}
@@ -214,6 +228,15 @@ export default function Login({navigation, route}) {
             <Text style={styles.register_text_scnd}>{t('register')}</Text>
           </Pressable>
         </View>
+          <View style={[styles.register_text,{marginTop: '5%'}]}>
+          <Text style={styles.register_text_frst}>
+            {t("login as field officer")}
+          </Text>
+          <Pressable onPress={() => navigation.navigate('loginFieldOfficer')}>
+            <Text style={styles.register_text_scnd}>{t('login')}</Text>
+          </Pressable>
+          </View>
+          </View>
       </>
     </LoginWrapper>
   );

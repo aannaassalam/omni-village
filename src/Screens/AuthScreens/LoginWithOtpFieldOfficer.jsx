@@ -1,59 +1,26 @@
-import { Box, Flex } from '@react-native-material/core';
+import { Box, Flex, Pressable } from '@react-native-material/core';
 import { useMutation } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-    useWindowDimensions,
-} from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import OtpInput from '../../Components/OtpInputs';
-import { useUser } from '../../Hooks/useUser';
-import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
-import { register, registerModerator, sentOtp } from '../../functions/AuthScreens';
 import { storage } from '../../Helper/Storage';
+import { useModerator, useUser } from '../../Hooks/useUser';
+import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
+import { login, loginModerator, sentOtp, sentOtpModerator } from '../../functions/AuthScreens';
+import { queryClient } from '../../..';
 
-export default function RegisterFieldOfficerOtp({ navigation, route }) {
-    const { data: user } = useUser();
-
-    const { t } = useTranslation();
-
-    const [timer, setTimer] = useState(30);
-    // const [otp, setOtp] = useState('');
-    const otp = useRef('');
-    const [err, setErr] = useState('');
+export default function LoginWithOtpFieldOfficer({ navigation, route }) {
+    const { data: user } = useModerator();
 
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
+    const { t } = useTranslation();
 
-    const { mutate, isPending } = useMutation({
-        mutationFn: registerModerator,
-        onSuccess: data => {
-            storage.set('token', data.token);
-            storage.set('refresh_token', data?.refreshToken);
-            storage.set('type', 'officer');
-            navigation.replace('registerDetailsFieldOfficer', { edit: false });
-        },
-        onError: error => {
-            if (error.response.status === 401) {
-                setErr(error.response.data.message);
-            }
-            console.log(error.response, 'err');
-        },
-    });
-
-    const { isPending: isOTPPending, mutate: resendOtp } = useMutation({
-        mutationFn: sentOtp,
-        onError: error => {
-            if (error.response.status === 400) {
-                setErr(error.response.data.message);
-            }
-            console.log(error.response);
-        },
-    });
+    const [timer, setTimer] = useState(30);
+    const [otp, setOtp] = useState('');
+    const [err, setErr] = useState('');
 
     useEffect(() => {
         const interval = setInterval(
@@ -64,11 +31,43 @@ export default function RegisterFieldOfficerOtp({ navigation, route }) {
         return () => {
             clearInterval(interval);
         };
+    }, []);
+
+    const { isPending, mutate } = useMutation({
+        mutationFn: loginModerator,
+        onSuccess: data => {
+            storage.set('token', data?.data?.token);
+            storage.set('refresh_token', data?.data?.refreshToken);
+            storage.set('type', 'officer');
+            queryClient.invalidateQueries();
+            if (user?.first_name === '-') {
+                navigation.replace('registerDetailsFieldOfficer');
+                // navigation.replace('loginsuccess');
+            } else {
+                navigation.replace('loginfieldsuccess');
+            }
+        },
+        onError: error => {
+            if (error.response.status === 401) {
+                setErr(error.response.data.message);
+            }
+            console.log(error.response.status, 'err');
+        },
+    });
+
+    const { isPending: isOTPPending, mutate: resendOtp } = useMutation({
+        mutationFn: sentOtpModerator,
+        onError: error => {
+            if (error.response.status === 400) {
+                setErr(error.response.data.message);
+            }
+            console.log(error.response);
+        },
     });
 
     const FormSubmit = () => {
-        if (otp.current.length === 4) {
-            mutate({ ...route.params, otp: otp.current });
+        if (otp.length === 4) {
+            mutate({ ...route.params, otp });
         } else {
             setErr(t('invalid otp'));
         }
@@ -78,14 +77,14 @@ export default function RegisterFieldOfficerOtp({ navigation, route }) {
         <LoginWrapper>
             <View style={styles.form_section}>
                 <View style={styles.form_head}>
-                    <Text style={styles.LoginHead}>{t('register as field officer')}</Text>
+                    <Text style={styles.LoginHead}>Login</Text>
                     <Text style={styles.subtitle}>
                         {t('enter otp recieved in')}{' '}
-                        {`XXX${route.params?.phone?.slice(-2)}`}
+                        {`XXX${route.params.phone?.toString()?.slice(-2)}`}
                     </Text>
                 </View>
                 <View style={styles.login_input}>
-                    <OtpInput setParentOtp={ot => (otp.current = ot)} />
+                    <OtpInput setParentOtp={setOtp} />
                     {err.length > 0 && (
                         <Text
                             style={{
@@ -114,7 +113,7 @@ export default function RegisterFieldOfficerOtp({ navigation, route }) {
                                     ? resendOtp({
                                         phone: route.params.phone,
                                         country_code: `${route.params?.country_code}`,
-                                        type: 'register',
+                                        type: 'login',
                                     })
                                     : null
                             }>
@@ -127,7 +126,6 @@ export default function RegisterFieldOfficerOtp({ navigation, route }) {
                         00:{timer < 10 ? '0' + timer : timer}
                     </Text>
                 </Box>
-                {/* <Text>{otp.current}</Text> */}
             </View>
         </LoginWrapper>
     );
@@ -141,6 +139,7 @@ const makeStyles = fontScale =>
         },
         LoginHead: {
             color: '#36393B',
+            // fontSize: 22 / fontScale,
             fontSize: 22 / fontScale,
             marginBottom: 10,
             textAlign: 'center',

@@ -727,5 +727,13 @@
   "Business wish to start is required": "Keinginan untuk memulakan perniagaan diperlukan",
   "Require land is required": "Memerlukan tanah diperlukan",
   "land already owned is required": "tanah yang sudah dimiliki diperlukan",
-  "Purpose of business is required": "Tujuan perniagaan diperlukan"
+  "Purpose of business is required": "Tujuan perniagaan diperlukan",
+  "login as field officer": "Log masuk sebagai pegawai lapangan",
+  "already have an account as field officer": "Sudah mempunyai akaun sebagai pegawai lapangan?",
+  "don't have an account as a field officer": "Tidak mempunyai akaun sebagai pegawai lapangan?",
+  "login as a villager": "Log masuk sebagai orang kampung",
+  "Under Verification!": "Di bawah Pengesahan!",
+  "Please wait while we are verifying your account.": "Sila tunggu sementara kami mengesahkan akaun anda.",
+  "Account Rejected!": "Akaun Ditolak!",
+  "Your Account has been rejected": "Akaun anda telah ditolak"
 }

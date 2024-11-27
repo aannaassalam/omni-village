@@ -23,10 +23,10 @@ import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDropdown1 from '../../Components/CustomDropdown/CustomDropdown1';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import { useLandMeasurement, useVillages } from '../../Hooks/cms';
-import { useUser } from '../../Hooks/useUser';
+import { useModerator, useUser } from '../../Hooks/useUser';
 import LoginWrapper from '../../Layout/LoginWrapper/LoginWrapper';
 import { validation } from '../../Validation/Validation';
-import { editUser } from '../../functions/AuthScreens';
+import { editModerator, editUser } from '../../functions/AuthScreens';
 import { storage } from '../../Helper/Storage';
 import { queryClient } from '../../..';
 
@@ -37,29 +37,29 @@ const schema = yup
         last_name: yup.string().required(validation?.error?.last_name),
         village_name: yup.string().required(validation?.error?.village_name),
         country_name: yup.string(),
-        land_measurement: yup
-            .string()
-            .required(validation?.error?.land_measurement),
-        phone: yup.string().required(validation?.error?.phone),
-        number_of_members: yup
-            .number()
-            .max(20, 'Number of members cannot be greater than 20!')
-            .required(validation.error.number_of_members),
-        members: yup
-            .array(
-                yup.object().shape({
-                    name: yup.string().required(validation.error.member_name),
-                    age: yup.string().required(validation.error.member_age),
-                    gender: yup.string().required(validation.error.member_gender),
-                }),
-            )
-            .required('Members is required'),
-        document_type: yup.string().required('Document Type is required!'),
-        social_security_number: yup
-            .string()
-            .required(validation?.error?.social_security_number),
+        // land_measurement: yup
+        //     .string()
+        //     .required(validation?.error?.land_measurement),
+        // phone: yup.string().required(validation?.error?.phone),
+        // number_of_members: yup
+        //     .number()
+        //     .max(20, 'Number of members cannot be greater than 20!')
+        //     .required(validation.error.number_of_members),
+        // members: yup
+        //     .array(
+        //         yup.object().shape({
+        //             name: yup.string().required(validation.error.member_name),
+        //             age: yup.string().required(validation.error.member_age),
+        //             gender: yup.string().required(validation.error.member_gender),
+        //         }),
+        //     )
+        //     .required('Members is required'),
+        // document_type: yup.string().required('Document Type is required!'),
+        // social_security_number: yup
+        //     .string()
+        //     .required(validation?.error?.social_security_number),
         address: yup.string().required(validation?.error?.address),
-        street_address: yup.string().required(validation?.error?.street_address),
+        // street_address: yup.string().required(validation?.error?.street_address),
     })
     .required();
 
@@ -96,7 +96,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
         }
     }, []);
 
-    const { data: user } = useUser();
+    const { data: user } = useModerator();
     const { data: landmeasurement } = useLandMeasurement();
     const { data: village } = useVillages(user?.country);
     const { t } = useTranslation();
@@ -114,37 +114,37 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            phone: user?.phone,
+            // phone: user?.phone,
             country_name: user?.country,
             address: isEdit ? user?.address : '',
             first_name: isEdit ? user?.first_name : '',
-            land_measurement: isEdit ? user?.land_measurement : '',
+            // land_measurement: isEdit ? user?.land_measurement : '',
             last_name: isEdit ? user?.last_name : '',
-            members: isEdit ? user?.members : [],
-            number_of_members: isEdit ? parseInt(user?.number_of_members, 10) : 0,
-            document_type: isEdit ? user?.document_type : '',
-            social_security_number: isEdit ? user?.social_security_number : '',
+            // members: isEdit ? user?.members : [],
+            // number_of_members: isEdit ? parseInt(user?.number_of_members, 10) : 0,
+            // document_type: isEdit ? user?.document_type : '',
+            // social_security_number: isEdit ? user?.social_security_number : '',
             village_name: isEdit ? user?.village_name : '',
-            street_address: isEdit ? user?.street_address : '',
+            // street_address: isEdit ? user?.street_address : '',
         },
     });
 
     useEffect(() => {
         if (user) {
             reset({
-                phone: user?.phone ?? '',
+                // phone: user?.phone ?? '',
                 country_name: user?.country ?? '',
                 address: user?.address.replace('-', '') ?? '',
                 first_name: user?.first_name.replace('-', '') ?? '',
-                land_measurement: user?.land_measurement.replace('-', '') ?? '',
+                // land_measurement: user?.land_measurement.replace('-', '') ?? '',
                 last_name: user?.last_name.replace('-', '') ?? '',
-                members: user?.members ?? [],
-                number_of_members: parseInt(user?.number_of_members, 10) ?? 0,
-                document_type: user?.document_type.replace('-', '') ?? '',
-                social_security_number:
-                    user?.social_security_number.replace('-', '') ?? '',
+                // members: user?.members ?? [],
+                // number_of_members: parseInt(user?.number_of_members, 10) ?? 0,
+                // document_type: user?.document_type.replace('-', '') ?? '',
+                // social_security_number:
+                    // user?.social_security_number.replace('-', '') ?? '',
                 village_name: user?.village_name.replace('-', '') ?? '',
-                street_address: user?.street_address.replace('-', '') ?? '',
+                // street_address: user?.street_address.replace('-', '') ?? '',
             });
         }
     }, [user]);
@@ -154,11 +154,11 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
     );
 
     const { mutate, isPending } = useMutation({
-        mutationFn: editUser,
+        mutationFn: editModerator,
         onSuccess: data => {
             // storage.set('user', JSON.stringify(data));
             queryClient.invalidateQueries();
-            isEdit ? navigation.goBack() : navigation.replace('registersuccess');
+            isEdit ? navigation.goBack() : navigation.replace('pending');
         },
         onError: err =>
             console.log(err.code, err.name, err.stack, 'Err from register details'),
@@ -179,10 +179,6 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
 
         const _data = {
             ...data,
-            number_of_members: String(data.number_of_members),
-            land_measurement_symbol: landmeasurement.find(
-                lm => lm.name === data.land_measurement,
-            ).symbol,
             edit: isEdit,
             type:'officer'
         };
@@ -191,11 +187,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
 
         const formData = new FormData();
         Object.keys(_data).forEach(key => {
-            if (key === 'members') {
-                formData.append('members', JSON.stringify(_data[key]));
-            } else {
                 formData.append(key, _data[key]);
-            }
         });
         formData.append('address_proof', {
             uri: _file?.uri || '',
@@ -214,7 +206,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
         Object.entries(formData).forEach(item => console.log(item[0], item[1]));
 
         const submitable_data = _data.edit ? _data : formData;
-
+// console.log("subsbsbbs", submitable_data)
         mutate({ data: submitable_data, edit: _data.edit });
     };
 
@@ -344,7 +336,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                     </Box>
                 </Box>
 
-                <Box style={styles.cmn_wrp}>
+                {/* <Box style={styles.cmn_wrp}>
                     <View style={styles.login_input}>
                         <Controller
                             control={control}
@@ -366,12 +358,12 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                             <Text style={styles.error}>{errors?.phone?.message}</Text>
                         ) : null}
                     </View>
-                </Box>
-                <View style={styles.form_btm_text}>
+                </Box> */}
+                {/* <View style={styles.form_btm_text}>
                     <Text style={styles.login_text}>{t('household informations')}</Text>
                     <View style={styles.line_border} />
-                </View>
-                <Box style={styles.cmn_wrp}>
+                </View> */}
+                {/* <Box style={styles.cmn_wrp}>
                     <View style={styles.login_input}>
                         <Controller
                             control={control}
@@ -388,33 +380,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                         />
                     </View>
                 </Box>
-                <Text style={styles.cityName}>Village Name</Text>
-                <Box style={styles.cmn_wrp}>
-                    <Controller
-                        control={control}
-                        name="village_name"
-                        render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                            <CustomDropdown1
-                                data={village}
-                                value={value}
-                                placeholder={t('village name')}
-                                selectedValue={onChange}
-                                search
-                            />
-                        )}
-                    />
-                </Box>
-                {errors?.village_name && (
-                    <Text
-                        style={{
-                            ...styles.error,
-                            width: '100%',
-                            marginBottom: 15,
-                            marginTop: -10,
-                        }}>
-                        {errors?.village_name?.message}
-                    </Text>
-                )}
+               
                 <Text style={styles.cityName}>Land Measurement</Text>
                 <Box style={styles.cmn_wrp}>
                     <Controller
@@ -605,7 +571,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                         }}>
                         {errors?.document_type?.message}
                     </Text>
-                )}
+                )} 
                 <Box style={styles.cmn_wrp}>
                     <View style={styles.login_input}>
                         <Controller
@@ -626,7 +592,35 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                             </Text>
                         ) : null}
                     </View>
+                </Box> */}
+                {/* // From here required */}
+                <Text style={styles.cityName}>Village Name</Text>
+                <Box style={styles.cmn_wrp}>
+                    <Controller
+                        control={control}
+                        name="village_name"
+                        render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                            <CustomDropdown1
+                                data={village}
+                                value={value}
+                                placeholder={t('village name')}
+                                selectedValue={onChange}
+                                search
+                            />
+                        )}
+                    />
                 </Box>
+                {errors?.village_name && (
+                    <Text
+                        style={{
+                            ...styles.error,
+                            width: '100%',
+                            marginBottom: 15,
+                            marginTop: -10,
+                        }}>
+                        {errors?.village_name?.message}
+                    </Text>
+                )}
                 <Box style={styles.cmn_wrp}>
                     <View style={styles.login_input}>
                         <Controller
@@ -687,7 +681,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
             // height={100}
           /> */}
                 </Box>
-                {Boolean(watch('address').length) && (
+                {/* {Boolean(watch('address').length) && (
                     <Box style={styles.cmn_wrp}>
                         <View style={styles.login_input}>
                             <Controller
@@ -709,7 +703,7 @@ export default function RegisterDetailsFieldOfficer({ navigation, route }) {
                             ) : null}
                         </View>
                     </Box>
-                )}
+                )} */}
                 {!isEdit && (
                     <>
                         <Box style={styles.file_box}>
