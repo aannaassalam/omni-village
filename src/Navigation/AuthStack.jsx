@@ -81,6 +81,14 @@ import PendingScreen from '../Screens/AuthScreens/PendingScreen';
 import Village from '../Screens/AuthScreens/Village';
 import RejectScreen from '../Screens/AuthScreens/RejectScreen';
 import LoginFieldOfficerSuccessfull from '../Screens/AuthScreens/LoginFieldOfficerSuccess';
+import OfficerHome from '../Screens/OfficerHome';
+import OfficerLandholding from '../Screens/Officer/Landholding/OfficerLandholding';
+import OfficerWater from '../Screens/Officer/Water/OfficerWater';
+import OfficerEnergy from '../Screens/Officer/Energy/OfficerEnergy';
+import OfficerMobility from '../Screens/Officer/Mobility/OfficerMobility';
+import OfficerForest from '../Screens/Officer/Forest/OfficerForest';
+import OfficerBusiness from '../Screens/Officer/Business/OfficerBusiness';
+import OfficerCommunity from '../Screens/Officer/Community/OfficerCommunity';
 
 const Stack = createStackNavigator();
 
@@ -104,7 +112,8 @@ export default function AuthStack({user, moderator}) {
         return 'reject';
       } else if (moderator?.status === 1) {
         // console.log("hereeeeeeee14")
-        return 'village'
+        // return 'village'
+        return 'officerHome'
       }else{
         return 'startup'
       }
@@ -146,6 +155,7 @@ export default function AuthStack({user, moderator}) {
       <Stack.Screen name="reject" component={RejectScreen} />
       <Stack.Screen name="village" component={Village} />
       <Stack.Screen name="home" component={Home} />
+      <Stack.Screen name="officerHome" component={OfficerHome} />
       <Stack.Screen name="foodHome" component={FoodHome} />
       <Stack.Screen name="ProductionStack" component={Productionstack} />
       <Stack.Screen name="ConsumptionStack" component={ConsumptionStack} />
@@ -207,6 +217,14 @@ export default function AuthStack({user, moderator}) {
       <Stack.Screen name='businessInvestment' component={BusinessInvestment} />
       <Stack.Screen name='businessRequirement' component={BusinessRequirement} />
       <Stack.Screen name='newBusinessDetails' component={NewBusinessDetails} />
+      {/* Officer */}
+      <Stack.Screen name='officerLandholding' component={OfficerLandholding} />
+      <Stack.Screen name='officerWater' component={OfficerWater} />
+      <Stack.Screen name='officerEnergy' component={OfficerEnergy} />
+      <Stack.Screen name='officerMobility' component={OfficerMobility} />
+      <Stack.Screen name='officerForestry' component={OfficerForest} />
+      <Stack.Screen name='officerBusiness' component={OfficerBusiness} />
+      <Stack.Screen name='officerCommunity' component={OfficerCommunity} />
     </Stack.Navigator>
   );
 }

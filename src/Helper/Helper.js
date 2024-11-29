@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use(
         config.data.language = USER_PREFERRED_LANGUAGE;
       }
     }
-    console.log(config.url, 'data');
+    // console.log(config.url, 'data');
     return config;
   },
   function (err) {

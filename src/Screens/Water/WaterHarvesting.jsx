@@ -182,11 +182,11 @@ const WaterHarvesting = ({ navigation, route }) => {
                     selectedd={selectedStatus}
                     infoName={t('Type of Harvesting')}
                 />
-                {values?.type_of_harvesting.length > 0 && (
+                {values?.type_of_harvesting?.length > 0 && (
                     <View style={styles.innerInputView}>
                         <Divider style={styles.divider2} />
                         <View style={{ width: '100%' }}>
-                            {values.type_of_harvesting.map((item, index) => (
+                            {values?.type_of_harvesting.map((item, index) => (
                                 <>
                                     <Input
                                         label={t(

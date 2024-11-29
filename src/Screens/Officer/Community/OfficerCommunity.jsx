@@ -1,0 +1,148 @@
+import { Image, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator } from 'react-native-paper';
+import { borderColor, primaryColor } from '../../../styles/colors';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import CustomHeader from '../../../Components/CustomHeader/CustomHeader';
+import { Styles } from '../../../styles/globalStyles';
+import CustomButton from '../../../Components/CustomButton/CustomButton';
+import PopupModal from '../../../Components/Popups/PopupModal';
+
+const OfficerCommunity = ({ navigation }) => {
+  const { t } = useTranslation()
+  const [savePopup, setSavepopup] = useState(false)
+  const [draftPopup, setDraftpopup] = useState(false)
+  const scheme = yup.object().shape({
+    total_area_allocated_village: yup.string().required(t('Total area allocated village is required')),
+    total_area_allocated_community: yup.number().required(t('Total area allocated community is required')),
+    land_owned_by_non_resident: yup.number().required(t('Land owned by non resident is required')),
+    freehold_village_land: yup.string().required(t('Freehold village land is required'))
+  });
+  const {
+    handleChange,
+    handleSubmit,
+    values,
+    errors,
+    setFieldTouched,
+    setFieldValue,
+    touched,
+    resetForm,
+    setValues
+  } = useFormik({
+    initialValues: {
+      total_area_allocated_village: '',
+      total_area_allocated_community: '',
+      land_owned_by_non_resident: '',
+      freehold_village_land: '',
+    },
+    validationSchema: scheme,
+    onSubmit: async (values) => {
+      console.log(values);
+      setSavepopup(true)
+    },
+
+  });
+  const onSubmit = () => { }
+  const handleDraft = () => { }
+  // if (isTypeLoading || isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+  //       <ActivityIndicator size={'large'} color={primaryColor} />
+  //     </View>
+  //   );
+  // }
+  return (
+    <View style={styles.container}>
+      <CustomHeader
+        backIcon={true}
+        headerName={t(`landholding`)}
+        goBack={() => navigation.goBack()}
+      />
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+      </KeyboardAwareScrollView>
+      <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
+        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+      </View>
+      {/* submit popup */}
+      <PopupModal
+        modalVisible={savePopup}
+        setBottomModalVisible={setSavepopup}
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        <View style={Styles.submitPopup}>
+          <View style={Styles.noteImage}>
+            <Image
+              source={require('../../../../assets/note.png')}
+              style={Styles.noteImage}
+            />
+          </View>
+          <Text style={Styles.confirmText}>{t('confirm')}</Text>
+          <Text style={Styles.nextText}>
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+          </Text>
+          <View style={Styles.bottomPopupbutton}>
+            <CustomButton
+              style={Styles.submitButton}
+              btnText={t('submit')}
+              onPress={() => { onSubmit() }}
+            // loading={isAddPoultryPending || isEditPoultryPending}
+            />
+            <CustomButton
+              style={Styles.draftButton}
+              btnText={t('cancel')}
+              onPress={() => {
+                setSavepopup(false);
+              }}
+            />
+          </View>
+        </View>
+      </PopupModal>
+      {/* draft popup */}
+      <PopupModal
+        modalVisible={draftPopup}
+        setBottomModalVisible={setDraftpopup}
+        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        <View style={Styles.submitPopup}>
+          <View style={Styles.noteImage}>
+            <Image
+              source={require('../../../../assets/note.png')}
+              style={Styles.noteImage}
+            />
+          </View>
+          <Text style={Styles.confirmText}>{t('save as draft')}</Text>
+          <Text style={Styles.nextText}>
+            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
+          </Text>
+          <View style={Styles.bottomPopupbutton}>
+            <CustomButton
+              style={Styles.submitButton}
+              btnText={t('save')}
+              onPress={handleDraft}
+            // loading={isAddPoultryPending || isEditPoultryPending}
+            />
+            <CustomButton
+              style={Styles.draftButton}
+              btnText={t('cancel')}
+              onPress={() => setDraftpopup(false)}
+            />
+          </View>
+        </View>
+      </PopupModal>
+    </View>
+  )
+}
+
+export default OfficerCommunity
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  }
+})
