@@ -141,8 +141,8 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
 
   useEffect(() => {
     // Initialize collapseStates with false for all vehicles
-    if (values?.forestry_type > 0) {
-      setCollapseStates(Array(values.forestry_type).fill(false));
+    if (values?.forestry_type.length > 0) {
+      setCollapseStates(Array(values.forestry_type.length).fill(true));
     }
   }, [values?.forestry_type]);
 

@@ -72,3 +72,8 @@ export const get_dropdown_data = async () => {
   let res = await axiosInstance?.get(endpoints?.dropdown?.get_dropdown);
   return res?.data;
 };
+
+export const get_villages = async () => {
+  let res = await axiosInstance?.get(endpoints?.moderator?.getVillages);
+  return res?.data;
+};

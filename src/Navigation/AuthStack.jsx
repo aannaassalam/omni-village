@@ -89,6 +89,10 @@ import OfficerMobility from '../Screens/Officer/Mobility/OfficerMobility';
 import OfficerForest from '../Screens/Officer/Forest/OfficerForest';
 import OfficerBusiness from '../Screens/Officer/Business/OfficerBusiness';
 import OfficerCommunity from '../Screens/Officer/Community/OfficerCommunity';
+import OfficerCommunityMobility from '../Screens/Officer/Community/OfficerCommunityMobility';
+import OfficerCommunitySports from '../Screens/Officer/Community/OfficerCommunitySports';
+import OfficerCommunityStreet from '../Screens/Officer/Community/OfficerCommunityStreet';
+import OfficerDemographic from '../Screens/Officer/Demographic/OfficerDemographic';
 
 const Stack = createStackNavigator();
 
@@ -218,6 +222,7 @@ export default function AuthStack({user, moderator}) {
       <Stack.Screen name='businessRequirement' component={BusinessRequirement} />
       <Stack.Screen name='newBusinessDetails' component={NewBusinessDetails} />
       {/* Officer */}
+      <Stack.Screen name='officerDemographic' component={OfficerDemographic} />
       <Stack.Screen name='officerLandholding' component={OfficerLandholding} />
       <Stack.Screen name='officerWater' component={OfficerWater} />
       <Stack.Screen name='officerEnergy' component={OfficerEnergy} />
@@ -225,6 +230,9 @@ export default function AuthStack({user, moderator}) {
       <Stack.Screen name='officerForestry' component={OfficerForest} />
       <Stack.Screen name='officerBusiness' component={OfficerBusiness} />
       <Stack.Screen name='officerCommunity' component={OfficerCommunity} />
+      <Stack.Screen name='officerCommunityMobility' component={OfficerCommunityMobility} />
+      <Stack.Screen name='officerCommunitySports' component={OfficerCommunitySports} />
+      <Stack.Screen name='officerCommunityStreet' component={OfficerCommunityStreet} />
     </Stack.Navigator>
   );
 }

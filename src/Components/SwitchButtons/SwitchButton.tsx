@@ -4,24 +4,34 @@ import { borderColor, primaryColor } from '../../styles/colors'
 import CustomButton from '../CustomButton/CustomButton'
 import { Styles, width } from '../../styles/globalStyles'
 
-const SwitchButton = ({firstBtnText, selected, firstBtnPress, secondBtntext, secondBtnPress, label, nolabel=true}:{
-    firstBtnText: string,
-    secondBtntext: string,
-    selected: string,
-    firstBtnPress: () => void,
-    secondBtnPress: () => void,
-    label?:any,
-    nolabel?:any,
+const SwitchButton = ({
+  firstBtnText,
+  selected,
+  firstBtnPress,
+  secondBtntext,
+  secondBtnPress,
+  label,
+  nolabel = true,
+  nested =false
+}: {
+  firstBtnText: string;
+  secondBtntext: string;
+  selected: string;
+  firstBtnPress: () => void;
+  secondBtnPress: () => void;
+  label?: any;
+  nolabel?: any;
+  nested?:any
 }) => {
- const isFirstButtonSelected = selected === firstBtnText || selected === true;
- const isSecondButtonSelected =
-   selected === secondBtntext || selected === false;
+  const isFirstButtonSelected = selected === firstBtnText || selected === true;
+  const isSecondButtonSelected =
+    selected === secondBtntext || selected === false;
   return (
     <View style={styles.mainContainer}>
       {!nolabel && (
         <Text style={[Styles.fieldLabel, {marginTop: 0}]}>{label}</Text>
       )}
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         <CustomButton
           btnText={firstBtnText}
           onPress={firstBtnPress}
@@ -29,7 +39,7 @@ const SwitchButton = ({firstBtnText, selected, firstBtnPress, secondBtntext, sec
             color: isFirstButtonSelected ? 'white' : 'black',
           }}
           style={{
-            width: width / 2.5,
+            width: nested ? width / 2.7 : width / 2.5,
             backgroundColor: isFirstButtonSelected ? primaryColor : borderColor,
           }}
         />
@@ -40,7 +50,7 @@ const SwitchButton = ({firstBtnText, selected, firstBtnPress, secondBtntext, sec
             color: isSecondButtonSelected ? 'white' : 'black',
           }}
           style={{
-            width: width / 2.5,
+            width: nested ? width / 2.7 : width / 2.5,
             backgroundColor: isSecondButtonSelected
               ? primaryColor
               : borderColor,
@@ -49,7 +59,7 @@ const SwitchButton = ({firstBtnText, selected, firstBtnPress, secondBtntext, sec
       </View>
     </View>
   );
-}
+};
 
 export default SwitchButton
 

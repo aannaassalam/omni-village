@@ -14,7 +14,8 @@ export const endpoints = {
     login: '/moderator/login',
     editModerator: '/moderator/edit_moderator',
     getModerator: '/moderator/current_moderator',
-    deleteModerator: '/moderator/delete_moderator'
+    deleteModerator: '/moderator/delete_moderator',
+    getVillages: '/villages/get-villages-for-moderator'
   },
   cultivation: {
     fetchCultivation: '/cultivation',

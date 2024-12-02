@@ -43,6 +43,11 @@ const OfficerHome = ({ navigation }) => {
   // console.log("usererer", user?.is_landholding_data)
   const ITEMS = [
     {
+      title: t('demographic'),
+      navigation: 'officerDemographic',
+      image: require('../../assets/demographic.png'),
+    },
+    {
       title: t('landholding'),
       navigation:'officerLandholding',
       image: require('../../assets/landhold.png'),

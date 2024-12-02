@@ -128,8 +128,8 @@ const VehicleRequirement = ({ navigation, route }) => {
 
     useEffect(() => {
         // Initialize collapseStates with false for all vehicles
-        if (values?.vehicles_needed > 0) {
-            setCollapseStates(Array(values.vehicles_needed).fill(false));
+        if (values?.vehicles_needed.length > 0) {
+            setCollapseStates(Array(values.vehicles_needed.length).fill(true));
         }
     }, [values?.vehicles_needed]);
 

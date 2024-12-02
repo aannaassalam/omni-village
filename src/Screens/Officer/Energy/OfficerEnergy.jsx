@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, ToastAndroid, View } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -7,30 +7,87 @@ import { ActivityIndicator, Divider } from 'react-native-paper';
 import { borderColor, primaryColor } from '../../../styles/colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../../Components/CustomHeader/CustomHeader';
-import { Styles } from '../../../styles/globalStyles';
+import { Styles, width } from '../../../styles/globalStyles';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
 import Input from '../../../Components/Inputs/Input';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import AcresElement from '../../../Components/ui/AcresElement';
+import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
+import { useModerator } from '../../../Hooks/useUser';
 
 const OfficerEnergy = ({ navigation }) => {
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const {data: user} = useModerator()
   const scheme = yup.object().shape({
     available_renewable_energy: yup
       .array()
       .of(
         yup.object().shape({
           type: yup.string().required(t('Type is required')),
-          percentage: yup
+          energy_source: yup.boolean().required(t('Energy Source is required')),
+
+          capacity: yup
             .string()
-            .required(t('Percentage is required')),
-        }),
-      )
+            .test('is-required-if-energy-source-true', t('Capacity is required'), function (value) {
+              const { energy_source } = this.parent;
+              return energy_source ? value && value.trim() !== '' : true;
+            }),
+
+          distribution_method: yup
+            .array()
+            .test('is-required-if-energy-source-true', t('Distribution Method is required'), function (value) {
+              const { energy_source } = this.parent;
+              return energy_source ? value && value.length > 0 : true;
+            }),
+
+          installation_cost: yup
+            .string()
+            .test('is-required-if-energy-source-true', t('Installation Cost is required'), function (value) {
+              const { energy_source } = this.parent;
+              return energy_source ? value && value.trim() !== '' : true;
+            }),
+
+          central_grid_fossil: yup
+            .string()
+            .test('sum-limit', t('The total of central grid fossil, renewable, and microgrid should be equal to 100'), function (value) {
+              const { central_grid_fossil, central_grid_renewable, local_renewable_microgrid, energy_source } = this.parent;
+              const sum =
+                (parseFloat(central_grid_fossil) || 0) +
+                (parseFloat(central_grid_renewable) || 0) +
+                (parseFloat(local_renewable_microgrid) || 0);
+              return sum === 100
+            }),
+
+          central_grid_renewable: yup
+            .string()
+            .test('sum-limit', t('The total of central grid fossil, renewable, and microgrid should be equal to 100'), function (value) {
+              const { central_grid_fossil, central_grid_renewable, local_renewable_microgrid } = this.parent;
+              const sum =
+                (parseFloat(central_grid_fossil) || 0) +
+                (parseFloat(central_grid_renewable) || 0) +
+                (parseFloat(local_renewable_microgrid) || 0);
+              return sum === 100
+            }),
+
+          local_renewable_microgrid: yup
+            .string()
+            .test('sum-limit', t('The total of central grid fossil, renewable, and microgrid should be equal to 100'), function (value) {
+              const { central_grid_fossil, central_grid_renewable, local_renewable_microgrid } = this.parent;
+              const sum =
+                (parseFloat(central_grid_fossil) || 0) +
+                (parseFloat(central_grid_renewable) || 0) +
+                (parseFloat(local_renewable_microgrid) || 0);
+              // return sum <= 100;
+              return sum === 100
+            }),
+        })
+      ),
   });
+
   const {
     handleChange,
     handleSubmit,
@@ -55,6 +112,7 @@ const OfficerEnergy = ({ navigation }) => {
     },
 
   });
+
   const onSubmit = () => { }
   const handleDraft = () => { }
   const handleFieldChange = (index, field, value) => {
@@ -74,11 +132,34 @@ const OfficerEnergy = ({ navigation }) => {
 
       return existingEntry || {
         type: item,
-        percentage: ''
+        energy_source: false,
+        capacity: '',
+        distribution_method: [],
+        installation_cost: '',
+        central_grid_fossil: '',
+        central_grid_renewable: '',
+        local_renewable_microgrid: ''
       };
     });
     // Update the form's purpose_status_of_land field
     setFieldValue('available_renewable_energy', updatedPurposeStatusOfLand);
+  };
+  const [collapseStates, setCollapseStates] = useState([]);
+
+  useEffect(() => {
+    // Initialize collapseStates with false for all vehicles
+    if (values?.available_renewable_energy.length > 0) {
+      setCollapseStates(Array(values.available_renewable_energy.length).fill(true));
+    }
+  }, [values?.available_renewable_energy]);
+
+  const toggleCollapse = (index) => {
+    setCollapseStates((prevStates) => {
+      // Create a new array to avoid mutating the state directly
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index]; // Toggle the specific index
+      return newStates;
+    });
   };
   // if (isTypeLoading || isLoading) {
   //   return (
@@ -101,56 +182,279 @@ const OfficerEnergy = ({ navigation }) => {
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[
-            {key:'Something', name:"Something"},
-            {key:'Something2', name:"Something2"},
+            { key: 'Something', name: "Something" },
+            { key: 'Something2', name: "Something2" },
           ]}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
           infoName={t('Available renewable energy sources')}
         />
         {values?.available_renewable_energy?.length > 0 && (
-          <View style={styles.innerInputView}>
-            <Divider style={styles.divider2} />
-            <View style={{ width: '100%' }}>
-              {values?.available_renewable_energy.map((item, index) => (
-                <>
-                  <Input
-                    label={t(
-                      `${t(
-                        'Enter Percentage for',
-                      )} `
-                      // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
-                    )}
-                    value={item.percentage}
-                    placeholder={'0'}
-                    fullLength={true}
-                    keyboardType="numeric"
-                    onChangeText={text =>
-                      handleFieldChange(
-                        index,
-                        'percentage',
-                        parseInt(text),
-                      )
-                    }
-                    isRight={
-                      <AcresElement title={'%'} />
-                    }
+         <>
+            {values?.available_renewable_energy.map((item, index) => {
+              return <>
+                <View style={[styles.subArea, { marginTop: '3%' }]}>
+                  <Text
+                    style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                    ]}>
+                    {t(`${t('Type')} ${index + 1}`)}
+                  </Text>
+                  <Divider
+                    bold={true}
+                    style={[styles.divider, { width: '64%' }]}
+                    horizontalInset={true}
                   />
-                  {errors.available_renewable_energy &&
-                    errors.available_renewable_energy[index]
-                      ?.percentage && (
-                      <Text style={Styles.error2}>
-                        {
-                        errors.available_renewable_energy[index]
-                            .percentage
-                        }
-                      </Text>
+                  <TouchableOpacity onPress={() => toggleCollapse(index)}>
+                    {collapseStates[index] ? (
+                      <Image
+                        source={require('../../../../assets/arrowUp.png')}
+                        style={styles.uparrow}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../../../assets/arrowDown.png')}
+                        style={styles.uparrow}
+                      />
                     )}
-                </>
-              ))}
-            </View>
-          </View>
+                  </TouchableOpacity>
+                </View>
+                {collapseStates[index] &&
+                  <View style={styles.innerInputView}>
+                    <Divider style={styles.divider2} />
+                    <View style={{ width: '100%' }}>
+                      <View style={{ width: '100%' }}>
+                            <SwitchButton
+                              nested={true}
+                              nolabel={false}
+                              label={t('Is the village using this energy source?')}
+                              selected={item?.energy_source}
+                              firstBtnPress={() => handleFieldChange(
+                                index,
+                                'energy_source',
+                                true,
+                              )}
+                              secondBtnPress={() => {
+                                handleFieldChange(
+                                  index,
+                                  'energy_source',
+                                  false,
+                                )
+                              }}
+                              firstBtnText={t('yes')}
+                              secondBtntext={t('no')}
+                            />
+                            {item?.energy_source &&
+                              <>
+                                <Input
+                                  label={t(
+                                    `${t(
+                                      'Capacity',
+                                    )} `
+                                    // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                                  )}
+                                  value={item.capacity}
+                                  placeholder={'0'}
+                                  fullLength={true}
+                                  keyboardType="numeric"
+                                  onChangeText={text =>
+                                    handleFieldChange(
+                                      index,
+                                      'capacity',
+                                      parseInt(text),
+                                    )
+                                  }
+                                  isRight={
+                                    <AcresElement title={'kWh'} />
+                                  }
+                                />
+                                {errors.available_renewable_energy &&
+                                  errors.available_renewable_energy[index]
+                                    ?.capacity && (
+                                    <Text style={Styles.error2}>
+                                      {
+                                        errors.available_renewable_energy[index]
+                                          .capacity
+                                      }
+                                    </Text>
+                                  )}
+                          <MultiselectDropdown
+                            containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                            data={[
+                              {
+                                key: 'Tank',
+                                name: 'Tank'
+                              },
+                              {
+                                key: 'Tank1',
+                                name: 'Tank1'
+                              },
+                              {
+                                key: 'Tank2',
+                                name: 'Tank2'
+                              },
+                            ]}
+                            setSelectedd={(value) => {
+                              handleFieldChange(
+                                index,
+                                'distribution_method',
+                                value,
+                              )
+                            }}
+                            selectedd={item?.distribution_method}
+                            infoName={t('Distribution method')}
+                          />
+                          {errors.available_renewable_energy &&
+                            errors.available_renewable_energy[index]
+                              ?.distribution_method && (
+                              <Text style={Styles.error2}>
+                                {
+                                errors.available_renewable_energy[index]
+                                    .distribution_method
+                                }
+                              </Text>
+                            )}
+                          <Input
+                            label={t(
+                              `${t(
+                                'Installation Cost',
+                              )} `
+                              // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                            )}
+                            value={item.installation_cost}
+                            placeholder={'0'}
+                            fullLength={true}
+                            keyboardType="numeric"
+                            onChangeText={text =>
+                              handleFieldChange(
+                                index,
+                                'installation_cost',
+                                parseInt(text),
+                              )
+                            }
+                            isRight={
+                              <AcresElement title={user?.currency} />
+                            }
+                          />
+                          {errors.available_renewable_energy &&
+                            errors.available_renewable_energy[index]
+                            ?.installation_cost && (
+                              <Text style={Styles.error2}>
+                                {
+                                  errors.available_renewable_energy[index]
+                                    .installation_cost
+                                }
+                              </Text>
+                            )}
+                          <Text style={Styles.fieldLabel}>Percentage distribution of village electricity:</Text>
+                          <Input
+                            label={t(
+                              `${t(
+                                'Central grid fossil based',
+                              )} `
+                              // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                            )}
+                            value={item.central_grid_fossil}
+                            placeholder={'0'}
+                            fullLength={true}
+                            keyboardType="numeric"
+                            onChangeText={text =>
+                              handleFieldChange(
+                                index,
+                                'central_grid_fossil',
+                                parseInt(text),
+                              )
+                            }
+                            isRight={
+                              <AcresElement title={'%'} />
+                            }
+                          />
+                          {errors.available_renewable_energy &&
+                            errors.available_renewable_energy[index]
+                            ?.central_grid_fossil && (
+                              <Text style={Styles.error2}>
+                                {
+                                  errors.available_renewable_energy[index]
+                                  .central_grid_fossil
+                                }
+                              </Text>
+                            )}
+                          <Input
+                            label={t(
+                              `${t(
+                                'Central grid renewable',
+                              )} `
+                              // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                            )}
+                            value={item.central_grid_renewable}
+                            placeholder={'0'}
+                            fullLength={true}
+                            keyboardType="numeric"
+                            onChangeText={text =>
+                              handleFieldChange(
+                                index,
+                                'central_grid_renewable',
+                                parseInt(text),
+                              )
+                            }
+                            isRight={
+                              <AcresElement title={'%'} />
+                            }
+                          />
+                          {errors.available_renewable_energy &&
+                            errors.available_renewable_energy[index]
+                            ?.central_grid_renewable && (
+                              <Text style={Styles.error2}>
+                                {
+                                  errors.available_renewable_energy[index]
+                                  .central_grid_renewable
+                                }
+                              </Text>
+                            )}
+                          <Input
+                            label={t(
+                              `${t(
+                                'Local renewable microgrid',
+                              )} `
+                              // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
+                            )}
+                            value={item.local_renewable_microgrid}
+                            placeholder={'0'}
+                            fullLength={true}
+                            keyboardType="numeric"
+                            onChangeText={text =>
+                              handleFieldChange(
+                                index,
+                                'local_renewable_microgrid',
+                                parseInt(text),
+                              )
+                            }
+                            isRight={
+                              <AcresElement title={'%'} />
+                            }
+                          />
+                          {errors.available_renewable_energy &&
+                            errors.available_renewable_energy[index]
+                            ?.local_renewable_microgrid && (
+                              <Text style={Styles.error2}>
+                                {
+                                  errors.available_renewable_energy[index]
+                                  .local_renewable_microgrid
+                                }
+                              </Text>
+                            )}
+                              </>
+                            }
+                      </View>
+                    </View>
+                    </View>
+            }
+              </>
+            })}
+         </>
         )}
+            
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
         <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
@@ -230,6 +534,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff'
+  },
+  subArea: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    // margin: 10,
+    marginTop: '5%',
+    width: width / 1.04,
+    alignItems: 'center',
+  },
+  divider: {
+    alignSelf: 'center',
+    height: 1,
+    width: '67%',
+    color: 'grey',
+  },
+  uparrow: {
+    height: 20,
+    width: 20,
   },
   innerInputView: {
     flexDirection: 'row',

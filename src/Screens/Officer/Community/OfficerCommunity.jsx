@@ -10,16 +10,19 @@ import CustomHeader from '../../../Components/CustomHeader/CustomHeader';
 import { Styles } from '../../../styles/globalStyles';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
+import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
+import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 
 const OfficerCommunity = ({ navigation }) => {
   const { t } = useTranslation()
-  const [savePopup, setSavepopup] = useState(false)
-  const [draftPopup, setDraftpopup] = useState(false)
   const scheme = yup.object().shape({
-    total_area_allocated_village: yup.string().required(t('Total area allocated village is required')),
-    total_area_allocated_community: yup.number().required(t('Total area allocated community is required')),
-    land_owned_by_non_resident: yup.number().required(t('Land owned by non resident is required')),
-    freehold_village_land: yup.string().required(t('Freehold village land is required'))
+    education: yup.array().required(t('Education is required')).min(1,'Atleast one education is required'),
+    town_hall: yup.number().required(t('Town hall is required')),
+    market: yup.number().required(t('Market is required')),
+    bank: yup.string().required(t('Bank is required')),
+    health_care: yup.string().required(t('Health care is required')),
+    library: yup.string().required(t('Library is required')),
+    museum: yup.string().required(t('Museum is required')),
   });
   const {
     handleChange,
@@ -33,20 +36,20 @@ const OfficerCommunity = ({ navigation }) => {
     setValues
   } = useFormik({
     initialValues: {
-      total_area_allocated_village: '',
-      total_area_allocated_community: '',
-      land_owned_by_non_resident: '',
-      freehold_village_land: '',
+      education: [],
+      town_hall: '',
+      market: '',
+      bank: '',
+      health_care:'',
+      library:'',
+      museum:'',
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
       console.log(values);
-      setSavepopup(true)
     },
 
   });
-  const onSubmit = () => { }
-  const handleDraft = () => { }
   // if (isTypeLoading || isLoading) {
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -65,75 +68,36 @@ const OfficerCommunity = ({ navigation }) => {
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+        <MultiselectDropdown
+          containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+          data={[{ key: '6736117ecb51156c2f52383e', name: 'test' }, { key: '6736117ecb51156c2f59383e', name: 'test2' }]}
+          setSelectedd={(value) => setValues({ ...values, education: value })}
+          selectedd={values?.education}
+          infoName={t('Education')}
+        />
+        {touched?.education && errors?.education && (
+          <Text style={Styles.error2}>{String(errors?.education)}</Text>
+        )}
+        <CustomDropdown
+          data={
+            [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]
+          }
+          value={values?.town_hall}
+          label={t('Town hall')}
+          onChange={value => {
+            setValues({
+              ...values,
+              town_hall: value?.value,
+            });
+          }}
+        />
+        {touched?.town_hall && errors?.town_hall && (
+          <Text style={Styles.error2}>{String(errors?.town_hall)}</Text>
+        )}
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')}  onPress={handleSubmit} style={{width:'100%'}} />
       </View>
-      {/* submit popup */}
-      <PopupModal
-        modalVisible={savePopup}
-        setBottomModalVisible={setSavepopup}
-        styleInner={[Styles.savePopup, { width: '90%' }]}>
-        <View style={Styles.submitPopup}>
-          <View style={Styles.noteImage}>
-            <Image
-              source={require('../../../../assets/note.png')}
-              style={Styles.noteImage}
-            />
-          </View>
-          <Text style={Styles.confirmText}>{t('confirm')}</Text>
-          <Text style={Styles.nextText}>
-            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
-          </Text>
-          <View style={Styles.bottomPopupbutton}>
-            <CustomButton
-              style={Styles.submitButton}
-              btnText={t('submit')}
-              onPress={() => { onSubmit() }}
-            // loading={isAddPoultryPending || isEditPoultryPending}
-            />
-            <CustomButton
-              style={Styles.draftButton}
-              btnText={t('cancel')}
-              onPress={() => {
-                setSavepopup(false);
-              }}
-            />
-          </View>
-        </View>
-      </PopupModal>
-      {/* draft popup */}
-      <PopupModal
-        modalVisible={draftPopup}
-        setBottomModalVisible={setDraftpopup}
-        styleInner={[Styles.savePopup, { width: '90%' }]}>
-        <View style={Styles.submitPopup}>
-          <View style={Styles.noteImage}>
-            <Image
-              source={require('../../../../assets/note.png')}
-              style={Styles.noteImage}
-            />
-          </View>
-          <Text style={Styles.confirmText}>{t('save as draft')}</Text>
-          <Text style={Styles.nextText}>
-            {t('lorem ipsum is simply dummy text of the.Lorem Ipsum.')}
-          </Text>
-          <View style={Styles.bottomPopupbutton}>
-            <CustomButton
-              style={Styles.submitButton}
-              btnText={t('save')}
-              onPress={handleDraft}
-            // loading={isAddPoultryPending || isEditPoultryPending}
-            />
-            <CustomButton
-              style={Styles.draftButton}
-              btnText={t('cancel')}
-              onPress={() => setDraftpopup(false)}
-            />
-          </View>
-        </View>
-      </PopupModal>
     </View>
   )
 }

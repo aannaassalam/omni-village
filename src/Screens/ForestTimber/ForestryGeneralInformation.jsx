@@ -176,7 +176,6 @@ resetForm({
           </View>
       );
   }
-  console.log("get foreeee", get_forestry)
   return (
     <View style={styles.container}>
       <CustomHeader

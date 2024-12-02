@@ -1,0 +1,4 @@
+Dropdown data everywhere needs to be capitalized.
+Collapsible needs to opened by default specially for nested input in multiselect. (done)
+In some place fields are showing undefined . 
+If i am selecting that from multiselect dropdown then new collapsible is creating over there selected item name should be visible.

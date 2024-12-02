@@ -52,6 +52,7 @@ interface InputProps {
   main_width?: any;
   autoFocus?: any;
   txtStyle?: any;
+  unit?:any
 }
 
 const Input = ({
@@ -87,6 +88,7 @@ const Input = ({
   main_width,
   autoFocus,
   txtStyle,
+  unit,
 }: InputProps) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -117,8 +119,13 @@ const Input = ({
           style={[
             styles.inputBox,
             {
-
-              width: width_ ? width_ : main_width? main_width:fullLength ? '100%' : (width - 88) / 2,
+              width: width_
+                ? width_
+                : main_width
+                ? main_width
+                : fullLength
+                ? '100%'
+                : (width - 88) / 2,
               height:
                 longText && boxHeight < 100
                   ? 150
@@ -141,7 +148,9 @@ const Input = ({
                   : inner_width
                   ? inner_width
                   : isDate || isClock || isRupee || isKM || isRight
-                  ? '80%'
+                  ? unit
+                    ? unit
+                    : '80%'
                   : width - 50,
               fontSize: 16 / fontScale,
               fontFamily: fontFamilyMedium,

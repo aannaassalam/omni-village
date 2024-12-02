@@ -99,7 +99,6 @@ const TimberNeeds = ({ navigation, route }) => {
       setSavepopup(true)
     },
   });
-  console.log("erroro", errors)
 
   const handleDraft = () => {
     let newData = {
@@ -134,7 +133,7 @@ const TimberNeeds = ({ navigation, route }) => {
     resetForm({
       values: {
         timber_needs: get_forestry?.timber_needs || false,
-        quantity: String(get_forestry?.quantity) || '',
+        quantity: String(get_forestry?.quantity || '') || '',
         purpose: get_forestry?.purpose || [],
         urgency: get_forestry?.urgency || '',
       }

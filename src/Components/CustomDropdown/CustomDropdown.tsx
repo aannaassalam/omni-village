@@ -29,6 +29,7 @@ const Customdropdown = ({
   noLabel,
   placeholder,
   search = false,
+  sideDrop = false,
 }: {
   data: any;
   value: any; // Add type annotation here
@@ -45,6 +46,7 @@ const Customdropdown = ({
   noLabel?: any;
   search?: boolean;
   placeholder?: any;
+  sideDrop?: boolean;
 }) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
@@ -67,7 +69,19 @@ const Customdropdown = ({
         inputSearchStyle={[styles.inputSearchStyle, inputSearchStyle]}
         iconStyle={[styles.iconStyle, iconStyle]}
         fontFamily={fontFamilyMedium}
-        renderRightIcon={()=><Image source={require('../../../assets/arrowDown.png')} style={{height:30, width:30}}/>}
+        renderRightIcon={() =>
+          sideDrop ? (
+            <Image
+              source={require('../../../assets/downArrow.png')}
+              style={{height: 12, width: 12, alignSelf:'center'}}
+            />
+          ) : (
+            <Image
+              source={require('../../../assets/arrowDown.png')}
+              style={{height: 30, width: 30}}
+            />
+          )
+        }
         itemTextStyle={{color: '#000'}}
         data={data}
         renderInputSearch={renderInputSearch}
