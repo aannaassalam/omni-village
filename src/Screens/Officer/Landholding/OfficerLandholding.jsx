@@ -142,7 +142,7 @@ const OfficerLandholding = ({ navigation }) => {
     validationSchema: scheme,
     onSubmit: async (values) => {
       if (values?.area_unit == "") {
-        ToastAndroid.show("Invalid area unit. Please select a valid unit from the options provided next to the total area allocated to the village.", ToastAndroid.LONG);
+        ToastAndroid.show(t("Invalid area unit. Please select a valid unit from the options provided next to the total area allocated to the village."), ToastAndroid.LONG);
       } else {
         setSavepopup(true)
       }

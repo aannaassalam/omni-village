@@ -107,7 +107,7 @@ const OfficerEnergy = ({ navigation }) => {
       if (selectedStatus.length > 0) {
         setSavepopup(true);
       } else {
-        ToastAndroid.show("Please select one value", ToastAndroid.BOTTOM)
+        ToastAndroid.show(t("Please select one value"), ToastAndroid.BOTTOM)
       }
     },
 
@@ -250,7 +250,7 @@ const OfficerEnergy = ({ navigation }) => {
                                 <Input
                                   label={t(
                                     `${t(
-                                      'Capacity',
+                                      'Capacity'
                                     )} `
                                     // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                                   )}
@@ -318,7 +318,7 @@ const OfficerEnergy = ({ navigation }) => {
                           <Input
                             label={t(
                               `${t(
-                                'Installation Cost',
+                                'Installation Cost'
                               )} `
                               // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                             )}
@@ -347,11 +347,11 @@ const OfficerEnergy = ({ navigation }) => {
                                 }
                               </Text>
                             )}
-                          <Text style={Styles.fieldLabel}>Percentage distribution of village electricity:</Text>
+                          <Text style={Styles.fieldLabel}>{t("Percentage distribution of village electricity:")}</Text>
                           <Input
                             label={t(
                               `${t(
-                                'Central grid fossil based',
+                                'Central grid fossil based'
                               )} `
                               // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                             )}
@@ -383,7 +383,7 @@ const OfficerEnergy = ({ navigation }) => {
                           <Input
                             label={t(
                               `${t(
-                                'Central grid renewable',
+                                'Central grid renewable'
                               )} `
                               // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                             )}
@@ -415,7 +415,7 @@ const OfficerEnergy = ({ navigation }) => {
                           <Input
                             label={t(
                               `${t(
-                                'Local renewable microgrid',
+                                'Local renewable microgrid'
                               )} `
                               // ${water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id) ? water_dropdown?.type_of_harvesting.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type} `,
                             )}

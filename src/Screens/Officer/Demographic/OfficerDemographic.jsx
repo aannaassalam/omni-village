@@ -102,7 +102,7 @@ const OfficerDemographic = ({ navigation }) => {
         <View style={styles.container}>
             <CustomHeader
                 backIcon={true}
-                headerName={t(`landholding`)}
+                headerName={t(`demographic`)}
                 goBack={() => navigation.goBack()}
             />
             <KeyboardAwareScrollView
@@ -148,7 +148,7 @@ const OfficerDemographic = ({ navigation }) => {
                     )}
                 <Input
                     label={t(
-                        `How much ${values?.common_land_measurement_unit} is equal to 1 acre `
+                        `${t('How much')} ${values?.common_land_measurement_unit} ${t('is equal to 1 acre')} `
                     )}
                     value={values?.how_much}
                     placeholder={'0'}
@@ -184,7 +184,7 @@ const OfficerDemographic = ({ navigation }) => {
                     )}
                 <Input
                     label={t(
-                        `Common traditional house type `
+                        `Common traditional house type`
                     )}
                     value={values?.common_traditional_house}
                     placeholder={''}
