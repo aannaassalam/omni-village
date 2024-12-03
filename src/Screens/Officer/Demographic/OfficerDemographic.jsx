@@ -121,7 +121,7 @@ const OfficerDemographic = ({ navigation }) => {
                     isRight={<AcresElement title={'%'} />}
                 />
                 {errors.average_population_growth_rate &&
-                    errors.average_population_growth_rate && (
+                    touched.average_population_growth_rate && (
                         <Text style={Styles.error2}>
                             {
                                 errors.average_population_growth_rate
@@ -139,7 +139,7 @@ const OfficerDemographic = ({ navigation }) => {
                     onChangeText={handleChange('common_land_measurement_unit')}
                 />
                 {errors.common_land_measurement_unit &&
-                    errors.common_land_measurement_unit && (
+                    touched.common_land_measurement_unit && (
                         <Text style={Styles.error2}>
                             {
                                 errors.common_land_measurement_unit
@@ -157,7 +157,7 @@ const OfficerDemographic = ({ navigation }) => {
                     onChangeText={handleChange('how_much')}
                 />
                 {errors.how_much &&
-                    errors.how_much && (
+                    touched.how_much && (
                         <Text style={Styles.error2}>
                             {
                                 errors.how_much
@@ -175,7 +175,7 @@ const OfficerDemographic = ({ navigation }) => {
                     onChangeText={handleChange('local_language')}
                 />
                 {errors.local_language &&
-                    errors.local_language && (
+                    touched.local_language && (
                         <Text style={Styles.error2}>
                             {
                                 errors.local_language
@@ -193,7 +193,7 @@ const OfficerDemographic = ({ navigation }) => {
                     onChangeText={handleChange('common_traditional_house')}
                 />
                 {errors.common_traditional_house &&
-                    errors.common_traditional_house && (
+                    touched.common_traditional_house && (
                         <Text style={Styles.error2}>
                             {
                                 errors.common_traditional_house

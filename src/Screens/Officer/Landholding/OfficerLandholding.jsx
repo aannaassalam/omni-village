@@ -209,7 +209,7 @@ const OfficerLandholding = ({ navigation }) => {
           }
         />
         {errors.total_area_allocated_village &&
-          errors.total_area_allocated_village && (
+          touched.total_area_allocated_village && (
             <Text style={Styles.error2}>
               {
                 errors.total_area_allocated_village
