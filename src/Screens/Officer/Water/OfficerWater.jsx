@@ -31,7 +31,7 @@ const OfficerWater = ({ navigation }) => {
         sustainable_yearly_supply: yup.string().required(t('Sustainable Yearly Supply is required')),
         yearly_consumption: yup.string().required(t('Yearly consumption is required')),
         storage_capacity: yup.string(),
-        distribution_method: yup.array().min(1, t('Atleast one Distribution method is required')).required(t('Distribution method is required')),
+        distribution_method: yup.string().required(t('Distribution method is required')),
         storage_method: yup.string().required(t('Storage method is required')),
         rate_of_replenishment: yup.string().required(t('Rate of replenishment is required')),
       })
@@ -108,7 +108,7 @@ const OfficerWater = ({ navigation }) => {
         sustainable_yearly_supply: '',
         yearly_consumption: '',
         storage_capacity: '',
-        distribution_method: [],
+        distribution_method: '',
         storage_method: '',
         rate_of_replenishment: '',
       };
@@ -325,7 +325,7 @@ const OfficerWater = ({ navigation }) => {
                             }
                           </Text>
                         )}
-                      {/* <CustomDropdown
+                       <CustomDropdown
                         data={[
                           {
                             label: 'Tank',
@@ -346,8 +346,8 @@ const OfficerWater = ({ navigation }) => {
                             value?.value,
                           )
                         }}
-                      /> */}
-                      <MultiselectDropdown
+                      /> 
+                      {/* <MultiselectDropdown
                         containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                         data={[
                           {
@@ -372,7 +372,7 @@ const OfficerWater = ({ navigation }) => {
 }}
                         selectedd={item?.distribution_method}
                         infoName={t('Distribution method')}
-                      />
+                      /> */}
                       {errors.water_source_available &&
                         errors.water_source_available[index]
                           ?.distribution_method && (

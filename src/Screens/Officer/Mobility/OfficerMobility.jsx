@@ -12,6 +12,7 @@ import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import Input from '../../../Components/Inputs/Input';
+import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 
 const OfficerMobility = ({ navigation }) => {
   const { t } = useTranslation()
@@ -21,7 +22,7 @@ const OfficerMobility = ({ navigation }) => {
     house_connected_to_internal_road: yup.string().required(t('Houses connected to internal road is required')),
     house_not_connected_to_internal_road: yup.number().required(t('Houses not connected to internal road is required')),
     village_connected_to_highway: yup.boolean().required(t('Village connectivity to highway is required')),
-    number_of_bridges_needed: yup.string().required(t('Number of bridges is required')),
+    mobility_requirement: yup.array().min(1, t('Atleast one Mobility requirement is required')).required(t('Mobility requirement is required')),
     reason: yup.string().required(t('Reason is required')),
     condition_of_internal_roads: yup.string().required(t('Condition of internal roads is required')),
     safety_issues_on_roads: yup.boolean().required(t('Safety issues on roads is required')),
@@ -55,7 +56,7 @@ const OfficerMobility = ({ navigation }) => {
       house_connected_to_internal_road: '',
       house_not_connected_to_internal_road: '',
       village_connected_to_highway: false,
-      number_of_bridges_needed: '',
+      mobility_requirement: '',
       reason: '',
       condition_of_internal_roads: '',
       safety_issues_on_roads:false,
@@ -143,7 +144,7 @@ const OfficerMobility = ({ navigation }) => {
         {touched?.village_connected_to_highway && errors?.village_connected_to_highway && (
           <Text style={Styles.error2}>{String(errors?.village_connected_to_highway)}</Text>
         )}
-        <Input
+        {/* <Input
           label={t(
             `Number of bridges needed`
           )}
@@ -152,12 +153,34 @@ const OfficerMobility = ({ navigation }) => {
           fullLength={true}
           keyboardType="numeric"
           onChangeText={handleChange('number_of_bridges_needed')}
-        />
-        {errors.number_of_bridges_needed &&
-          touched.number_of_bridges_needed && (
+        /> */}
+        <MultiselectDropdown
+                        containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                        data={[
+                          {
+                            key:'Tank',
+                            name:'Tank'
+                          },
+                          {
+                            key: 'Tank1',
+                            name: 'Tank1'
+                          },
+                          {
+                            key: 'Tank2',
+                            name: 'Tank2'
+                          },
+                        ]}
+                        setSelectedd={(value) => {
+                          setValues({ ...values, mobility_requirement: value });
+}}
+          selectedd={values?.mobility_requirement}
+                        infoName={t('Mobility requirement')}
+                      />
+        {errors.mobility_requirement &&
+          touched.mobility_requirement && (
             <Text style={Styles.error2}>
               {
-              errors.number_of_bridges_needed
+              errors.mobility_requirement
               }
             </Text>
           )}
