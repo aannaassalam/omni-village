@@ -52,9 +52,9 @@ export const endpoints = {
       add_business_commercial: ''
     },
     community_infrastructure:{
-      get_community_infrastructure: '',
-      edit_community_infrastructure:'',
-      add_community_infrastructure: ''
+      get_community_infrastructure: '/community-officer',
+      edit_community_infrastructure:'/community-officer',
+      add_community_infrastructure: '/community-officer'
     }
   },
   cultivation: {

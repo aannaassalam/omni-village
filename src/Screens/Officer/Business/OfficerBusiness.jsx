@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import { ActivityIndicator, Divider } from 'react-native-paper';
 import { borderColor, primaryColor } from '../../../styles/colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../../Components/CustomHeader/CustomHeader';
-import { Styles } from '../../../styles/globalStyles';
+import { Styles, width } from '../../../styles/globalStyles';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
@@ -18,16 +18,27 @@ const OfficerBusiness = ({ navigation }) => {
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState([])
   const scheme = yup.object().shape({
     organisation_not_owned_by_villagers: yup
       .boolean()
       .required(t('required')),
-    type: yup
-      .string(),
-    year_started: yup
-      .string(),
-    purpose: yup
-      .string(),
+    how_many_establishment: yup
+      .array()
+      .of(
+        yup.object().shape({
+          name: yup.string().required(t('Name is required')),
+          type: yup.string().required(t('Type is required')),
+          purpose: yup.string().required(t('Purpose is required')),
+          year_started: yup.string().required(t('Year Started is required')),
+        }),
+      )
+    // type: yup
+    //   .string(),
+    // year_started: yup
+    //   .string(),
+    // purpose: yup
+    //   .string(),
   });
   const {
     handleChange,
@@ -42,9 +53,10 @@ const OfficerBusiness = ({ navigation }) => {
   } = useFormik({
     initialValues: {
       organisation_not_owned_by_villagers: false,
-      type: '',
-      year_started: '',
-      purpose:''
+      how_many_establishment:[]
+      // type: '',
+      // year_started: '',
+      // purpose:''
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -55,6 +67,40 @@ const OfficerBusiness = ({ navigation }) => {
   });
   const onSubmit = () => { }
   const handleDraft = () => { }
+  const handleFieldChange = (index, field, value) => {
+    const newDetailsOfLand = [...values.how_many_establishment];
+    newDetailsOfLand[index][field] = value;
+    setValues({ ...values, how_many_establishment: newDetailsOfLand });
+  };
+
+  const handleStatusChange = (selectedItems) => {
+    setSelectedStatus(selectedItems);
+
+    // Update `purpose_status_of_land` based on the selected items
+    const updatedPurposeStatusOfLand = Array.from({ length: selectedItems }, (item, index) => {
+      // Check if this `type` already exists in `purpose_status_of_land`
+      const existingEntry = values.how_many_establishment.find(
+        (entry, indx) => indx === index
+      );
+
+      return existingEntry || {
+        name: '',
+        type:'',
+        purpose: "",
+        year_started: "",
+      };
+    });
+    // Update the form's purpose_status_of_land field
+    setFieldValue('how_many_establishment', updatedPurposeStatusOfLand);
+  };
+  const [collapseStates, setCollapseStates] = useState([]);
+
+  useEffect(() => {
+    // Initialize collapseStates with false for all vehicles
+    if (values?.how_many_establishment?.length > 0) {
+      setCollapseStates(Array(values?.how_many_establishment?.length).fill(true));
+    }
+  }, [values?.how_many_establishment]);
   // if (isTypeLoading || isLoading) {
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -82,7 +128,7 @@ const OfficerBusiness = ({ navigation }) => {
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
-        {values?.organisation_not_owned_by_villagers ?
+        {/* {values?.organisation_not_owned_by_villagers ?
           <View style={styles.innerInputView}>
             <Divider style={styles.divider2} />
             <View style={{ width: '100%' }}>
@@ -135,11 +181,165 @@ const OfficerBusiness = ({ navigation }) => {
             </View>
           </View>
           : null
+        } */}
+        <Input
+          label={t(
+            `How many establishment/ organisation ?`
+          )}
+          value={selectedStatus}
+          placeholder={'0'}
+          fullLength={true}
+          keyboardType="numeric"
+          onChangeText={(e) => handleStatusChange(e)}
+        />
+        {values?.how_many_establishment?.length > 0 &&
+          <>
+          {values?.how_many_establishment.map((item, index) => {
+              return <>
+                <View style={[styles.subArea, { marginTop: '3%' }]}>
+                  <Text
+                    style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                    ]}>
+                    {t(`Type ${index + 1}`)}
+                  </Text>
+                  <Divider
+                    bold={true}
+                    style={[styles.divider, { width: '34%' }]}
+                    horizontalInset={true}
+                  />
+                  <TouchableOpacity onPress={() => toggleCollapse(index)}>
+                    {collapseStates[index] ? (
+                      <Image
+                        source={require('../../../../assets/arrowUp.png')}
+                        style={styles.uparrow}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../../../assets/arrowDown.png')}
+                        style={styles.uparrow}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {collapseStates[index] &&
+                  <View style={styles.innerInputView}>
+                    <Divider style={styles.divider2} />
+                    <View style={{ width: '100%' }}>
+                      <Input
+                        label={t(
+                          `Type`
+                        )}
+                        value={item?.type}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType="default"
+                        onChangeText={value => {
+                          handleFieldChange(
+                            index,
+                            'type',
+                            value,
+                          )
+                        }}
+                      />
+                      {errors.how_many_establishment &&
+                        errors.how_many_establishment[index]
+                          ?.type && (
+                          <Text style={Styles.error2}>
+                            {
+                            errors.how_many_establishment[index]
+                                .type
+                            }
+                          </Text>
+                        )}
+                      <Input
+                        label={t(
+                          `Name`
+                        )}
+                        value={item?.name}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType="default"
+                        onChangeText={value => {
+                          handleFieldChange(
+                            index,
+                            'name',
+                            value,
+                          )
+                        }}
+                      />
+                      {errors.how_many_establishment &&
+                        errors.how_many_establishment[index]
+                          ?.name && (
+                          <Text style={Styles.error2}>
+                            {
+                            errors.how_many_establishment[index]
+                                .name
+                            }
+                          </Text>
+                        )}
+
+                      <YearPicker
+                        onYearChange={(year) => {
+                          handleFieldChange(
+                            index,
+                            'year_started',
+                            parseInt(year),
+                          )
+                        }}
+                        selectedYear={item?.year_started}
+                        label={t('Year started')}
+                      />
+                      {errors.how_many_establishment &&
+                        errors.how_many_establishment[index]
+                          ?.year_started && (
+                          <Text style={Styles.error2}>
+                            {
+                            errors.how_many_establishment[index]
+                                .year_started
+                            }
+                          </Text>
+                        )}
+                      <Input
+                        label={t(
+                          `Purpose`
+                        )}
+                        value={item?.purpose}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType="default"
+                        onChangeText={value => {
+                          handleFieldChange(
+                            index,
+                            'purpose',
+                            value,
+                          )
+                        }}
+                      />
+                      {errors.how_many_establishment &&
+                        errors.how_many_establishment[index]
+                          ?.purpose && (
+                          <Text style={Styles.error2}>
+                            {
+                              errors.how_many_establishment[index]
+                              .purpose
+                            }
+                          </Text>
+                        )}
+                    </View>
+                  </View>
+                }
+              </>
+            }
+            )}
+
+          </>
         }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
       </View>
       {/* submit popup */}
       <PopupModal
@@ -230,5 +430,25 @@ const styles = StyleSheet.create({
     marginTop: 9,
     width: '1%',
     borderRadius: 10,
+  },
+  subArea: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    // margin: 10,
+    marginTop: '5%',
+    width: width / 1.04,
+    alignItems: 'center',
+  },
+  divider: {
+    alignSelf: 'center',
+    height: 1,
+    width: '67%',
+    color: 'grey',
+  },
+  uparrow: {
+    height: 20,
+    width: 20,
   },
 })

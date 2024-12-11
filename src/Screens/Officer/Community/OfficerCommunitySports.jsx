@@ -16,7 +16,7 @@ import Input from '../../../Components/Inputs/Input';
 
 const OfficerCommunitySports = ({ navigation, route }) => {
   const { t } = useTranslation()
-  const {community} = route.params
+  const { community, village_id, data } = route.params
   const scheme = yup.object().shape({
     sports: yup.boolean().required(t('Sports is required')),
     kind_of_sports: yup.array().test(
@@ -210,7 +210,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
     validationSchema: scheme,
     onSubmit: async (values) => {
       console.log(values);
-      navigation.navigate('officerCommunityStreet', { community,sports: values })
+      navigation.navigate('officerCommunityStreet', { community, sports: values, village_id, data })
     },
 
   });
@@ -256,15 +256,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -307,7 +307,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
             <View style={{ width: '100%' }}>
               <CustomDropdown
                 data={
-                  [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                  [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
                 }
                 value={values?.how_frequently}
                 label={t('How frequently ?')}
@@ -353,15 +353,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -406,15 +406,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -434,7 +434,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 )}
               <CustomDropdown
                 data={
-                  [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+                  [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
                 }
                 value={values?.how_far_from_village_offices}
                 label={t('How far from village')}
@@ -475,15 +475,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -505,15 +505,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -558,15 +558,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -588,15 +588,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -641,15 +641,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -694,15 +694,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -725,7 +725,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
         }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} onPress={handleSubmit} style={{ width: '100%' }} />
+        <CustomButton btnText={t('next')} onPress={handleSubmit} style={{ width: '100%' }} />
       </View>
     </View>
   )

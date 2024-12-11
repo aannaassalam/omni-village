@@ -14,18 +14,20 @@ import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../../Components/Inputs/Input';
 
-const OfficerCommunity = ({ navigation }) => {
+const OfficerCommunity = ({ navigation, route }) => {
   const { t } = useTranslation()
   const [sewage, setSewage] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const {village_id} = route.params
+  const data = {}
   const scheme = yup.object().shape({
-    education: yup.array().of(
-      yup.object().shape({
-        type: yup.string().required(t('Type is required')),
-        number: yup.string().required(t('Number is required')),
-        how_far_from_village: yup.string().required(t('How far from the village is required')),
-      })
-    ).required(t('Education is required')).min(1, 'Atleast one education is required'),
+    // education: yup.array().of(
+    //   yup.object().shape({
+    //     type: yup.string().required(t('Type is required')),
+    //     number: yup.string().required(t('Number is required')),
+    //     how_far_from_village: yup.string().required(t('How far from the village is required')),
+    //   })
+    // ).required(t('Education is required')).min(1, 'Atleast one education is required'),
     town_hall: yup.boolean().required(t('Town hall is required')),
     town_hall_purpose: yup.array().test(
       'describe-required-if-safety-issues',
@@ -153,7 +155,7 @@ const OfficerCommunity = ({ navigation }) => {
     setValues
   } = useFormik({
     initialValues: {
-      education: [],
+      // education: [],
       town_hall: false,
       town_hall_purpose: [],
       market: false,
@@ -172,54 +174,53 @@ const OfficerCommunity = ({ navigation }) => {
     validationSchema: scheme,
     onSubmit: async (values) => {
       console.log(values);
-      if(values?.education.length===0){return ToastAndroid.show("Please select one value", ToastAndroid.BOTTOM)}
-      navigation.navigate('officerCommunitySports', { data: values })
+      navigation.navigate('officerCommunitySports', { community: values, village_id, data })
     },
 
   });
-  console.log("errorrr", errors)
+  // console.log("errorrr", errors)
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.education];
     newDetailsOfLand[index][field] = value;
     setValues({ ...values, education: newDetailsOfLand });
   };
 
-  const handleStatusChange = (selectedItems) => {
-    setSelectedStatus(selectedItems);
+  // const handleStatusChange = (selectedItems) => {
+  //   setSelectedStatus(selectedItems);
 
-    // Update `purpose_status_of_land` based on the selected items
-    const updatedPurposeStatusOfLand = selectedItems.map((item) => {
-      // Check if this `type` already exists in `purpose_status_of_land`
-      const existingEntry = values.education.find(
-        entry => entry.type === item
-      );
+  //   // Update `purpose_status_of_land` based on the selected items
+  //   const updatedPurposeStatusOfLand = selectedItems.map((item) => {
+  //     // Check if this `type` already exists in `purpose_status_of_land`
+  //     const existingEntry = values.education.find(
+  //       entry => entry.type === item
+  //     );
 
-      return existingEntry || {
-        type: item,
-        number: '',
-        how_far_from_village: '',
-      };
-    });
-    // Update the form's purpose_status_of_land field
-    setFieldValue('education', updatedPurposeStatusOfLand);
-  };
-  const [collapseStates, setCollapseStates] = useState([]);
+  //     return existingEntry || {
+  //       type: item,
+  //       number: '',
+  //       how_far_from_village: '',
+  //     };
+  //   });
+  //   // Update the form's purpose_status_of_land field
+  //   setFieldValue('education', updatedPurposeStatusOfLand);
+  // };
+  // const [collapseStates, setCollapseStates] = useState([]);
 
-  useEffect(() => {
-    // Initialize collapseStates with false for all vehicles
-    if (values?.education.length > 0) {
-      setCollapseStates(Array(values.education.length).fill(true));
-    }
-  }, [values?.education]);
+  // useEffect(() => {
+  //   // Initialize collapseStates with false for all vehicles
+  //   if (values?.education.length > 0) {
+  //     setCollapseStates(Array(values.education.length).fill(true));
+  //   }
+  // }, [values?.education]);
 
-  const toggleCollapse = (index) => {
-    setCollapseStates((prevStates) => {
-      // Create a new array to avoid mutating the state directly
-      const newStates = [...prevStates];
-      newStates[index] = !newStates[index]; // Toggle the specific index
-      return newStates;
-    });
-  };
+  // const toggleCollapse = (index) => {
+  //   setCollapseStates((prevStates) => {
+  //     // Create a new array to avoid mutating the state directly
+  //     const newStates = [...prevStates];
+  //     newStates[index] = !newStates[index]; // Toggle the specific index
+  //     return newStates;
+  //   });
+  // };
   // if (isTypeLoading || isLoading) {
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -238,7 +239,7 @@ const OfficerCommunity = ({ navigation }) => {
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
-        <MultiselectDropdown
+        {/* <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[{ key: '6736117ecb51156c2f52383e', name: 'test' }, { key: '6736117ecb51156c2f59383e', name: 'test2' }]}
           setSelectedd={handleStatusChange}
@@ -309,7 +310,7 @@ const OfficerCommunity = ({ navigation }) => {
                         )}
                       <CustomDropdown
                         data={
-                          [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51155c2f52383e' }]
+                          [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
                         }
                         value={item?.how_far_from_village}
                         label={t('How far from village?')}
@@ -338,7 +339,7 @@ const OfficerCommunity = ({ navigation }) => {
               </>
             })}
           </>
-        }
+        } */}
         <CustomDropdown
           data={
             [{ label: 'Yes', value: true }, { label: 'No', value: false }]
@@ -363,15 +364,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -416,15 +417,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -469,15 +470,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -497,7 +498,7 @@ const OfficerCommunity = ({ navigation }) => {
                 )}
               <CustomDropdown
                 data={
-                  [{ label: '1 kilometer', value: '1 kilometer' }, { label: '2 kilometer', value: '2 kilometer' }]
+                  [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
                 }
                 value={values?.how_far_from_village_bank}
                 label={t('How far from village')}
@@ -538,15 +539,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -566,7 +567,7 @@ const OfficerCommunity = ({ navigation }) => {
                 )}
               <CustomDropdown
                 data={
-                  [{ label: '1 kilometer', value: '1 kilometer' }, { label: '2 kilometer', value: '2 kilometer' }]
+                  [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
                 }
                 value={values?.how_far_from_village_healthcare}
                 label={t('How far from village')}
@@ -607,15 +608,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -660,15 +661,15 @@ const OfficerCommunity = ({ navigation }) => {
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={[
                   {
-                    key: 'Tank',
+                    key: '6736117ecb51156c2f52383e',
                     name: 'Tank'
                   },
                   {
-                    key: 'Tank1',
+                    key: '6736117ecb51156c2f52583e',
                     name: 'Tank1'
                   },
                   {
-                    key: 'Tank2',
+                    key: '6736117ecb51156c2f52323e',
                     name: 'Tank2'
                   },
                 ]}
@@ -691,7 +692,7 @@ const OfficerCommunity = ({ navigation }) => {
         }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} onPress={handleSubmit} style={{ width: '100%' }} />
+        <CustomButton btnText={t('next')} onPress={handleSubmit} style={{ width: '100%' }} />
       </View>
     </View>
   )

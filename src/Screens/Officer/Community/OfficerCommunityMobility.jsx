@@ -13,15 +13,45 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../../Components/Inputs/Input';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorCommunityInfrastructure, editModeratorCommunityInfrastructure, getModeratorCommunityInfrastructure } from '../../../functions/moderator';
 
 const OfficerCommunityMobility = ({ navigation, route }) => {
     const { t } = useTranslation()
-    const { community, sports, street } = route.params
+    const { community, sports, street, village_id, data } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
+    const queryClient = useQueryClient()
+    const { data: get_moderator_community, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`get_moderator_community`],
+        queryFn: () => getModeratorCommunityInfrastructure(village_id),
+        enabled: village_id ? true : false,
+        refetchOnWindowFocus: true,
+    })
+
+    const { mutate: edit_moderator_community } = useMutation({
+        mutationKey: ['edit_moderator_community'],
+        mutationFn: async (data) => {
+            editModeratorCommunityInfrastructure(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_moderator_community } = useMutation({
+        mutationKey: ['add_moderator_community'],
+        mutationFn: async (data) => {
+            addModeratorCommunityInfrastructure(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHomer', { village_id: village_id }) },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         mobility: yup.boolean().required(t('Mobility is required')),
-        mobility_type: yup.string().test(
+        type_of_mobility: yup.array().test(
             'is-mobility-type',
             t('Mobility type is required'),
             function (value) {
@@ -43,7 +73,7 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                 const { water_storage } = this.parent;
                 if (water_storage) {
                     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
-                    return value.length > 0;
+                        return value.length > 0;
                     }
                     return false;
                 }
@@ -58,7 +88,7 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                 const { cold_storage } = this.parent;
                 if (cold_storage) {
                     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
-                    return value.length > 0;
+                        return value.length > 0;
                     }
                     return false;
                 }
@@ -94,10 +124,10 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
             function (value) {
                 const { energy_battery_house } = this.parent;
                 if (energy_battery_house) {
-            if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
-                return value.length > 0;
-            }
-            return false;
+                    if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
+                        return value.length > 0;
+                    }
+                    return false;
                 }
                 return true; // Pass validation if safety_issues_on_roads is false
             }
@@ -118,17 +148,17 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
     } = useFormik({
         initialValues: {
             mobility: false,
-            type_of_mobility:[],
-            water_storage:false,
-            water_capacity:[],
-            cold_storage:false,
-            cold_storage_type:[],
-            cold_storage_capacity:'',
-            energy_battery_house:false,
-            energy_battery_capacity:'',
-            energy_battery_type:[],
-            others:'',
-            access_to_newspaper:false,
+            type_of_mobility: [],
+            water_storage: false,
+            water_capacity: [],
+            cold_storage: false,
+            cold_storage_type: [],
+            cold_storage_capacity: '',
+            energy_battery_house: false,
+            energy_battery_capacity: '',
+            energy_battery_type: [],
+            others: '',
+            access_to_newspaper: false,
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
@@ -137,9 +167,18 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
         },
 
     });
-console.log("erroror", errors)
-    const onSubmit = () => { 
+    console.log("erroror", errors)
+    const onSubmit = () => {
         setSavepopup(false)
+        let formData = {
+            ...values,
+            ...community, ...sports, ...street
+        }
+        if (data?._id) {
+            edit_moderator_community({ ...formData, community_id: data?._id })
+        } else {
+            add_moderator_community({ ...formData, village_id })
+        }
     }
     const handleDraft = () => { }
     // if (isTypeLoading || isLoading) {
@@ -184,22 +223,22 @@ console.log("erroror", errors)
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={[
                                     {
-                                        key: 'Tank',
+                                        key: '6736117ecb51156c2f52383e',
                                         name: 'Tank'
                                     },
                                     {
-                                        key: 'Tank1',
+                                        key: '6736117ecb51156c2f52583e',
                                         name: 'Tank1'
                                     },
                                     {
-                                        key: 'Tank2',
+                                        key: '6736117ecb51156c2f52323e',
                                         name: 'Tank2'
                                     },
                                 ]}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, type_of_mobility: value });
                                 }}
-                                selectedd={values?.senile_center_type}
+                                selectedd={values?.type_of_mobility}
                                 infoName={t('Type of mobility accessible from the village')}
                             />
                             {errors.type_of_mobility &&
@@ -237,15 +276,15 @@ console.log("erroror", errors)
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={[
                                     {
-                                        key: 'Tank',
+                                        key: '6736117ecb51156c2f52383e',
                                         name: 'Tank'
                                     },
                                     {
-                                        key: 'Tank1',
+                                        key: '6736117ecb51156c2f52583e',
                                         name: 'Tank1'
                                     },
                                     {
-                                        key: 'Tank2',
+                                        key: '6736117ecb51156c2f52323e',
                                         name: 'Tank2'
                                     },
                                 ]}
@@ -290,15 +329,15 @@ console.log("erroror", errors)
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={[
                                     {
-                                        key: 'Tank',
+                                        key: '6736117ecb51156c2f52383e',
                                         name: 'Tank'
                                     },
                                     {
-                                        key: 'Tank1',
+                                        key: '6736117ecb51156c2f52583e',
                                         name: 'Tank1'
                                     },
                                     {
-                                        key: 'Tank2',
+                                        key: '6736117ecb51156c2f52323e',
                                         name: 'Tank2'
                                     },
                                 ]}
@@ -312,7 +351,7 @@ console.log("erroror", errors)
                                 touched.cold_storage_type && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.cold_storage_type
+                                            errors.cold_storage_type
                                         }
                                     </Text>
                                 )}
@@ -333,11 +372,11 @@ console.log("erroror", errors)
                                 touched.cold_storage_capacity && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.cold_storage_capacity
+                                            errors.cold_storage_capacity
                                         }
                                     </Text>
                                 )}
-                           
+
                         </View>
                     </View>
                 }
@@ -365,15 +404,15 @@ console.log("erroror", errors)
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={[
                                     {
-                                        key: 'Tank',
+                                        key: '6736117ecb51156c2f52383e',
                                         name: 'Tank'
                                     },
                                     {
-                                        key: 'Tank1',
+                                        key: '6736117ecb51156c2f52583e',
                                         name: 'Tank1'
                                     },
                                     {
-                                        key: 'Tank2',
+                                        key: '6736117ecb51156c2f52323e',
                                         name: 'Tank2'
                                     },
                                 ]}
@@ -393,7 +432,7 @@ console.log("erroror", errors)
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Solar', value: 'solar' }, { label: 'electric', value: 'electric' }]
+                                    [{ label: '1 kg', value: '6736117ecb51156c2f52383e' }, { label: '2 kg', value: '6736117ecb51155c2f52383e' }]
                                 }
                                 value={values?.energy_battery_capacity}
                                 label={t('Capacity')}
@@ -452,8 +491,8 @@ console.log("erroror", errors)
                 )}
             </KeyboardAwareScrollView>
             <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+                <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
             </View>
             {/* submit popup */}
             <PopupModal
