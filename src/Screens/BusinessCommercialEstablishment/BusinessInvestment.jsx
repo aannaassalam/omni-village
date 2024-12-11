@@ -95,7 +95,7 @@ const BusinessInvestment = ({ navigation, route }) => {
         const updatedPurposeStatusOfLand = selectedItems.map((item) => {
             // Check if this `type` already exists in `purpose_status_of_land`
             const existingEntry = values.raw_material_consumption.find(
-                entry => entry.type === item
+                entry => entry.item === item
             );
 
             return existingEntry || {

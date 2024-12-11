@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -13,14 +13,45 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import Input from '../../../Components/Inputs/Input';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorMobility, editModeratorMobility, getModeratorMobility } from '../../../functions/moderator';
 
-const OfficerMobility = ({ navigation }) => {
+const OfficerMobility = ({ navigation, route }) => {
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
+  const {village_id} = route.params
+  const queryClient = useQueryClient()
+  const { data: get_moderator_mobility, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_mobility`],
+    queryFn: () => getModeratorMobility(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_mobility } = useMutation({
+    mutationKey: ['edit_moderator_mobility'],
+    mutationFn: async (data) => {
+      editModeratorMobility(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_mobility } = useMutation({
+    mutationKey: ['add_moderator_mobility'],
+    mutationFn: async (data) => {
+      addModeratorMobility(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     house_connected_to_internal_road: yup.string().required(t('Houses connected to internal road is required')),
-    house_not_connected_to_internal_road: yup.number().required(t('Houses not connected to internal road is required')),
+    house_not_connected_to_internal_road: yup.string().required(t('Houses not connected to internal road is required')),
     village_connected_to_highway: yup.boolean().required(t('Village connectivity to highway is required')),
     mobility_requirement: yup.array().min(1, t('Atleast one Mobility requirement is required')).required(t('Mobility requirement is required')),
     reason: yup.string().required(t('Reason is required')),
@@ -72,15 +103,51 @@ const OfficerMobility = ({ navigation }) => {
     },
 
   });
-  const onSubmit = () => { }
+  const onSubmit = () => { 
+    let data = {
+      house_connected_to_internal_road: values.house_connected_to_internal_road,
+      house_not_connected_to_internal_road: values.house_not_connected_to_internal_road,
+      village_connected_to_highway: values.village_connected_to_highway,
+      mobility_requirement: values.mobility_requirement,
+      reason: values.reason,
+      condition_of_internal_roads: values.condition_of_internal_roads,
+      safety_issues_on_roads: values.safety_issues_on_roads,
+      describe: values.describe,
+      connectivity_to_healthcare_facilities: values.connectivity_to_healthcare_facilities,
+      road_infrastructure_damaged: values.road_infrastructure_damaged,
+      road_damage_frequency: values.road_damage_frequency,
+    }
+    if(get_moderator_mobility?._id){
+      edit_moderator_mobility({...data, mobility_id: get_moderator_mobility?._id})
+    }else{
+      add_moderator_mobility({...data, village_id})
+    }
+  }
   const handleDraft = () => { }
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(()=>{
+    resetForm({
+      values:{
+        house_connected_to_internal_road: get_moderator_mobility?.house_connected_to_internal_road|| '',
+        house_not_connected_to_internal_road: get_moderator_mobility?.house_not_connected_to_internal_road|| '',
+        village_connected_to_highway: get_moderator_mobility?.village_connected_to_highway|| false,
+        mobility_requirement: get_moderator_mobility?.mobility_requirement|| '',
+        reason: get_moderator_mobility?.reason|| '',
+        condition_of_internal_roads: get_moderator_mobility?.condition_of_internal_roads|| '',
+        safety_issues_on_roads: get_moderator_mobility?.safety_issues_on_roads||false,
+        describe: get_moderator_mobility?.describe|| '',
+        connectivity_to_healthcare_facilities: get_moderator_mobility?.connectivity_to_healthcare_facilities|| '',
+        road_infrastructure_damaged: get_moderator_mobility?.road_infrastructure_damaged|| false,
+        road_damage_frequency: get_moderator_mobility?.road_damage_frequency|| '',
+      }
+    })
+  }, [get_moderator_mobility])
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -158,15 +225,15 @@ const OfficerMobility = ({ navigation }) => {
                         containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                         data={[
                           {
-                            key:'Tank',
+                            key:'6736117ecb51156c2f52383e',
                             name:'Tank'
                           },
                           {
-                            key: 'Tank1',
+                            key: '6736117ecb51156c2f52883e',
                             name: 'Tank1'
                           },
                           {
-                            key: 'Tank2',
+                            key: '6736117ecb51156c2f52583e',
                             name: 'Tank2'
                           },
                         ]}
@@ -204,7 +271,14 @@ const OfficerMobility = ({ navigation }) => {
           )}
         <CustomDropdown
           data={
-            [{ label: 'Something2', value: 'something2' }, { label: 'Something', value: 'something' }]
+            [{
+              label: 'Tank',
+              value: '6736117ecb51156c2f52383e',
+            },
+              {
+                label: 'Bucket',
+                value: '6736117ecb51156c2f52583e',
+              }]
           }
           value={values?.condition_of_internal_roads}
           label={t('Condition of internal roads')}
@@ -259,7 +333,14 @@ const OfficerMobility = ({ navigation }) => {
       }
         <CustomDropdown
           data={
-            [{ label: 'Something2', value: 'something2' }, { label: 'Something', value: 'something' }]
+            [{
+              label: 'Tank',
+              value: '6736117ecb51156c2f52383e',
+            },
+              {
+                label: 'Bucket',
+                value: '6736117ecb51156c2f52583e',
+              }]
           }
           value={values?.connectivity_to_healthcare_facilities}
           label={t('Connectivity to healthcare facilities')}
@@ -291,7 +372,14 @@ const OfficerMobility = ({ navigation }) => {
         )}
         <CustomDropdown
           data={
-            [{ label: 'Something', value: 'something' }, { label: 'Something2', value: 'something2' }]
+            [{
+              label: 'Tank',
+              value: '6736117ecb51156c2f52383e',
+            },
+              {
+                label: 'Bucket',
+                value: '6736117ecb51156c2f52583e',
+              }]
           }
           value={values?.road_damage_frequency}
           label={t('How frequently the road gets damaged due to flooding or landslides?')}
@@ -307,8 +395,8 @@ const OfficerMobility = ({ navigation }) => {
         )}
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
       </View>
       {/* submit popup */}
       <PopupModal

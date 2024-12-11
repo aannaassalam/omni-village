@@ -10,14 +10,44 @@ import CustomHeader from '../../../Components/CustomHeader/CustomHeader';
 import { height, Styles, width } from '../../../styles/globalStyles';
 import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
-import AcresElement from '../../../Components/ui/AcresElement';
 import Input from '../../../Components/Inputs/Input';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorLandholding, editModeratorLandholding, getModeratorLandholding } from '../../../functions/moderator';
 
-const OfficerLandholding = ({ navigation }) => {
+const OfficerLandholding = ({ navigation, route }) => {
   const { t } = useTranslation()
+  const { village_id } = route.params
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
+  const queryClient = useQueryClient()
+  const { data: get_moderator_landholding, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_landholding`],
+    queryFn: () => getModeratorLandholding(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_landholding } = useMutation({
+    mutationKey: ['edit_moderator_landholding'],
+    mutationFn: async (data) => {
+      editModeratorLandholding(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_landholding } = useMutation({
+    mutationKey: ['add_moderator_landholding'],
+    mutationFn: async (data) => {
+      addModeratorLandholding(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     total_area_allocated_village: yup
       .number()
@@ -60,7 +90,7 @@ const OfficerLandholding = ({ navigation }) => {
         return true; // Not required if Unutilized Area is zero
       }),
     others: yup
-      .string(),
+      .number(),
     land_owned_by_non_resident: yup
       .number()
       .required(t('Land owned by non-resident is required')),
@@ -149,7 +179,25 @@ const OfficerLandholding = ({ navigation }) => {
     },
 
   });
-  const onSubmit = () => { }
+  const onSubmit = () => {
+let data = {
+  total_area_allocated_village: parseFloat(values.total_area_allocated_village),
+  area_unit: values.area_unit,
+  farming_community_infrastructure: parseFloat(values.farming_community_infrastructure),
+  unutilized_area: parseFloat(values.unutilized_area),
+  fallow: parseFloat(values.fallow),
+  under_forest: parseFloat(values.under_forest),
+  under_grassland: parseFloat(values.under_grassland),
+  others: parseFloat(values.others),
+  land_owned_by_non_resident: parseFloat(values.land_owned_by_non_resident),
+  total_area_privately_owned: parseFloat(values.total_area_privately_owned),
+}
+if(get_moderator_landholding?._id){
+  edit_moderator_landholding({ ...data, landholding_id: get_moderator_landholding?._id })
+}else{
+  add_moderator_landholding({ ...data, village_id : village_id})
+}
+   }
   const handleDraft = () => { }
   useEffect(() => {
     if (values?.total_area_allocated_village && values?.farming_community_infrastructure) {
@@ -159,14 +207,30 @@ const OfficerLandholding = ({ navigation }) => {
       })
     }
   }, [values?.total_area_allocated_village, values?.farming_community_infrastructure])
-  console.log("errorr", errors)
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(()=>{
+    resetForm({
+      values: {
+        total_area_allocated_village: String(get_moderator_landholding?.total_area_allocated_village || '') || '',
+        area_unit: get_moderator_landholding?.area_unit || '',
+        farming_community_infrastructure: String(get_moderator_landholding?.farming_community_infrastructure || '') || '',
+        unutilized_area: get_moderator_landholding?.unutilized_area || '',
+        fallow: String(get_moderator_landholding?.fallow || '') || '',
+        under_forest: String(get_moderator_landholding?.under_forest || '') || '',
+        under_grassland: String(get_moderator_landholding?.under_grassland || '') || '',
+        others: String(get_moderator_landholding?.others || '') || '',
+        land_owned_by_non_resident: String(get_moderator_landholding?.land_owned_by_non_resident || '') || '',
+        total_area_privately_owned:String(get_moderator_landholding?.total_area_privately_owned || '') || '',
+      }
+    })
+  }, [get_moderator_landholding])
+  console.log("get_moderator_landholding", get_moderator_landholding)
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -318,7 +382,7 @@ const OfficerLandholding = ({ navigation }) => {
               value={values?.others}
               placeholder={'0'}
               fullLength={true}
-              keyboardType="default"
+              keyboardType="numeric"
               onChangeText={handleChange('others')}
             />
             {errors.others &&
@@ -371,8 +435,8 @@ const OfficerLandholding = ({ navigation }) => {
           )}
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
       </View>
       {/* submit popup */}
       <PopupModal

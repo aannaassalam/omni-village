@@ -17,7 +17,6 @@ const Village = ({navigation}) => {
     queryFn: get_villages,
     refetchOnWindowFocus: true,
   });
-console.log("villagesssss", villages)
   return (
     <View style={styles.container}  >
       {/* <CustomHeader
@@ -26,10 +25,15 @@ console.log("villagesssss", villages)
         goBack={() => navigation.goBack()}
       /> */}
       <KeyboardAwareScrollView>
-      <CustomShowcaseInput
-      productionName={'Village'}
-        onPress={() => { navigation.navigate('officerHome')}}
-      />
+        {villages?.map((item)=>{
+          return(       
+            <CustomShowcaseInput
+            key={item?._id}
+            productionName={item?.name.toUpperCase()}
+              onPress={() => { navigation.navigate('officerHome',{village_id:item?._id})}}
+            />
+          )
+        })}
       </KeyboardAwareScrollView>
       <View style={Styles.bottomBtn}>
       <CustomButton 

@@ -116,8 +116,8 @@ export default function AuthStack({user, moderator}) {
         return 'reject';
       } else if (moderator?.status === 1) {
         // console.log("hereeeeeeee14")
-        // return 'village'
-        return 'officerHome'
+        return 'village'
+        // return 'officerHome'
       }else{
         return 'startup'
       }

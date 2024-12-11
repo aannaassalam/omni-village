@@ -15,7 +15,47 @@ export const endpoints = {
     editModerator: '/moderator/edit_moderator',
     getModerator: '/moderator/current_moderator',
     deleteModerator: '/moderator/delete_moderator',
-    getVillages: '/villages/get-villages-for-moderator'
+    getVillages: '/villages/get-villages-for-moderator',
+    demographic:{
+      get_demographic: '/demographic-officer',
+      edit_demographic:'/demographic-officer',
+      add_demographic: '/demographic-officer'
+    },
+    landholding:{
+      get_landholding: '/landholding-officer',
+      edit_landholding:'/landholding-officer',
+      add_landholding: '/landholding-officer'
+    },
+    water:{
+      get_water: '/water-officer',
+      edit_water:'/water-officer',
+      add_water: '/water-officer'
+    },
+    energy:{
+      get_energy: '/energy-officer',
+      edit_energy:'/energy-officer',
+      add_energy: '/energy-officer'
+    },
+    mobility:{
+      get_mobility: '/mobility-officer',
+      edit_mobility:'/mobility-officer',
+      add_mobility: '/mobility-officer'
+    },
+    forestry:{
+      get_forestry: '',
+      edit_forestry:'',
+      add_forestry: ''
+    },
+    business_commercial:{
+      get_business_commercial: '',
+      edit_business_commercial:'',
+      add_business_commercial: ''
+    },
+    community_infrastructure:{
+      get_community_infrastructure: '',
+      edit_community_infrastructure:'',
+      add_community_infrastructure: ''
+    }
   },
   cultivation: {
     fetchCultivation: '/cultivation',

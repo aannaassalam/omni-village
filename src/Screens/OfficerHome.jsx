@@ -11,10 +11,11 @@ import { fontFamilyMedium } from '../styles/fontStyle'
 import { useQuery } from '@tanstack/react-query'
 import { getLandholdingByUser } from '../functions/landholding'
 
-const OfficerHome = ({ navigation }) => {
+const OfficerHome = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions()
   const styles = makeStyles(fontScale)
   const { t } = useTranslation();
+  const {village_id} = route.params
   const [onItemSeleted, setOnItemSelected] = useState(null)
 
   const { data: user, isLoading } = useModerator();
@@ -171,7 +172,7 @@ const OfficerHome = ({ navigation }) => {
           </Box>
           {ITEMS.map((item, i) => {
             return (
-              <TouchableOpacity onPress={() => { setOnItemSelected(i), navigation.navigate(item?.navigation) }} style={[styles?.itemContainer, { borderColor: onItemSeleted == i ? primaryColor : borderColor }]} key={i}>
+              <TouchableOpacity onPress={() => { setOnItemSelected(i), navigation.navigate(item?.navigation, {village_id: village_id}) }} style={[styles?.itemContainer, { borderColor: onItemSeleted == i ? primaryColor : borderColor }]} key={i}>
                 <View style={[styles.itemImageContainer, { backgroundColor: onItemSeleted == i ? primaryColor : unSelected }]}>
                   <Image source={item.image}
                     style={styles.itemImage} />

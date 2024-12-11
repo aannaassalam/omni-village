@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +15,43 @@ import DocumentPicker, { types } from 'react-native-document-picker';
 import Input from '../../../Components/Inputs/Input';
 import AcresElement from '../../../Components/ui/AcresElement';
 import { fontFamilyMedium } from '../../../styles/fontStyle';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorDemographic, editModeratorDemographic, getModeratorDemographic } from '../../../functions/moderator';
 
-const OfficerDemographic = ({ navigation }) => {
+const OfficerDemographic = ({ navigation, route }) => {
     const { t } = useTranslation()
+    const { village_id } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
+    const [images, setImages] = useState([])
+    const queryClient = useQueryClient()
+    const { data: get_moderator_demographic, isLoading: isTypeLoading } = useQuery({
+        queryKey: [`get_moderator_demographic`],
+        queryFn: () => getModeratorDemographic(village_id),
+        enabled: village_id ? true : false,
+        refetchOnWindowFocus: true,
+    })
+
+    const { mutate: edit_moderator_demographic } = useMutation({
+        mutationKey: ['edit_moderator_demographic'],
+        mutationFn: async (data) => {
+            editModeratorDemographic(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_moderator_demographic } = useMutation({
+        mutationKey: ['add_moderator_demographic'],
+        mutationFn: async (data) => {
+            addModeratorDemographic(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
     const scheme = yup.object().shape({
         average_population_growth_rate: yup.string().required(t('Average population growth rate is required')),
         common_land_measurement_unit: yup.string().required(t('Common land measurement unit is required')),
@@ -61,7 +93,29 @@ const OfficerDemographic = ({ navigation }) => {
         },
 
     });
-    const onSubmit = () => { }
+    const onSubmit = () => {
+        const formData = new FormData()
+        formData.append('average_population_growth_rate', values.average_population_growth_rate)
+        formData.append('common_land_measurement_unit', values.common_land_measurement_unit)
+        formData.append('how_much', values.how_much)
+        formData.append('local_language', values.local_language)
+        formData.append('common_traditional_house', values.common_traditional_house)
+        values.upload_house_picture.forEach((item, index) => {
+            formData.append('upload_house_picture', {
+                name: item.name,
+                uri: item.uri,
+                type: item.type
+            })
+        })
+
+        if (get_moderator_demographic?.id) {
+            formData.append('demographic_id', get_moderator_demographic?.id)
+            edit_moderator_demographic(formData)
+        } else {
+            formData.append('village_id', village_id)
+            add_moderator_demographic(formData)
+        }
+    }
     const handleDraft = () => { }
     const handleDocumentSelection = useCallback(async (index) => {
         try {
@@ -91,13 +145,28 @@ const OfficerDemographic = ({ navigation }) => {
         setFieldValue('upload_house_picture', values.upload_house_picture.filter((item, i) => i
             !== index));
     }
-    // if (isTypeLoading || isLoading) {
-    //   return (
-    //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //       <ActivityIndicator size={'large'} color={primaryColor} />
-    //     </View>
-    //   );
-    // }
+    useEffect(() => {
+        resetForm({
+            values: {
+                average_population_growth_rate: String(get_moderator_demographic?.average_population_growth_rate || '') || '',
+                common_land_measurement_unit: get_moderator_demographic?.common_land_measurement_unit || '',
+                how_much: String(get_moderator_demographic?.how_much || '') || '',
+                local_language: get_moderator_demographic?.local_language || '',
+                common_traditional_house: get_moderator_demographic?.common_traditional_house || '',
+                upload_house_picture: []
+            }
+        })
+        setImages(get_moderator_demographic?.upload_house_picture.map((item, index) => {
+            return `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${item}`
+        }))
+    }, [get_moderator_demographic])
+    if (isTypeLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -224,26 +293,45 @@ const OfficerDemographic = ({ navigation }) => {
                         })}
 
                     </> :
-                    null
+                    <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'space-between'}}>
+                        {images?.length > 0 ?
+                            images?.map((item, index) => {
+                                return <Image source={{ uri: '' }} 
+                                    style={{ width: 100, height: 100 }} />
+                                
+                            })
+                            :
+                            null
+                        }
+                    </View>
                 }
-                    <TouchableOpacity
-                        style={[styles.add_button, {
-                            justifyContent: 'flex-start'
-                        }]}
-                        onPress={() => {
-
+                {/* {errors?.upload_house_picture && errors?.upload_house_picture[0]?.name ?
+                    <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.upload_house_picture[0]?.name}</Text>
+                    :
+                    null
+                } */}
+                <TouchableOpacity
+                    style={[styles.add_button, {
+                        justifyContent: 'flex-start'
+                    }]}
+                    onPress={() => {
+                        if(images?.length>0){
+                            setImages([])
                             handleDocumentSelection()
-                        }}>
+                        }else{
+                            handleDocumentSelection()
+                        }
+                    }}>
 
-                        <>
-                            <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                            <Text style={styles.add_button_text}>{t('Add House photo')}</Text>
-                        </>
-                    </TouchableOpacity>
+                    <>
+                        <Entypo name="upload-to-cloud" size={26} color={'black'} />
+                        <Text style={styles.add_button_text}>{images?.length>0?t('Re-upload House photo'):t('Add House photo')}</Text>
+                    </>
+                </TouchableOpacity>
             </KeyboardAwareScrollView>
             <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-                <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+                <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+                {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
             </View>
             {/* submit popup */}
             <PopupModal

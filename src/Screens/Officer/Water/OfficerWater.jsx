@@ -15,13 +15,44 @@ import MultiselectDropdown from '../../../Components/MultiselectDropdown/Multise
 import Input from '../../../Components/Inputs/Input';
 import AcresElement from '../../../Components/ui/AcresElement';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorWater, editModeratorWater, getModeratorWater } from '../../../functions/moderator';
 
-const OfficerWater = ({ navigation }) => {
+const OfficerWater = ({ navigation, route }) => {
   const { t } = useTranslation()
+  const {village_id} = route.params
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const [sewage, setSewage] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const queryClient = useQueryClient()
+  const { data: get_moderator_water, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_water`],
+    queryFn: () => getModeratorWater(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_water } = useMutation({
+    mutationKey: ['edit_moderator_water'],
+    mutationFn: async (data) => {
+      editModeratorWater(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_water } = useMutation({
+    mutationKey: ['add_moderator_water'],
+    mutationFn: async (data) => {
+      addModeratorWater(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     water_source_available: yup.array().of(
       yup.object().shape({
@@ -35,7 +66,7 @@ const OfficerWater = ({ navigation }) => {
         storage_method: yup.string().required(t('Storage method is required')),
         rate_of_replenishment: yup.string().required(t('Rate of replenishment is required')),
       })
-    ).required('Water source available is required').min(1, 'Atleast one Water source available is required'),
+    ).min(1, 'Atleast one Water source available is required'),
     sewage_treatment: yup.boolean().required(t('Sewage treatment is required')),
     capacity: yup.string().required(t('Capacity is required')).test('capacity-required', t('Capacity is required when sewage treatment is enabled'), function (value) {
       const { sewage_treatment } = this.parent;
@@ -83,24 +114,47 @@ const OfficerWater = ({ navigation }) => {
     },
 
   });
-  const onSubmit = () => { }
+  const onSubmit = () => { 
+    let data= {
+      water_source_available: values?.water_source_available.map((item)=>{
+        return{
+          type: item.type,
+          condition: item.condition,
+          tapped_into: item.tapped_into,
+          sustainable_yearly_supply: parseFloat(item.sustainable_yearly_supply),
+          yearly_consumption: parseFloat(item.yearly_consumption),
+          storage_capacity: parseFloat(item.storage_capacity),
+          distribution_method: item.distribution_method,
+          storage_method: item.storage_method,
+          rate_of_replenishment: parseFloat(item.rate_of_replenishment)
+        }
+      }),
+      sewage_treatment: values.sewage_treatment,
+      capacity: values.capacity,
+      treated_water_discharged: values.treated_water_discharged,
+      number_of_houses: values.number_of_houses,
+    }
+    if(get_moderator_water?._id){
+      edit_moderator_water({ ...data, water_id: get_moderator_water?._id })
+    }else{
+      add_moderator_water({...data, village_id })
+    }
+  }
   const handleDraft = () => { }
   const handleFieldChange = (index, field, value) => {
-    const newDetailsOfLand = [...values.water_source_available];
+    const newDetailsOfLand = [...values?.water_source_available];
     newDetailsOfLand[index][field] = value;
     setValues({ ...values, water_source_available: newDetailsOfLand });
   };
 
-  const handleStatusChange = (selectedItems) => {
+  const handleStatusChange = async(selectedItems) => {
     setSelectedStatus(selectedItems);
-
     // Update `purpose_status_of_land` based on the selected items
-    const updatedPurposeStatusOfLand = selectedItems.map((item) => {
+    const updatedPurposeStatusOfLand = await selectedItems.map((item) => {
       // Check if this `type` already exists in `purpose_status_of_land`
-      const existingEntry = values.water_source_available.find(
-        entry => entry.type === item
+      const existingEntry = values?.water_source_available?.find(
+        entry => entry?.type === item
       );
-
       return existingEntry || {
         type: item,
         condition: '',
@@ -113,17 +167,16 @@ const OfficerWater = ({ navigation }) => {
         rate_of_replenishment: '',
       };
     });
-    // Update the form's purpose_status_of_land field
     setFieldValue('water_source_available', updatedPurposeStatusOfLand);
   };
   const [collapseStates, setCollapseStates] = useState([]);
 
   useEffect(() => {
     // Initialize collapseStates with false for all vehicles
-    if (values?.water_source_available.length > 0) {
-      setCollapseStates(Array(values.water_source_available.length).fill(true));
+    if (values?.water_source_available?.length > 0) {
+      setCollapseStates(Array(values?.water_source_available?.length).fill(true));
     }
-  }, [values?.water_source_available]);
+  }, [values?.water_source_available?.length]);
 
   const toggleCollapse = (index) => {
     setCollapseStates((prevStates) => {
@@ -133,13 +186,38 @@ const OfficerWater = ({ navigation }) => {
       return newStates;
     });
   };
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(()=>{
+    resetForm({
+      values:{
+        water_source_available: get_moderator_water?.water_source_available?.length > 0? get_moderator_water?.water_source_available.map((item)=>{
+          return {
+            type: item.type,
+            condition: item.condition || '',
+            tapped_into: item.tapped_into || '',
+            sustainable_yearly_supply: String(item.sustainable_yearly_supply || '') || '',
+            yearly_consumption: String(item.yearly_consumption||'') || '',
+            storage_capacity: String(item.storage_capacity||'') || '',
+            distribution_method: item.distribution_method || '',
+            storage_method: String(item.storage_method||'') || '',
+            rate_of_replenishment: String(item.rate_of_replenishment || '') || '',
+          }
+        }):[],
+        sewage_treatment: get_moderator_water?.sewage_treatment || false,
+        capacity: String(get_moderator_water?.capacity || '') || '',
+        treated_water_discharged: String(get_moderator_water?.treated_water_discharged ||'') || '',
+        number_of_houses: String(get_moderator_water?.number_of_houses || '') || '',
+      }
+    })
+    setSelectedStatus(get_moderator_water?.water_source_available.map(item => item.type))
+  }, [get_moderator_water])
+  console.log("errr", errors?.water_source_available, values?.water_source_available)
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -154,10 +232,10 @@ const OfficerWater = ({ navigation }) => {
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[
-            { key: 1, name: 'Agriculture' },
-            { key: 2, name: 'Drinking water' },
+            { key: '6736117ecb51156c2f52383e', name: 'Agriculture' },
+            { key: '6736117ecb51156c2f52683e', name: 'Drinking water' },
           ]}
-          setSelectedd={handleStatusChange}
+          setSelectedd={(values)=>handleStatusChange(values)}
           selectedd={selectedStatus}
           infoName={t('Select Water sources available at the village level')}
         />
@@ -306,7 +384,7 @@ const OfficerWater = ({ navigation }) => {
                         value={item?.storage_capacity}
                         placeholder={''}
                         fullLength={true}
-                        keyboardType="default"
+                        keyboardType="numeric"
                         onChangeText={value => {
                           handleFieldChange(
                             index,
@@ -329,11 +407,11 @@ const OfficerWater = ({ navigation }) => {
                         data={[
                           {
                             label: 'Tank',
-                            value: 'tank',
+                            value: '6736117ecb51156c2f52383e',
                           },
                           {
                             label: 'Bucket',
-                            value: 'bucket',
+                            value: '6736117ecb51156c2f52583e',
                           }
                         ]
                         }
@@ -387,11 +465,11 @@ const OfficerWater = ({ navigation }) => {
                         data={[
                           {
                             label: 'Tank',
-                            value: 'tank',
+                            value: '6736117ecb51156c2f52383e',
                           },
                           {
                             label: 'Bucket',
-                            value: 'bucket',
+                            value: '6736117ecb51156c2f52583e',
                           }
                         ]
                         }
@@ -555,8 +633,8 @@ const OfficerWater = ({ navigation }) => {
         }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
       </View>
       {/* submit popup */}
       <PopupModal

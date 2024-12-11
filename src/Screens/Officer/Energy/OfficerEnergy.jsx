@@ -15,13 +15,45 @@ import MultiselectDropdown from '../../../Components/MultiselectDropdown/Multise
 import AcresElement from '../../../Components/ui/AcresElement';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
 import { useModerator } from '../../../Hooks/useUser';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorEnergy, editModeratorEnergy, getModeratorEnergy } from '../../../functions/moderator';
+import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 
-const OfficerEnergy = ({ navigation }) => {
+const OfficerEnergy = ({ navigation, route }) => {
   const { t } = useTranslation()
+  const {village_id}= route.params
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
   const {data: user} = useModerator()
+  const queryClient = useQueryClient()
+  const { data: get_moderator_energy, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_energy`],
+    queryFn: () => getModeratorEnergy(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_energy } = useMutation({
+    mutationKey: ['edit_moderator_energy'],
+    mutationFn: async (data) => {
+      editModeratorEnergy(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_energy } = useMutation({
+    mutationKey: ['add_moderator_energy'],
+    mutationFn: async (data) => {
+      addModeratorEnergy(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     available_renewable_energy: yup
       .array()
@@ -50,7 +82,12 @@ const OfficerEnergy = ({ navigation }) => {
               const { energy_source } = this.parent;
               return energy_source ? value && value.trim() !== '' : true;
             }),
-
+          distance_to_pumps: yup
+            .string()
+            .test('is-required-if-energy-source-true', t('How far is Petrol or Diesel Pumps is required'), function (value) {
+              const { energy_source } = this.parent;
+              return energy_source ? value && value.trim() !== '' : true;
+            }),
           central_grid_fossil: yup
             .string()
             .test('sum-limit', t('The total of central grid fossil, renewable, and microgrid should be equal to 100'), function (value) {
@@ -113,7 +150,26 @@ const OfficerEnergy = ({ navigation }) => {
 
   });
 
-  const onSubmit = () => { }
+  const onSubmit = () => {
+    let data = {
+      available_renewable_energy: values.available_renewable_energy.map((item) => ({
+        type: item.type,
+        energy_source: item.energy_source,
+        capacity: parseFloat(item.capacity),
+        distribution_method: item.distribution_method,
+        installation_cost: parseFloat(item.installation_cost),
+        central_grid_fossil: parseFloat(item.central_grid_fossil),
+        central_grid_renewable: parseFloat(item.central_grid_renewable),
+        local_renewable_microgrid: parseFloat(item.local_renewable_microgrid),
+        distance_to_pumps: item?.distance_to_pumps,
+      })),
+    }
+    if(get_moderator_energy?._id){
+      edit_moderator_energy({...data, energy_id: get_moderator_energy._id })
+    }else{
+      add_moderator_energy({...data, village_id})
+    }
+   }
   const handleDraft = () => { }
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.available_renewable_energy];
@@ -126,8 +182,8 @@ const OfficerEnergy = ({ navigation }) => {
     // Update `purpose_status_of_land` based on the selected items
     const updatedPurposeStatusOfLand = selectedItems.map((item) => {
       // Check if this `type` already exists in `purpose_status_of_land`
-      const existingEntry = values.available_renewable_energy.find(
-        entry => entry.type === item
+      const existingEntry = values?.available_renewable_energy?.find(
+        entry => entry?.type === item
       );
 
       return existingEntry || {
@@ -138,7 +194,8 @@ const OfficerEnergy = ({ navigation }) => {
         installation_cost: '',
         central_grid_fossil: '',
         central_grid_renewable: '',
-        local_renewable_microgrid: ''
+        local_renewable_microgrid: '',
+        distance_to_pumps: '',
       };
     });
     // Update the form's purpose_status_of_land field
@@ -148,8 +205,8 @@ const OfficerEnergy = ({ navigation }) => {
 
   useEffect(() => {
     // Initialize collapseStates with false for all vehicles
-    if (values?.available_renewable_energy.length > 0) {
-      setCollapseStates(Array(values.available_renewable_energy.length).fill(true));
+    if (values?.available_renewable_energy?.length > 0) {
+      setCollapseStates(Array(values.available_renewable_energy?.length).fill(true));
     }
   }, [values?.available_renewable_energy]);
 
@@ -161,13 +218,34 @@ const OfficerEnergy = ({ navigation }) => {
       return newStates;
     });
   };
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(() => {
+    resetForm({
+      values:{
+        available_renewable_energy: get_moderator_energy?.available_renewable_energy.map((item)=>{
+          return{
+            type: item.type,
+            energy_source: item.energy_source,
+            capacity: String(item.capacity || '') || '',
+            distribution_method: item.distribution_method || '',
+            installation_cost: String(item.installation_cost || '') || '',
+            central_grid_fossil: String(item.central_grid_fossil || '') || '',
+            central_grid_renewable: String(item.central_grid_renewable||'') || '',
+            local_renewable_microgrid: String(item.local_renewable_microgrid || '') || '',
+            distance_to_pumps: item?.distance_to_pumps || ''
+          }
+        })
+      }
+    })
+    setSelectedStatus(get_moderator_energy?.available_renewable_energy.map((item) => item.type))
+  },[get_moderator_energy])
+  console.log("errrr", errors)
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -182,8 +260,8 @@ const OfficerEnergy = ({ navigation }) => {
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
           data={[
-            { key: 'Something', name: "Something" },
-            { key: 'Something2', name: "Something2" },
+            { name: 'Something', key: "6736117ecb51156c2f52383e" },
+            { name: 'Something2', key: "6736117ecb51156c2f59383e" },
           ]}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
@@ -283,16 +361,16 @@ const OfficerEnergy = ({ navigation }) => {
                             containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                             data={[
                               {
-                                key: 'Tank',
-                                name: 'Tank'
+                                name: 'Tank',
+                                key: '6736117ecb51156c2f52383e'
                               },
                               {
-                                key: 'Tank1',
-                                name: 'Tank1'
+                                name: 'Tank1',
+                                key: '6736117ecb51156c2f56383e'
                               },
                               {
-                                key: 'Tank2',
-                                name: 'Tank2'
+                                name: 'Tank2',
+                                key: '6736117ecb51156c2f53383e'
                               },
                             ]}
                             setSelectedd={(value) => {
@@ -444,9 +522,41 @@ const OfficerEnergy = ({ navigation }) => {
                                 }
                               </Text>
                             )}
+                            <CustomDropdown
+                              data={[
+                                {
+                                  label: '1 km',
+                                  value: '6736117ecb51156c2f52383e',
+                                },
+                                {
+                                  label: '5 km',
+                                  value: '6736117ecb51156c2f52583e',
+                                }
+                              ]
+                              }
+                              value={item?.distance_to_pumps}
+                              label={t('How far is Petrol or Diesel Pumps?')}
+                              onChange={value => {
+                                handleFieldChange(
+                                  index,
+                                  'distance_to_pumps',
+                                  value?.value,
+                                )
+                              }}
+                            />
+                            {errors.available_renewable_energy &&
+                              errors.available_renewable_energy[index]
+                              ?.distance_to_pumps && (
+                                <Text style={Styles.error2}>
+                                  {
+                                  errors.available_renewable_energy[index]
+                                    .distance_to_pumps
+                                  }
+                                </Text>
+                              )}
                               </>
                             }
-                      </View>
+                          </View>
                     </View>
                     </View>
             }
@@ -457,8 +567,8 @@ const OfficerEnergy = ({ navigation }) => {
             
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+        <CustomButton btnText={t('submit')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} /> */}
       </View>
       {/* submit popup */}
       <PopupModal
