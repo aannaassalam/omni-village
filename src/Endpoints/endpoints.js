@@ -42,14 +42,14 @@ export const endpoints = {
       add_mobility: '/mobility-officer'
     },
     forestry:{
-      get_forestry: '',
-      edit_forestry:'',
-      add_forestry: ''
+      get_forestry: '/forestry-officer',
+      edit_forestry:'/forestry-officer',
+      add_forestry: '/forestry-officer'
     },
     business_commercial:{
-      get_business_commercial: '',
-      edit_business_commercial:'',
-      add_business_commercial: ''
+      get_business_commercial: '/business-officer',
+      edit_business_commercial:'/business-officer',
+      add_business_commercial: '/business-officer'
     },
     community_infrastructure:{
       get_community_infrastructure: '/community-officer',

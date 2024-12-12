@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -195,6 +195,30 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
         },
 
     });
+    useEffect(()=>{
+        resetForm({
+            values:{
+                street_light:data?.street_light|| false,
+                solar_electric: data?.solar_electric || '',
+                broadband_internet: data?.broadband_internet || false,
+                how_many_provider: data?.how_many_provider ||[],
+                methods_of_using: data?.methods_of_using ||[],
+                bandwidth: data?.bandwidth ||[],
+                stability: data?.stability ||[],
+                burial_ground: data?.burial_ground || false,
+                how_far_from_village_burial_ground: data?.how_far_from_village_burial_ground || '',
+                animal_shelters: data?.animal_shelters || false,
+                how_far_from_village_animal_shelter: data?.how_far_from_village_animal_shelter || '',
+                animal_shelter_type: data?.animal_shelter_type ||[],
+                parking: data?.parking || false,
+                capacity: data?.capacity || '',
+                children_playground: data?.children_playground || false,
+                children_playground_type: data?.children_playground_type || [],
+                senile_center: data?.senile_center || false,
+                senile_center_type: data?.senile_center_type ||[],
+            }
+        })
+    },[data])
     // if (isTypeLoading || isLoading) {
     //   return (
     //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>

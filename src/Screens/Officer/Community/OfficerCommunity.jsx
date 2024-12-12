@@ -13,13 +13,20 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../../Components/Inputs/Input';
+import { useQuery } from '@tanstack/react-query';
+import { getModeratorCommunityInfrastructure } from '../../../functions/moderator';
 
 const OfficerCommunity = ({ navigation, route }) => {
   const { t } = useTranslation()
   const [sewage, setSewage] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
   const {village_id} = route.params
-  const data = {}
+  const { data: get_moderator_community, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_community`],
+    queryFn: () => getModeratorCommunityInfrastructure(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
   const scheme = yup.object().shape({
     // education: yup.array().of(
     //   yup.object().shape({
@@ -174,7 +181,7 @@ const OfficerCommunity = ({ navigation, route }) => {
     validationSchema: scheme,
     onSubmit: async (values) => {
       console.log(values);
-      navigation.navigate('officerCommunitySports', { community: values, village_id, data })
+      navigation.navigate('officerCommunitySports', { community: values, village_id, data: get_moderator_community })
     },
 
   });
@@ -221,13 +228,33 @@ const OfficerCommunity = ({ navigation, route }) => {
   //     return newStates;
   //   });
   // };
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(()=>{
+    resetForm({
+      values: {
+        town_hall: get_moderator_community?.town_hall || false,
+        town_hall_purpose: get_moderator_community?.town_hall_purpose || [],
+        market: get_moderator_community?.market || false,
+        how_many_market: get_moderator_community?.how_many_market ||[],
+        bank: get_moderator_community?.bank || false,
+        how_many_bank: get_moderator_community?.how_many_bank ||[],
+        how_far_from_village_bank: get_moderator_community?.how_far_from_village_bank || '',
+        health_care: get_moderator_community?.health_care || false,
+        how_many_healthcare: get_moderator_community?.how_many_healthcare ||[],
+        how_far_from_village_healthcare: get_moderator_community?.how_far_from_village_healthcare || '',
+        library: get_moderator_community?.library || false,
+        how_many_library: get_moderator_community?.how_many_library ||[],
+        museum: get_moderator_community?.museum || false,
+        how_many_museum: get_moderator_community?.how_many_museum ||[],
+      },
+    })
+  }, [get_moderator_community])
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -11,13 +11,45 @@ import CustomButton from '../../../Components/CustomButton/CustomButton';
 import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import Input from '../../../Components/Inputs/Input';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addModeratorForestry, editModeratorForestry, getModeratorForestry } from '../../../functions/moderator';
+import { primaryColor } from '../../../styles/colors';
 
-const OfficerForest = ({ navigation }) => {
+const OfficerForest = ({ navigation, route }) => {
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
+  const {village_id} = route.params
+  const queryClient = useQueryClient()
+  const { data: get_moderator_forest, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_forest`],
+    queryFn: () => getModeratorForestry(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_forest } = useMutation({
+    mutationKey: ['edit_moderator_forest'],
+    mutationFn: async (data) => {
+      editModeratorForestry(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_forest } = useMutation({
+    mutationKey: ['add_moderator_forest'],
+    mutationFn: async (data) => {
+      addModeratorForestry(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
-    type_of_forest_accessible: yup.array().required(t('Type of forest is required')),
+    type_of_forest_accessible: yup.string().required(t('Type of forest is required')),
     area_of_forest_accessible: yup.string().required(t('Area of forest is required')),
     do_you_have_flora_fauna: yup.boolean(),
     link_of_the_doc: yup.string().test(
@@ -42,7 +74,7 @@ const OfficerForest = ({ navigation }) => {
         return true; // Pass validation if safety_issues_on_roads is false
       }
     ),
-    incident_of_forest_fire: yup.boolean().test(
+    incident_of_forest_fire: yup.string().test(
       'link-of-the-doc-required-if-flora-fauna',
       t('Incident of forest fire is required if flora fauna is true'),
       function (value) {
@@ -53,17 +85,19 @@ const OfficerForest = ({ navigation }) => {
         return true; // Pass validation if safety_issues_on_roads is false
       }
     ),
-    incident_of_wildlife_conflict: yup.boolean().test(
-      'link-of-the-doc-required-if-flora-fauna',
-      t('Incident of wildlife conflict is required if flora fauna is true'),
-      function (value) {
-        const { do_you_have_flora_fauna } = this.parent;
-        if (do_you_have_flora_fauna) {
-          return value && value.trim() !== ''; // Ensure 'describe' is not empty if safety_issues_on_roads is true
-        }
-        return true; // Pass validation if safety_issues_on_roads is false
-      }
-    ),
+    incident_of_wildlife_conflict: yup.boolean()
+    // .test(
+    //   'link-of-the-doc-required-if-flora-fauna',
+    //   t('Incident of wildlife conflict is required if flora fauna is true'),
+    //   function (value) {
+    //     const { do_you_have_flora_fauna } = this.parent;
+    //     if (do_you_have_flora_fauna) {
+    //       return value && value; // Ensure 'describe' is not empty if safety_issues_on_roads is true
+    //     }
+    //     return true; // Pass validation if safety_issues_on_roads is false
+    //   }
+    // )
+    ,
     describe: yup.string().test(
       'link-of-the-doc-required-if-flora-fauna',
       t('Describe is required'),
@@ -75,7 +109,7 @@ const OfficerForest = ({ navigation }) => {
         return true; // Pass validation if safety_issues_on_roads is false
       }
     ),
-    any_incident_of_illegal_forest_activities: yup.boolean().test(
+    any_incident_of_illegal_forest_activities: yup.string().test(
       'link-of-the-doc-required-if-flora-fauna',
       t('Any incident of illegal forest activities is required'),
       function (value) {
@@ -116,15 +150,48 @@ const OfficerForest = ({ navigation }) => {
     },
 
   });
-  const onSubmit = () => { }
+  const onSubmit = () => { 
+    let data = {
+      type_of_forest_accessible: values.type_of_forest_accessible,
+      area_of_forest_accessible: parseInt(values.area_of_forest_accessible),
+      do_you_have_flora_fauna: values.do_you_have_flora_fauna,
+      link_of_the_doc: values.link_of_the_doc,
+      condition_of_forest_accessible: values.condition_of_forest_accessible,
+      incident_of_forest_fire: values.incident_of_forest_fire,
+      incident_of_wildlife_conflict: values.incident_of_wildlife_conflict,
+      describe: values.describe,
+      any_incident_of_illegal_forest_activities: values.any_incident_of_illegal_forest_activities,
+    }
+    if(get_moderator_forest?._id){
+      edit_moderator_forest({...data, forestry_id: get_moderator_forest?._id})
+    }else{
+      add_moderator_forest({...data,village_id })
+    }
+  }
   const handleDraft = () => { }
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(()=>{
+    resetForm({
+      values:{
+        type_of_forest_accessible: get_moderator_forest?.type_of_forest_accessible,
+        area_of_forest_accessible:String( get_moderator_forest?.area_of_forest_accessible||''),
+        do_you_have_flora_fauna: get_moderator_forest?.do_you_have_flora_fauna,
+        link_of_the_doc: get_moderator_forest?.link_of_the_doc,
+        condition_of_forest_accessible: get_moderator_forest?.condition_of_forest_accessible,
+        incident_of_forest_fire: get_moderator_forest?.incident_of_forest_fire,
+        incident_of_wildlife_conflict: get_moderator_forest?.incident_of_wildlife_conflict || false,
+        describe: get_moderator_forest?.describe,
+        any_incident_of_illegal_forest_activities: get_moderator_forest?.any_incident_of_illegal_forest_activities,
+      }
+    })
+  }, [get_moderator_forest])
+  console.log("errrrr", errors)
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -159,7 +226,7 @@ const OfficerForest = ({ navigation }) => {
           value={values?.area_of_forest_accessible}
           placeholder={'0'}
           fullLength={true}
-          keyboardType="default"
+          keyboardType="numeric"
           onChangeText={handleChange('area_of_forest_accessible')}
         />
         {errors.area_of_forest_accessible &&

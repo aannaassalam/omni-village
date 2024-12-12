@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -22,12 +22,12 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const queryClient = useQueryClient()
-    const { data: get_moderator_community, isLoading: isTypeLoading } = useQuery({
-        queryKey: [`get_moderator_community`],
-        queryFn: () => getModeratorCommunityInfrastructure(village_id),
-        enabled: village_id ? true : false,
-        refetchOnWindowFocus: true,
-    })
+    // const { data: get_moderator_community, isLoading: isTypeLoading } = useQuery({
+    //     queryKey: [`get_moderator_community`],
+    //     queryFn: () => getModeratorCommunityInfrastructure(village_id),
+    //     enabled: village_id ? true : false,
+    //     refetchOnWindowFocus: true,
+    // })
 
     const { mutate: edit_moderator_community } = useMutation({
         mutationKey: ['edit_moderator_community'],
@@ -45,7 +45,7 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
             addModeratorCommunityInfrastructure(data)
             queryClient.invalidateQueries()
         },
-        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHomer', { village_id: village_id }) },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
         onError: (error) => console.log("error save", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
@@ -181,13 +181,25 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
         }
     }
     const handleDraft = () => { }
-    // if (isTypeLoading || isLoading) {
-    //   return (
-    //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //       <ActivityIndicator size={'large'} color={primaryColor} />
-    //     </View>
-    //   );
-    // }
+    useEffect(()=>{
+        resetForm({
+            values:{
+
+                mobility: data?.mobility || false,
+                type_of_mobility: data?.type_of_mobility || [],
+                water_storage: data?.water_storage || false,
+                water_capacity: data?.water_capacity || [],
+                cold_storage: data?.cold_storage || false,
+                cold_storage_type: data?.cold_storage_type || [],
+                cold_storage_capacity: data?.cold_storage_capacity || '',
+                energy_battery_house: data?.energy_battery_house || false,
+                energy_battery_capacity: data?.energy_battery_capacity || '',
+                energy_battery_type: data?.energy_battery_type || [],
+                others: data?.others || '',
+                access_to_newspaper: data?.access_to_newspaper || false,
+            }
+        })
+    },[])
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -357,7 +369,7 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Solar', value: 'solar' }, { label: 'electric', value: 'electric' }]
+                                    [{ label: 'Solar', value: '6736117ecb51156c2f52583e' }, { label: 'electric', value: '6738117ecb51156c2f52583e' }]
                                 }
                                 value={values?.cold_storage_capacity}
                                 label={t('Capacity')}

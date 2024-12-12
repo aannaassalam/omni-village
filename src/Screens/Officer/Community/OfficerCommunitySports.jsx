@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -214,6 +214,31 @@ const OfficerCommunitySports = ({ navigation, route }) => {
     },
 
   });
+  useEffect(()=>{
+    resetForm({
+      values:{
+        sports: data?.sports || false,
+        kind_of_sports: data?.kind_of_sports ||[],
+        spiritual_retreats: data?.spiritual_retreats || false,
+        how_frequently: data?.how_frequently || '',
+        spiritual_sanctums: data?.spiritual_sanctums || false,
+        how_many_sanctums: data?.how_many_sanctums ||[],
+        post_office: data?.post_office || false,
+        how_many_post_offices: data?.how_many_post_offices ||[],
+        how_far_from_village_offices: data?.how_far_from_village_offices || '',
+        sewage_treatment_facility: data?.sewage_treatment_facility || false,
+        how_many_sewage_treatment: data?.how_many_sewage_treatment ||[],
+        sewage_type: data?.sewage_type ||[],
+        composing_facility: data?.composing_facility || false,
+        how_many_composing_facility: data?.how_many_composing_facility ||[],
+        composing_type: data?.composing_type ||[],
+        recycling: data?.recycling || false,
+        recycling_type: data?.recycling_type ||[],
+        water_segregation: data?.water_segregation || false,
+        level_of_segregation: data?.level_of_segregation ||[],
+      }
+    })
+  },[data])
   // if (isTypeLoading || isLoading) {
   //   return (
   //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>

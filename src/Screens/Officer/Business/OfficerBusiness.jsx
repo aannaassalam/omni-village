@@ -13,12 +13,43 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
 import Input from '../../../Components/Inputs/Input';
 import YearPicker from '../../../Components/YearPicker/YearPicker';
+import { addModeratorBusiness, editModeratorBusiness, getModeratorBusiness } from '../../../functions/moderator';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const OfficerBusiness = ({ navigation }) => {
+const OfficerBusiness = ({ navigation, route }) => {
   const { t } = useTranslation()
+  const { village_id } = route.params
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([])
+  const queryClient = useQueryClient()
+  const { data: get_moderator_business, isLoading: isTypeLoading } = useQuery({
+    queryKey: [`get_moderator_business`],
+    queryFn: () => getModeratorBusiness(village_id),
+    enabled: village_id ? true : false,
+    refetchOnWindowFocus: true,
+  })
+
+  const { mutate: edit_moderator_business } = useMutation({
+    mutationKey: ['edit_moderator_business'],
+    mutationFn: async (data) => {
+      editModeratorBusiness(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
+  const { mutate: add_moderator_business } = useMutation({
+    mutationKey: ['add_moderator_business'],
+    mutationFn: async (data) => {
+      addModeratorBusiness(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+  })
   const scheme = yup.object().shape({
     organisation_not_owned_by_villagers: yup
       .boolean()
@@ -53,10 +84,7 @@ const OfficerBusiness = ({ navigation }) => {
   } = useFormik({
     initialValues: {
       organisation_not_owned_by_villagers: false,
-      how_many_establishment:[]
-      // type: '',
-      // year_started: '',
-      // purpose:''
+      how_many_establishment: []
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -65,7 +93,24 @@ const OfficerBusiness = ({ navigation }) => {
     },
 
   });
-  const onSubmit = () => { }
+  const onSubmit = () => {
+    let data = {
+      organisation_not_owned_by_villagers: values.organisation_not_owned_by_villagers,
+      how_many_establishment: values.how_many_establishment.map((item) => {
+        return {
+          name: item.name,
+          type: item.type,
+          purpose: item.purpose,
+          year_started: item.year_started
+        }
+      })
+    }
+    if (get_moderator_business?._id) {
+      edit_moderator_business({ ...data, business_id: get_moderator_business?._id })
+    } else {
+      add_moderator_business({ ...data, village_id })
+    }
+  }
   const handleDraft = () => { }
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.how_many_establishment];
@@ -85,7 +130,7 @@ const OfficerBusiness = ({ navigation }) => {
 
       return existingEntry || {
         name: '',
-        type:'',
+        type: '',
         purpose: "",
         year_started: "",
       };
@@ -101,13 +146,30 @@ const OfficerBusiness = ({ navigation }) => {
       setCollapseStates(Array(values?.how_many_establishment?.length).fill(true));
     }
   }, [values?.how_many_establishment]);
-  // if (isTypeLoading || isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-  //       <ActivityIndicator size={'large'} color={primaryColor} />
-  //     </View>
-  //   );
-  // }
+  useEffect(() => {
+    resetForm({
+      values: {
+        organisation_not_owned_by_villagers: get_moderator_business?.organisation_not_owned_by_villagers,
+        how_many_establishment: get_moderator_business?.how_many_establishment.map((item) => {
+          return {
+            name: item.name,
+            type: item.type,
+            purpose: item.purpose,
+            year_started: item.year_started
+          }
+        })
+      }
+    })
+    setSelectedStatus(String(get_moderator_business?.how_many_establishment.length))
+  }, [get_moderator_business])
+  console.log("sele", selectedStatus)
+  if (isTypeLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -194,7 +256,7 @@ const OfficerBusiness = ({ navigation }) => {
         />
         {values?.how_many_establishment?.length > 0 &&
           <>
-          {values?.how_many_establishment.map((item, index) => {
+            {values?.how_many_establishment.map((item, index) => {
               return <>
                 <View style={[styles.subArea, { marginTop: '3%' }]}>
                   <Text
@@ -206,7 +268,7 @@ const OfficerBusiness = ({ navigation }) => {
                   </Text>
                   <Divider
                     bold={true}
-                    style={[styles.divider, { width: '34%' }]}
+                    style={[styles.divider, { width: '74%' }]}
                     horizontalInset={true}
                   />
                   <TouchableOpacity onPress={() => toggleCollapse(index)}>
@@ -248,7 +310,7 @@ const OfficerBusiness = ({ navigation }) => {
                           ?.type && (
                           <Text style={Styles.error2}>
                             {
-                            errors.how_many_establishment[index]
+                              errors.how_many_establishment[index]
                                 .type
                             }
                           </Text>
@@ -274,7 +336,7 @@ const OfficerBusiness = ({ navigation }) => {
                           ?.name && (
                           <Text style={Styles.error2}>
                             {
-                            errors.how_many_establishment[index]
+                              errors.how_many_establishment[index]
                                 .name
                             }
                           </Text>
@@ -296,7 +358,7 @@ const OfficerBusiness = ({ navigation }) => {
                           ?.year_started && (
                           <Text style={Styles.error2}>
                             {
-                            errors.how_many_establishment[index]
+                              errors.how_many_establishment[index]
                                 .year_started
                             }
                           </Text>
@@ -323,7 +385,7 @@ const OfficerBusiness = ({ navigation }) => {
                           <Text style={Styles.error2}>
                             {
                               errors.how_many_establishment[index]
-                              .purpose
+                                .purpose
                             }
                           </Text>
                         )}

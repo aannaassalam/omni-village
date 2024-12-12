@@ -108,8 +108,8 @@ const OfficerDemographic = ({ navigation, route }) => {
             })
         })
 
-        if (get_moderator_demographic?.id) {
-            formData.append('demographic_id', get_moderator_demographic?.id)
+        if (get_moderator_demographic?._id) {
+            formData.append('demographic_id', get_moderator_demographic?._id)
             edit_moderator_demographic(formData)
         } else {
             formData.append('village_id', village_id)
@@ -157,9 +157,10 @@ const OfficerDemographic = ({ navigation, route }) => {
             }
         })
         setImages(get_moderator_demographic?.upload_house_picture.map((item, index) => {
-            return `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${item}`
+            return `${item.replace("uploads/", "").replace(".png","")}`
         }))
     }, [get_moderator_demographic])
+    console.log("helloooooo", get_moderator_demographic?.upload_house_picture)
     if (isTypeLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -296,8 +297,11 @@ const OfficerDemographic = ({ navigation, route }) => {
                     <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'space-between'}}>
                         {images?.length > 0 ?
                             images?.map((item, index) => {
-                                return <Image source={{ uri: '' }} 
+                                return <View style={{alignItems:'center'}}>
+                                    <Image source={require('../../../../assets/imagePlaceholder.png')}
                                     style={{ width: 100, height: 100 }} />
+                                    <Text style={{color: '#000', fontSize: 12/fontScale, marginTop: 5}}>{item}</Text>
+                                    </View>
                                 
                             })
                             :
