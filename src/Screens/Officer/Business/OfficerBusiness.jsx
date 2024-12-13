@@ -53,7 +53,7 @@ const OfficerBusiness = ({ navigation, route }) => {
   const scheme = yup.object().shape({
     organisation_not_owned_by_villagers: yup
       .boolean()
-      .required(t('required')),
+      .required(t('Organisation not owned by villagers is required')),
     how_many_establishment: yup
       .array()
       .of(
@@ -264,7 +264,7 @@ const OfficerBusiness = ({ navigation, route }) => {
                       Styles.fieldLabel,
                       { marginTop: 4, alignSelf: 'center' },
                     ]}>
-                    {t(`Type ${index + 1}`)}
+                    {t(`${t('Type')} ${index + 1}`)}
                   </Text>
                   <Divider
                     bold={true}

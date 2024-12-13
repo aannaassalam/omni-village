@@ -345,7 +345,7 @@ const OfficerForest = ({ navigation, route }) => {
                 )}
               <Input
                 label={t(
-                  `Any incidents of illegal forest activities? `
+                  `Any incidents of illegal forest activities?`
                 )}
                 value={values?.any_incident_of_illegal_forest_activities}
                 placeholder={''}
