@@ -4,12 +4,12 @@ import { endpoints } from '../Endpoints/endpoints';
 
 //NOTE: DEMOGRAPHIC API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorDemographicDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.demographic_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorDemographic = async (id) => {
     const res = await axiosInstance.get(
@@ -46,12 +46,12 @@ export const editModeratorDemographic = async body => {
 
 //NOTE: LANDHOLDING API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorLandholdingDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.landholding_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorLandholding = async (id) => {
     const res = await axiosInstance.get(
@@ -78,12 +78,12 @@ export const editModeratorLandholding = async body => {
 
 // NOTE: WATER API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorWaterDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.water_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorWater = async (id) => {
     const res = await axiosInstance.get(
@@ -110,12 +110,12 @@ export const editModeratorWater = async body => {
 
 // NOTE: ENERGY API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorEnergyDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.energy_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorEnergy= async (id) => {
     const res = await axiosInstance.get(
@@ -142,12 +142,12 @@ export const editModeratorEnergy = async body => {
 
 // NOTE: MOBILITY API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorMobilityDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.mobility_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorMobility = async (id) => {
     const res = await axiosInstance.get(
@@ -174,12 +174,12 @@ export const editModeratorMobility = async body => {
 
 // NOTE: FORESTRY API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorForestryDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.forestry_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorForestry = async (id) => {
     const res = await axiosInstance.get(
@@ -206,12 +206,12 @@ export const editModeratorForestry = async body => {
 
 // NOTE: BUSINESS COMMERCIAL API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorBusinessDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.business_commercial_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorBusiness = async (id) => {
     const res = await axiosInstance.get(
@@ -238,12 +238,12 @@ export const editModeratorBusiness = async body => {
 
 // NOTE: COMMUNITY INFRASTRUCTURE API'S
 
-// export const getLandholdingDropdown = async (id) => {
-//     const res = await axiosInstance.get(
-//         endpoints.dropdown.get_landholding_dropdown
-//     );
-//     return res.data;
-// };
+export const getModeratorCommunityInfrastructureDropdown = async () => {
+    const res = await axiosInstance.get(
+        endpoints.moderator.moderator_dropdown.community_infrastructure_dropdown
+    );
+    return res.data;
+};
 
 export const getModeratorCommunityInfrastructure = async (id) => {
     const res = await axiosInstance.get(

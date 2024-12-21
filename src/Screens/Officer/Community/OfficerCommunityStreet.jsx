@@ -13,10 +13,18 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../../Components/Inputs/Input';
+import { useQuery } from '@tanstack/react-query';
+import { getModeratorCommunityInfrastructureDropdown } from '../../../functions/moderator';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerCommunityStreet = ({ navigation, route }) => {
     const { t } = useTranslation()
     const { community, sports, village_id, data } = route.params
+    const { data: get_moderator_community_dropdown, isLoading } = useQuery({
+        queryKey: [`get_moderator_community_dropdown`],
+        queryFn: () => getModeratorCommunityInfrastructureDropdown(),
+        refetchOnWindowFocus: true,
+    })
     const scheme = yup.object().shape({
         street_light: yup.boolean().required(t('Street light is required')),
         solar_electric: yup.string().required(t('Solar electric is required')),
@@ -219,13 +227,13 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
             }
         })
     },[data])
-    // if (isTypeLoading || isLoading) {
-    //   return (
-    //     <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-    //       <ActivityIndicator size={'large'} color={primaryColor} />
-    //     </View>
-    //   );
-    // }
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+          <ActivityIndicator size={'large'} color={primaryColor} />
+        </View>
+      );
+    }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -259,7 +267,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Solar', value: '6736117ecb51156c2f52383e' }, { label: 'Electric', value: '6736117ecb51155c2f52383e' }]
+                                    get_moderator_community_dropdown?.type_of_street_lights.map((item) => {
+                                                  return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                })
                                 }
                                 value={values?.solar_electric}
                                 label={t('Solar or Electric')}
@@ -303,20 +313,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.no_of_broadband_providers.map((item) => {
+                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, how_many_provider: value });
                                 }}
@@ -333,20 +332,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 )}
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Wifi'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Wired'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Satellite'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.method_of_broadband.map((item) => {
+                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, methods_of_using: value });
                                 }}
@@ -363,20 +351,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 )}
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.bandwidth_of_broadband.map((item) => {
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, bandwidth: value });
                                 }}
@@ -393,20 +370,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 )}
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.stability_of_broadband.map((item) => {
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, stability: value });
                                 }}
@@ -446,7 +412,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <CustomDropdown
                                 data={
-                                    [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
+                                    get_moderator_community_dropdown?.distance_of_burial_cremation.map((item) => {
+                                                 return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                               })
                                 }
                                 value={values?.how_far_from_village_burial_ground}
                                 label={t('How far from village')}
@@ -490,7 +458,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <CustomDropdown
                                 data={
-                                    [{ label: '1 Kilometer', value: '6736117ecb51156c2f52383e' }, { label: '2 Kilometer', value: '6736117ecb51155c2f52383e' }]
+                                    get_moderator_community_dropdown?.distance_of_animal_shelters.map((item) => {
+                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                    })
                                 }
                                 value={values?.how_far_from_village_animal_shelter}
                                 label={t('How far from village')}
@@ -511,20 +481,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 )}
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_animal_shelters.map((item) => {
+                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, animal_shelter_type: value });
                                 }}
@@ -564,7 +523,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <CustomDropdown
                                 data={
-                                    [{ label: '1 kg', value: '6736117ecb51156c2f52383e' }, { label: '2 kg', value: '6736117ecb51155c2f52383e' }]
+                                    get_moderator_community_dropdown?.capacity_of_parking.map((item) => {
+                                                  return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                })
                                 }
                                 value={values?.capacity}
                                 label={t('Capacity')}
@@ -608,20 +569,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_children_playground.map((item) => {
+                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, children_playground_type: value });
                                 }}
@@ -661,20 +611,9 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_senile_center.map((item) => {
+                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, senile_center_type: value });
                                 }}

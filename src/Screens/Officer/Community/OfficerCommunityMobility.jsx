@@ -14,7 +14,8 @@ import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import Input from '../../../Components/Inputs/Input';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorCommunityInfrastructure, editModeratorCommunityInfrastructure, getModeratorCommunityInfrastructure } from '../../../functions/moderator';
+import { addModeratorCommunityInfrastructure, editModeratorCommunityInfrastructure, getModeratorCommunityInfrastructure, getModeratorCommunityInfrastructureDropdown } from '../../../functions/moderator';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerCommunityMobility = ({ navigation, route }) => {
     const { t } = useTranslation()
@@ -22,12 +23,11 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
     const queryClient = useQueryClient()
-    // const { data: get_moderator_community, isLoading: isTypeLoading } = useQuery({
-    //     queryKey: [`get_moderator_community`],
-    //     queryFn: () => getModeratorCommunityInfrastructure(village_id),
-    //     enabled: village_id ? true : false,
-    //     refetchOnWindowFocus: true,
-    // })
+    const { data: get_moderator_community_dropdown, isLoading } = useQuery({
+      queryKey: [`get_moderator_community_dropdown`],
+      queryFn: () => getModeratorCommunityInfrastructureDropdown(),
+      refetchOnWindowFocus: true,
+    })
 
     const { mutate: edit_moderator_community } = useMutation({
         mutationKey: ['edit_moderator_community'],
@@ -200,6 +200,13 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
             }
         })
     },[])
+      if (isLoading) {
+          return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+              <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+          );
+        }
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -233,20 +240,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_mobility.map((item) => {
+                                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, type_of_mobility: value });
                                 }}
@@ -286,20 +282,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.capacity_of_water_storage.map((item) => {
+                                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, water_capacity: value });
                                 }}
@@ -339,20 +324,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_cold_storage.map((item) => {
+                                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, cold_storage_type: value });
                                 }}
@@ -369,8 +343,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Solar', value: '6736117ecb51156c2f52583e' }, { label: 'electric', value: '6738117ecb51156c2f52583e' }]
-                                }
+                                    get_moderator_community_dropdown?.capacity_of_cold_storage.map((item) => {
+                               return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                             })                                }
                                 value={values?.cold_storage_capacity}
                                 label={t('Capacity')}
                                 onChange={value => {
@@ -414,20 +389,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                         <View style={{ width: '100%' }}>
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                data={[
-                                    {
-                                        key: '6736117ecb51156c2f52383e',
-                                        name: 'Tank'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52583e',
-                                        name: 'Tank1'
-                                    },
-                                    {
-                                        key: '6736117ecb51156c2f52323e',
-                                        name: 'Tank2'
-                                    },
-                                ]}
+                                data={get_moderator_community_dropdown?.type_of_energy_and_battery_house.map((item) => {
+                                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                                                                                              })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, energy_battery_type: value });
                                 }}
@@ -444,7 +408,9 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: '1 kg', value: '6736117ecb51156c2f52383e' }, { label: '2 kg', value: '6736117ecb51155c2f52383e' }]
+                                    get_moderator_community_dropdown?.capacity_of_energy_and_battery_house.map((item) => {
+                                                                  return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                                })
                                 }
                                 value={values?.energy_battery_capacity}
                                 label={t('Capacity')}

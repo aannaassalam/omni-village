@@ -12,8 +12,9 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import Input from '../../../Components/Inputs/Input';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorForestry, editModeratorForestry, getModeratorForestry } from '../../../functions/moderator';
+import { addModeratorForestry, editModeratorForestry, getModeratorForestry, getModeratorForestryDropdown } from '../../../functions/moderator';
 import { primaryColor } from '../../../styles/colors';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerForest = ({ navigation, route }) => {
   const { t } = useTranslation()
@@ -21,6 +22,11 @@ const OfficerForest = ({ navigation, route }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const {village_id} = route.params
   const queryClient = useQueryClient()
+  const { data: get_moderator_forest_dropdown, isLoading: isLoading } = useQuery({
+    queryKey: [`get_moderator_forest_dropdown`],
+    queryFn: () => getModeratorForestryDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_moderator_forest, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_forest`],
     queryFn: () => getModeratorForestry(village_id),
@@ -185,7 +191,7 @@ const OfficerForest = ({ navigation, route }) => {
     })
   }, [get_moderator_forest])
   console.log("errrrr", errors)
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -205,7 +211,9 @@ const OfficerForest = ({ navigation, route }) => {
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
         <CustomDropdown
           data={
-            [{ label: 'Something', value: '6736117ecb51156c2f52383e' }, { label: 'Nothing', value: '6736117ecb51156c2f52683e' }]
+            get_moderator_forest_dropdown?.type_of_forest_accessible.map((item) => {
+                         return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                       })
           }
           value={values?.type_of_forest_accessible}
           label={t('Type of forest accessible')}
@@ -277,7 +285,9 @@ const OfficerForest = ({ navigation, route }) => {
               )}
             <CustomDropdown
               data={
-                [{ label: 'Tank', value: '6736117ecb51156c2f52383e' }, { label: 'Bucket', value: '6736117ecb51156c2f58383e' }]
+                  get_moderator_forest_dropdown?.condition_of_forest_accessible.map((item) => {
+                             return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                           })
               }
               value={values?.condition_of_forest_accessible}
               label={t('Condition of forest accessible')}
@@ -293,7 +303,9 @@ const OfficerForest = ({ navigation, route }) => {
             )}
             <CustomDropdown
               data={
-                [{ label: 'Something', value: '6736117ecb51156c2f52383e' }, { label: 'Nothing', value: '6736117ecb51156c2f52683e' }]
+                  get_moderator_forest_dropdown?.incident_of_forest_fire.map((item) => {
+                              return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                            })
               }
               value={values?.incident_of_forest_fire}
               label={t('Incident of Forest Fire')}

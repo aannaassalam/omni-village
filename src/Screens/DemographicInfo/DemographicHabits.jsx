@@ -19,9 +19,9 @@ const DemographicHabits = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
     const styles = makeStyles(fontScale);
     const { t } = useTranslation()
-    const [hobbies,setHobbies] = useState(false)
+    const [hobbies, setHobbies] = useState(false)
     const [skillset, setSkillset] = useState(false)
-    const [skills,setSkills] = useState(false)
+    const [skills, setSkills] = useState(false)
     const { demographic, occupation, disease, data, member_id, member_name,
         demographic_id } = route.params
     const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
@@ -33,6 +33,9 @@ const DemographicHabits = ({ navigation, route }) => {
         specific_habit: yup.string().required(t('Specific habit is required')),
         education_status: yup.string().required(t('Education status is required')),
         education_seeking_to_gain: yup.string().required(t('Education seeking to gain is required')),
+        other_habit: yup.string(),
+        other_education_status: yup.string(),
+        other_education_seeking: yup.string(),
         cultural_traditional_hobbies: yup.array().required('Cultural traditional hobbies are required').min(1, t('Atleast one Cultural traditional hobbies are required')),
         outdoor_nature_based_hobbies: yup.array().required('Outdoor nature based hobbies are required').min(1, t('Atleast one Outdoor nature based hobbies are required')),
         modern_digital_hobbies: yup.array().required('Modern digital hobbies are required').min(1, t('Atleast one Modern digital hobbies are required')),
@@ -66,23 +69,26 @@ const DemographicHabits = ({ navigation, route }) => {
             specific_habit: '',
             education_status: '',
             education_seeking_to_gain: '',
-            cultural_traditional_hobbies:[],
-            outdoor_nature_based_hobbies:[],
-            modern_digital_hobbies:[],
-            creative_artistics_hobbies:[],
-            other_hobbies:'',
-            technical_vocational_skills_learn:[],
-            entrepreneurial_business_skills_learn:[],
-            digital_technological_skills_learn:[],
-            communication_language_skills_learn:[],
+            other_habit: '',
+            other_education_status: '',
+            other_education_seeking: '',
+            cultural_traditional_hobbies: [],
+            outdoor_nature_based_hobbies: [],
+            modern_digital_hobbies: [],
+            creative_artistics_hobbies: [],
+            other_hobbies: '',
+            technical_vocational_skills_learn: [],
+            entrepreneurial_business_skills_learn: [],
+            digital_technological_skills_learn: [],
+            communication_language_skills_learn: [],
             health_well_being_skills_learn: [],
             creative_artistics_skills_learn: [],
-            others_skills_learn:'',
+            others_skills_learn: '',
             technical_vocational_skills: [],
             entrepreneurial_business_skills: [],
             interpersonal_skills: [],
             creative_artistic_skills: [],
-            professional_skills:[],
+            professional_skills: [],
             others_skills: ''
         },
         validationSchema: scheme,
@@ -92,28 +98,31 @@ const DemographicHabits = ({ navigation, route }) => {
                 demographic: demographic,
                 occupation: occupation,
                 disease: disease,
-                data:data,
+                data: data,
                 member_id,
-        demographic_id,
+                demographic_id,
                 habits: values,
                 member_name
             })
         },
     });
-    useEffect(()=>{
+    useEffect(() => {
         resetForm({
-            values:{
-                specific_habit:data?.general_data?.specific_habit?._id ||'',
-                education_status: data?.general_data?.education_status?._id ||'',
+            values: {
+                specific_habit: data?.general_data?.specific_habit?._id || '',
+                education_status: data?.general_data?.education_status?._id || '',
                 education_seeking_to_gain: data?.general_data?.education_seeking_to_gain?._id || '',
-                cultural_traditional_hobbies: data?.hobbies?.cultural_traditional_hobbies.map((i)=>{return i?._id}) || [],
+                other_habit: data?.general_data?.other_habit || '',
+                other_education_status: data?.general_data?.other_education_status || '',
+                other_education_seeking: data?.general_data?.other_education_seeking || '',
+                cultural_traditional_hobbies: data?.hobbies?.cultural_traditional_hobbies.map((i) => { return i?._id }) || [],
                 outdoor_nature_based_hobbies: data?.hobbies?.outdoor_nature_based_hobbies.map((i) => { return i?._id }) || [],
                 modern_digital_hobbies: data?.hobbies?.modern_digital_hobbies.map((i) => { return i?._id }) || [],
-                creative_artistics_hobbies: data?.hobbies?.creative_artistics_hobbies.map((i)=>{return i?._id}) || [],
+                creative_artistics_hobbies: data?.hobbies?.creative_artistics_hobbies.map((i) => { return i?._id }) || [],
                 other_hobbies: data?.hobbies?.other_hobbies || '',
                 technical_vocational_skills_learn: data?.skills_to_learn?.technical_vocational_skills_learn.map((i) => { return i?._id }) || [],
                 entrepreneurial_business_skills_learn: data?.skills_to_learn?.entrepreneurial_business_skills_learn.map((i) => { return i?._id }) || [],
-                digital_technological_skills_learn: data?.skills_to_learn?.digital_technological_skills_learn.map((i) => { return i?._id })  || [],
+                digital_technological_skills_learn: data?.skills_to_learn?.digital_technological_skills_learn.map((i) => { return i?._id }) || [],
                 communication_language_skills_learn: data?.skills_to_learn?.communication_language_skills_learn.map((i) => { return i?._id }) || [],
                 health_well_being_skills_learn: data?.skills_to_learn?.health_well_being_skills_learn.map((i) => { return i?._id }) || [],
                 creative_artistics_skills_learn: data?.skills_to_learn?.creative_artistics_skills_learn.map((i) => { return i?._id }) || [],
@@ -126,7 +135,7 @@ const DemographicHabits = ({ navigation, route }) => {
                 others_skills: data?.skills?.others_skills || ''
             }
         })
-    },[data])
+    }, [data])
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -157,6 +166,16 @@ const DemographicHabits = ({ navigation, route }) => {
                 {touched?.specific_habit && errors?.specific_habit && (
                     <Text style={Styles.error2}>{String(errors?.specific_habit)}</Text>
                 )}
+                {dropdownData?.['habbits'].find((item) => item?._id === values?.specific_habit)?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_habit}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_habit')}
+                    />
+                )}
                 <Customdropdown
                     data={dropdownData?.['current_education_status'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.education_status}
@@ -171,6 +190,16 @@ const DemographicHabits = ({ navigation, route }) => {
                 {touched?.education_status && errors?.education_status && (
                     <Text style={Styles.error2}>{String(errors?.education_status)}</Text>
                 )}
+                {dropdownData?.['current_education_status'].find((item) => item?._id === values?.education_status)?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.education_status}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('education_status')}
+                    />
+                )}
                 <Customdropdown
                     data={dropdownData?.['education_seeking_to_gain'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.education_seeking_to_gain}
@@ -184,6 +213,16 @@ const DemographicHabits = ({ navigation, route }) => {
                 />
                 {touched?.education_seeking_to_gain && errors?.education_seeking_to_gain && (
                     <Text style={Styles.error2}>{String(errors?.education_seeking_to_gain)}</Text>
+                )}
+                {dropdownData?.['education_seeking_to_gain'].find((item) => item?._id === values?.education_seeking_to_gain)?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_education_seeking}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_education_seeking')}
+                    />
                 )}
                 {/* // NOTE: Hobbies section */}
                 <View style={styles.subArea}>

@@ -44,8 +44,8 @@ const HousingDetails = ({ navigation, route }) => {
     no_of_floors: yup.number().required(t('No of floors is required')),
     living_area: yup.number().required(t('Living area is required')),
     year_built: yup.number().required(t('Year built is required')),
-    year_renovated: yup.number().required(t('Year renovated is required')),
-    year_last_expanded: yup.number().required(t('Year last expanded is required')),
+    year_renovated: yup.number().required(t('Year renovated is required')).optional(),
+    year_last_expanded: yup.number().required(t('Year last expanded is required')).optional(),
     type: yup.string().required(t('Type is required')),
   });
   const {
@@ -81,7 +81,7 @@ const HousingDetails = ({ navigation, route }) => {
         no_of_units_built:parseInt(values.no_of_units_built),
         total_built_area: parseInt(values.total_built_area),
         no_of_floors: parseInt(values.no_of_floors),
-        living_area: parseInt(values.living_area),
+        living_area: parseInt(values.living_area ),
         year_built: values.year_built,
         year_renovated: values.year_renovated,
         year_last_expanded: values.year_last_expanded,
@@ -109,6 +109,7 @@ const HousingDetails = ({ navigation, route }) => {
     }
     )
   },[housing])
+  // console.log("living ", housing.living_area)
   if (isLoading || loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>

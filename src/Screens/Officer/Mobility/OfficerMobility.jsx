@@ -14,14 +14,20 @@ import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import Input from '../../../Components/Inputs/Input';
 import MultiselectDropdown from '../../../Components/MultiselectDropdown/MultiselectDropdown';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorMobility, editModeratorMobility, getModeratorMobility } from '../../../functions/moderator';
+import { addModeratorMobility, editModeratorMobility, getModeratorMobility, getModeratorMobilityDropdown } from '../../../functions/moderator';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerMobility = ({ navigation, route }) => {
   const { t } = useTranslation()
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
-  const {village_id} = route.params
+  const { village_id } = route.params
   const queryClient = useQueryClient()
+  const { data: get_moderator_mobility_dropdown, isLoading: isLoading } = useQuery({
+    queryKey: [`get_moderator_mobility_dropdown`],
+    queryFn: () => getModeratorMobilityDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_moderator_mobility, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_mobility`],
     queryFn: () => getModeratorMobility(village_id),
@@ -90,11 +96,11 @@ const OfficerMobility = ({ navigation, route }) => {
       mobility_requirement: '',
       reason: '',
       condition_of_internal_roads: '',
-      safety_issues_on_roads:false,
+      safety_issues_on_roads: false,
       describe: '',
-      connectivity_to_healthcare_facilities:'',
+      connectivity_to_healthcare_facilities: '',
       road_infrastructure_damaged: false,
-      road_damage_frequency:''
+      road_damage_frequency: ''
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -103,7 +109,7 @@ const OfficerMobility = ({ navigation, route }) => {
     },
 
   });
-  const onSubmit = () => { 
+  const onSubmit = () => {
     let data = {
       house_connected_to_internal_road: values.house_connected_to_internal_road,
       house_not_connected_to_internal_road: values.house_not_connected_to_internal_road,
@@ -117,31 +123,31 @@ const OfficerMobility = ({ navigation, route }) => {
       road_infrastructure_damaged: values.road_infrastructure_damaged,
       road_damage_frequency: values.road_damage_frequency,
     }
-    if(get_moderator_mobility?._id){
-      edit_moderator_mobility({...data, mobility_id: get_moderator_mobility?._id})
-    }else{
-      add_moderator_mobility({...data, village_id})
+    if (get_moderator_mobility?._id) {
+      edit_moderator_mobility({ ...data, mobility_id: get_moderator_mobility?._id })
+    } else {
+      add_moderator_mobility({ ...data, village_id })
     }
   }
   const handleDraft = () => { }
-  useEffect(()=>{
+  useEffect(() => {
     resetForm({
-      values:{
-        house_connected_to_internal_road: get_moderator_mobility?.house_connected_to_internal_road|| '',
-        house_not_connected_to_internal_road: get_moderator_mobility?.house_not_connected_to_internal_road|| '',
-        village_connected_to_highway: get_moderator_mobility?.village_connected_to_highway|| false,
-        mobility_requirement: get_moderator_mobility?.mobility_requirement|| '',
-        reason: get_moderator_mobility?.reason|| '',
-        condition_of_internal_roads: get_moderator_mobility?.condition_of_internal_roads|| '',
-        safety_issues_on_roads: get_moderator_mobility?.safety_issues_on_roads||false,
-        describe: get_moderator_mobility?.describe|| '',
-        connectivity_to_healthcare_facilities: get_moderator_mobility?.connectivity_to_healthcare_facilities|| '',
-        road_infrastructure_damaged: get_moderator_mobility?.road_infrastructure_damaged|| false,
-        road_damage_frequency: get_moderator_mobility?.road_damage_frequency|| '',
+      values: {
+        house_connected_to_internal_road: get_moderator_mobility?.house_connected_to_internal_road || '',
+        house_not_connected_to_internal_road: get_moderator_mobility?.house_not_connected_to_internal_road || '',
+        village_connected_to_highway: get_moderator_mobility?.village_connected_to_highway || false,
+        mobility_requirement: get_moderator_mobility?.mobility_requirement || '',
+        reason: get_moderator_mobility?.reason || '',
+        condition_of_internal_roads: get_moderator_mobility?.condition_of_internal_roads || '',
+        safety_issues_on_roads: get_moderator_mobility?.safety_issues_on_roads || false,
+        describe: get_moderator_mobility?.describe || '',
+        connectivity_to_healthcare_facilities: get_moderator_mobility?.connectivity_to_healthcare_facilities || '',
+        road_infrastructure_damaged: get_moderator_mobility?.road_infrastructure_damaged || false,
+        road_damage_frequency: get_moderator_mobility?.road_damage_frequency || '',
       }
     })
   }, [get_moderator_mobility])
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -173,7 +179,7 @@ const OfficerMobility = ({ navigation, route }) => {
           touched.house_connected_to_internal_road && (
             <Text style={Styles.error2}>
               {
-              errors.house_connected_to_internal_road
+                errors.house_connected_to_internal_road
               }
             </Text>
           )}
@@ -191,13 +197,13 @@ const OfficerMobility = ({ navigation, route }) => {
           touched.house_not_connected_to_internal_road && (
             <Text style={Styles.error2}>
               {
-              errors.house_not_connected_to_internal_road
+                errors.house_not_connected_to_internal_road
               }
             </Text>
           )}
         <CustomDropdown
           data={
-            [{ label: 'Yes', value: true }, { label: 'No', value: false}]
+            [{ label: 'Yes', value: true }, { label: 'No', value: false }]
           }
           value={values?.village_connected_to_highway}
           label={t('Village connectivity to highway')}
@@ -222,32 +228,21 @@ const OfficerMobility = ({ navigation, route }) => {
           onChangeText={handleChange('number_of_bridges_needed')}
         /> */}
         <MultiselectDropdown
-                        containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                        data={[
-                          {
-                            key:'6736117ecb51156c2f52383e',
-                            name:'Tank'
-                          },
-                          {
-                            key: '6736117ecb51156c2f52883e',
-                            name: 'Tank1'
-                          },
-                          {
-                            key: '6736117ecb51156c2f52583e',
-                            name: 'Tank2'
-                          },
-                        ]}
-                        setSelectedd={(value) => {
-                          setValues({ ...values, mobility_requirement: value });
-}}
+          containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+          data={get_moderator_mobility_dropdown?.mobility_requirements.map((item) => {
+            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+          })}
+          setSelectedd={(value) => {
+            setValues({ ...values, mobility_requirement: value });
+          }}
           selectedd={values?.mobility_requirement}
-                        infoName={t('Mobility requirement')}
-                      />
+          infoName={t('Mobility requirement')}
+        />
         {errors.mobility_requirement &&
           touched.mobility_requirement && (
             <Text style={Styles.error2}>
               {
-              errors.mobility_requirement
+                errors.mobility_requirement
               }
             </Text>
           )}
@@ -265,20 +260,15 @@ const OfficerMobility = ({ navigation, route }) => {
           touched.reason && (
             <Text style={Styles.error2}>
               {
-              errors.reason
+                errors.reason
               }
             </Text>
           )}
         <CustomDropdown
           data={
-            [{
-              label: 'Tank',
-              value: '6736117ecb51156c2f52383e',
-            },
-              {
-                label: 'Bucket',
-                value: '6736117ecb51156c2f52583e',
-              }]
+            get_moderator_mobility_dropdown?.mobility_requirements?.map((item) => {
+              return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+            })
           }
           value={values?.condition_of_internal_roads}
           label={t('Condition of internal roads')}
@@ -308,8 +298,8 @@ const OfficerMobility = ({ navigation, route }) => {
         {touched?.safety_issues_on_roads && errors?.safety_issues_on_roads && (
           <Text style={Styles.error2}>{String(errors?.safety_issues_on_roads)}</Text>
         )}
-        {values?.safety_issues_on_roads ? 
-      <>
+        {values?.safety_issues_on_roads ?
+          <>
             <Input
               label={t(
                 `If yes, describe`
@@ -324,23 +314,18 @@ const OfficerMobility = ({ navigation, route }) => {
               touched.describe && (
                 <Text style={Styles.error2}>
                   {
-                  errors.describe
+                    errors.describe
                   }
                 </Text>
               )}
-      </> 
-      : null 
-      }
+          </>
+          : null
+        }
         <CustomDropdown
           data={
-            [{
-              label: 'Tank',
-              value: '6736117ecb51156c2f52383e',
-            },
-              {
-                label: 'Bucket',
-                value: '6736117ecb51156c2f52583e',
-              }]
+            get_moderator_mobility_dropdown?.frequency_of_road_damage.map((item) => {
+              return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+            })
           }
           value={values?.connectivity_to_healthcare_facilities}
           label={t('Connectivity to healthcare facilities')}
@@ -372,14 +357,9 @@ const OfficerMobility = ({ navigation, route }) => {
         )}
         <CustomDropdown
           data={
-            [{
-              label: 'Tank',
-              value: '6736117ecb51156c2f52383e',
-            },
-              {
-                label: 'Bucket',
-                value: '6736117ecb51156c2f52583e',
-              }]
+            get_moderator_mobility_dropdown?.frequency_of_road_damage.map((item) => {
+              return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+            })
           }
           value={values?.road_damage_frequency}
           label={t('How frequently the road gets damaged due to flooding or landslides?')}

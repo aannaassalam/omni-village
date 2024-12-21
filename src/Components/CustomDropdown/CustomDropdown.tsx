@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 import React from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import { primaryColor} from '../../styles/colors';
+import {borderColor, primaryColor} from '../../styles/colors';
 import {fontFamilyMedium, fontFamilyRegular} from '../../styles/fontStyle';
 import {useTranslation} from 'react-i18next';
-import { Styles } from '../../styles/globalStyles.jsx';
+import {Styles} from '../../styles/globalStyles.jsx';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const Customdropdown = ({
   data,
@@ -55,6 +56,7 @@ const Customdropdown = ({
     return (
       <View style={[styles.item]}>
         <Text style={[styles.selectedTextStyle]}>{item.label}</Text>
+        <AntDesign name="check" size={12} color={primaryColor} />
       </View>
     );
   };
@@ -73,7 +75,7 @@ const Customdropdown = ({
           sideDrop ? (
             <Image
               source={require('../../../assets/downArrow.png')}
-              style={{height: 12, width: 12, alignSelf:'center'}}
+              style={{height: 12, width: 12, alignSelf: 'center'}}
             />
           ) : (
             <Image
@@ -83,7 +85,20 @@ const Customdropdown = ({
           )
         }
         itemTextStyle={{color: '#000'}}
-        data={data}
+        data={data
+          .map((item: any) => {
+            return {
+              ...item,
+              label:
+                item.label.charAt(0).toUpperCase() +
+                item.label.slice(1).toLowerCase(),
+            };
+          })
+          .sort((a: any, b: any) => {
+            if (a.label < b.label) return -1;
+            if (a.label > b.label) return 1;
+            return 0; // Equal labels
+          })}
         renderInputSearch={renderInputSearch}
         search={search}
         iconColor={primaryColor}
@@ -96,6 +111,7 @@ const Customdropdown = ({
         value={value}
         onChange={item => onChange(item)}
         keyboardAvoiding
+        activeColor={borderColor}
       />
     </View>
   );

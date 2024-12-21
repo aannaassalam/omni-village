@@ -36,6 +36,7 @@ const BusinessName = ({navigation, route}) => {
     const scheme = yup.object().shape({
         business_name: yup.string().required(t('Business Name is Required')),
         business_type: yup.string().required(t('Business Type is required')),
+        other_type: yup.string(),
         year_started: yup.string().required(t('Year Started is required')),
         brief_description: yup.string().required(t('Brief Description is required')),
         segment_served: yup.string().required(t('Segment Served is required')),
@@ -145,6 +146,7 @@ const BusinessName = ({navigation, route}) => {
         initialValues: {
           business_name:'',
           business_type:'',
+            other_type:'',
           year_started:'',
           brief_description:'',
           segment_served:'',
@@ -158,6 +160,7 @@ const BusinessName = ({navigation, route}) => {
             let new_data = {
                 business_name: values.business_name,
                 business_type: values.business_type,
+                other_type: values.other_type,
                 year_started: values.year_started,
                 brief_description: values.brief_description,
                 segment_served: values.segment_served,
@@ -173,6 +176,7 @@ const BusinessName = ({navigation, route}) => {
             values: {
                 business_name: business?.business_name||'',
                 business_type: business?.business_type||'',
+                other_type: business?.other_type||'',
                 year_started: business?.year_started||'',
                 brief_description: business?.brief_description||'',
                 segment_served: business?.segment_served||'',
@@ -237,6 +241,16 @@ const BusinessName = ({navigation, route}) => {
               />
               {touched?.business_type && errors?.business_type && (
                   <Text style={Styles.error2}>{String(errors?.business_type)}</Text>
+              )}
+              {business_dropdown?.type_of_business.find((item) => item?._id === values?.business_type)?.name === "Others(if any)" && (
+                  <Input
+                      label={t('Others(If any)')}
+                      value={values.other_type}
+                      placeholder={''}
+                      fullLength={true}
+                      keyboardType='default'
+                      onChangeText={handleChange('other_type')}
+                  />
               )}
               <YearPicker
                   onYearChange={(year) => {

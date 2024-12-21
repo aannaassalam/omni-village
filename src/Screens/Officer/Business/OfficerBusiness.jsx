@@ -13,7 +13,7 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
 import Input from '../../../Components/Inputs/Input';
 import YearPicker from '../../../Components/YearPicker/YearPicker';
-import { addModeratorBusiness, editModeratorBusiness, getModeratorBusiness } from '../../../functions/moderator';
+import { addModeratorBusiness, editModeratorBusiness, getModeratorBusiness, getModeratorBusinessDropdown } from '../../../functions/moderator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const OfficerBusiness = ({ navigation, route }) => {
@@ -23,6 +23,11 @@ const OfficerBusiness = ({ navigation, route }) => {
   const [draftPopup, setDraftpopup] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([])
   const queryClient = useQueryClient()
+  const { data: get_moderator_business_dropdown, isLoading } = useQuery({
+    queryKey: [`get_moderator_business_dropdown`],
+    queryFn: () =>getModeratorBusinessDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_moderator_business, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_business`],
     queryFn: () => getModeratorBusiness(village_id),
@@ -163,7 +168,7 @@ const OfficerBusiness = ({ navigation, route }) => {
     setSelectedStatus(String(get_moderator_business?.how_many_establishment.length))
   }, [get_moderator_business])
   console.log("sele", selectedStatus)
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />

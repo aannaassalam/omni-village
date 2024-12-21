@@ -16,8 +16,9 @@ import AcresElement from '../../../Components/ui/AcresElement';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
 import { useModerator } from '../../../Hooks/useUser';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorEnergy, editModeratorEnergy, getModeratorEnergy } from '../../../functions/moderator';
+import { addModeratorEnergy, editModeratorEnergy, getModeratorEnergy, getModeratorEnergyDropdown } from '../../../functions/moderator';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerEnergy = ({ navigation, route }) => {
   const { t } = useTranslation()
@@ -27,6 +28,11 @@ const OfficerEnergy = ({ navigation, route }) => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const {data: user} = useModerator()
   const queryClient = useQueryClient()
+      const { data: get_moderator_energy_dropdown, isLoading: isLoading } = useQuery({
+        queryKey: [`get_moderator_energy_dropdown`],
+        queryFn: () => getModeratorEnergyDropdown(),
+        refetchOnWindowFocus: true,
+      })
   const { data: get_moderator_energy, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_energy`],
     queryFn: () => getModeratorEnergy(village_id),
@@ -239,7 +245,7 @@ const OfficerEnergy = ({ navigation, route }) => {
     setSelectedStatus(get_moderator_energy?.available_renewable_energy.map((item) => item.type))
   },[get_moderator_energy])
   console.log("errrr", errors)
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -259,10 +265,9 @@ const OfficerEnergy = ({ navigation, route }) => {
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            { name: 'Something', key: "6736117ecb51156c2f52383e" },
-            { name: 'Something2', key: "6736117ecb51156c2f59383e" },
-          ]}
+          data={get_moderator_energy_dropdown?.type_of_energy_sources.map((item) => {
+                                            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                        })}
           setSelectedd={handleStatusChange}
           selectedd={selectedStatus}
           infoName={t('Available renewable energy sources')}
@@ -359,20 +364,9 @@ const OfficerEnergy = ({ navigation, route }) => {
                                   )}
                           <MultiselectDropdown
                             containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                            data={[
-                              {
-                                name: 'Tank',
-                                key: '6736117ecb51156c2f52383e'
-                              },
-                              {
-                                name: 'Tank1',
-                                key: '6736117ecb51156c2f56383e'
-                              },
-                              {
-                                name: 'Tank2',
-                                key: '6736117ecb51156c2f53383e'
-                              },
-                            ]}
+                            data={get_moderator_energy_dropdown?.distribution_method.map((item) => {
+                              return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                            })}
                             setSelectedd={(value) => {
                               handleFieldChange(
                                 index,
@@ -523,16 +517,9 @@ const OfficerEnergy = ({ navigation, route }) => {
                               </Text>
                             )}
                             <CustomDropdown
-                              data={[
-                                {
-                                  label: '1 km',
-                                  value: '6736117ecb51156c2f52383e',
-                                },
-                                {
-                                  label: '5 km',
-                                  value: '6736117ecb51156c2f52583e',
-                                }
-                              ]
+                            data={get_moderator_energy_dropdown?.distance_of_fuel_pumps.map((item) => {
+                                                                      return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                                    })
                               }
                               value={item?.distance_to_pumps}
                               label={t('How far is Petrol or Diesel Pumps?')}

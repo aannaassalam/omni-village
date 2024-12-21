@@ -8,55 +8,6 @@ export const endpoints = {
     landAllocation: '/user/land_allocation',
     cultivationLandAllocation: '/user/cultivation_land_allocation',
   },
-  moderator:{
-    otp: '/moderator/send_otp',
-    register: '/moderator/register',
-    login: '/moderator/login',
-    editModerator: '/moderator/edit_moderator',
-    getModerator: '/moderator/current_moderator',
-    deleteModerator: '/moderator/delete_moderator',
-    getVillages: '/villages/get-villages-for-moderator',
-    demographic:{
-      get_demographic: '/demographic-officer',
-      edit_demographic:'/demographic-officer',
-      add_demographic: '/demographic-officer'
-    },
-    landholding:{
-      get_landholding: '/landholding-officer',
-      edit_landholding:'/landholding-officer',
-      add_landholding: '/landholding-officer'
-    },
-    water:{
-      get_water: '/water-officer',
-      edit_water:'/water-officer',
-      add_water: '/water-officer'
-    },
-    energy:{
-      get_energy: '/energy-officer',
-      edit_energy:'/energy-officer',
-      add_energy: '/energy-officer'
-    },
-    mobility:{
-      get_mobility: '/mobility-officer',
-      edit_mobility:'/mobility-officer',
-      add_mobility: '/mobility-officer'
-    },
-    forestry:{
-      get_forestry: '/forestry-officer',
-      edit_forestry:'/forestry-officer',
-      add_forestry: '/forestry-officer'
-    },
-    business_commercial:{
-      get_business_commercial: '/business-officer',
-      edit_business_commercial:'/business-officer',
-      add_business_commercial: '/business-officer'
-    },
-    community_infrastructure:{
-      get_community_infrastructure: '/community-officer',
-      edit_community_infrastructure:'/community-officer',
-      add_community_infrastructure: '/community-officer'
-    }
-  },
   cultivation: {
     fetchCultivation: '/cultivation',
     addCultivation: '/cultivation/add_cultivation',
@@ -263,5 +214,64 @@ export const endpoints = {
       get_business_requirement: '/business-by-user/business-requirements',
       edit_business_requirement:'/business-by-user/edit-business-requirements',
     },
-  }
+  },
+  moderator: {
+    otp: '/moderator/send_otp',
+    register: '/moderator/register',
+    login: '/moderator/login',
+    editModerator: '/moderator/edit_moderator',
+    getModerator: '/moderator/current_moderator',
+    deleteModerator: '/moderator/delete_moderator',
+    getVillages: '/villages/get-villages-for-moderator',
+    moderator_dropdown: {
+      demographic_dropdown: '/demographic-officer-dropdown',
+      landholding_dropdown: '/landholding-officer-dropdown',
+      water_dropdown: '/water-officer-dropdown',
+      energy_dropdown: '/energy-officer-dropdown',
+      mobility_dropdown: '/mobility-officer-dropdown',
+      forestry_dropdown: '/forestry-officer-dropdown',
+      business_commercial_dropdown: '/business-officer-dropdown',
+      community_infrastructure_dropdown: '/community-officer-dropdown'
+    },
+    demographic: {
+      get_demographic: '/demographic-officer',
+      edit_demographic: '/demographic-officer',
+      add_demographic: '/demographic-officer'
+    },
+    landholding: {
+      get_landholding: '/landholding-officer',
+      edit_landholding: '/landholding-officer',
+      add_landholding: '/landholding-officer'
+    },
+    water: {
+      get_water: '/water-officer',
+      edit_water: '/water-officer',
+      add_water: '/water-officer'
+    },
+    energy: {
+      get_energy: '/energy-officer',
+      edit_energy: '/energy-officer',
+      add_energy: '/energy-officer'
+    },
+    mobility: {
+      get_mobility: '/mobility-officer',
+      edit_mobility: '/mobility-officer',
+      add_mobility: '/mobility-officer'
+    },
+    forestry: {
+      get_forestry: '/forestry-officer',
+      edit_forestry: '/forestry-officer',
+      add_forestry: '/forestry-officer'
+    },
+    business_commercial: {
+      get_business_commercial: '/business-officer',
+      edit_business_commercial: '/business-officer',
+      add_business_commercial: '/business-officer'
+    },
+    community_infrastructure: {
+      get_community_infrastructure: '/community-officer',
+      edit_community_infrastructure: '/community-officer',
+      add_community_infrastructure: '/community-officer'
+    }
+  },
 };

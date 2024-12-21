@@ -16,12 +16,13 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { addWaterDisposal, editWaterDisposal, getWaterDisposal, getWaterDropdown } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import Input from '../../Components/Inputs/Input'
 
 const WaterDisposal = ({ navigation, route }) => {
     const { name, water_id, type } = route.params
     const [savePopup, setSavepopup] = useState(false)
     const [draftPopup, setDraftpopup] = useState(false)
-    const [bool,setBool] = useState(false)
+    const [bool, setBool] = useState(false)
     const { t } = useTranslation()
     const { data: user } = useUser()
     const queryClient = useQueryClient()
@@ -32,7 +33,7 @@ const WaterDisposal = ({ navigation, route }) => {
     })
     const { data: get_usage, isLoading: isUsageLoading } = useQuery({
         queryKey: ['get_water_disposal'],
-        enabled: water_id? true:false,
+        enabled: water_id ? true : false,
         queryFn: () => getWaterDisposal(water_id),
         refetchOnWindowFocus: true,
     })
@@ -59,6 +60,7 @@ const WaterDisposal = ({ navigation, route }) => {
     const scheme = yup.object().shape({
         wastewater_disposal_methods: yup.array().required(t('waste water disposal methods is required')).min(1, t('waste water disposal methods is required')),
         water_recycling_methods: yup.array().required(t('water recycling methods is required')).min(1, t('water recycling methods is required')),
+        other_recycling: yup.string().required(t('other recycling is required')),
     });
     const {
         handleChange,
@@ -71,8 +73,9 @@ const WaterDisposal = ({ navigation, route }) => {
         setValues
     } = useFormik({
         initialValues: {
-            wastewater_disposal_methods:[],
-            water_recycling_methods:[],
+            wastewater_disposal_methods: [],
+            water_recycling_methods: [],
+            other_recycling: '',
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
@@ -85,17 +88,19 @@ const WaterDisposal = ({ navigation, route }) => {
             values: {
                 wastewater_disposal_methods: get_usage?.wastewater_disposal_methods || [],
                 water_recycling_methods: get_usage?.water_recycling_methods || [],
+                other_recycling: get_usage?.other_recycling
             }
         })
-        setBool(get_usage?.water_recycling_methods.length>0? true:false)
+        setBool(get_usage?.water_recycling_methods.length > 0 ? true : false)
     }, [get_usage])
     const handleDraft = () => {
         let newData = {
             wastewater_disposal_methods: values.wastewater_disposal_methods,
             water_recycling_methods: values.water_recycling_methods,
             water_recycle: bool,
+            other_recycling: values.other_recycling,
             type,
-            status:0
+            status: 0
         }
         if (water_id) {
             edit_usage({ ...newData, water_id })
@@ -108,8 +113,9 @@ const WaterDisposal = ({ navigation, route }) => {
             wastewater_disposal_methods: values.wastewater_disposal_methods,
             water_recycling_methods: values.water_recycling_methods,
             water_recycle: bool,
+            other_recycling: values.other_recycling,
             type,
-            status:1
+            status: 1
         }
         if (water_id) {
             edit_usage({ ...newData, water_id })
@@ -152,6 +158,7 @@ const WaterDisposal = ({ navigation, route }) => {
                 {touched?.wastewater_disposal_methods && errors?.wastewater_disposal_methods && (
                     <Text style={Styles.error2}>{String(errors?.wastewater_disposal_methods)}</Text>
                 )}
+
                 <SwitchButton
                     nolabel={false}
                     label={t('Do you recycle waste water?')}
@@ -161,25 +168,35 @@ const WaterDisposal = ({ navigation, route }) => {
                     firstBtnText={t('yes')}
                     secondBtntext={t('no')}
                 />
-                {bool && 
-                <>
-                <MultiselectDropdown
-                    containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={
-                        water_dropdown?.water_recycling.map((item) => {
-                            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                        })
-                    }
-                    setSelectedd={(value) => {
-                        setValues({ ...values, water_recycling_methods: value })
-                    }}
-                    selectedd={values?.water_recycling_methods}
-                    infoName={t('Water recycling methods ?')}
-                />
-                {touched?.water_recycling_methods && errors?.water_recycling_methods && (
-                    <Text style={Styles.error2}>{String(errors?.water_recycling_methods)}</Text>
-                )}
-                </>
+                {bool &&
+                    <>
+                        <MultiselectDropdown
+                            containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                            data={
+                                water_dropdown?.water_recycling.map((item) => {
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })
+                            }
+                            setSelectedd={(value) => {
+                                setValues({ ...values, water_recycling_methods: value })
+                            }}
+                            selectedd={values?.water_recycling_methods}
+                            infoName={t('Water recycling methods ?')}
+                        />
+                        {touched?.water_recycling_methods && errors?.water_recycling_methods && (
+                            <Text style={Styles.error2}>{String(errors?.water_recycling_methods)}</Text>
+                        )}
+                        {water_dropdown?.water_recycling.find((item) => values.water_recycling_methods.includes(item?._id))?.name === "Others(if any)" && (
+                            <Input
+                                label={t('Others(If any)')}
+                                value={values.other_recycling}
+                                placeholder={''}
+                                fullLength={true}
+                                keyboardType='default'
+                                onChangeText={handleChange('other_recycling')}
+                            />
+                        )}
+                    </>
                 }
             </KeyboardAwareScrollView>
             <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>

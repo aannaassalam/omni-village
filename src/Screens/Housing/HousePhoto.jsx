@@ -136,10 +136,36 @@ const HousePhoto = ({ navigation, route }) => {
     resetForm({
       values:{
         ...values,
-        amenities: housing_data?.amenities
+        amenities: housing_data?.amenities,
+        front_photo:{
+          uri: housing_data?.front_photo,
+          type: housing_data?.front_photo,
+          name: housing_data?.front_photo,
+        },
+        kitchen_photo:{
+          uri: housing_data?.kitchen_photo,
+          type: housing_data?.kitchen_photo,
+          name: housing_data?.kitchen_photo,
+        },
+        inside_living_photo:{
+          uri: housing_data?.inside_living_photo,
+          type: housing_data?.inside_living_photo,
+          name: housing_data?.inside_living_photo,
+        },
+        back_photo:{
+          uri: housing_data?.back_photo,
+          type: housing_data?.back_photo,
+          name: housing_data?.back_photo,
+        },
+        neighbourhood_photo:{
+          uri: housing_data?.neighbourhood_photo,
+          type: housing_data?.neighbourhood_photo,
+          name: housing_data?.neighbourhood_photo,
+        },
       }
     })
   }, [housing_data])
+  console.log("housinggg", housing_data)
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -191,8 +217,8 @@ const HousePhoto = ({ navigation, route }) => {
                   }]}
                   onPress={() => {
                     if (values?.front_photo?.name) {
-                      setIsVisible(true)
-                      setPhoto([{ uri: values?.front_photo?.uri }])
+                      // setIsVisible(true)
+                      // setPhoto([{ uri: values?.front_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("front_photo")
@@ -221,8 +247,8 @@ const HousePhoto = ({ navigation, route }) => {
                   }]}
                   onPress={() => {
                     if (values?.back_photo?.name) {
-                      setIsVisible(true)
-                      setPhoto([{ uri: values?.back_photo?.uri }])
+                      // setIsVisible(true)
+                      // setPhoto([{ uri: values?.back_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("back_photo")
@@ -251,8 +277,8 @@ const HousePhoto = ({ navigation, route }) => {
                   }]}
                   onPress={() => {
                     if (values?.neighbourhood_photo?.name) {
-                      setIsVisible(true)
-                      setPhoto([{ uri: values?.neighbourhood_photo?.uri }])
+                      // setIsVisible(true)
+                      // setPhoto([{ uri: values?.neighbourhood_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("neighbourhood_photo")
@@ -281,8 +307,8 @@ const HousePhoto = ({ navigation, route }) => {
                   }]}
                   onPress={() => {
                     if (values?.inside_living_photo?.name) {
-                      setIsVisible(true)
-                      setPhoto([{ uri: values?.inside_living_photo?.uri }])
+                      // setIsVisible(true)
+                      // setPhoto([{ uri: values?.inside_living_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("inside_living_photo")
@@ -311,8 +337,8 @@ const HousePhoto = ({ navigation, route }) => {
                   }]}
                   onPress={() => {
                     if (values?.kitchen_photo?.name) {
-                      setIsVisible(true)
-                      setPhoto([{ uri: values?.kitchen_photo?.uri }])
+                      // setIsVisible(true)
+                      // setPhoto([{ uri: values?.kitchen_photo?.uri }])
                     }
                     else {
                       handleDocumentSelection("kitchen_photo")

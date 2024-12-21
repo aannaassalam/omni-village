@@ -16,7 +16,8 @@ import Input from '../../../Components/Inputs/Input';
 import AcresElement from '../../../Components/ui/AcresElement';
 import SwitchButton from '../../../Components/SwitchButtons/SwitchButton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorWater, editModeratorWater, getModeratorWater } from '../../../functions/moderator';
+import { addModeratorWater, editModeratorWater, getModeratorWater, getModeratorWaterDropdown } from '../../../functions/moderator';
+import { USER_PREFERRED_LANGUAGE } from '../../../i18next';
 
 const OfficerWater = ({ navigation, route }) => {
   const { t } = useTranslation()
@@ -26,13 +27,18 @@ const OfficerWater = ({ navigation, route }) => {
   const [sewage, setSewage] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState([]);
   const queryClient = useQueryClient()
+    const { data: get_moderator_water_dropdown, isLoading: isLoading } = useQuery({
+      queryKey: [`get_moderator_water_dropdown`],
+      queryFn: () => getModeratorWaterDropdown(),
+      refetchOnWindowFocus: true,
+    })
   const { data: get_moderator_water, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_water`],
     queryFn: () => getModeratorWater(village_id),
     enabled: village_id ? true : false,
     refetchOnWindowFocus: true,
   })
-
+// console.log("watererre", get_moderator_water_dropdown)
   const { mutate: edit_moderator_water } = useMutation({
     mutationKey: ['edit_moderator_water'],
     mutationFn: async (data) => {
@@ -211,7 +217,7 @@ const OfficerWater = ({ navigation, route }) => {
     setSelectedStatus(get_moderator_water?.water_source_available.map(item => item.type))
   }, [get_moderator_water])
   console.log("errr", errors?.water_source_available, values?.water_source_available)
-  if (isTypeLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -231,10 +237,9 @@ const OfficerWater = ({ navigation, route }) => {
         contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
         <MultiselectDropdown
           containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={[
-            { key: '6736117ecb51156c2f52383e', name: 'Agriculture' },
-            { key: '6736117ecb51156c2f52683e', name: 'Drinking water' },
-          ]}
+          data={get_moderator_water_dropdown?.water_source.map((item) => {
+                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                              })}
           setSelectedd={(values)=>handleStatusChange(values)}
           selectedd={selectedStatus}
           infoName={t('Select Water sources available at the village level')}
@@ -279,7 +284,9 @@ const OfficerWater = ({ navigation, route }) => {
                     <View style={{ width: '100%' }}>
                       <CustomDropdown
                         data={
-                          [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51155c2f52383e' }]
+                          get_moderator_water_dropdown?.condition.map((item) => {
+                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                      })
                         }
                         value={item?.condition}
                         label={t('Condition')}
@@ -303,7 +310,9 @@ const OfficerWater = ({ navigation, route }) => {
                         )}
                       <CustomDropdown
                         data={
-                          [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51155c2f52383e' }]
+                          get_moderator_water_dropdown?.tapped_into.map((item) => {
+                            return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                          })
                         }
                         value={item?.tapped_into}
                         label={t('Tapped Into')}
@@ -404,16 +413,9 @@ const OfficerWater = ({ navigation, route }) => {
                           </Text>
                         )}
                        <CustomDropdown
-                        data={[
-                          {
-                            label: 'Tank',
-                            value: '6736117ecb51156c2f52383e',
-                          },
-                          {
-                            label: 'Bucket',
-                            value: '6736117ecb51156c2f52583e',
-                          }
-                        ]
+                        data={get_moderator_water_dropdown?.distribution_method.map((item) => {
+                          return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                        })
                         }
                         value={item?.distribution_method}
                         label={t('Distribution method')}
@@ -462,16 +464,9 @@ const OfficerWater = ({ navigation, route }) => {
                           </Text>
                         )}
                       <CustomDropdown
-                        data={[
-                          {
-                            label: 'Tank',
-                            value: '6736117ecb51156c2f52383e',
-                          },
-                          {
-                            label: 'Bucket',
-                            value: '6736117ecb51156c2f52583e',
-                          }
-                        ]
+                        data={get_moderator_water_dropdown?.storage_method.map((item) => {
+                          return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                        })
                         }
                         value={item?.storage_method}
                         label={t('Storage method')}
@@ -591,7 +586,9 @@ const OfficerWater = ({ navigation, route }) => {
                 )}
               <CustomDropdown
                 data={
-                  [{ label: 'ha', value: '6736117ecb51156c2f52383e' }, { label: 'km', value: '6736117ecb51156c2f52683e' }]
+                  get_moderator_water_dropdown?.treated_water_discharged.map((item) => {
+                    return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                  })
                 }
                 value={values?.treated_water_discharged}
                 label={t('Where is the treated water discharged')}

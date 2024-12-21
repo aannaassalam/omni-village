@@ -13,6 +13,7 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
 import { primaryColor } from '../../styles/colors';
+import Input from '../../Components/Inputs/Input';
 
 const DemographicDisease = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
@@ -28,7 +29,9 @@ const DemographicDisease = ({ navigation, route }) => {
     })
     const scheme = yup.object().shape({
         chronic_disease: yup.array().required(t('chronic disease is required')).min(1, t('Atleast one chronic disease is required')),
+        other_chronic: yup.string(),
         motor_disablity: yup.string().required(t('motor disability is required')),
+        other_motor: yup.string(),
         currently_feeling: yup.string().required(t('current feeling is required')),
         feelings_with_others: yup.string().required(t('feelings with others is required')),
         support_you_have: yup.array().required(t('support you have is required')).min(1, t('atleast one support is required')),
@@ -47,7 +50,9 @@ const DemographicDisease = ({ navigation, route }) => {
     } = useFormik({
         initialValues: {
             chronic_disease: [],
+            other_chronic:'',
             motor_disablity: '',
+            other_motor:'',
             currently_feeling: '',
             feelings_with_others: '',
             support_you_have: [],
@@ -72,7 +77,9 @@ const DemographicDisease = ({ navigation, route }) => {
         resetForm({
             values: {
                 chronic_disease: data?.general_data?.chronic_disease?.map((i) => { return i?._id }) || [],
+                other_chronic: data?.general_data?.other_chronic || '',
                 motor_disablity: data?.general_data?.motor_disablity?._id || '',
+                other_motor: data?.general_data?.other_motor || '',
                 currently_feeling: data?.mental_and_emotional_wellbeing?.currently_feeling?._id || '',
                 feelings_with_others: data?.mental_and_emotional_wellbeing?.feelings_with_others?._id || '',
                 support_you_have: data?.mental_and_emotional_wellbeing?.support_you_have.map((i) => { return i?._id }) || [],
@@ -81,6 +88,7 @@ const DemographicDisease = ({ navigation, route }) => {
             }
         })
     }, [data])
+    console.log("erororor", errors)
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -115,6 +123,16 @@ const DemographicDisease = ({ navigation, route }) => {
                 {touched?.chronic_disease && errors?.chronic_disease && (
                     <Text style={Styles.error2}>{String(errors?.chronic_disease)}</Text>
                 )}
+                {dropdownData?.['chronic_diseases'].find((item) => values?.chronic_disease.includes(item?._id))?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_chronic}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_chronic')}
+                    />
+                )}
                 <Customdropdown
                     data={dropdownData?.['motor_disability'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.motor_disablity}
@@ -128,6 +146,16 @@ const DemographicDisease = ({ navigation, route }) => {
                 />
                 {touched?.motor_disablity && errors?.motor_disablity && (
                     <Text style={Styles.error2}>{String(errors?.motor_disablity)}</Text>
+                )}
+                {dropdownData?.['motor_disability'].find((item) => item?._id === values?.motor_disablity)?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_motor}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_motor')}
+                    />
                 )}
                 <View style={styles.subArea}>
                     <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Mental Health & Emotional Well-being')}</Text>

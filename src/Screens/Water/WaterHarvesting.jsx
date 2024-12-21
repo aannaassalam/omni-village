@@ -68,7 +68,8 @@ const WaterHarvesting = ({ navigation, route }) => {
                         .string()
                         .required(t('Capacity is required')),
                 }),
-            )
+            ),
+        other_harvesting: yup.string(),
     });
     const {
         handleChange,
@@ -83,6 +84,7 @@ const WaterHarvesting = ({ navigation, route }) => {
     } = useFormik({
         initialValues: {
             type_of_harvesting: [],
+            other_harvesting:'',
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
@@ -102,7 +104,8 @@ const WaterHarvesting = ({ navigation, route }) => {
                         type:item.type,
                         capacity:String(item.capacity)
                     }
-                })||[]
+                })||[],
+                other_harvesting:get_usage?.other_harvesting||'',
             }
         })
         setSelectedStatus(get_usage?.type_of_harvesting.map(item => item.type)||[])
@@ -134,6 +137,7 @@ const WaterHarvesting = ({ navigation, route }) => {
     const handleDraft= ()=>{
         let newData = {
             type_of_harvesting: values?.type_of_harvesting,
+            other_harvesting:values?.other_harvesting,
             type: type,
             status: 0
         }
@@ -146,6 +150,7 @@ const WaterHarvesting = ({ navigation, route }) => {
     const onSubmit = () => {
         let newData = {
             type_of_harvesting: values?.type_of_harvesting,
+            other_harvesting:values?.other_harvesting,
             type: type,
             status: 1
         }
@@ -182,6 +187,16 @@ const WaterHarvesting = ({ navigation, route }) => {
                     selectedd={selectedStatus}
                     infoName={t('Type of Harvesting')}
                 />
+                {water_dropdown?.type_of_harvesting.find((item) => selectedStatus.includes(item?._id))?.name === "Others(if any)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_harvesting}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_harvesting')}
+                    />
+                )}
                 {values?.type_of_harvesting?.length > 0 && (
                     <View style={styles.innerInputView}>
                         <Divider style={styles.divider2} />

@@ -13,7 +13,7 @@ import PopupModal from '../../../Components/Popups/PopupModal';
 import Input from '../../../Components/Inputs/Input';
 import CustomDropdown from '../../../Components/CustomDropdown/CustomDropdown';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addModeratorLandholding, editModeratorLandholding, getModeratorLandholding } from '../../../functions/moderator';
+import { addModeratorLandholding, editModeratorLandholding, getModeratorLandholding, getModeratorLandholdingDropdown } from '../../../functions/moderator';
 
 const OfficerLandholding = ({ navigation, route }) => {
   const { t } = useTranslation()
@@ -21,13 +21,17 @@ const OfficerLandholding = ({ navigation, route }) => {
   const [savePopup, setSavepopup] = useState(false)
   const [draftPopup, setDraftpopup] = useState(false)
   const queryClient = useQueryClient()
+  const { data: get_moderator_landholding_dropdown, isLoading: isLoading } = useQuery({
+    queryKey: [`get_moderator_landholding_dropdown`],
+    queryFn: () => getModeratorLandholdingDropdown(),
+    refetchOnWindowFocus: true,
+  })
   const { data: get_moderator_landholding, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_moderator_landholding`],
     queryFn: () => getModeratorLandholding(village_id),
     enabled: village_id ? true : false,
     refetchOnWindowFocus: true,
   })
-
   const { mutate: edit_moderator_landholding } = useMutation({
     mutationKey: ['edit_moderator_landholding'],
     mutationFn: async (data) => {
@@ -223,8 +227,7 @@ if(get_moderator_landholding?._id){
       }
     })
   }, [get_moderator_landholding])
-  console.log("get_moderator_landholding", get_moderator_landholding)
-  if (isTypeLoading) {
+  if (isTypeLoading ||  isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />

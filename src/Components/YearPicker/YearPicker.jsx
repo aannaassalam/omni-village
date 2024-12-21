@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Button, Modal, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { fontScale, Styles } from '../../styles/globalStyles';
@@ -6,12 +6,19 @@ import {borderColor, primaryColor } from '../../styles/colors';
 import { fontFamilyMedium } from '../../styles/fontStyle';
 
 const YearPicker = ({ selectedYear, onYearChange, label }) => {
+    const currentYear = new Date().getFullYear();
     const [tempYear, setTempYear] = useState(selectedYear || new Date().getFullYear());
 
     const years = [];
     for (let i = 1900; i <= new Date().getFullYear(); i++) {
         years.push(i);
     }
+    useEffect(() => {
+        if (!selectedYear) {
+            onYearChange(currentYear); // Set default to current year if not provided
+        }
+    }, [selectedYear, onYearChange, currentYear]);
+
     return (
         <View style={Styles.pickerContainer}>
             {label && <Text style={[Styles.fieldLabel,{marginTop:0}]}>{label}</Text>}

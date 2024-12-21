@@ -42,7 +42,16 @@ export default MutipleselectDropdown = ({
                         inputSearchStyle={styles.inputSearchStyle}
                         iconStyle={styles.iconStyle}
                         search={false}
-                        data={data?.map((i)=>{return{label: i?.name, value: i?.key}})}
+                        data={data?.map((i) => {
+                            return {
+                                label: i.name.charAt(0).toUpperCase() +
+                                    i.name.slice(1).toLowerCase(), value: i?.key
+                            }
+                        }).sort((a, b) => {
+                            if (a.label < b.label) return -1;
+                            if (a.label > b.label) return 1;
+                            return 0; // Equal labels
+                        }) }
                         labelField="label"
                         valueField="value"
                         placeholder="Select multiple item"
@@ -51,6 +60,7 @@ export default MutipleselectDropdown = ({
                         onChange={handleSelect}
                         selectedStyle={styles.selectedStyle}
                         itemTextStyle={styles.itemTxtStyle}
+                        activeColor={borderColor}
                     />
                 </View>
 
