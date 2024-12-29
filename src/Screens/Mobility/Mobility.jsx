@@ -132,7 +132,7 @@ const Mobility = ({ navigation }) => {
                     )}
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]
+                        [{ label: 'Yes', value: true }, { label: 'No', value: false }]
                     }
                     value={values?.vehicle_requirement}
                     label={t('Do you have any new Vehicle Requirement?')}

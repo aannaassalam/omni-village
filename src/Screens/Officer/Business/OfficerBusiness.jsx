@@ -129,7 +129,7 @@ const OfficerBusiness = ({ navigation, route }) => {
     // Update `purpose_status_of_land` based on the selected items
     const updatedPurposeStatusOfLand = Array.from({ length: selectedItems }, (item, index) => {
       // Check if this `type` already exists in `purpose_status_of_land`
-      const existingEntry = values.how_many_establishment.find(
+      const existingEntry = values?.how_many_establishment?.find(
         (entry, indx) => indx === index
       );
 
@@ -154,7 +154,7 @@ const OfficerBusiness = ({ navigation, route }) => {
   useEffect(() => {
     resetForm({
       values: {
-        organisation_not_owned_by_villagers: get_moderator_business?.organisation_not_owned_by_villagers,
+        organisation_not_owned_by_villagers: get_moderator_business?.organisation_not_owned_by_villagers || false,
         how_many_establishment: get_moderator_business?.how_many_establishment.map((item) => {
           return {
             name: item.name,
@@ -165,9 +165,9 @@ const OfficerBusiness = ({ navigation, route }) => {
         })
       }
     })
-    setSelectedStatus(String(get_moderator_business?.how_many_establishment.length))
+    setSelectedStatus(String(get_moderator_business?.how_many_establishment.length || ''))
   }, [get_moderator_business])
-  console.log("sele", selectedStatus)
+  console.log("sele", get_moderator_business)
   if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>

@@ -118,19 +118,19 @@ const OfficerLandholding = ({ navigation, route }) => {
       } = values;
 
       // Rule 1: Validate sum of specific fields against total area allocated
-      const totalSumAllocated =
-        (farming_community_infrastructure || 0) +
-        (land_owned_by_non_resident || 0) +
-        (total_area_privately_owned || 0);
+      // const totalSumAllocated =
+      //   (farming_community_infrastructure || 0) +
+      //   (land_owned_by_non_resident || 0) +
+      //   (total_area_privately_owned || 0);
 
-      if (totalSumAllocated > total_area_allocated_village) {
-        return this.createError({
-          path: 'farming_community_infrastructure',
-          message: t(
-            'The sum of Farming & Community Infrastructure, Land Owned by Non-Residents, and Total Area Privately Owned must not exceed the Total Area Allocated to the Village'
-          ),
-        });
-      }
+      // if (totalSumAllocated > total_area_allocated_village) {
+      //   return this.createError({
+      //     path: 'farming_community_infrastructure',
+      //     message: t(
+      //       'The sum of Farming & Community Infrastructure, Land Owned by Non-Residents, and Total Area Privately Owned must not exceed the Total Area Allocated to the Village'
+      //     ),
+      //   });
+      // }
 
       // Rule 2: Validate sum of unutilized fields against unutilized area
       const totalSumUnutilized =

@@ -86,12 +86,13 @@ const Customdropdown = ({
         }
         itemTextStyle={{color: '#000'}}
         data={data
-          .map((item: any) => {
+          ?.map((item: any) => {
             return {
-              ...item,
+              // ...item,
               label:
                 item.label.charAt(0).toUpperCase() +
                 item.label.slice(1).toLowerCase(),
+              value: item.value,
             };
           })
           .sort((a: any, b: any) => {

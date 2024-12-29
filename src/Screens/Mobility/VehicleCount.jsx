@@ -11,7 +11,7 @@ import { getHousingByUser, getHousingDropdown } from '../../functions/housing'
 import { useQuery } from '@tanstack/react-query'
 import { useFocusEffect } from '@react-navigation/native'
 import { primaryColor } from '../../styles/colors'
-import { getMobilityByUser } from '../../functions/mobility'
+import { getMobilityByUser, getMobilityDropdown } from '../../functions/mobility'
 
 const VehicleCount = ({ navigation, route }) => {
     const { t } = useTranslation()
@@ -20,6 +20,11 @@ const VehicleCount = ({ navigation, route }) => {
         queryFn: () => getMobilityByUser(),
         refetchOnWindowFocus: true,
     })
+       const { data: mobility, isLoading: isTypeLoading } = useQuery({
+            queryKey: [`mobility`],
+            queryFn: () => getMobilityDropdown(),
+            refetchOnWindowFocus: true,
+        })
     useFocusEffect(
         useCallback(() => {
             refetch()
@@ -30,6 +35,7 @@ const VehicleCount = ({ navigation, route }) => {
             <ActivityIndicator size={'large'} color={primaryColor} />
         </View>
     }
+    console.log("yessssss", get_mobility_by_user)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -52,7 +58,7 @@ const VehicleCount = ({ navigation, route }) => {
                 }
                 <View style={styles.mainContainer}>
                     {/* {Array.from({ length: total_numbers_of_house }, (_, index) => { */}
-                    {get_mobility_by_user.mobilities.map((item, index) => {
+                    {get_mobility_by_user?.mobilities.map((item, index) => {
                         return <CustomShowcaseInput
                             key={index}
                             productionName={`${t('Vehicle')} ${index + 1}`}

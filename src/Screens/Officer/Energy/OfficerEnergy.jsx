@@ -280,9 +280,10 @@ const OfficerEnergy = ({ navigation, route }) => {
                   <Text
                     style={[
                       Styles.fieldLabel,
-                      { marginTop: 4, alignSelf: 'center' },
+                      { marginTop: 4, alignSelf: 'center', textTransform:'capitalize' },
                     ]}>
-                    {t(`${t('Type')} ${index + 1}`)}
+                    {/* {t(`${t('Type')} ${index + 1}`)} */}
+                    {get_moderator_energy_dropdown?.type_of_energy_sources.find((i) => item?.type == i?._id) ? get_moderator_energy_dropdown?.type_of_energy_sources.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE] : item?.type}
                   </Text>
                   <Divider
                     bold={true}

@@ -27,7 +27,17 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
     })
     const scheme = yup.object().shape({
         street_light: yup.boolean().required(t('Street light is required')),
-        solar_electric: yup.string().required(t('Solar electric is required')),
+        solar_electric: yup.string().test(
+            'solar-is-required',
+            t('Solar electric is required'),
+            function (value) {
+                const { street_light } = this.parent;
+                if (street_light) {
+                    return value && value.trim() !== '';;
+                }
+                return true; // Pass validation if safety_issues_on_roads is false
+            }
+        ),
         broadband_internet: yup.boolean().required(t('Broadband internet is required')),
         how_many_provider: yup.array().test(
             'provider-is-required',
@@ -155,6 +165,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
             t('Senile center type is required'),
             function (value) {
                 const { senile_center } = this.parent;
+                console.log("seniel ", senile_center)
                 if (senile_center) {
                     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
                     return value.length > 0;
@@ -203,6 +214,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
         },
 
     });
+    console.log("errroo", errors)
     useEffect(()=>{
         resetForm({
             values:{

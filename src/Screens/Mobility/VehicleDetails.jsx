@@ -132,7 +132,9 @@ let new_data={
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
+                        mobility?.type_of_vehicles.map((item) => {
+                                                       return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                     })
                     }
                     value={values?.type}
                     label={t('Type')}
@@ -197,7 +199,7 @@ let new_data={
                 />
                 <CustomDropdown
                     data={
-                        [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
+                        [{ label: 'Daily', value: 'daily' }, { label: 'Weekly', value: 'weekly' }, { label: 'Monthly', value: 'monthly' }]
                     }
                     value={values?.frequency_of_usage}
                     label={t('Frequency of usage')}

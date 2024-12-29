@@ -498,7 +498,7 @@ const OfficerCommunity = ({ navigation, route }) => {
                 )}
               <CustomDropdown
                 data={
-                 get_moderator_community_dropdown?.no_of_bank.map((item) => {
+                  get_moderator_community_dropdown?.distance_of_bank.map((item) => {
                                return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
                              })
                 }
@@ -558,7 +558,7 @@ const OfficerCommunity = ({ navigation, route }) => {
                 )}
               <CustomDropdown
                 data={
-                  get_moderator_community_dropdown?.no_of_healthcare.map((item) => {
+                  get_moderator_community_dropdown?.distance_of_healthcare.map((item) => {
                                 return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
                               })
                 }

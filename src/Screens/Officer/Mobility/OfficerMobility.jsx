@@ -323,7 +323,7 @@ const OfficerMobility = ({ navigation, route }) => {
         }
         <CustomDropdown
           data={
-            get_moderator_mobility_dropdown?.frequency_of_road_damage.map((item) => {
+            get_moderator_mobility_dropdown?.connectivity_to_healthcare_facilities.map((item) => {
               return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
             })
           }

@@ -10,7 +10,6 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Styles, width } from '../../styles/globalStyles'
-import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import Input from '../../Components/Inputs/Input'
 import AcresElement from '../../Components/ui/AcresElement'
 import CustomButton from '../../Components/CustomButton/CustomButton'
@@ -19,6 +18,7 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarvesting } from '../../functions/water'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import { editMobilityRequirement, getMobilityRequirement } from '../../functions/mobility'
+import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 
 const VehicleRequirement = ({ navigation, route }) => {
     const { name } = route.params
@@ -31,7 +31,7 @@ const VehicleRequirement = ({ navigation, route }) => {
     const { data: mobility, isLoading: isTypeLoading } = useQuery({
         queryKey: [`mobility`],
         queryFn: () => getMobilityDropdown(),
-        refetchOnWindowFocus: true,
+        // refetchOnWindowFocus: true,
     })
     const { data: get_mobility_requirement, isLoading: isLoading } = useQuery({
         queryKey: [`get_mobility_requirement`],
@@ -95,7 +95,7 @@ const VehicleRequirement = ({ navigation, route }) => {
                 }))
             }
         })
-        setSelectedStatus(String(get_mobility_requirement?.vehicles_needed.length) || 0)
+        setSelectedStatus(String(get_mobility_requirement?.vehicles_needed.length || '') || '')
     }, [get_mobility_requirement])
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.vehicles_needed];
@@ -115,7 +115,7 @@ const VehicleRequirement = ({ navigation, route }) => {
             );
 
             return existingEntry || {
-                vehicle_number: index +1,
+                vehicle_number: index + 1,
                 purpose: "",
                 vehicle_type: "",
                 urgency: "",
@@ -128,10 +128,10 @@ const VehicleRequirement = ({ navigation, route }) => {
 
     useEffect(() => {
         // Initialize collapseStates with false for all vehicles
-        if (values?.vehicles_needed.length > 0) {
-            setCollapseStates(Array(values.vehicles_needed.length).fill(true));
+        if (values?.vehicles_needed?.length > 0) {
+            setCollapseStates(Array(values?.vehicles_needed?.length).fill(true));
         }
-    }, [values?.vehicles_needed]);
+    }, [values?.vehicles_needed?.length]);
 
     const toggleCollapse = (index) => {
         setCollapseStates((prevStates) => {
@@ -201,11 +201,11 @@ const VehicleRequirement = ({ navigation, route }) => {
                     placeholder={'0'}
                     fullLength={true}
                     keyboardType="numeric"
-                    onChangeText={(e)=> handleStatusChange(e)}
+                    onChangeText={(e) => handleStatusChange(e)}
                 />
                 {values?.vehicles_needed?.length > 0 &&
                     <>
-                        {values?.vehicles_needed.map((item, index) =>{
+                        {values?.vehicles_needed.map((item, index) => {
                             return <>
                                 <View style={[styles.subArea, { marginTop: '3%' }]}>
                                     <Text
@@ -235,85 +235,87 @@ const VehicleRequirement = ({ navigation, route }) => {
                                     </TouchableOpacity>
                                 </View>
                                 {collapseStates[index] &&
-                                <View style={styles.innerInputView}>
-                                    <Divider style={styles.divider2} />
-                                    <View style={{ width: '100%' }}>
-                                        <CustomDropdown
-                                            data={
-                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
-                                            }
-                                            value={item?.vehicle_type}
-                                            label={t('Type of Vehicle Required')}
-                                            onChange={value => {
-                                                handleFieldChange(
-                                                    index,
-                                                    'vehicle_type',
-                                                    value?.value,
-                                                )
-                                            }}
-                                        />
-                                        {errors.vehicles_needed &&
-                                            errors.vehicles_needed[index]
-                                                ?.vehicle_type && (
-                                                <Text style={Styles.error2}>
-                                                    {
-                                                        errors.vehicles_needed[index]
-                                                            .vehicle_type
-                                                    }
-                                                </Text>
-                                            )}
-                                        <CustomDropdown
-                                            data={
-                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
-                                            }
-                                            value={item?.purpose}
-                                            label={t('Purpose')}
-                                            onChange={value => {
-                                                handleFieldChange(
-                                                    index,
-                                                    'purpose',
-                                                    value?.value,
-                                                )
-                                            }}
-                                        />
-                                        {errors.vehicles_needed &&
-                                            errors.vehicles_needed[index]
-                                                ?.purpose && (
-                                                <Text style={Styles.error2}>
-                                                    {
-                                                        errors.vehicles_needed[index]
-                                                            .purpose
-                                                    }
-                                                </Text>
-                                            )}
+                                    <View style={styles.innerInputView}>
+                                        <Divider style={styles.divider2} />
+                                        <View style={{ width: '100%' }}>
+                                            <CustomDropdown
+                                                data={
+                                                    mobility?.type_of_vehicles?.map((item) => {
+                                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                                    })
+                                                }
+                                                value={item?.vehicle_type}
+                                                label={t('Type of Vehicle Required')}
+                                                onChange={value => {
+                                                    handleFieldChange(
+                                                        index,
+                                                        'vehicle_type',
+                                                        value?.value,
+                                                    )
+                                                }}
+                                            />
+                                            {errors.vehicles_needed &&
+                                                errors.vehicles_needed[index]
+                                                    ?.vehicle_type && (
+                                                    <Text style={Styles.error2}>
+                                                        {
+                                                            errors.vehicles_needed[index]
+                                                                .vehicle_type
+                                                        }
+                                                    </Text>
+                                                )}
+                                            <CustomDropdown
+                                                data={
+                                                    [{ label: 'Daily', value: 'daily' }, { label: 'Weekly', value: 'weekly' }, { label: 'Monthly', value: 'monthly' }]
+                                                }
+                                                value={item?.purpose}
+                                                label={t('Purpose')}
+                                                onChange={value => {
+                                                    handleFieldChange(
+                                                        index,
+                                                        'purpose',
+                                                        value?.value,
+                                                    )
+                                                }}
+                                            />
+                                            {errors.vehicles_needed &&
+                                                errors.vehicles_needed[index]
+                                                    ?.purpose && (
+                                                    <Text style={Styles.error2}>
+                                                        {
+                                                            errors.vehicles_needed[index]
+                                                                .purpose
+                                                        }
+                                                    </Text>
+                                                )}
 
-                                        <CustomDropdown
-                                            data={
-                                                    [{ label: 'Yes', value: '6736117ecb51156c2f52383e' }, { label: 'No', value: '6736117ecb51156c2f52683e' }]
-                                            }
-                                            value={item?.urgency}
-                                            label={t('Urgency')}
-                                            onChange={value => {
-                                                handleFieldChange(
-                                                    index,
-                                                    'urgency',
-                                                    value?.value,
-                                                )
-                                            }}
-                                        />
-                                        {errors.vehicles_needed &&
-                                            errors.vehicles_needed[index]
-                                                ?.urgency && (
-                                                <Text style={Styles.error2}>
-                                                    {
-                                                        errors.vehicles_needed[index]
-                                                            .urgency
-                                                    }
-                                                </Text>
-                                            )}
+                                            <CustomDropdown
+                                                data={
+                                                    [{ label: 'Within 1 year', value: 'within 1 year' }, { label: 'Within 2-5 years', value: 'within 2-5 years' }, { label: 'After 10 years', value: 'after 10 years' }]
+                                                }
+                                                value={item?.urgency}
+                                                label={t('Urgency')}
+                                                onChange={value => {
+                                                    handleFieldChange(
+                                                        index,
+                                                        'urgency',
+                                                        value?.value,
+                                                    )
+                                                }}
+                                            />
+                                            {errors.vehicles_needed &&
+                                                errors.vehicles_needed[index]
+                                                    ?.urgency && (
+                                                    <Text style={Styles.error2}>
+                                                        {
+                                                            errors.vehicles_needed[index]
+                                                                .urgency
+                                                        }
+                                                    </Text>
+                                                )}
+                                        </View>
                                     </View>
-                                </View>
-                            }
+                                }
                             </>
                         }
                         )}
