@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { get_dropdown_data } from '../../functions/AuthScreens';
 import { ActivityIndicator } from 'react-native-paper';
 import { primaryColor } from '../../styles/colors';
+import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 
 const DemographicOccupation = ({ navigation, route }) => {
     const { fontScale } = useWindowDimensions();
@@ -30,7 +31,7 @@ const DemographicOccupation = ({ navigation, route }) => {
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
-        occupation: yup.string().required(t('occupation is required')),
+        occupation: yup.array().required(t('occupation is required')).min(1),
         other_occupation: yup.string().test(
             'occupation-required',
             t('other occupation is required'),
@@ -68,7 +69,7 @@ const DemographicOccupation = ({ navigation, route }) => {
         setValues
     } = useFormik({
         initialValues: {
-            occupation: '',
+            occupation: [],
             other_occupation: '',
             yearly_income: '',
             bank_account: false,
@@ -91,7 +92,7 @@ const DemographicOccupation = ({ navigation, route }) => {
     useEffect(() => {
         resetForm({
             values: {
-                occupation: data?.general_data?.occupation?._id || '',
+                occupation: data?.general_data?.occupation?.map((i) => { return i?._id }) || [],
                 other_occupation: data?.general_data?.other_occupation || '',
                 yearly_income: data?.general_data?.yearly_income?._id || '',
                 bank_account: data?.general_data?.bank_account || false,
@@ -100,7 +101,6 @@ const DemographicOccupation = ({ navigation, route }) => {
             }
         })
     }, [data])
-    console.log("errorr", errors)
     if (dropdown_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
@@ -117,7 +117,7 @@ const DemographicOccupation = ({ navigation, route }) => {
                 style={{ flex: 1 }}
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
-                <Customdropdown
+                {/* <Customdropdown
                     data={dropdownData?.['occupation'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
                     value={values.occupation}
                     label={t('occupation')}
@@ -127,7 +127,19 @@ const DemographicOccupation = ({ navigation, route }) => {
                             occupation: value?.value,
                         });
                     }}
-                />
+                /> */}
+                  <MultiselectDropdown
+                          containerStyle={{
+                            marginTop: '5%',
+                            paddingTop: 0,
+                          }}
+                    data={dropdownData?.['occupation'].map((item) => { return { name: item?.name, key: item?._id } })}
+                          setSelectedd={(item) =>
+                              setValues({ ...values, occupation: item })
+                          }
+                    selectedd={values?.occupation}
+                    infoName={t('occupation')}
+                        />
                 {touched?.occupation && errors?.occupation && (
                     <Text style={Styles.error2}>{String(errors?.occupation)}</Text>
                 )}

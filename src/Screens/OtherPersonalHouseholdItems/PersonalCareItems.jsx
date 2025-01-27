@@ -93,13 +93,11 @@ const PersonalCareItem = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            if (selectedStatus.length > 0) {
-                setSavepopup(true)
-            } else {
-                ToastAndroid.show("Please select one purpose", ToastAndroid.BOTTOM)
-            }
+            setSavepopup(true)
         },
     });
+    console.log("errrrr", errors)
+
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.items_produces];
         newDetailsOfLand[index][field] = value;
@@ -170,7 +168,7 @@ const PersonalCareItem = ({ navigation, route }) => {
         })
         setSelectedStatus(get_other_personal?.items_produces.map(item => item.type) || [])
     }, [get_other_personal])
-    console.log("heell", get_other_personal)
+    // console.log("heell", get_other_personal)
     if (isTypeLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>

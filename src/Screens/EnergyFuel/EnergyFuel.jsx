@@ -31,7 +31,7 @@ const EnergyFuel = ({navigation}) => {
                 Styles.fieldLabel,
                 { marginTop: 4, alignSelf: 'center' },
               ]}>
-              {t('Enter information for the Selected Energy Sources')}
+            {t('Enter information for the following energy sources')}
             </Text>
             <Divider
               bold={true}

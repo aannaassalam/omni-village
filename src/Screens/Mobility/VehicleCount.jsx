@@ -1,64 +1,61 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput'
 import { Styles, width } from '../../styles/globalStyles'
 import { ActivityIndicator, Divider } from 'react-native-paper'
 import { useTranslation } from 'react-i18next'
-import CustomHeader from '../../Components/CustomHeader/CustomHeader'
-import * as yup from 'yup';
-import { useFormik } from 'formik';
-import { getHousingByUser, getHousingDropdown } from '../../functions/housing'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useFocusEffect } from '@react-navigation/native'
 import { primaryColor } from '../../styles/colors'
-import { getMobilityByUser, getMobilityDropdown } from '../../functions/mobility'
+import { deleteMobility, getMobilityByUser, getMobilityDropdown, getNumberOfMobility } from '../../functions/mobility'
+import ItemHeader from '../../Components/CustomHeader/ItemHeader'
+import AddAndDeleteCropButton from '../../Components/CropButtons/AddAndDeleteCropButton'
 
-const VehicleCount = ({ navigation, route }) => {
+const VehicleCount = ({ navigation }) => {
     const { t } = useTranslation()
+    const queryClient = useQueryClient()
     const { data: get_mobility_by_user, isLoading, refetch } = useQuery({
         queryKey: ['get_mobility_by_user'],
         queryFn: () => getMobilityByUser(),
         refetchOnWindowFocus: true,
     })
-       const { data: mobility, isLoading: isTypeLoading } = useQuery({
-            queryKey: [`mobility`],
-            queryFn: () => getMobilityDropdown(),
-            refetchOnWindowFocus: true,
-        })
+    const { data: get_number_of_mobility, isLoading: number_of_mobility_loading, refetch: number_of_mobility_loading_refetch, isFetching } = useQuery({
+        queryKey: ['get_number_of_mobility'],
+        queryFn: () => getNumberOfMobility(),
+        refetchOnWindowFocus: true,
+    })
+    const { mutate: delete_mobility } = useMutation({
+        mutationKey: ['delete_mobility'],
+        mutationFn: async id => {
+            deleteMobility(id);
+            queryClient.invalidateQueries();
+        },
+        onSuccess: () => {
+            number_of_mobility_loading_refetch();
+        },
+        onError: error => console.log('error save', error),
+        onSettled: () => { },
+    });
     useFocusEffect(
         useCallback(() => {
             refetch()
         }, [refetch])
     )
-    if (isLoading) {
+    if (isLoading || number_of_mobility_loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
             <ActivityIndicator size={'large'} color={primaryColor} />
         </View>
     }
-    console.log("yessssss", get_mobility_by_user)
     return (
         <View style={styles.container}>
-            <CustomHeader
-                backIcon={true}
-                headerName={t('mobility')}
-                goBack={() => navigation.goBack()}
+            <ItemHeader
+                title={t('mobility')}
+                onPress={() => navigation.replace('mobility')}
+                edit
             />
-            <ScrollView>
-
-                {get_mobility_by_user?.mobilities > 0 ?
-                    <View style={styles.subArea}>
-                        <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Fill in details for')}</Text>
-                        <Divider
-                            bold={true}
-                            style={[styles.divider, { width: '65%' }]}
-                            horizontalInset={true}
-                        />
-                    </View>
-                    : null
-                }
                 <View style={styles.mainContainer}>
                     {/* {Array.from({ length: total_numbers_of_house }, (_, index) => { */}
-                    {get_mobility_by_user?.mobilities.map((item, index) => {
+                    {/* {get_mobility_by_user?.mobilities.map((item, index) => {
                         return <CustomShowcaseInput
                             key={index}
                             productionName={`${t('Vehicle')} ${index + 1}`}
@@ -69,12 +66,54 @@ const VehicleCount = ({ navigation, route }) => {
                                 // console.log("valyesssss", values)
                             }}
                         />
-                    })}
+                    })} */}
+                <FlatList
+                    data={get_number_of_mobility}
+                    keyExtractor={item => item._id}
+                    onRefresh={number_of_mobility_loading_refetch}
+                    refreshing={isFetching}
+                    contentContainerStyle={{ paddingBottom: 8 }}
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity
+                            style={styles.addAndDeleteButtonSection}
+                            onPress={() => {
+                                navigation.navigate('vehicleDetails', { name: `${t('Vehicle')} ${index + 1}`, mobility_id: item?._id });
+                            }}>
+                            <AddAndDeleteCropButton
+                                darftStyle={{
+                                    borderColor: item.status === 1 ? 'grey' : '#e5c05e',
+                                }}
+                                drafted={item.status === 0}
+                                add={false}
+                                cropName={
+                                    `${t('Vehicle')} ${index + 1}`
+                                }
+                                onPress={() => {
+                                    delete_mobility(item._id);
+                                }}
+                            />
+                        </TouchableOpacity>
+                    )}
+                    ListFooterComponent={
+                        <TouchableOpacity
+                            style={styles.addAndDeleteButtonSection}
+                            onPress={() => {
+                                navigation.navigate('vehicleDetails', { name: `${t('Vehicle')}`, mobility_id: null })
+                            }}>
+                            <AddAndDeleteCropButton
+                                add={true}
+                                cropName={t('add mobility')}
+                                onPress={() => {
+                                    navigation.navigate('vehicleDetails', { name: `${t('Vehicle')}`, mobility_id: null })
+                                }}
+                            />
+                        </TouchableOpacity>
+                    }
+                />
                     {get_mobility_by_user?.vehicle_requirement ?
                         <CustomShowcaseInput
                             key={1}
                             productionName={t(`On Vehicle Requirements`)}
-                            style={{ width: '100%', }}
                             progressBar={false}
                             onPress={() => {
                                 navigation.navigate('vehicleRequirements',{name:t('Vehicle Requirement'),})
@@ -83,7 +122,6 @@ const VehicleCount = ({ navigation, route }) => {
                         : null
                     }
                 </View>
-            </ScrollView>
         </View>
     )
 }
@@ -96,7 +134,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     mainContainer: {
-        paddingHorizontal: 22,
+        // paddingHorizontal: 22,
+    },
+    addAndDeleteButtonSection: {
+        marginTop: '5%',
     },
     subArea: {
         alignSelf: 'center',

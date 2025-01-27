@@ -93,11 +93,7 @@ const CleaningProduct = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            if (selectedStatus.length > 0) {
-                setSavepopup(true)
-            } else {
-                ToastAndroid.show("Please select one purpose", ToastAndroid.BOTTOM)
-            }
+            setSavepopup(true)
         },
     });
     const handleFieldChange = (index, field, value) => {
@@ -264,7 +260,11 @@ const CleaningProduct = ({ navigation, route }) => {
                                     <View style={styles.quantityContainer}>
                                         {values.items_produces.map((item, index) => (
                                             <>
-                                                <PurposeInput title={`${t('Item')} ${index + 1}`} value={item.quantity} onChangeText={text =>
+                                                <PurposeInput title={`${t('Item')} ${index + 1}`
+                                                    // `${business_dropdown?.raw_materials.find((i) => item?.type == i?._id) ?
+                                                    //     business_dropdown?.raw_materials.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE]
+                                                    //     : item?.type}`    
+                                            } value={item.quantity} onChangeText={text =>
                                                     handleFieldChange(
                                                         index,
                                                         'quantity',

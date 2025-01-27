@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import ItemHeader from '../../Components/CustomHeader/ItemHeader'
@@ -10,12 +10,17 @@ import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import Input from '../../Components/Inputs/Input'
 import { Styles } from '../../styles/globalStyles'
 import CustomButton from '../../Components/CustomButton/CustomButton'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { addBusinessByUser } from '../../functions/business'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { addBusinessByUser, editBusinessByUser, getBusinessByUser } from '../../functions/business'
 
 const BusinessCommercial = ({ navigation }) => {
     const { t } = useTranslation()
     const queryClient = useQueryClient()
+    const { data: get_business_by_user, isLoading, refetch } = useQuery({
+        queryKey: ['get_business_by_user'],
+        queryFn: () => getBusinessByUser(),
+        refetchOnWindowFocus: true,
+    })
     const { mutate: add_business_by_user } = useMutation({
         mutationKey: ['add_business_by_user'],
         mutationFn: async (data) => {
@@ -29,33 +34,46 @@ const BusinessCommercial = ({ navigation }) => {
         onError: (error) => console.log("error save", error),
         onSettled: () => { }
     })
+     const { mutate: edit_business_by_user } = useMutation({
+         mutationKey: ['edit_business_by_user'],
+            mutationFn: async (data) => {
+                editBusinessByUser(data)
+                queryClient.invalidateQueries()
+            },
+         onSuccess: (data) => { console.log("successsssss save", data), navigation.navigate('businessCount') },
+            onError: (error) => console.log("error save", error),
+        })
     const scheme = yup.object().shape({
-        number_of_business: yup.number(),
         other_business_apart_farming: yup.boolean(),
         plan_to_start_business: yup.boolean()
     });
     const {
-        handleChange,
         handleSubmit,
         values,
-        errors,
-        setFieldTouched,
-        setFieldValue,
-        touched,
-        resetForm,
         setValues
     } = useFormik({
         initialValues: {
             other_business_apart_farming: false,
-            number_of_business: '',
             plan_to_start_business: false
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-           add_business_by_user({...values, number_of_business: parseInt(values?.number_of_business)})
+            if(get_business_by_user?._id){
+                edit_business_by_user({ ...values, number_of_business: parseInt(values?.number_of_business), business_by_user_id: get_business_by_user._id })
+            }else{
+                add_business_by_user({...values, number_of_business: parseInt(values?.number_of_business)})
+            }
         }
     });
+    useEffect(() => {
+        if (get_business_by_user?._id) {
+            setValues({
+                other_business_apart_farming: get_business_by_user?.other_business_apart_farming,
+                plan_to_start_business: get_business_by_user?.plan_to_start_business,
+            })
+        }
+    },[get_business_by_user])
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -72,33 +90,10 @@ const BusinessCommercial = ({ navigation }) => {
                         label={t('Do you have any other businesses apart from farming?')}
                         selected={values?.other_business_apart_farming}
                         firstBtnPress={() => setValues({ ...values, other_business_apart_farming: true })}
-                        secondBtnPress={() => { setValues({ ...values, other_business_apart_farming: false, number_of_business: '' }) }}
+                        secondBtnPress={() => { setValues({ ...values, other_business_apart_farming: false }) }}
                         firstBtnText={t('yes')}
                         secondBtntext={t('no')}
                     />
-                    {values?.other_business_apart_farming ?
-                        <>
-                            <Input
-                                label={t(
-                                    `How many other businesses?`
-                                )}
-                                value={values?.number_of_business}
-                                placeholder={'0'}
-                                fullLength={true}
-                                keyboardType="numeric"
-                                onChangeText={handleChange('number_of_business')}
-                            />
-                            {errors.number_of_business &&
-                                errors.number_of_business && (
-                                    <Text style={Styles.error2}>
-                                        {
-                                            errors.number_of_business
-                                        }
-                                    </Text>
-                                )}
-                        </>
-                        : null
-                    }
                     <SwitchButton
                         nolabel={false}
                         label={t('Do you have plan to start a new business or organisation?')}

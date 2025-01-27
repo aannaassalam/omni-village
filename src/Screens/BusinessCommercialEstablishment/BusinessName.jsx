@@ -16,7 +16,7 @@ import { primaryColor } from '../../styles/colors';
 import AcresElement from '../../Components/ui/AcresElement';
 import { useUser } from '../../Hooks/useUser';
 import { useQuery } from '@tanstack/react-query';
-import { getBusiness, getBusinessDropdown } from '../../functions/business';
+import { getBusiness, getBusinessById, getBusinessDropdown } from '../../functions/business';
 import { ActivityIndicator } from 'react-native-paper';
 
 const BusinessName = ({navigation, route}) => {
@@ -29,8 +29,8 @@ const BusinessName = ({navigation, route}) => {
         refetchOnWindowFocus: true,
     })
     const { data: business, isLoading: isBusinessLoading } = useQuery({
-        queryKey: ['business'],
-        queryFn: () => getBusiness(id),
+        queryKey: [`business_${id}`],
+        queryFn: () => getBusinessById(id),
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
@@ -180,7 +180,7 @@ const BusinessName = ({navigation, route}) => {
                 year_started: business?.year_started||'',
                 brief_description: business?.brief_description||'',
                 segment_served: business?.segment_served||'',
-                location: business?.location||'22.7890,88.3456',
+                location: business?.location||'',
                 land_area_utilised: String(business?.land_area_utilised || '')||'',
                 built_up_area: String(business?.built_up_area || '')||'',
             }
@@ -213,7 +213,7 @@ const BusinessName = ({navigation, route}) => {
                   keyboardType="default"
                   onChangeText={handleChange('business_name')}
               />
-              {errors.business_name &&
+              {touched.business_name &&
                   errors.business_name && (
                       <Text style={Styles.error2}>
                           {
@@ -259,7 +259,7 @@ const BusinessName = ({navigation, route}) => {
                   selectedYear={values?.year_started}
                   label={t('Year Started')}
               />
-              {errors.year_started && errors.year_started && (
+              {touched.year_started && errors.year_started && (
                   <Text style={Styles.error2}>{errors.year_started}</Text>
               )}
               <Input
@@ -272,7 +272,7 @@ const BusinessName = ({navigation, route}) => {
                   keyboardType="default"
                   onChangeText={handleChange('brief_description')}
               />
-              {errors.brief_description &&
+              {touched.brief_description &&
                   errors.brief_description && (
                       <Text style={Styles.error2}>
                           {
@@ -307,12 +307,12 @@ const BusinessName = ({navigation, route}) => {
                           Styles.fieldLabel,
                           { width: '65%', marginTop: 0, alignSelf: 'center' },
                       ]}>
-                      {t('Press Geotag to start locating the land owned per user.')}
+                      {values?.location ? values?.location :t('Press Geotag to start locating the land owned per user.')}
                   </Text>
                   <CustomButton btnText={t('Geotag')} onPress={getLocation} />
               </View>
-              {errors.geotag && errors.geotag && (
-                  <Text style={Styles.error2}>{errors.geotag}</Text>
+              {touched.location && errors.location && (
+                  <Text style={Styles.error2}>{errors.location}</Text>
               )}
               <Input
                   label={t(
@@ -325,7 +325,7 @@ const BusinessName = ({navigation, route}) => {
                   onChangeText={handleChange('land_area_utilised')}
                   isRight={<AcresElement title={user?.land_measurement_symbol} />}
               />
-              {errors.land_area_utilised &&
+              {touched.land_area_utilised &&
                   errors.land_area_utilised && (
                       <Text style={Styles.error2}>
                           {
@@ -344,7 +344,7 @@ const BusinessName = ({navigation, route}) => {
                   onChangeText={handleChange('built_up_area')}
                   isRight={<AcresElement title={user?.land_measurement_symbol}/>}
               />
-              {errors.built_up_area &&
+              {touched.built_up_area &&
                   errors.built_up_area && (
                       <Text style={Styles.error2}>
                           {

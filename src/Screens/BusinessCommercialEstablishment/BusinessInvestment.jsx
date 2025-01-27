@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, ToastAndroid, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import * as yup from 'yup';
@@ -16,7 +16,9 @@ import AcresElement from '../../Components/ui/AcresElement';
 import { useUser } from '../../Hooks/useUser';
 import { primaryColor } from '../../styles/colors';
 import { useQuery } from '@tanstack/react-query';
-import { getBusiness, getBusinessDropdown } from '../../functions/business';
+import { getBusiness, getBusinessById, getBusinessDropdown } from '../../functions/business';
+import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
+import { fontFamilyRegular } from '../../styles/fontStyle';
 
 const BusinessInvestment = ({ navigation, route }) => {
     const { businessEmployee, businessName, name, id } = route.params;
@@ -30,8 +32,8 @@ const BusinessInvestment = ({ navigation, route }) => {
         refetchOnWindowFocus: true,
     })
     const { data: business, isLoading: isBusinessLoading } = useQuery({
-        queryKey: ['business'],
-        queryFn: () => getBusiness(id),
+        queryKey: [`business_${id}`],
+        queryFn: () => getBusinessById(id),
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
@@ -40,11 +42,13 @@ const BusinessInvestment = ({ navigation, route }) => {
         energy_consumption: yup.number().required('Energy consumption is required'),
         raw_material_consumption: yup.array().of(yup.object().shape({
             item: yup.string().required(t('Type is required')),
-            quantity: yup.string().required(t('Quantity is required'))})).required('Raw material consumption is required'),
+            quantity: yup.string().required(t('Quantity is required'))
+        })).required('Raw material consumption is required'),
         fuel_source: yup.array().of(yup.object().shape({
             item: yup.string().required(t('Type is required')),
             quantity: yup.string().required(t('Quantity is required'))
         })).required('Fuel source is required'),
+        raw_consumption_unit: yup.string(),
         type_of_infrastructure: yup.array().of(yup.string()).required('Infrastructure is required'),
         machine_equipment_installed: yup.string().required('Machine and equipment installed is required'),
     })
@@ -66,7 +70,8 @@ const BusinessInvestment = ({ navigation, route }) => {
             raw_material_consumption: [],
             fuel_source: [],
             type_of_infrastructure: [],
-            machine_equipment_installed: ''
+            machine_equipment_installed: '',
+            raw_consumption_unit: ''
         },
         validationSchema: scheme,
         onSubmit: async values => {
@@ -79,8 +84,13 @@ const BusinessInvestment = ({ navigation, route }) => {
                 fuel_source: values.fuel_source,
                 type_of_infrastructure: values.type_of_infrastructure,
                 machine_equipment_installed: values.machine_equipment_installed,
+                raw_consumption_unit: values.raw_consumption_unit,
             }
-            navigation.navigate('businessRequirement', { businessInvestment: new_data, businessEmployee, businessName: businessName, id: id, name })
+            if(values.raw_consumption_unit == ''){
+                ToastAndroid.show(t('Raw consumption unit is required'), ToastAndroid.SHORT);
+            }else{
+                navigation.navigate('businessRequirement', { businessInvestment: new_data, businessEmployee, businessName: businessName, id: id, name })
+            }
         },
     });
     const handleFieldChange = (index, field, value) => {
@@ -135,23 +145,24 @@ const BusinessInvestment = ({ navigation, route }) => {
                 investment_need_so_far: String(business?.investment_need_so_far || '') || '',
                 water_consumption: String(business?.water_consumption || '') || '',
                 energy_consumption: String(business?.energy_consumption || '') || '',
-                raw_material_consumption: business?.raw_material_consumption?.length > 0 ? business?.raw_material_consumption.map((item)=>{
+                raw_material_consumption: business?.raw_material_consumption?.length > 0 ? business?.raw_material_consumption.map((item) => {
                     return {
                         item: item.item,
                         quantity: String(item.quantity)
                     }
                 }) : [],
-                fuel_source: business?.fuel_source?.length>0 ?business?.fuel_source.map((item) => {
+                raw_consumption_unit: business?.raw_consumption_unit || '',
+                fuel_source: business?.fuel_source?.length > 0 ? business?.fuel_source.map((item) => {
                     return {
                         item: item.item,
                         quantity: String(item.quantity)
                     }
-                }): [],
-                type_of_infrastructure: business?.type_of_infrastructure||[],
+                }) : [],
+                type_of_infrastructure: business?.type_of_infrastructure || [],
                 machine_equipment_installed: business?.machine_equipment_installed || ''
             }
         })
-        setSelectedStatus(business?.raw_material_consumption.map((item)=> item?.item))
+        setSelectedStatus(business?.raw_material_consumption.map((item) => item?.item))
         setSelectedStatusSecond(business?.fuel_source.map((item) => item?.item))
     }, [business])
     if (isBusinessLoading || isLoading) {
@@ -183,7 +194,7 @@ const BusinessInvestment = ({ navigation, route }) => {
                     isRight={<AcresElement title={user?.currency} />}
                 />
                 {errors.investment_need_so_far &&
-                    errors.investment_need_so_far && (
+                    touched.investment_need_so_far && (
                         <Text style={Styles.error2}>
                             {
                                 errors.investment_need_so_far
@@ -230,9 +241,9 @@ const BusinessInvestment = ({ navigation, route }) => {
                     )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={business_dropdown?.raw_materials.map((item) => {
+                    data={business_dropdown?.raw_materials?business_dropdown?.raw_materials.map((item) => {
                         return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                    })}
+                    }) : [{ name: 'Pharmaceutical', key: '6736117ecb51156c2f52383e' }, { name: 'IT/Telecom', key: '6736117ecb51156c2f52683e' }]}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
                     infoName={t('Raw materials consumption')}
@@ -245,13 +256,36 @@ const BusinessInvestment = ({ navigation, route }) => {
                             <View style={styles.quantityContainer}>
                                 {values.raw_material_consumption.map((item, index) => (
                                     <>
-                                        <PurposeInput title={`${t('Item')} ${index + 1}`} value={item.quantity} onChangeText={text =>
+                                        <PurposeInput title={`${business_dropdown?.raw_materials.find((i) => item?.item == i?._id) ?
+                                            business_dropdown?.raw_materials.find((i) => item?.item == i?._id)?.name[USER_PREFERRED_LANGUAGE]
+                                            : item?.item}`} value={item.quantity} onChangeText={text =>
                                             handleFieldChange(
                                                 index,
                                                 'quantity',
                                                 parseInt(text),
                                             )
-                                        } unit={'Kg'} placeholder={t('Quantity')} />
+                                        } isRight={<CustomDropdown
+                                            data={
+                                                business_dropdown?.legal_structure.map((item) => {
+                                                    return {
+                                                        label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                                                    }
+                                                })
+                                            }
+                                            value={values?.raw_consumption_unit}
+                                            noLabel={true}
+                                            onChange={value => {
+                                                setValues({
+                                                    ...values,
+                                                    raw_consumption_unit: value?.value,
+                                                });
+                                            }}
+                                            sideDrop={true}
+                                            style={{ height: 30, borderColor: '#fff', width: 74, marginTop: -1, marginRight: '5%' }}
+                                            placeholder={t('Unit')}
+                                            placeholderStyle={{ fontSize: 14, fontFamily: fontFamilyRegular, marginRight: 4 }}
+
+                                        />} placeholder={t('Quantity')} />
                                         {errors.raw_material_consumption &&
                                             errors.raw_material_consumption[index]
                                                 ?.quantity && (
@@ -270,9 +304,9 @@ const BusinessInvestment = ({ navigation, route }) => {
                 )}
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={business_dropdown?.fuel_sources.map((item) => {
+                    data={business_dropdown?.fuel_sources?business_dropdown?.fuel_sources.map((item) => {
                         return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                    })}
+                    }) : [{ name: 'Pharmaceutical', key: '6736117ecb51156c2f52383e' }, { name: 'IT/Telecom', key: '6736117ecb51156c2f52683e' }]}
                     setSelectedd={handleStatusChangeSecond}
                     selectedd={selectedStatusSecond}
                     infoName={t('Select your Fuel sources if any')}
@@ -285,7 +319,9 @@ const BusinessInvestment = ({ navigation, route }) => {
                             <View style={styles.quantityContainer}>
                                 {values.fuel_source.map((item, index) => (
                                     <>
-                                        <PurposeInput title={`${t('Item')} ${index + 1}`} value={item.quantity} onChangeText={text =>
+                                        <PurposeInput title={`${business_dropdown?.fuel_sources.find((i) => item?.item == i?._id) ?
+                                            business_dropdown?.fuel_sources.find((i) => item?.item == i?._id)?.name[USER_PREFERRED_LANGUAGE]
+                                            : item?.item}`} value={item.quantity} onChangeText={text =>
                                             handleFieldChangeSecond(
                                                 index,
                                                 'quantity',
@@ -313,7 +349,7 @@ const BusinessInvestment = ({ navigation, route }) => {
                     data={business_dropdown?.type_of_infrastructure.map((item) => {
                         return { key: item?._id, name: item?.name?.[USER_PREFERRED_LANGUAGE] }
                     })}
-                    setSelectedd={(value) => {setValues({ ...values, type_of_infrastructure: value }), console.log("value", value)}}
+                    setSelectedd={(value) => { setValues({ ...values, type_of_infrastructure: value }), console.log("value", value) }}
                     selectedd={values?.type_of_infrastructure}
                     infoName={t('Type of infrastructure')}
                 />
@@ -331,7 +367,7 @@ const BusinessInvestment = ({ navigation, route }) => {
                     onChangeText={handleChange('machine_equipment_installed')}
                 />
                 {errors.machine_equipment_installed &&
-                    errors.machine_equipment_installed && (
+                    touched.machine_equipment_installed && (
                         <Text style={Styles.error2}>
                             {
                                 errors.machine_equipment_installed

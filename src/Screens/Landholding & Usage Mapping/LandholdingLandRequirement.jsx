@@ -99,7 +99,7 @@ edit_landholding_specification({...newData, status: 0})
             }
             edit_landholding_specification({ ...newData, status: 1 })
     }
-    if (isLoading) {
+    if (isLoading || isLandholdingLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />

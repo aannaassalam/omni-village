@@ -1,68 +1,94 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import * as yup from 'yup';
-import { useFormik } from 'formik';
-import DocumentPicker, { types } from 'react-native-document-picker';
-import { fontScale, Styles, width } from '../../styles/globalStyles';
-import { ActivityIndicator, Divider } from 'react-native-paper';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {useFormik} from 'formik';
+import DocumentPicker, {types} from 'react-native-document-picker';
+import {fontScale, Styles, width} from '../../styles/globalStyles';
+import {ActivityIndicator, Divider} from 'react-native-paper';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { borderColor, primaryColor } from '../../styles/colors';
-import { fontFamilyMedium } from './../../styles/fontStyle';
-import Entypo from 'react-native-vector-icons/Entypo'
-import ImageView from "react-native-image-viewing";
+import {borderColor, primaryColor} from '../../styles/colors';
+import {fontFamilyMedium} from './../../styles/fontStyle';
+import Entypo from 'react-native-vector-icons/Entypo';
+import ImageView from 'react-native-image-viewing';
 import Input from '../../Components/Inputs/Input';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { getHousingDropdown } from '../../functions/housing';
-import { useQuery } from '@tanstack/react-query';
-import { USER_PREFERRED_LANGUAGE } from '../../i18next';
+import {getHousingDropdown} from '../../functions/housing';
+import {useQuery} from '@tanstack/react-query';
+import {USER_PREFERRED_LANGUAGE} from '../../i18next';
 
-const HousePhoto = ({ navigation, route }) => {
-  const { t } = useTranslation()
-  const { housingData, house, house_id, housing_data } = route.params
-  const [uploadPhoto, setUploadPhoto] = useState(true)
+const HousePhoto = ({navigation, route}) => {
+  const {t} = useTranslation();
+  const {housingData, house, house_id, housing_data} = route.params;
+  const [uploadPhoto, setUploadPhoto] = useState(true);
   const [visible, setIsVisible] = useState(false);
-  const [photo, setPhoto] = useState('')
-  const { data: housing_dropdown, isLoading, refetch } = useQuery({
+  const [photo, setPhoto] = useState('');
+  const {
+    data: housing_dropdown,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['housing'],
     queryFn: () => getHousingDropdown(),
     refetchOnWindowFocus: true,
-  })
+  });
   const scheme = yup.object().shape({
     front_photo: yup
-      .object().shape({
+      .object()
+      .shape({
         uri: yup.string().required(t('Front photo of houses is required')),
         type: yup.string().required(t('Front photo of houses is required')),
         name: yup.string().required(t('Front photo of houses is required')),
       })
       .required(t('Front photo of houses is required')),
     back_photo: yup
-      .object().shape({
+      .object()
+      .shape({
         uri: yup.string().required(t('Back photo of house is required')),
         type: yup.string().required(t('Back photo of house is required')),
         name: yup.string().required(t('Back photo of house is required')),
       })
       .required(t('Back photo of house is required')),
-    neighbourhood_photo: yup.object().shape({
-      uri: yup.string().required(t('Neighbourhood photo of house is required')),
-      type: yup.string().required(t('Neighbourhood photo of house is required')),
-      name: yup.string().required(t('Neighbourhood photo of house is required')),
-    })
+    neighbourhood_photo: yup
+      .object()
+      .shape({
+        uri: yup
+          .string()
+          .required(t('Neighbourhood photo of house is required')),
+        type: yup
+          .string()
+          .required(t('Neighbourhood photo of house is required')),
+        name: yup
+          .string()
+          .required(t('Neighbourhood photo of house is required')),
+      })
       .required(t('Neighbourhood photo of house is required')),
-    inside_living_photo: yup.object().shape({
-      uri: yup.string().required(t('Inside living photo of house is required')),
-      type: yup.string().required(t('Inside living photo of house is required')),
-      name: yup.string().required(t('Inside living photo of house is required')),
-    }).required(t('Inside living photo of house is required')),
-    kitchen_photo: yup.object().shape({
-      uri: yup.string().required(t('Kitchen photo of house is required')),
-      type: yup.string().required(t('Kitchen photo of house is required')),
-      name: yup.string().required(t('Kitchen photo of house is required')),
-    }).required(t('Kitchen photo of house is required')),
+    inside_living_photo: yup
+      .object()
+      .shape({
+        uri: yup
+          .string()
+          .required(t('Inside living photo of house is required')),
+        type: yup
+          .string()
+          .required(t('Inside living photo of house is required')),
+        name: yup
+          .string()
+          .required(t('Inside living photo of house is required')),
+      })
+      .required(t('Inside living photo of house is required')),
+    kitchen_photo: yup
+      .object()
+      .shape({
+        uri: yup.string().required(t('Kitchen photo of house is required')),
+        type: yup.string().required(t('Kitchen photo of house is required')),
+        name: yup.string().required(t('Kitchen photo of house is required')),
+      })
+      .required(t('Kitchen photo of house is required')),
     amenities: yup.array().required(t('Amenities is required')),
-  })
+  });
   const {
     handleChange,
     handleSubmit,
@@ -109,11 +135,11 @@ const HousePhoto = ({ navigation, route }) => {
         house,
         housingPhoto: values,
         house_id,
-        housing_data
-      })
+        housing_data,
+      });
     },
   });
-  const handleDocumentSelection = useCallback(async (type) => {
+  const handleDocumentSelection = useCallback(async type => {
     try {
       const response = await DocumentPicker.pick({
         presentationStyle: 'fullScreen',
@@ -132,43 +158,78 @@ const HousePhoto = ({ navigation, route }) => {
       console.warn(err);
     }
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     resetForm({
-      values:{
+      values: {
         ...values,
         amenities: housing_data?.amenities,
-        front_photo:{
-          uri: housing_data?.front_photo,
-          type: housing_data?.front_photo,
+        // front_photo: {
+        //   uri: '',
+        //   type: '',
+        //   name: '',
+        // },
+        // back_photo: {
+        //   uri: '',
+        //   type: '',
+        //   name: '',
+        // },
+        // neighbourhood_photo: {
+        //   uri: '',
+        //   type: '',
+        //   name: '',
+        // },
+        // inside_living_photo: {
+        //   uri: '',
+        //   type: '',
+        //   name: '',
+        // },
+        // kitchen_photo: {
+        //   uri: '',
+        //   type: '',
+        //   name: '',
+        // },
+        front_photo: {
+          uri: housing_data?.front_photo
+            ? `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${housing_data?.front_photo}`
+            : '',
+          type: housing_data?.front_photo ? 'image/jpeg' : '',
           name: housing_data?.front_photo,
         },
-        kitchen_photo:{
-          uri: housing_data?.kitchen_photo,
-          type: housing_data?.kitchen_photo,
+        kitchen_photo: {
+          uri: housing_data?.kitchen_photo
+            ? `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${housing_data?.kitchen_photo}`
+            : '',
+          type: housing_data?.kitchen_photo ? 'image/jpeg' : '',
           name: housing_data?.kitchen_photo,
         },
-        inside_living_photo:{
-          uri: housing_data?.inside_living_photo,
-          type: housing_data?.inside_living_photo,
+        inside_living_photo: {
+          uri: housing_data?.inside_living_photo
+            ? `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${housing_data?.inside_living_photo}`
+            : '',
+          type: housing_data?.inside_living_photo ? 'image/jpeg' : '',
           name: housing_data?.inside_living_photo,
         },
-        back_photo:{
-          uri: housing_data?.back_photo,
-          type: housing_data?.back_photo,
+        back_photo: {
+          uri: housing_data?.back_photo
+            ? `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${housing_data?.back_photo}`
+            : '',
+          type: housing_data?.back_photo ? 'image/jpeg' : '',
           name: housing_data?.back_photo,
         },
-        neighbourhood_photo:{
-          uri: housing_data?.neighbourhood_photo,
-          type: housing_data?.neighbourhood_photo,
+        neighbourhood_photo: {
+          uri: housing_data?.neighbourhood_photo
+            ? `https://omnivillage-server-360ba1f0adb3.herokuapp.com/${housing_data?.neighbourhood_photo}`
+            : '',
+          type: housing_data?.neighbourhood_photo ? 'image/jpeg' : '',
           name: housing_data?.neighbourhood_photo,
         },
-      }
-    })
-  }, [housing_data])
-  console.log("housinggg", housing_data)
+      },
+    });
+  }, [housing_data]);
+  console.log('housinggg', values?.front_photo);
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+      <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
         <ActivityIndicator size={'large'} color={primaryColor} />
       </View>
     );
@@ -181,14 +242,17 @@ const HousePhoto = ({ navigation, route }) => {
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+        contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
         <View style={styles.subArea}>
-          <Text style={[Styles.fieldLabel, { marginTop: 4, alignSelf: 'center' }]}>{t('Upload Photos of House')}</Text>
+          <Text
+            style={[Styles.fieldLabel, {marginTop: 4, alignSelf: 'center'}]}>
+            {t('Upload Photos of House')}
+          </Text>
           <Divider
             bold={true}
-            style={[styles.divider, { width: '45%' }]}
+            style={[styles.divider, {width: '45%'}]}
             horizontalInset={true}
           />
           <TouchableOpacity onPress={() => setUploadPhoto(!uploadPhoto)}>
@@ -205,169 +269,276 @@ const HousePhoto = ({ navigation, route }) => {
             )}
           </TouchableOpacity>
         </View>
-        {uploadPhoto ?
+        {uploadPhoto ? (
           <>
             <View style={styles.innerInputView}>
               <Divider style={styles.divider2} />
-              <View style={{ width: '100%' }}>
+              <View style={{width: '100%'}}>
                 {/* Front */}
                 <TouchableOpacity
-                  style={[styles.add_button, {
-                    justifyContent: values?.front_photo?.uri ? 'space-between' : 'flex-start'
-                  }]}
+                  style={[
+                    styles.add_button,
+                    {
+                      justifyContent: values?.front_photo?.uri
+                        ? 'space-between'
+                        : 'flex-start',
+                    },
+                  ]}
                   onPress={() => {
                     if (values?.front_photo?.name) {
                       // setIsVisible(true)
                       // setPhoto([{ uri: values?.front_photo?.uri }])
-                    }
-                    else {
-                      handleDocumentSelection("front_photo")
+                    } else {
+                      handleDocumentSelection('front_photo');
                     }
                   }}>
-                  {values?.front_photo?.uri ?
+                  {values?.front_photo?.uri ? (
                     <>
-                      <Text style={styles.add_button_text}>{values?.front_photo?.name}</Text>
-                      <Entypo name="circle-with-cross" size={26} color={'red'} onPress={() => setValues({ ...values, front_photo: {} })} />
+                      <Text style={styles.add_button_text}>
+                        {values?.front_photo?.name}
+                      </Text>
+                      <Entypo
+                        name="circle-with-cross"
+                        size={26}
+                        color={'red'}
+                        onPress={() => setValues({...values, front_photo: {}})}
+                      />
                     </>
-                    :
+                  ) : (
                     <>
-                      <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                      <Text style={styles.add_button_text}>{t('Add Front photo')}</Text>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={26}
+                        color={'black'}
+                      />
+                      <Text style={styles.add_button_text}>
+                        {t('Add Front photo')}
+                      </Text>
                     </>
-                  }
+                  )}
                 </TouchableOpacity>
-                {errors?.front_photo?.name && touched?.front_photo?.name ?
-                  <Text style={[Styles.error,{marginLeft: 0, marginBottom:0}]}>{errors?.front_photo?.name}</Text>
-                  : null
-                }
+                {errors?.front_photo?.name && touched?.front_photo?.name ? (
+                  <Text
+                    style={[Styles.error, {marginLeft: 0, marginBottom: 0}]}>
+                    {errors?.front_photo?.name}
+                  </Text>
+                ) : null}
                 {/* Back */}
                 <TouchableOpacity
-                  style={[styles.add_button, {
-                    justifyContent: values?.back_photo?.uri ? 'space-between' : 'flex-start'
-                  }]}
+                  style={[
+                    styles.add_button,
+                    {
+                      justifyContent: values?.back_photo?.uri
+                        ? 'space-between'
+                        : 'flex-start',
+                    },
+                  ]}
                   onPress={() => {
                     if (values?.back_photo?.name) {
                       // setIsVisible(true)
                       // setPhoto([{ uri: values?.back_photo?.uri }])
-                    }
-                    else {
-                      handleDocumentSelection("back_photo")
+                    } else {
+                      handleDocumentSelection('back_photo');
                     }
                   }}>
-                  {values?.back_photo?.uri ?
+                  {values?.back_photo?.uri ? (
                     <>
-                      <Text style={styles.add_button_text}>{values?.back_photo?.name}</Text>
-                      <Entypo name="circle-with-cross" size={26} color={'red'} onPress={() => setValues({ ...values, back_photo: {} })} />
+                      <Text style={styles.add_button_text}>
+                        {values?.back_photo?.name}
+                      </Text>
+                      <Entypo
+                        name="circle-with-cross"
+                        size={26}
+                        color={'red'}
+                        onPress={() => setValues({...values, back_photo: {}})}
+                      />
                     </>
-                    :
+                  ) : (
                     <>
-                      <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                      <Text style={styles.add_button_text}>{t('Add Back photo')}</Text>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={26}
+                        color={'black'}
+                      />
+                      <Text style={styles.add_button_text}>
+                        {t('Add Back photo')}
+                      </Text>
                     </>
-                  }
+                  )}
                 </TouchableOpacity>
-                {errors?.back_photo?.name && touched?.back_photo?.name ?
-                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.back_photo?.name}</Text>
-                  : null
-                }
+                {errors?.back_photo?.name && touched?.back_photo?.name ? (
+                  <Text
+                    style={[Styles.error, {marginLeft: 0, marginBottom: 0}]}>
+                    {errors?.back_photo?.name}
+                  </Text>
+                ) : null}
                 {/* NeighbourHood */}
                 <TouchableOpacity
-                  style={[styles.add_button, {
-                    justifyContent: values?.neighbourhood_photo?.uri ? 'space-between' : 'flex-start'
-                  }]}
+                  style={[
+                    styles.add_button,
+                    {
+                      justifyContent: values?.neighbourhood_photo?.uri
+                        ? 'space-between'
+                        : 'flex-start',
+                    },
+                  ]}
                   onPress={() => {
                     if (values?.neighbourhood_photo?.name) {
                       // setIsVisible(true)
                       // setPhoto([{ uri: values?.neighbourhood_photo?.uri }])
-                    }
-                    else {
-                      handleDocumentSelection("neighbourhood_photo")
+                    } else {
+                      handleDocumentSelection('neighbourhood_photo');
                     }
                   }}>
-                  {values?.neighbourhood_photo?.uri ?
+                  {values?.neighbourhood_photo?.uri ? (
                     <>
-                      <Text style={styles.add_button_text}>{values?.neighbourhood_photo?.name}</Text>
-                      <Entypo name="circle-with-cross" size={26} color={'red'} onPress={() => setValues({ ...values, neighbourhood_photo: {} })} />
+                      <Text style={styles.add_button_text}>
+                        {values?.neighbourhood_photo?.name}
+                      </Text>
+                      <Entypo
+                        name="circle-with-cross"
+                        size={26}
+                        color={'red'}
+                        onPress={() =>
+                          setValues({...values, neighbourhood_photo: {}})
+                        }
+                      />
                     </>
-                    :
+                  ) : (
                     <>
-                      <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                      <Text style={styles.add_button_text}>{t('Add Neighbourhood photo')}</Text>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={26}
+                        color={'black'}
+                      />
+                      <Text style={styles.add_button_text}>
+                        {t('Add Neighbourhood photo')}
+                      </Text>
                     </>
-                  }
+                  )}
                 </TouchableOpacity>
-                {errors?.neighbourhood_photo?.name && touched?.neighbourhood_photo?.name ?
-                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.neighbourhood_photo?.name}</Text>
-                  : null
-                }
+                {errors?.neighbourhood_photo?.name &&
+                touched?.neighbourhood_photo?.name ? (
+                  <Text
+                    style={[Styles.error, {marginLeft: 0, marginBottom: 0}]}>
+                    {errors?.neighbourhood_photo?.name}
+                  </Text>
+                ) : null}
                 {/* Inside living */}
                 <TouchableOpacity
-                  style={[styles.add_button, {
-                    justifyContent: values?.inside_living_photo?.uri ? 'space-between' : 'flex-start'
-                  }]}
+                  style={[
+                    styles.add_button,
+                    {
+                      justifyContent: values?.inside_living_photo?.uri
+                        ? 'space-between'
+                        : 'flex-start',
+                    },
+                  ]}
                   onPress={() => {
                     if (values?.inside_living_photo?.name) {
                       // setIsVisible(true)
                       // setPhoto([{ uri: values?.inside_living_photo?.uri }])
-                    }
-                    else {
-                      handleDocumentSelection("inside_living_photo")
+                    } else {
+                      handleDocumentSelection('inside_living_photo');
                     }
                   }}>
-                  {values?.inside_living_photo?.uri ?
+                  {values?.inside_living_photo?.uri ? (
                     <>
-                      <Text style={styles.add_button_text}>{values?.inside_living_photo?.name}</Text>
-                      <Entypo name="circle-with-cross" size={26} color={'red'} onPress={() => setValues({ ...values, inside_living_photo: {} })} />
+                      <Text style={styles.add_button_text}>
+                        {values?.inside_living_photo?.name}
+                      </Text>
+                      <Entypo
+                        name="circle-with-cross"
+                        size={26}
+                        color={'red'}
+                        onPress={() =>
+                          setValues({...values, inside_living_photo: {}})
+                        }
+                      />
                     </>
-                    :
+                  ) : (
                     <>
-                      <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                      <Text style={styles.add_button_text}>{t('Add Inside living photo')}</Text>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={26}
+                        color={'black'}
+                      />
+                      <Text style={styles.add_button_text}>
+                        {t('Add Inside living photo')}
+                      </Text>
                     </>
-                  }
+                  )}
                 </TouchableOpacity>
-                {errors?.neighbourhood_photo?.name && touched?.neighbourhood_photo?.name ?
-                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.neighbourhood_photo?.name}</Text>
-                  : null
-                }
+                {errors?.neighbourhood_photo?.name &&
+                touched?.neighbourhood_photo?.name ? (
+                  <Text
+                    style={[Styles.error, {marginLeft: 0, marginBottom: 0}]}>
+                    {errors?.neighbourhood_photo?.name}
+                  </Text>
+                ) : null}
                 {/* Kitchen */}
                 <TouchableOpacity
-                  style={[styles.add_button, {
-                    justifyContent: values?.kitchen_photo?.uri ? 'space-between' : 'flex-start',
-                  }]}
+                  style={[
+                    styles.add_button,
+                    {
+                      justifyContent: values?.kitchen_photo?.uri
+                        ? 'space-between'
+                        : 'flex-start',
+                    },
+                  ]}
                   onPress={() => {
                     if (values?.kitchen_photo?.name) {
                       // setIsVisible(true)
                       // setPhoto([{ uri: values?.kitchen_photo?.uri }])
-                    }
-                    else {
-                      handleDocumentSelection("kitchen_photo")
+                    } else {
+                      handleDocumentSelection('kitchen_photo');
                     }
                   }}>
-                  {values?.kitchen_photo?.uri ?
+                  {values?.kitchen_photo?.uri ? (
                     <>
-                      <Text style={styles.add_button_text}>{values?.kitchen_photo?.name}</Text>
-                      <Entypo name="circle-with-cross" size={26} color={'red'} onPress={() => setValues({ ...values, kitchen_photo: {} })} />
+                      <Text style={styles.add_button_text}>
+                        {values?.kitchen_photo?.name}
+                      </Text>
+                      <Entypo
+                        name="circle-with-cross"
+                        size={26}
+                        color={'red'}
+                        onPress={() =>
+                          setValues({...values, kitchen_photo: {}})
+                        }
+                      />
                     </>
-                    :
+                  ) : (
                     <>
-                      <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                      <Text style={styles.add_button_text}>{t('Add Kitchen photo')}</Text>
+                      <Entypo
+                        name="upload-to-cloud"
+                        size={26}
+                        color={'black'}
+                      />
+                      <Text style={styles.add_button_text}>
+                        {t('Add Kitchen photo')}
+                      </Text>
                     </>
-                  }
+                  )}
                 </TouchableOpacity>
-                {errors?.kitchen_photo?.name && touched?.kitchen_photo?.name ?
-                  <Text style={[Styles.error, { marginLeft: 0, marginBottom: 0 }]}>{errors?.kitchen_photo?.name}</Text>
-                  : null
-                }
+                {errors?.kitchen_photo?.name && touched?.kitchen_photo?.name ? (
+                  <Text
+                    style={[Styles.error, {marginLeft: 0, marginBottom: 0}]}>
+                    {errors?.kitchen_photo?.name}
+                  </Text>
+                ) : null}
               </View>
             </View>
           </>
-          : null
-        }
+        ) : null}
         <MultiselectDropdown
-          containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-          data={housing_dropdown?.amenities.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
+          containerStyle={{marginTop: '5%', paddingTop: 0}}
+          data={housing_dropdown?.amenities.map(item => {
+            return {
+              name: item?.name?.[USER_PREFERRED_LANGUAGE],
+              key: item?._id,
+            };
+          })}
           setSelectedd={item => {
             setValues({
               ...values,
@@ -381,8 +552,16 @@ const HousePhoto = ({ navigation, route }) => {
           <Text style={Styles.error2}>{String(errors?.amenities)}</Text>
         )}
       </KeyboardAwareScrollView>
-      <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+      <View
+        style={[
+          Styles.bottomBtn,
+          {flexDirection: 'row', justifyContent: 'space-between'},
+        ]}>
+        <CustomButton
+          btnText={t('next')}
+          style={{width: '100%', height: 60}}
+          onPress={handleSubmit}
+        />
         {/* <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { }} btnStyle={{ color: 'black' }} /> */}
       </View>
       <ImageView
@@ -392,15 +571,15 @@ const HousePhoto = ({ navigation, route }) => {
         onRequestClose={() => setIsVisible(false)}
       />
     </View>
-  )
-}
+  );
+};
 
-export default HousePhoto
+export default HousePhoto;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   subArea: {
     alignSelf: 'center',
@@ -428,7 +607,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: '5%',
     gap: 12,
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
   },
   divider2: {
     // backgroundColor: 'grey',
@@ -443,7 +622,7 @@ const styles = StyleSheet.create({
     width: 46,
     resizeMode: 'contain',
     marginHorizontal: 12,
-    backgroundColor: 'red'
+    backgroundColor: 'red',
   },
   add_button: {
     borderColor: primaryColor,
@@ -455,12 +634,12 @@ const styles = StyleSheet.create({
     gap: 48,
     marginTop: 16,
     width: '100%',
-    paddingHorizontal: 22
+    paddingHorizontal: 22,
   },
   add_button_text: {
     color: '#000',
     fontSize: 16 / fontScale,
     fontFamily: fontFamilyMedium,
-    alignSelf: 'center'
-  }
-})
+    alignSelf: 'center',
+  },
+});

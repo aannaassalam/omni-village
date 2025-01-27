@@ -13,23 +13,36 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addHousingByUser } from '../../functions/housing';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
-import { addMobility, getMobilityDropdown } from '../../functions/mobility';
+import { addMobility, addMobilityByUser, editMobilityByUser, getMobilityByUser, getMobilityDropdown } from '../../functions/mobility';
 import { USER_PREFERRED_LANGUAGE } from '../../i18next';
 import { primaryColor } from '../../styles/colors';
 
 const Mobility = ({ navigation }) => {
     const { t } = useTranslation()
-
     const queryClient = useQueryClient()
     const { data: mobility, isLoading: isTypeLoading } = useQuery({
         queryKey: [`mobility`],
         queryFn: () => getMobilityDropdown(),
         refetchOnWindowFocus: true,
     })
+       const { data: get_mobility_by_user, isLoading, refetch } = useQuery({
+            queryKey: ['get_mobility_by_user'],
+            queryFn: () => getMobilityByUser(),
+            refetchOnWindowFocus: true,
+        })
     const { mutate: add_mobility_by_user } = useMutation({
         mutationKey: ['add_mobility_by_user'],
         mutationFn: async (data) => {
-            addMobility(data)
+            addMobilityByUser(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => { console.log("successsssss save", data), navigation.navigate('vehicleCount') },
+        onError: (error) => console.log("error save", error),
+    })
+    const { mutate: edit_mobility_by_user } = useMutation({
+        mutationKey: ['edit_mobility_by_user'],
+        mutationFn: async (data) => {
+            editMobilityByUser(data)
             queryClient.invalidateQueries()
         },
         onSuccess: (data) => { console.log("successsssss save", data), navigation.navigate('vehicleCount') },
@@ -38,7 +51,6 @@ const Mobility = ({ navigation }) => {
     const scheme = yup.object().shape({
         methods_of_mobility: yup.array().required(t('Methods of mobility is required')).min(1, t('Atleast one Methods of mobility is required')),
         access_to_public_transport: yup.string().required(t('Access to public transport is required')),
-        number_of_vehicles: yup.number().required(t('Number of vehicles is required')),
         vehicle_requirement: yup.string().required(t('Vehicle requirement is required'))
     });
     const {
@@ -54,7 +66,6 @@ const Mobility = ({ navigation }) => {
         initialValues: {
             methods_of_mobility: [],
             access_to_public_transport: false,
-            number_of_vehicles: '',
             vehicle_requirement: false
         },
         validationSchema: scheme,
@@ -63,14 +74,25 @@ const Mobility = ({ navigation }) => {
             let new_data = {
                 methods_of_mobility: values.methods_of_mobility,
                 access_to_public_transport: values.access_to_public_transport,
-                number_of_vehicles: parseInt(values.number_of_vehicles),
                 vehicle_requirement: values.vehicle_requirement
 
+            }
+            if (get_mobility_by_user){
+                edit_mobility_by_user({ ...new_data, mobility_by_user_id: get_mobility_by_user._id})
             }
             add_mobility_by_user(new_data)
         },
     });
-    if (isTypeLoading) {
+    useEffect(() => {
+        if (get_mobility_by_user) {
+            setValues({
+                methods_of_mobility: get_mobility_by_user.methods_of_mobility,
+                access_to_public_transport: get_mobility_by_user.access_to_public_transport,    
+                vehicle_requirement: get_mobility_by_user.vehicle_requirement    
+            })
+        }
+    }, [get_mobility_by_user])
+    if (isTypeLoading || isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -112,24 +134,6 @@ const Mobility = ({ navigation }) => {
                 {touched?.access_to_public_transport && errors?.access_to_public_transport && (
                     <Text style={Styles.error2}>{String(errors?.access_to_public_transport)}</Text>
                 )}
-                <Input
-                    label={t(
-                        `Number of Vehicles owned by your household`
-                    )}
-                    value={values?.number_of_vehicles}
-                    placeholder={'0'}
-                    fullLength={true}
-                    keyboardType="numeric"
-                    onChangeText={handleChange('number_of_vehicles')}
-                />
-                {errors.number_of_vehicles &&
-                    errors.number_of_vehicles && (
-                        <Text style={Styles.error2}>
-                            {
-                                errors.number_of_vehicles
-                            }
-                        </Text>
-                    )}
                 <CustomDropdown
                     data={
                         [{ label: 'Yes', value: true }, { label: 'No', value: false }]

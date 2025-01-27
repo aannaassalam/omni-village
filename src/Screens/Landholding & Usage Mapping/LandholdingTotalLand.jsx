@@ -9,14 +9,21 @@ import { Styles, width } from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
-import { addLandholdingByUser } from '../../functions/landholding';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { addLandholdingByUser, editLandholdingByUser, getLandholdingByUser } from '../../functions/landholding';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '../../Hooks/useUser';
 
 const LandholdingTotalLand = ({ navigation }) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const {data: user} = useUser()
+  const {
+    data: landholding
+  } = useQuery({
+    queryKey: ['landholding_user'],
+    queryFn: () => getLandholdingByUser(),
+    refetchOnWindowFocus: true,
+  });
   const { mutate: add_landholding_by_user } = useMutation({
     mutationKey: ['add_landholding_by_user'],
     mutationFn: async (data) => {
@@ -30,12 +37,25 @@ const LandholdingTotalLand = ({ navigation }) => {
     onError: (error) => console.log("error save", error),
     onSettled: () => { }
   })
+  const { mutate: edit_landholding_by_user } = useMutation({
+    mutationKey: ['edit_landholding_by_user'],
+    mutationFn: async (data) => {
+      editLandholdingByUser(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => {
+      console.log("successsssss edit save", data)
+      navigation.navigate('landSpecificationQuestioner')
+    },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { }
+  })
   const scheme = yup.object().shape({
-    total_numbers_of_lands: yup
-      .number()
-      .required(t('Total number of lands owned is required'))
-      .max(20, 'Total number of lands owned cannot be greater than 20!')
-      .min(1, 'At least one total number of lands owned is required'),
+    // total_numbers_of_lands: yup
+    //   .number()
+    //   .required(t('Total number of lands owned is required'))
+    //   .max(20, 'Total number of lands owned cannot be greater than 20!')
+    //   .min(1, 'At least one total number of lands owned is required'),
       land_requirements: yup.boolean().required(t('Land requirements is required')),
   });
   const {
@@ -49,19 +69,30 @@ const LandholdingTotalLand = ({ navigation }) => {
     setValues,
   } = useFormik({
     initialValues: {
-      total_numbers_of_lands: '',
+      // total_numbers_of_lands: '',
       land_requirements: false,
     },
     validationSchema: scheme,
     onSubmit: async values => {
       console.log(values);
       let new_data = {
-        total_numbers_of_lands: parseInt(values.total_numbers_of_lands),
         land_requirements: values.land_requirements
+       }
+       if (landholding?._id) {
+         edit_landholding_by_user({ ...new_data, landholding_by_user_id: landholding?._id, })
        }
       add_landholding_by_user(new_data)
     },
   });
+
+  useEffect(() => {
+    if (landholding?._id) {
+      setValues({
+        // total_numbers_of_lands: landholding?.total_numbers_of_lands,
+        land_requirements: landholding?.land_requirements,
+      })
+    }
+  }, [landholding])
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -71,7 +102,7 @@ const LandholdingTotalLand = ({ navigation }) => {
       />
       <ItemHeader title={t('landholding')} />
       <View style={styles.mainContainer}>
-        <Input
+        {/* <Input
           label={t('Total number of lands owned')}
           value={values.total_numbers_of_lands}
           placeholder={''}
@@ -81,7 +112,7 @@ const LandholdingTotalLand = ({ navigation }) => {
         />
         {touched?.total_numbers_of_lands && errors?.total_numbers_of_lands && (
           <Text style={Styles.error2}>{String(errors?.total_numbers_of_lands)}</Text>
-        )}
+        )} */}
         <SwitchButton
         nolabel={false}
         label={t('Do have any more land requirements?')}

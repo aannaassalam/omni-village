@@ -15,6 +15,7 @@ import { get_dropdown_data } from '../../functions/AuthScreens';
 import { getDemographic } from '../../functions/demographic';
 import { primaryColor } from '../../styles/colors';
 import { USER_PREFERRED_LANGUAGE } from '../../i18next';
+import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 
 const Demographic = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions();
@@ -24,9 +25,9 @@ const Demographic = ({ navigation, route }) => {
     queryKey: ['dropdown_data'],
     queryFn: get_dropdown_data,
   })
-  const {data: demographic_data, isLoading: demographic_loading} = useQuery({
+  const { data: demographic_data, isLoading: demographic_loading } = useQuery({
     queryKey: ['demographic_data'],
-    queryFn: ()=>getDemographic(demographic_id),
+    queryFn: () => getDemographic(demographic_id),
     enabled: !!demographic_id
   })
   const { t } = useTranslation()
@@ -35,9 +36,9 @@ const Demographic = ({ navigation, route }) => {
     diet: yup.string().required(t('diet is required')),
     height: yup.number().required(t('height is required')),
     weight: yup.number().required(t('weight is required')),
-    language_speak: yup.string().required(t('language speak is required')),
-    language_read: yup.string().required(t('language read is required')),
-    language_write: yup.string().required(t('language write is required')),
+    language_speak: yup.array().required(t('language speak is required')).min(1),
+    language_read: yup.array().required(t('language read is required')).min(1),
+    language_write: yup.array().required(t('language write is required')).min(1),
   });
   const {
     handleChange,
@@ -54,9 +55,9 @@ const Demographic = ({ navigation, route }) => {
       diet: '',
       height: '',
       weight: '',
-      language_speak: '',
-      language_read: '',
-      language_write: '',
+      language_speak: [],
+      language_read: [],
+      language_write: [],
     },
     validationSchema: scheme,
     onSubmit: async (values) => {
@@ -70,22 +71,22 @@ const Demographic = ({ navigation, route }) => {
       })
     },
   });
-  useEffect(()=>{
+  useEffect(() => {
     resetForm({
-      values:{
+      values: {
         marital_status: demographic_data?.data?.general_data?.marital_status?._id || '',
         diet: demographic_data?.data?.general_data?.diet?._id || '',
         height: String(demographic_data?.data?.general_data?.height || ''),
         weight: String(demographic_data?.data?.general_data?.weight || ''),
-        language_speak: demographic_data?.data?.language?.[0]?.language_speak?._id || '',
-        language_read: demographic_data?.data?.language?.[0]?.language_read?._id || '',
-        language_write: demographic_data?.data.language?.[0]?.language_write?._id || '',
+        language_speak: demographic_data?.data?.language?.[0]?.language_speak.map((i) => { return i?._id }) || [],
+        language_read: demographic_data?.data?.language?.[0]?.language_read?.map((i) => { return i?._id }) || [],
+        language_write: demographic_data?.data?.language?.[0]?.language_write?.map((i) => { return i?._id }) || [],
       }
     })
   }, [demographic_data])
-  if(dropdown_loading || demographic_loading){
-    return <View style={{flex:1, justifyContent:'center', alignSelf:'center'}}>
-      <ActivityIndicator size={'large'} color={primaryColor}/>
+  if (dropdown_loading || demographic_loading) {
+    return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+      <ActivityIndicator size={'large'} color={primaryColor} />
     </View>
   }
   return (
@@ -152,7 +153,7 @@ const Demographic = ({ navigation, route }) => {
         {touched?.weight && errors?.weight && (
           <Text style={Styles.error2}>{String(errors?.weight)}</Text>
         )}
-        <Customdropdown
+        {/* <Customdropdown
           data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
           value={values.language_speak}
           label={t('which language can you speak?')}
@@ -162,11 +163,25 @@ const Demographic = ({ navigation, route }) => {
               language_speak: value?.value,
             });
           }}
+        /> */}
+        <MultiselectDropdown
+          containerStyle={{
+            marginTop: '5%',
+            paddingTop: 0,
+          }}
+          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
+          setSelectedd={(item) =>{
+            console.log("speak", item)
+            setValues({ ...values, language_speak: item })
+          }
+          }
+          selectedd={values?.language_speak}
+          infoName={t('which language can you speak?')}
         />
         {touched?.language_speak && errors?.language_speak && (
           <Text style={Styles.error2}>{String(errors?.language_speak)}</Text>
         )}
-        <Customdropdown
+        {/* <Customdropdown
           data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
           value={values.language_read}
           label={t('which language can you read?')}
@@ -176,11 +191,23 @@ const Demographic = ({ navigation, route }) => {
               language_read: value?.value,
             });
           }}
+        /> */}
+        <MultiselectDropdown
+          containerStyle={{
+            marginTop: '5%',
+            paddingTop: 0,
+          }}
+          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
+          setSelectedd={(item) =>
+            setValues({ ...values, language_read: item })
+          }
+          selectedd={values?.language_read}
+          infoName={t('which language can you read?')}
         />
         {touched?.language_read && errors?.language_read && (
           <Text style={Styles.error2}>{String(errors?.language_read)}</Text>
         )}
-        <Customdropdown
+        {/* <Customdropdown
           data={dropdownData?.['language'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
           value={values.language_write}
           label={t('which language can you write?')}
@@ -190,6 +217,18 @@ const Demographic = ({ navigation, route }) => {
               language_write: value?.value,
             });
           }}
+        /> */}
+        <MultiselectDropdown
+          containerStyle={{
+            marginTop: '5%',
+            paddingTop: 0,
+          }}
+          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
+          setSelectedd={(item) =>
+            setValues({ ...values, language_write: item })
+          }
+          selectedd={values?.language_write}
+          infoName={t('which language can you write?')}
         />
         {touched?.language_write && errors?.language_write && (
           <Text style={Styles.error2}>{String(errors?.language_write)}</Text>

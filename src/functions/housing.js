@@ -26,6 +26,14 @@ export const addHousingByUser = async body => {
     return res.data;
 };
 
+export const editHousingByUser = async body => {
+    const res = await axiosInstance.put(
+        endpoints.housing.edit_housing_by_user,
+        body,
+    );
+    return res.data;
+};
+
 export const editHousingRequirement = async body => {
     console.log("bodyyyyy housing specification", body)
     const res = await axiosInstance.put(
@@ -34,7 +42,19 @@ export const editHousingRequirement = async body => {
     );
     return res.data;
 };
+export const getNumberOfHousing = async () => {
+    const res = await axiosInstance.get(
+        endpoints.housing.get_housing
+    );
+    return res.data;
+};
 
+export const deleteHousing = async (id) => {
+    const res = await axiosInstance.delete(
+        endpoints.housing.delete_housing + `id=${id}`
+    );
+    return res.data;
+};
 export const getHousingRequirement = async () => {
     const res = await axiosInstance.get(
         endpoints.housing.get_housing_requirement
@@ -55,9 +75,21 @@ export const editHousing = async body => {
     return res.data;
 };
 
-export const getHousing = async (id) => {
+export const addHousing = async body => {
+    console.log("bodyyyyy housing", body)
+    const res = await axiosInstance.post(
+        endpoints.housing.add_housing,
+        body, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+    );
+    return res.data;
+};
+export const getHousingById = async (id) => {
     const res = await axiosInstance.get(
-        endpoints.housing.get_housing + `?housing_id=${id}`
+        endpoints.housing.get_housing_details + `?housing_id=${id}`
     );
     return res.data;
 };

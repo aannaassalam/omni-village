@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import Input from '../../Components/Inputs/Input'
-import { editBusiness, getBusiness, getBusinessDropdown, getBusinessRequirement } from '../../functions/business'
+import { addBusiness, editBusiness, getBusiness, getBusinessById, getBusinessDropdown, getBusinessRequirement } from '../../functions/business'
 
 const BusinessRequirement = ({ navigation, route }) => {
     const { t } = useTranslation()
@@ -32,10 +32,22 @@ const BusinessRequirement = ({ navigation, route }) => {
         refetchOnWindowFocus: true,
     })
     const { data: business, isLoading:isBusinessLoading } = useQuery({
-        queryKey: ['business'],
-        queryFn: () => getBusiness(id),
+        queryKey: [`business_${id}`],
+        queryFn: () => getBusinessById(id),
         refetchOnWindowFocus: true,
     })
+    const { mutate: add_business } = useMutation({
+        mutationKey: ['add_business'],
+        mutationFn: async data => {
+          addBusiness(data);
+          queryClient.invalidateQueries();
+        },
+        onSuccess: data => {
+          console.log('successsssss save', data),
+              navigation.replace('businessCount');
+        },
+        onError: error => console.log('error save', error),
+      });
     const { mutate: edit_business } = useMutation({
         mutationKey: ['edit_business'],
         mutationFn: async (data) => {
@@ -145,7 +157,11 @@ const BusinessRequirement = ({ navigation, route }) => {
             ...businessEmployee, ...businessInvestment, ...businessName, ...values, 
             status:0
         }
+        if (id){
             edit_business({...new_data, business_id: id })
+        }else{
+            add_business(new_data)
+        }
 
     }
 
@@ -154,7 +170,11 @@ const BusinessRequirement = ({ navigation, route }) => {
             ...businessEmployee, ...businessInvestment, ...businessName, ...values, 
             status: 1
         }
-        edit_business({ ...new_data, business_id: id })
+        if (id) {
+            edit_business({ ...new_data, business_id: id })
+        } else {
+            add_business(new_data)
+        }
     }
     useEffect(() => {
         resetForm({

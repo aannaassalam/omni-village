@@ -1,24 +1,30 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity, useWindowDimensions, View, Image, Dimensions, ScrollView } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
-import { Box, Text } from '@react-native-material/core'
-import { useUser } from '../Hooks/useUser'
-import { AnimatedCircularProgress } from 'react-native-circular-progress'
-import { storage } from '../Helper/Storage';
-import CustomButton from '../Components/CustomButton/CustomButton'
-import { useTranslation } from 'react-i18next'
-import { borderColor, primaryColor, unSelected } from '../styles/colors'
-import { fontFamilyMedium } from '../styles/fontStyle'
-import { useQuery } from '@tanstack/react-query'
-import { getLandholdingByUser } from '../functions/landholding'
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+  Image,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Box, Text} from '@react-native-material/core';
+import {useUser} from '../Hooks/useUser';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import {storage} from '../Helper/Storage';
+import CustomButton from '../Components/CustomButton/CustomButton';
+import {useTranslation} from 'react-i18next';
+import {borderColor, primaryColor, unSelected} from '../styles/colors';
+import {fontFamilyMedium} from '../styles/fontStyle';
 
-const Home = ({ navigation }) => {
-  const { fontScale } = useWindowDimensions()
-  const styles = makeStyles(fontScale)
-  const { t } = useTranslation();
-  const [onItemSeleted, setOnItemSelected] = useState(null)
+const Home = ({navigation}) => {
+  const {fontScale} = useWindowDimensions();
+  const styles = makeStyles(fontScale);
+  const {t} = useTranslation();
+  const [onItemSeleted, setOnItemSelected] = useState(null);
 
-  const { data: user, isLoading } = useUser();
-
+  const {data: user, isLoading} = useUser();
 
   const data_available = useMemo(() => user, [user]);
 
@@ -54,12 +60,16 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('landholding'),
-      navigation: user?.is_landholding_data ?'landSpecificationQuestioner':'landholdingTotalLand',
+      navigation: user?.is_landholding_data
+        ? 'landSpecificationQuestioner'
+        : 'landholdingTotalLand',
       image: require('../../assets/landhold.png'),
     },
     {
       title: t('housing'),
-      navigation: user?.is_housing_data ? 'houseSpecificationQuestioner':'housing',
+      navigation: user?.is_housing_data
+        ? 'houseSpecificationQuestioner'
+        : 'housing',
       image: require('../../assets/housing.png'),
     },
     {
@@ -74,7 +84,7 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('mobility'),
-      navigation: user?.is_mobility_data?'vehicleCount':'mobility',
+      navigation: user?.is_mobility_data ? 'vehicleCount' : 'mobility',
       image: require('../../assets/mobility.png'),
     },
     {
@@ -89,7 +99,9 @@ const Home = ({ navigation }) => {
     },
     {
       title: t('business'),
-      navigation: user?.is_business_data?'businessCount':'businessCommercial',
+      navigation: user?.is_business_data
+        ? 'businessCount'
+        : 'businessCommercial',
       image: require('../../assets/business.png'),
     },
     // {
@@ -97,11 +109,9 @@ const Home = ({ navigation }) => {
     //   navigation: 'community',
     //   image: require('../../assets/community.png'),
     // },
-  ]
+  ];
   return (
-    <View
-      style={styles.container}
-      edges={['top', 'left', 'right']}>
+    <View style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView>
         <View style={styles.mainContainer}>
           <Box style={[styles.user]}>
@@ -124,13 +134,13 @@ const Home = ({ navigation }) => {
             <TouchableOpacity
               style={styles.usr_btn}
               onPress={() =>
-                navigation.navigate('registerdetails', { edit: true })
+                navigation.navigate('registerdetails', {edit: true})
               }>
               <Text style={styles.usr_btn_txt}>{user?.first_name}</Text>
               <Image
-                style={[styles.tinyLogo1, { width: 16, height: 16 }]}
+                style={[styles.tinyLogo1, {width: 16, height: 16}]}
                 source={require('../../assets/edit2.png')}
-              // height={100}
+                // height={100}
               />
             </TouchableOpacity>
             <Text variant="body1" style={styles.phone}>
@@ -160,7 +170,7 @@ const Home = ({ navigation }) => {
                   // marginRight: 40,
                 }}
               />
-              <Box style={[styles.usr_land, { paddingLeft: 17 }]}>
+              <Box style={[styles.usr_land, {paddingLeft: 17}]}>
                 <Text variant="body1" style={styles.usr_txt}>
                   {/* Used land */}
                   {t('used land')}
@@ -182,21 +192,51 @@ const Home = ({ navigation }) => {
           </Box>
           {ITEMS.map((item, i) => {
             return (
-              <TouchableOpacity onPress={() => { setOnItemSelected(i),navigation.navigate(item?.navigation) }} style={[styles?.itemContainer, { borderColor: onItemSeleted == i ? primaryColor : borderColor }]} key={i}>
-                <View style={[styles.itemImageContainer, { backgroundColor: onItemSeleted == i ? primaryColor : unSelected }]}>
-                  <Image source={item.image}
-                    style={styles.itemImage} />
+              <TouchableOpacity
+                onPress={() => {
+                  setOnItemSelected(i), navigation.navigate(item?.navigation);
+                }}
+                style={[
+                  styles?.itemContainer,
+                  {
+                    borderColor:
+                      onItemSeleted == i ? primaryColor : borderColor,
+                  },
+                ]}
+                key={i}>
+                <View
+                  style={[
+                    styles.itemImageContainer,
+                    {
+                      backgroundColor:
+                        onItemSeleted == i ? primaryColor : unSelected,
+                    },
+                  ]}>
+                  <Image source={item.image} style={styles.itemImage} />
                 </View>
                 <View style={styles.itemInnerContainer}>
-                  <Text style={[styles.itemTxt, { color: onItemSeleted == i ? primaryColor : unSelected }]}>{item?.title}</Text>
-                  <Image source={onItemSeleted == i ? require('../../assets/e4.png') : require('../../assets/e5.png')} style={{ alignSelf: 'center' }} />
+                  <Text
+                    style={[
+                      styles.itemTxt,
+                      {color: onItemSeleted == i ? primaryColor : unSelected},
+                    ]}>
+                    {item?.title}
+                  </Text>
+                  <Image
+                    source={
+                      onItemSeleted == i
+                        ? require('../../assets/e4.png')
+                        : require('../../assets/e5.png')
+                    }
+                    style={{alignSelf: 'center'}}
+                  />
                 </View>
               </TouchableOpacity>
-            )
+            );
           })}
         </View>
       </ScrollView>
-      <View style={{ marginTop: 'auto', marginBottom: 20 }}>
+      <View style={{marginTop: 'auto', marginBottom: 20}}>
         <CustomButton
           btnText={t('logout')}
           onPress={() => {
@@ -206,187 +246,191 @@ const Home = ({ navigation }) => {
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default Home
-const { width } = Dimensions.get('window')
-const makeStyles = fontScale => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 22
-  },
-  mainContainer: {
-    flex: 1,
-  },
-  circular: {
-    marginTop: -95,
-  },
-  user: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    marginBottom: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 70,
-    padding: 15,
-    borderRadius: 8,
-  },
-  usr_btn_txt: {
-    color: '#268C43',
-    fontWeight: 700,
-    fontSize: 13 / fontScale,
-    marginRight: 1,
-    marginLeft: 4,
-  },
-  phone: {
-    color: '#263238',
-    fontSize: 13 / fontScale,
-  },
-  user_name: {
-    backgroundColor: '#EB7735',
-    height: 85,
-    width: 85,
-    borderRadius: 85,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 'auto',
-    marginTop: -60,
-  },
-  usr_btn: {
-    backgroundColor: 'rgba(38, 140, 67, .2)',
-    borderRadius: 200,
-    // width: 75,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginVertical: 10,
-    padding: 5,
-    paddingHorizontal: 10,
-  },
-  user_name_txt: {
-    color: '#fff',
-    fontSize: 36 / fontScale,
-    fontWeight: 700,
-  },
-  user_land: {
-    flexDirection: 'row',
-    borderColor: '#ddd',
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 20,
-    width: '100%',
-  },
-  usr_txt: {
-    fontSize: 12 / fontScale,
-    color: '#263238',
-    marginBottom: 5,
-    fontFamily: 'ubuntu-regular',
-  },
-  land_txt: {
-    color: '#268C43',
-    fontSize: 12 / fontScale,
-    fontFamily: 'ubuntu-medium',
-  },
-  land_txt2: {
-    color: '#E5C05E',
-    fontSize: 12 / fontScale,
-    fontFamily: 'ubuntu-medium',
-  },
+export default Home;
+const {width} = Dimensions.get('window');
+const makeStyles = fontScale =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      paddingHorizontal: 22,
+    },
+    mainContainer: {
+      flex: 1,
+    },
+    circular: {
+      marginTop: -95,
+    },
+    user: {
+      borderColor: '#ddd',
+      borderWidth: 1,
+      marginBottom: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 70,
+      padding: 15,
+      borderRadius: 8,
+    },
+    usr_btn_txt: {
+      color: '#268C43',
+      fontWeight: 700,
+      fontSize: 13 / fontScale,
+      marginRight: 1,
+      marginLeft: 4,
+    },
+    phone: {
+      color: '#263238',
+      fontSize: 13 / fontScale,
+    },
+    user_name: {
+      backgroundColor: '#EB7735',
+      height: 85,
+      width: 85,
+      borderRadius: 85,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 'auto',
+      marginTop: -60,
+    },
+    usr_btn: {
+      backgroundColor: 'rgba(38, 140, 67, .2)',
+      borderRadius: 200,
+      // width: 75,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      marginVertical: 10,
+      padding: 5,
+      paddingHorizontal: 10,
+    },
+    user_name_txt: {
+      color: '#fff',
+      fontSize: 36 / fontScale,
+      fontWeight: 700,
+    },
+    user_land: {
+      flexDirection: 'row',
+      borderColor: '#ddd',
+      borderWidth: 1,
+      padding: 8,
+      borderRadius: 8,
+      marginTop: 20,
+      width: '100%',
+    },
+    usr_txt: {
+      fontSize: 12 / fontScale,
+      color: '#263238',
+      marginBottom: 5,
+      fontFamily: 'ubuntu-regular',
+    },
+    land_txt: {
+      color: '#268C43',
+      fontSize: 12 / fontScale,
+      fontFamily: 'ubuntu-medium',
+    },
+    land_txt2: {
+      color: '#E5C05E',
+      fontSize: 12 / fontScale,
+      fontFamily: 'ubuntu-medium',
+    },
 
-  home_box: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#268C43',
-    paddingVertical: 8,
-    paddingLeft: 8,
-    paddingRight: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 16,
-  },
-  home_box_lft_upr: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  usr_land: {
-    flex: 1,
-    padding: 10,
-  },
-  hme_box_txt: {
-    color: '#268C43',
-    fontSize: 16 / fontScale,
-    fontWeight: 500,
-    marginLeft: 20,
-  },
-  hme_box_txt2: {
-    color: '#263238',
-    fontSize: 16 / fontScale,
-    fontWeight: 500,
-    marginLeft: 20,
-  },
-  hme_box_lft: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    borderRadius: 5,
-    backgroundColor: '#22863F',
-    // backgroundColor: '#22863e58',
+    home_box: {
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#268C43',
+      paddingVertical: 8,
+      paddingLeft: 8,
+      paddingRight: 20,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginBottom: 16,
+    },
+    home_box_lft_upr: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    usr_land: {
+      flex: 1,
+      padding: 10,
+    },
+    hme_box_txt: {
+      color: '#268C43',
+      fontSize: 16 / fontScale,
+      fontWeight: 500,
+      marginLeft: 20,
+    },
+    hme_box_txt2: {
+      color: '#263238',
+      fontSize: 16 / fontScale,
+      fontWeight: 500,
+      marginLeft: 20,
+    },
+    hme_box_lft: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      borderRadius: 5,
+      backgroundColor: '#22863F',
+      // backgroundColor: '#22863e58',
 
-    height: 80,
-    width: 80,
-  },
-  hme_box_lft2: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    borderRadius: 5,
-    backgroundColor: '#263238',
+      height: 80,
+      width: 80,
+    },
+    hme_box_lft2: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      borderRadius: 5,
+      backgroundColor: '#263238',
 
-    height: 80,
-    width: 80,
-  },
-  itemContainer: {
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    // justifyContent:'space-between',
-    gap: 12,
-    borderColor: borderColor,
-    borderWidth: 1,
-    borderRadius: 6,
-    width: '100%',
-    marginVertical: 8,
-  },
-  itemInnerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  itemImage: {
-    height: 38, width: 38, alignSelf:'center'
-  },
-  arrowIcon: {
-    height: 8, width: 8
-  },
-  itemImageContainer: {
-    backgroundColor: unSelected,
-    borderRadius: 6,
-    padding: 14,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    height: 80,
-    width: 80
-  },
-  itemTxt: {
-    color: unSelected,
-    fontSize: 16 / fontScale,
-    fontFamily: fontFamilyMedium,
-    alignSelf: 'center',
-    width: '65%',
-    flexWrap: 'wrap'
-  },
-})
+      height: 80,
+      width: 80,
+    },
+    itemContainer: {
+      padding: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      // justifyContent:'space-between',
+      gap: 12,
+      borderColor: borderColor,
+      borderWidth: 1,
+      borderRadius: 6,
+      width: '100%',
+      marginVertical: 8,
+    },
+    itemInnerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    itemImage: {
+      height: 38,
+      width: 38,
+      alignSelf: 'center',
+    },
+    arrowIcon: {
+      height: 8,
+      width: 8,
+    },
+    itemImageContainer: {
+      backgroundColor: unSelected,
+      borderRadius: 6,
+      padding: 14,
+      justifyContent: 'center',
+      alignSelf: 'center',
+      height: 80,
+      width: 80,
+    },
+    itemTxt: {
+      color: unSelected,
+      fontSize: 16 / fontScale,
+      fontFamily: fontFamilyMedium,
+      alignSelf: 'center',
+      width: '65%',
+      flexWrap: 'wrap',
+    },
+  });

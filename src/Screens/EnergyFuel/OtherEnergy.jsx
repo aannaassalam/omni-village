@@ -96,7 +96,7 @@ const OtherEnergy = ({ navigation, route }) => {
             }
         },
     });
-  
+
     const handleFieldChange = (index, field, value) => {
         const newDetailsOfLand = [...values.source_of_fuels_used];
         newDetailsOfLand[index][field] = value;
@@ -162,7 +162,7 @@ const OtherEnergy = ({ navigation, route }) => {
         })
         setSelectedStatus(get_type?.source_of_fuels_used.map(item => item.type) || [])
     }, [get_type])
-    if (isTypeLoading ||  isDropdownLoading) {
+    if (isTypeLoading || isDropdownLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -183,12 +183,12 @@ const OtherEnergy = ({ navigation, route }) => {
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                     data={[{
-                        name:'keyboard',
+                        name: 'keyboard',
                         key: '6736117ecb51156c2f92383e'
                     }, {
-                            name: 'mouse',
+                        name: 'mouse',
                         key: '6736117ecb51156c2f52383e'
-                        }]}
+                    }]}
                     setSelectedd={handleStatusChange}
                     selectedd={selectedStatus}
                     infoName={t('Other sources of fuels used')}
@@ -201,7 +201,9 @@ const OtherEnergy = ({ navigation, route }) => {
                                 <>
                                     <MultiselectDropdown
                                         containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                                        data={[
+                                        data={energy?.other_source_purpose?.length > 0 ? energy?.other_source_purpose.map((item) => {
+                                            return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                        }) : [
                                             { name: 'Title', key: '6736117ecb51156c2f52683e' }
                                         ]}
                                         setSelectedd={(value) => {
@@ -277,15 +279,15 @@ const OtherEnergy = ({ navigation, route }) => {
                                     />
                                     {errors.source_of_fuels_used &&
                                         errors.source_of_fuels_used[index]
-                                        ?.expenditure && (
+                                            ?.expenditure && (
                                             <Text style={Styles.error2}>
                                                 {
-                                                errors.source_of_fuels_used[index]
-                                                    .expenditure
+                                                    errors.source_of_fuels_used[index]
+                                                        .expenditure
                                                 }
                                             </Text>
                                         )}
-                                    
+
                                 </>
                             ))}
                         </View>

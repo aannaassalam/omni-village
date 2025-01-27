@@ -12,7 +12,7 @@ import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
 import { borderColor } from '../../styles/colors'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import PopupModal from '../../Components/Popups/PopupModal'
-import { editHousing, getHousingDropdown } from '../../functions/housing'
+import { addHousing, editHousing, getHousingDropdown } from '../../functions/housing'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
@@ -36,6 +36,18 @@ const HouseholdRequirement = ({ navigation, route }) => {
         },
         onSuccess: (data) => { 
             navigation.replace('houseSpecificationQuestioner') 
+        },
+        onError: (error) => console.log("error save", error),
+        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    })
+    const { mutate: add_housing } = useMutation({
+        mutationKey: ['add_housing'],
+        mutationFn: async (data) => {
+            addHousing(data)
+            queryClient.invalidateQueries()
+        },
+        onSuccess: (data) => {
+            navigation.replace('houseSpecificationQuestioner')
         },
         onError: (error) => console.log("error save", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
@@ -89,7 +101,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
         if (house_id) {
             edit_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status: 0, housing_id: house_id }))
         } else{
-            edit_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status: 0, housing_id: house_id }))
+            add_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status: 0 }))
         }
     }
 
@@ -97,21 +109,22 @@ const HouseholdRequirement = ({ navigation, route }) => {
         if (house_id) {
             edit_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status:1, housing_id: house_id }))
         } else {
-            edit_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status: 1, housing_id: house_id }))
+            add_housing(jsonToFormdata({ ...housingData, ...housingPhoto, ...values, status: 1 }))
         }
     }
     useEffect(()=>{
         resetForm({
             values:{
-                equipment: housing_data.equipment,
-                furnishing: housing_data.furnishing,
-                renovation_requirement: housing_data.renovation_requirement,
-                renovation_urgency: housing_data.renovation_urgency,
-                expansion_requirement: housing_data.expansion_requirement,
-                expansion_urgency: housing_data.expansion_urgency,
+                equipment: housing_data?.equipment || [],
+                furnishing: housing_data?.furnishing || [],
+                renovation_requirement: housing_data?.renovation_requirement || false,
+                renovation_urgency: housing_data?.renovation_urgency|| '',
+                expansion_requirement: housing_data?.expansion_requirement || false,
+                expansion_urgency: housing_data?.expansion_urgency || '',
             }
         })
     }, [housing_data])
+    console.log("hosususu", housingPhoto)
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -169,7 +182,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
                     )}
                     <MultiselectDropdown
                         containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                        data={housing_dropdown?.furnishing.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } })}
+                        data={housing_dropdown?.furnishing?housing_dropdown?.furnishing.map((item) => { return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id } }):[]}
                         setSelectedd={item => {
                             setValues({
                                 ...values,

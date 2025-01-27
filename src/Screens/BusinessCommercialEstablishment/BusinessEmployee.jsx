@@ -15,7 +15,7 @@ import AcresElement from '../../Components/ui/AcresElement';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import { primaryColor } from '../../styles/colors';
-import { getBusiness, getBusinessDropdown } from '../../functions/business';
+import { getBusiness, getBusinessById, getBusinessDropdown } from '../../functions/business';
 import { useQuery } from '@tanstack/react-query';
 
 const BusinessEmployee = ({ navigation, route }) => {
@@ -28,8 +28,8 @@ const BusinessEmployee = ({ navigation, route }) => {
         refetchOnWindowFocus: true,
     })
     const { data: business, isLoading: isBusinessLoading } = useQuery({
-        queryKey: ['business'],
-        queryFn: () => getBusiness(id),
+        queryKey: [`business_${id}`],
+        queryFn: () => getBusinessById(id),
         refetchOnWindowFocus: true,
     })
     const scheme = yup.object().shape({
@@ -178,13 +178,13 @@ const BusinessEmployee = ({ navigation, route }) => {
                     </View>
                 </View>
                 <CustomDropdown
-                    data={
+                    data={business_dropdown?.legal_structure?
                         business_dropdown?.legal_structure.map((item) => {
                             return {
                                 label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
                             }
-                        })
-                        // [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                        }) :
+                        [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
                     }
                     value={values?.legal_structure}
                     label={t('Legal structure')}

@@ -152,7 +152,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                 const { children_playground } = this.parent;
                 if (children_playground) {
                     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
-                    return value.length > 0;
+                        return value.length > 0;
                     }
                     return false;
                 }
@@ -168,7 +168,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                 console.log("seniel ", senile_center)
                 if (senile_center) {
                     if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
-                    return value.length > 0;
+                        return value.length > 0;
                     }
                     return false;
                 }
@@ -215,36 +215,36 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
 
     });
     console.log("errroo", errors)
-    useEffect(()=>{
+    useEffect(() => {
         resetForm({
-            values:{
-                street_light:data?.street_light|| false,
+            values: {
+                street_light: data?.street_light || false,
                 solar_electric: data?.solar_electric || '',
                 broadband_internet: data?.broadband_internet || false,
-                how_many_provider: data?.how_many_provider ||[],
-                methods_of_using: data?.methods_of_using ||[],
-                bandwidth: data?.bandwidth ||[],
-                stability: data?.stability ||[],
+                how_many_provider: data?.how_many_provider || [],
+                methods_of_using: data?.methods_of_using || [],
+                bandwidth: data?.bandwidth || [],
+                stability: data?.stability || [],
                 burial_ground: data?.burial_ground || false,
                 how_far_from_village_burial_ground: data?.how_far_from_village_burial_ground || '',
                 animal_shelters: data?.animal_shelters || false,
                 how_far_from_village_animal_shelter: data?.how_far_from_village_animal_shelter || '',
-                animal_shelter_type: data?.animal_shelter_type ||[],
+                animal_shelter_type: data?.animal_shelter_type || [],
                 parking: data?.parking || false,
                 capacity: data?.capacity || '',
                 children_playground: data?.children_playground || false,
                 children_playground_type: data?.children_playground_type || [],
                 senile_center: data?.senile_center || false,
-                senile_center_type: data?.senile_center_type ||[],
+                senile_center_type: data?.senile_center_type || [],
             }
         })
-    },[data])
+    }, [data])
     if (isLoading) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-          <ActivityIndicator size={'large'} color={primaryColor} />
-        </View>
-      );
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+                <ActivityIndicator size={'large'} color={primaryColor} />
+            </View>
+        );
     }
     return (
         <View style={styles.container}>
@@ -280,8 +280,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <CustomDropdown
                                 data={
                                     get_moderator_community_dropdown?.type_of_street_lights.map((item) => {
-                                                  return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
-                                                })
+                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                    })
                                 }
                                 value={values?.solar_electric}
                                 label={t('Solar or Electric')}
@@ -296,7 +296,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 touched.solar_electric && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.solar_electric
+                                            errors.solar_electric
                                         }
                                     </Text>
                                 )}
@@ -326,8 +326,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={get_moderator_community_dropdown?.no_of_broadband_providers.map((item) => {
-                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                              })}
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, how_many_provider: value });
                                 }}
@@ -338,15 +338,15 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 touched.how_many_provider && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.how_many_provider
+                                            errors.how_many_provider
                                         }
                                     </Text>
                                 )}
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={get_moderator_community_dropdown?.method_of_broadband.map((item) => {
-                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                              })}
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, methods_of_using: value });
                                 }}
@@ -357,7 +357,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 touched.methods_of_using && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.methods_of_using
+                                            errors.methods_of_using
                                         }
                                     </Text>
                                 )}
@@ -425,8 +425,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <CustomDropdown
                                 data={
                                     get_moderator_community_dropdown?.distance_of_burial_cremation.map((item) => {
-                                                 return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
-                                               })
+                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                    })
                                 }
                                 value={values?.how_far_from_village_burial_ground}
                                 label={t('How far from village')}
@@ -494,8 +494,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={get_moderator_community_dropdown?.type_of_animal_shelters.map((item) => {
-                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                              })}
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, animal_shelter_type: value });
                                 }}
@@ -536,8 +536,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <CustomDropdown
                                 data={
                                     get_moderator_community_dropdown?.capacity_of_parking.map((item) => {
-                                                  return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
-                                                })
+                                        return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                                    })
                                 }
                                 value={values?.capacity}
                                 label={t('Capacity')}
@@ -582,8 +582,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={get_moderator_community_dropdown?.type_of_children_playground.map((item) => {
-                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                              })}
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, children_playground_type: value });
                                 }}
@@ -594,7 +594,7 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                                 touched.children_playground_type && (
                                     <Text style={Styles.error2}>
                                         {
-                                        errors.children_playground_type
+                                            errors.children_playground_type
                                         }
                                     </Text>
                                 )}
@@ -624,8 +624,8 @@ const OfficerCommunityStreet = ({ navigation, route }) => {
                             <MultiselectDropdown
                                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                                 data={get_moderator_community_dropdown?.type_of_senile_center.map((item) => {
-                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                              })}
+                                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                                })}
                                 setSelectedd={(value) => {
                                     setValues({ ...values, senile_center_type: value });
                                 }}

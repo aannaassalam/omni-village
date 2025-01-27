@@ -8,8 +8,6 @@ import CustomButton from '../Components/CustomButton/CustomButton'
 import { useTranslation } from 'react-i18next'
 import { borderColor, primaryColor, unSelected } from '../styles/colors'
 import { fontFamilyMedium } from '../styles/fontStyle'
-import { useQuery } from '@tanstack/react-query'
-import { getLandholdingByUser } from '../functions/landholding'
 
 const OfficerHome = ({ navigation, route }) => {
   const { fontScale } = useWindowDimensions()

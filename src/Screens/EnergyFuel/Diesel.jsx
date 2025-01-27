@@ -89,9 +89,9 @@ const Diesel = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            if(selectedStatus.length > 0){
+            if (selectedStatus.length > 0) {
                 setSavepopup(true)
-            }else{
+            } else {
                 ToastAndroid.show("Please select one purpose", ToastAndroid.BOTTOM)
             }
         },
@@ -131,7 +131,7 @@ const Diesel = ({ navigation, route }) => {
         if (get_type?._id) {
             edit_petrol_diesel({ ...new_data, energy_id: get_type._id })
         } else {
-            add_petrol_diesel({...new_data})
+            add_petrol_diesel({ ...new_data })
         }
     }
 
@@ -146,7 +146,7 @@ const Diesel = ({ navigation, route }) => {
         if (get_type?._id) {
             edit_petrol_diesel({ ...new_data, energy_id: get_type._id })
         } else {
-            add_petrol_diesel({...new_data})
+            add_petrol_diesel({ ...new_data })
         }
     }
     useEffect(() => {
@@ -164,7 +164,7 @@ const Diesel = ({ navigation, route }) => {
         })
         setSelectedStatus(get_type?.purpose_petrol_used_for.map(item => item.type) || [])
     }, [get_type])
-    if (isTypeLoading||isDropdownLoading) {
+    if (isTypeLoading || isDropdownLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
                 <ActivityIndicator size={'large'} color={primaryColor} />
@@ -240,13 +240,17 @@ const Diesel = ({ navigation, route }) => {
                             <View style={styles.quantityContainer}>
                                 {values.purpose_petrol_used_for.map((item, index) => (
                                     <>
-                                        <PurposeInput title={`${t('Quantity')} ${index + 1}`} value={item.quantity} onChangeText={text =>
-                                            handleFieldChange(
-                                                index,
-                                                'quantity',
-                                                parseInt(text),
-                                            )
-                                        } unit={'Litre'}/>
+                                        <PurposeInput title={`${energy?.purpose_diesel.find((i) => item?.type == i?._id) ?
+                                            energy?.purpose_diesel.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE]
+                                            : item?.type}`}
+                                            value={item.quantity}
+                                            onChangeText={text =>
+                                                handleFieldChange(
+                                                    index,
+                                                    'quantity',
+                                                    parseInt(text),
+                                                )
+                                            } unit={'Litre'} />
                                         {errors.purpose_petrol_used_for &&
                                             errors.purpose_petrol_used_for[index]
                                                 ?.quantity && (

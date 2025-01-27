@@ -93,11 +93,7 @@ const KitchenItems = ({ navigation, route }) => {
         validationSchema: scheme,
         onSubmit: async (values) => {
             console.log(values);
-            if (selectedStatus.length > 0) {
-                setSavepopup(true)
-            } else {
-                ToastAndroid.show("Please select one purpose", ToastAndroid.BOTTOM)
-            }
+            setSavepopup(true)
         },
     });
     const handleFieldChange = (index, field, value) => {

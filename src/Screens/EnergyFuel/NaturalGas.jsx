@@ -241,7 +241,9 @@ const NaturalGas = ({ navigation, route }) => {
               <View style={styles.quantityContainer}>
                 {values.purpose_petrol_used_for.map((item, index) => (
                   <>
-                    <PurposeInput title={`${t('Quantity')} ${index + 1}`} value={item.quantity} onChangeText={text =>
+                    <PurposeInput title={`${energy?.purpose_natural_gas.find((i) => item?.type == i?._id) ?
+                      energy?.purpose_natural_gas.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE]
+                                                                : item?.type}`} value={item.quantity} onChangeText={text =>
                       handleFieldChange(
                         index,
                         'quantity',

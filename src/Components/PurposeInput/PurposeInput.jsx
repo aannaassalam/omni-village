@@ -6,21 +6,21 @@ import Input from '../Inputs/Input'
 import AcresElement from '../ui/AcresElement'
 import { primaryColor } from '../../styles/colors'
 
-const PurposeInput = ({ title, onChangeText, value, unit, placeholder }) => {
+const PurposeInput = ({ title, onChangeText, value, unit, placeholder, isRight }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headingText}>{title}</Text>
       <Input
-      fullLength={false}
-      placeholder={placeholder? placeholder: 'Enter a value'}
-      noLabel={true}
-      main_width={'87%'}
-      onChangeText={onChangeText}
-              value={value}
-              keyboardType="numeric"
-              isRight={
-                  <AcresElement title={unit} />
-              }
+        fullLength={false}
+        placeholder={placeholder ? placeholder : 'Enter a value'}
+        noLabel={true}
+        main_width={'87%'}
+        onChangeText={onChangeText}
+        value={value}
+        keyboardType="numeric"
+        isRight={isRight ? isRight:
+          <AcresElement title={unit} />
+        }
       />
     </View>
   )
@@ -29,17 +29,19 @@ const PurposeInput = ({ title, onChangeText, value, unit, placeholder }) => {
 export default PurposeInput
 
 const styles = StyleSheet.create({
-    container:{
-        flexDirection:'row',
-        alignItems:'center',
-        gap:12,
-        marginVertical: 8,
-        justifyContent:'space-between'
-    },
-    headingText:{
-        fontFamily: fontFamilyMedium,
-        fontSize: 14 / fontScale,
-        color: primaryColor,
-        marginTop: 5,
-    }
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginVertical: 8,
+    justifyContent: 'space-between'
+  },
+  headingText: {
+    fontFamily: fontFamilyMedium,
+    fontSize: 14 / fontScale,
+    color: primaryColor,
+    marginTop: 5,
+    textTransform: 'capitalize',
+    width: '20%'
+  }
 })

@@ -1,11 +1,15 @@
-Dropdown data everywhere needs to be capitalized.
-Collapsible needs to opened by default specially for nested input in multiselect. (done)
-In some place fields are showing undefined . 
-If i am selecting that from multiselect dropdown then new collapsible is creating over there selected item name should be visible.
-
-1. community,
-2. sports
-3. street
-4. mobility
+1. demographic -> language (speak,read,write) -> Array
+2. demographic -> occupation -> Array
+3. Energy -> Others -> Other source of fuels (dropdown data missing)[Discuss with tamaghna]
+4. Energy -> Others -> Other source of fuels (Others(specify) add option in dropdown)[Discuss with tamaghna]
+5. Energy -> Others -> Other source of fuels -> purpose (Dropdown data missing)[Discuss with tamaghna]
+6. Others personal -> Personal care item -> items_produces (make it optional i will handle validation from frontend, even though after passing blank string inside array its not working )
+7. Business -> Add extra field named as "raw_consumption_unit" (string)
+8. Extra fields for names in the below modules
+   a. Landholding -> land_name
+9. Edit option for the below modules
+   a. Housing -> edit number of houses
+   b. Business -> edit number of business
+   c. Landholding -> edit number of lands
 
 Officer Phone Number - 9856329586

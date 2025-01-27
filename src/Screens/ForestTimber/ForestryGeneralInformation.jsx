@@ -60,7 +60,15 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
   })
   const scheme = yup.object().shape({
     land_owned_under_forest_cover: yup.string().required(t('Land owned under forest cover is required')),
-    timber_logs_harvested: yup.number().required(t('Number logs is required')),
+    timber_logs_harvested: yup.number().required(t('Number logs is required')).test(
+      'logs-match-sum',
+      t('Timber logs harvested must equal the sum of own forest cover land and community forest'),
+      function (value) {
+        const { own_forest_cover_land, community_forest } = this.parent;
+        const expectedValue = (own_forest_cover_land || 0) + (community_forest || 0);
+        return value === expectedValue;
+      }
+    ),
     own_forest_cover_land: yup.number().required(t('Own forest cover land is required')),
     community_forest: yup.number().required(t('Community forest is required')),
     other_produced_harvested_from_forest: yup.array().of(
@@ -70,7 +78,7 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
         purpose: yup.array().required(t('Purpose is required')).min(1, t('Atleast one purpose is required')),
       })
     ).min(1, t('Atleast one other produce harvested required'))
-  });
+  })
   const {
     handleChange,
     handleSubmit,

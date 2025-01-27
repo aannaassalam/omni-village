@@ -151,6 +151,14 @@ const OfficerBusiness = ({ navigation, route }) => {
       setCollapseStates(Array(values?.how_many_establishment?.length).fill(true));
     }
   }, [values?.how_many_establishment]);
+  const toggleCollapse = (index) => {
+    setCollapseStates((prevStates) => {
+      // Create a new array to avoid mutating the state directly
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index]; // Toggle the specific index
+      return newStates;
+    });
+  };
   useEffect(() => {
     resetForm({
       values: {

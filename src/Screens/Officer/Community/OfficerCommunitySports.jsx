@@ -222,31 +222,31 @@ const OfficerCommunitySports = ({ navigation, route }) => {
     },
 
   });
-  useEffect(()=>{
+  useEffect(() => {
     resetForm({
-      values:{
+      values: {
         sports: data?.sports || false,
-        kind_of_sports: data?.kind_of_sports ||[],
+        kind_of_sports: data?.kind_of_sports || [],
         spiritual_retreats: data?.spiritual_retreats || false,
         how_frequently: data?.how_frequently || '',
         spiritual_sanctums: data?.spiritual_sanctums || false,
-        how_many_sanctums: data?.how_many_sanctums ||[],
+        how_many_sanctums: data?.how_many_sanctums || [],
         post_office: data?.post_office || false,
-        how_many_post_offices: data?.how_many_post_offices ||[],
+        how_many_post_offices: data?.how_many_post_offices || [],
         how_far_from_village_offices: data?.how_far_from_village_offices || '',
         sewage_treatment_facility: data?.sewage_treatment_facility || false,
-        how_many_sewage_treatment: data?.how_many_sewage_treatment ||[],
-        sewage_type: data?.sewage_type ||[],
+        how_many_sewage_treatment: data?.how_many_sewage_treatment || [],
+        sewage_type: data?.sewage_type || [],
         composing_facility: data?.composing_facility || false,
-        how_many_composing_facility: data?.how_many_composing_facility ||[],
-        composing_type: data?.composing_type ||[],
+        how_many_composing_facility: data?.how_many_composing_facility || [],
+        composing_type: data?.composing_type || [],
         recycling: data?.recycling || false,
-        recycling_type: data?.recycling_type ||[],
+        recycling_type: data?.recycling_type || [],
         water_segregation: data?.water_segregation || false,
-        level_of_segregation: data?.level_of_segregation ||[],
+        level_of_segregation: data?.level_of_segregation || [],
       }
     })
-  },[data])
+  }, [data])
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -288,8 +288,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.kind_of_sports.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, kind_of_sports: value });
                 }}
@@ -300,7 +300,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.kind_of_sports && (
                   <Text style={Styles.error2}>
                     {
-                    errors.kind_of_sports
+                      errors.kind_of_sports
                     }
                   </Text>
                 )}
@@ -330,8 +330,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <CustomDropdown
                 data={
                   get_moderator_community_dropdown?.frequency_of_spiritual_retreats.map((item) => {
-                                                return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
-                                              })
+                    return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                  })
                 }
                 value={values?.how_frequently}
                 label={t('How frequently ?')}
@@ -346,7 +346,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.how_frequently && (
                   <Text style={Styles.error2}>
                     {
-                    errors.how_frequently
+                      errors.how_frequently
                     }
                   </Text>
                 )}
@@ -376,8 +376,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.no_of_spiritual_sanctums.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, how_many_sanctums: value });
                 }}
@@ -388,7 +388,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.how_many_sanctums && (
                   <Text style={Styles.error2}>
                     {
-                    errors.how_many_sanctums
+                      errors.how_many_sanctums
                     }
                   </Text>
                 )}
@@ -418,8 +418,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.no_of_post_office.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, how_many_post_offices: value });
                 }}
@@ -430,15 +430,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.how_many_post_offices && (
                   <Text style={Styles.error2}>
                     {
-                    errors.how_many_post_offices
+                      errors.how_many_post_offices
                     }
                   </Text>
                 )}
               <CustomDropdown
                 data={
                   get_moderator_community_dropdown?.post_office_distance.map((item) => {
-                               return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
-                             })
+                    return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id }
+                  })
                 }
                 value={values?.how_far_from_village_offices}
                 label={t('How far from village')}
@@ -478,8 +478,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.no_of_sewage_treatment_facility.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, how_many_sewage_treatment: value });
                 }}
@@ -490,15 +490,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.how_many_sewage_treatment && (
                   <Text style={Styles.error2}>
                     {
-                    errors.how_many_sewage_treatment
+                      errors.how_many_sewage_treatment
                     }
                   </Text>
                 )}
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.types_of_sewage_treatment_facility.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, sewage_type: value });
                 }}
@@ -509,7 +509,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.sewage_type && (
                   <Text style={Styles.error2}>
                     {
-                    errors.sewage_type
+                      errors.sewage_type
                     }
                   </Text>
                 )}
@@ -539,8 +539,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.no_of_composting_facility.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, how_many_composing_facility: value });
                 }}
@@ -551,15 +551,15 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.how_many_composing_facility && (
                   <Text style={Styles.error2}>
                     {
-                    errors.how_many_composing_facility
+                      errors.how_many_composing_facility
                     }
                   </Text>
                 )}
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.types_of_composting_facility.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, composing_type: value });
                 }}
@@ -570,7 +570,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.composing_type && (
                   <Text style={Styles.error2}>
                     {
-                    errors.composing_type
+                      errors.composing_type
                     }
                   </Text>
                 )}
@@ -600,8 +600,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.types_of_recycling_facility.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, recycling_type: value });
                 }}
@@ -612,7 +612,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.recycling_type && (
                   <Text style={Styles.error2}>
                     {
-                    errors.recycling_type
+                      errors.recycling_type
                     }
                   </Text>
                 )}
@@ -642,8 +642,8 @@ const OfficerCommunitySports = ({ navigation, route }) => {
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
                 data={get_moderator_community_dropdown?.level_of_waste_segregation.map((item) => {
-                                                                                                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                                                                                              })}
+                  return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                })}
                 setSelectedd={(value) => {
                   setValues({ ...values, level_of_segregation: value });
                 }}
@@ -654,7 +654,7 @@ const OfficerCommunitySports = ({ navigation, route }) => {
                 touched.level_of_segregation && (
                   <Text style={Styles.error2}>
                     {
-                    errors.level_of_segregation
+                      errors.level_of_segregation
                     }
                   </Text>
                 )}
