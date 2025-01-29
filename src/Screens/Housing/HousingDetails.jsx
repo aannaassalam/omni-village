@@ -233,7 +233,7 @@ const HousingDetails = ({navigation, route}) => {
               fullLength={true}
               keyboardType="numeric"
               onChangeText={handleChange('land_utilised_for_family_housing')}
-              isRight={<AcresElement title={user?.land_measurement_symbol} />}
+              isRight={<AcresElement title={'sq ft'} />}
             />
             {touched?.land_utilised_for_family_housing &&
               errors?.land_utilised_for_family_housing && (
@@ -249,7 +249,7 @@ const HousingDetails = ({navigation, route}) => {
               fullLength={true}
               keyboardType="numeric"
               onChangeText={handleChange('no_of_units_built')}
-              isRight={<AcresElement title={user?.land_measurement_symbol} />}
+              // isRight={<AcresElement title={user?.land_measurement_symbol} />}
             />
             {touched?.no_of_units_built && errors?.no_of_units_built && (
               <Text style={Styles.error2}>

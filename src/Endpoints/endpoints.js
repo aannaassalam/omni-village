@@ -111,7 +111,7 @@ export const endpoints = {
     get_energy_dropdown:'/energy-dropdown',
     get_mobility_dropdown:'/mobility-dropdown',
     get_forestry_dropdown:'/forestry-dropdown',
-    get_other_personal: '/other-personal-dropdown',
+    get_other_personal: '/other-personal-household-items-dropdown',
     get_business_dropdown:'/business-dropdown',
   },
   demographic: {

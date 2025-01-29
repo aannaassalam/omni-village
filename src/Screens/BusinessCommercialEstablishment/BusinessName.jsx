@@ -323,7 +323,7 @@ const BusinessName = ({navigation, route}) => {
                   fullLength={true}
                   keyboardType="numeric"
                   onChangeText={handleChange('land_area_utilised')}
-                  isRight={<AcresElement title={user?.land_measurement_symbol} />}
+                  isRight={<AcresElement title={'Sq ft'} />}
               />
               {touched.land_area_utilised &&
                   errors.land_area_utilised && (
@@ -342,7 +342,7 @@ const BusinessName = ({navigation, route}) => {
                   fullLength={true}
                   keyboardType="numeric"
                   onChangeText={handleChange('built_up_area')}
-                  isRight={<AcresElement title={user?.land_measurement_symbol}/>}
+                  isRight={<AcresElement title={'Sq ft'}/>}
               />
               {touched.built_up_area &&
                   errors.built_up_area && (

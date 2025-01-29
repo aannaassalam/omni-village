@@ -139,6 +139,7 @@ const TimberNeeds = ({ navigation, route }) => {
       }
     })
   }, [get_forestry])
+  console.log("heelellel", get_forestry)
   if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -179,9 +180,9 @@ const TimberNeeds = ({ navigation, route }) => {
                 fullLength={true}
                 keyboardType="numeric"
                 onChangeText={handleChange('quantity')}
-                isRight={
-                  <AcresElement title={'Unit'} />
-                }
+                // isRight={
+                //   <AcresElement title={'Unit'} />
+                // }
               />
               {errors.quantity &&
                 errors.quantity && (
@@ -193,10 +194,10 @@ const TimberNeeds = ({ navigation, route }) => {
                 )}
               <MultiselectDropdown
                 containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                data={
+                data={forestry?.timber_needs_purpose?
                   forestry?.timber_needs_purpose.map((item) => {
                     return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                  })
+                  }) :[]
                 }
                 setSelectedd={(value) => {
                   setValues({ ...values, purpose: value })
@@ -208,12 +209,12 @@ const TimberNeeds = ({ navigation, route }) => {
                 <Text style={Styles.error2}>{String(errors?.purpose)}</Text>
               )}
               <CustomDropdown
-                data={
+                data={forestry?.timber_needs_urgency?
                   forestry?.timber_needs_urgency.map((item) => {
                     return {
                       label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
                     }
-                  })
+                  }) : []
                 }
                 value={values?.urgency}
                 label={t('Urgency')}

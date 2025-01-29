@@ -42,13 +42,14 @@ const BusinessInvestment = ({ navigation, route }) => {
         energy_consumption: yup.number().required('Energy consumption is required'),
         raw_material_consumption: yup.array().of(yup.object().shape({
             item: yup.string().required(t('Type is required')),
-            quantity: yup.string().required(t('Quantity is required'))
+            quantity: yup.string().required(t('Quantity is required')),
+            raw_consumption_unit: yup.string().required(t('Raw consumption unit is required'))
         })).required('Raw material consumption is required'),
         fuel_source: yup.array().of(yup.object().shape({
             item: yup.string().required(t('Type is required')),
-            quantity: yup.string().required(t('Quantity is required'))
+            quantity: yup.string().required(t('Quantity is required')),
+            fuel_source_unit: yup.string().required(t('Fuel source unit is required'))
         })).required('Fuel source is required'),
-        raw_consumption_unit: yup.string(),
         type_of_infrastructure: yup.array().of(yup.string()).required('Infrastructure is required'),
         machine_equipment_installed: yup.string().required('Machine and equipment installed is required'),
     })
@@ -71,7 +72,6 @@ const BusinessInvestment = ({ navigation, route }) => {
             fuel_source: [],
             type_of_infrastructure: [],
             machine_equipment_installed: '',
-            raw_consumption_unit: ''
         },
         validationSchema: scheme,
         onSubmit: async values => {
@@ -110,7 +110,8 @@ const BusinessInvestment = ({ navigation, route }) => {
 
             return existingEntry || {
                 item: item,
-                quantity: ''
+                quantity: '',
+                raw_consumption_unit:''
             };
         });
         // Update the form's purpose_status_of_land field
@@ -133,7 +134,8 @@ const BusinessInvestment = ({ navigation, route }) => {
 
             return existingEntry || {
                 item: item,
-                quantity: ''
+                quantity: '',
+                fuel_source_unit: ''
             };
         });
         // Update the form's purpose_status_of_land field
@@ -148,14 +150,15 @@ const BusinessInvestment = ({ navigation, route }) => {
                 raw_material_consumption: business?.raw_material_consumption?.length > 0 ? business?.raw_material_consumption.map((item) => {
                     return {
                         item: item.item,
-                        quantity: String(item.quantity)
+                        quantity: String(item.quantity),
+                        raw_consumption_unit: item.raw_consumption_unit || ''
                     }
                 }) : [],
-                raw_consumption_unit: business?.raw_consumption_unit || '',
                 fuel_source: business?.fuel_source?.length > 0 ? business?.fuel_source.map((item) => {
                     return {
                         item: item.item,
-                        quantity: String(item.quantity)
+                        quantity: String(item.quantity),
+                        fuel_source_unit: item.fuel_source_unit || ''
                     }
                 }) : [],
                 type_of_infrastructure: business?.type_of_infrastructure || [],
@@ -265,20 +268,24 @@ const BusinessInvestment = ({ navigation, route }) => {
                                                 parseInt(text),
                                             )
                                         } isRight={<CustomDropdown
-                                            data={
-                                                business_dropdown?.legal_structure.map((item) => {
+                                            data={business_dropdown?.raw_consumption_unit?
+                                                business_dropdown?.raw_consumption_unit.map((item) => {
                                                     return {
                                                         label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
                                                     }
-                                                })
+                                                }) : [
+                                                    { label: 'litres', value: '6736117ecb51156c2f52383e' },
+                                                    { label: 'kWh', value: '6736117ecb51156c2f52383b' }
+                                                ]
                                             }
-                                            value={values?.raw_consumption_unit}
+                                            value={item?.raw_consumption_unit}
                                             noLabel={true}
                                             onChange={value => {
-                                                setValues({
-                                                    ...values,
-                                                    raw_consumption_unit: value?.value,
-                                                });
+                                                handleFieldChange(
+                                                    index,
+                                                    'raw_consumption_unit',
+                                                value.value,
+                                                )
                                             }}
                                             sideDrop={true}
                                             style={{ height: 30, borderColor: '#fff', width: 74, marginTop: -1, marginRight: '5%' }}
@@ -327,7 +334,33 @@ const BusinessInvestment = ({ navigation, route }) => {
                                                 'quantity',
                                                 parseInt(text),
                                             )
-                                        } unit={'Litre'} placeholder={t('Quantity')} />
+                                        } isRight={<CustomDropdown
+                                                data={
+                                                business_dropdown?.fuel_source_unit ?
+                                                    business_dropdown?.fuel_source_unit.map((item) => {
+                                                        return {
+                                                            label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                                                        }
+                                                    }) : [
+                                                        { label: 'litres', value: '6736117ecb51156c2f52383e' },
+                                                        { label: 'kWh', value: '6736117ecb51156c2f52383b' }
+                                                    ]
+                                                }
+                                                value={item?.fuel_source_unit}
+                                                noLabel={true}
+                                                onChange={value => {
+                                                    handleFieldChangeSecond(
+                                                        index,
+                                                        'fuel_source_unit',
+                                                        value.value,
+                                                    )
+                                                }}
+                                                sideDrop={true}
+                                                style={{ height: 30, borderColor: '#fff', width: 74, marginTop: -1, marginRight: '5%' }}
+                                                placeholder={t('Unit')}
+                                                placeholderStyle={{ fontSize: 14, fontFamily: fontFamilyRegular, marginRight: 4 }}
+
+                                            />} placeholder={t('Quantity')} />
                                         {errors.fuel_source &&
                                             errors.fuel_source[index]
                                                 ?.quantity && (

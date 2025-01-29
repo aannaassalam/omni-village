@@ -160,6 +160,7 @@ const WaterHarvesting = ({ navigation, route }) => {
             add_usage({ ...newData })
         }
     }
+    console.log("heelelleeoeoe", water_dropdown?.type_of_harvesting.find((item) => selectedStatus.includes(item?._id)))
     if (isLoading || isUsageLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -187,7 +188,7 @@ const WaterHarvesting = ({ navigation, route }) => {
                     selectedd={selectedStatus}
                     infoName={t('Type of Harvesting')}
                 />
-                {water_dropdown?.type_of_harvesting.find((item) => selectedStatus.includes(item?._id))?.name === "Others(if any)" && (
+                {water_dropdown?.type_of_harvesting.find((item) => selectedStatus.includes(item?._id) && item?.name?.en === "others [specify]")  && (
                     <Input
                         label={t('Others(If any)')}
                         value={values.other_harvesting}
@@ -221,7 +222,7 @@ const WaterHarvesting = ({ navigation, route }) => {
                                             )
                                         }
                                         isRight={
-                                            <AcresElement title={'Unit'} />
+                                            <AcresElement title={'Litres'} />
                                         }
                                     />
                                     {errors.type_of_harvesting &&

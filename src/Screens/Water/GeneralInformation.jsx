@@ -61,8 +61,15 @@ const GeneralInformation = ({ navigation, route }) => {
     const scheme = yup.object().shape({
         water_meter: yup.boolean(),
         water_scarcity: yup.boolean(),
-        water_scarcity_severity: yup.string().required(t('Severity is required')),
-        month: yup.array().required(t('Month is required')).min(1, t('Atleast one month is required')),
+        water_scarcity_severity: yup.string().nullable().test('is-required-if-water_scarcity-true', t('Severity is required'), function (value) {
+            const { water_scarcity } = this.parent;
+            return water_scarcity ? value && value.trim() !== null : true;
+        }),
+        month: yup.array()
+            .test('is-required-if-water_scarcity-true', t('Month is required'), function (value) {
+                const { water_scarcity } = this.parent;
+                return water_scarcity ? value && value.length > 0 : true;;
+            })
     });
     const {
         handleChange,
@@ -86,6 +93,7 @@ const GeneralInformation = ({ navigation, route }) => {
             setSavepopup(true)
         },
     });
+    console.log("errororor", errors)
     useEffect(() => {
         resetForm({
             values: {
@@ -150,7 +158,7 @@ const GeneralInformation = ({ navigation, route }) => {
                     label={t('Do you have water meter?')}
                     selected={values?.water_meter}
                     firstBtnPress={() => setValues({ ...values, water_meter: true })}
-                    secondBtnPress={() => setValues({ ...values, water_meter: true })}
+                    secondBtnPress={() => setValues({ ...values, water_meter: false })}
                     firstBtnText={t('yes')}
                     secondBtntext={t('no')}
                 />
@@ -159,7 +167,7 @@ const GeneralInformation = ({ navigation, route }) => {
                     label={t('Do you face water scarcity?')}
                     selected={values?.water_scarcity}
                     firstBtnPress={() => setValues({ ...values, water_scarcity: true })}
-                    secondBtnPress={() => setValues({ ...values, water_scarcity: true })}
+                    secondBtnPress={() => setValues({ ...values, water_scarcity: false, water_scarcity_severity: null, month: [] })}
                     firstBtnText={t('yes')}
                     secondBtntext={t('no')}
                 />

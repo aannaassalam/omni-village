@@ -20,7 +20,8 @@ import MultiselectDropdown from '../../Components/MultiselectDropdown/Multiselec
 import PurposeInput from '../../Components/PurposeInput/PurposeInput'
 import { addPetrolDieselNatural, editPetrolDieselNatural, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
-import { addOtherPersonal, editOtherPersonal, getOtherPersonal } from '../../functions/otherPersonalHousehold'
+import { addOtherPersonal, editOtherPersonal, getOtherPersonal, getOtherPersonalDropdown } from '../../functions/otherPersonalHousehold'
+import { fontFamilyRegular } from '../../styles/fontStyle'
 
 const OfficeSupplies = ({ navigation, route }) => {
     const { name, type } = route.params
@@ -30,11 +31,11 @@ const OfficeSupplies = ({ navigation, route }) => {
     const { data: user } = useUser()
     const queryClient = useQueryClient()
     const [selectedStatus, setSelectedStatus] = useState([]);
-    // const { data: energy, isLoading: isDropdownLoading } = useQuery({
-    //     queryKey: [`energy`],
-    //     queryFn: () => getEnergyDropdown(),
-    //     refetchOnWindowFocus: true,
-    // })
+      const {data: other_personal, isLoading: isDropdownLoading} = useQuery({
+        queryKey: [`other_personal`],
+        queryFn: () => getOtherPersonalDropdown(),
+        refetchOnWindowFocus: true,
+      });
     const { data: get_other_personal, isLoading: isTypeLoading } = useQuery({
         queryKey: [`get_other_personal ${type}`],
         queryFn: () => getOtherPersonal(type),
@@ -70,6 +71,7 @@ const OfficeSupplies = ({ navigation, route }) => {
                 quantity: yup
                     .string()
                     .required(t('Quantity is required')),
+                    quantity_unit: yup.string().required(t('Quantity unit is required')),
             }),
         )
     });
@@ -113,7 +115,8 @@ const OfficeSupplies = ({ navigation, route }) => {
 
             return existingEntry || {
                 type: item,
-                quantity: ''
+                quantity: '',
+                quantity_unit: '',
             };
         });
         // Update the form's purpose_status_of_land field
@@ -159,7 +162,8 @@ const OfficeSupplies = ({ navigation, route }) => {
                 items_produces: get_other_personal?.items_produces.map((item) => {
                     return {
                         type: item.type,
-                        quantity: String(item.quantity)
+                        quantity: String(item.quantity),
+                        quantity_unit: item.quantity_unit || '',
                     }
                 }) || [],
             }
@@ -186,7 +190,14 @@ const OfficeSupplies = ({ navigation, route }) => {
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={[{
+                    data={other_personal?.personal_care
+                        ? other_personal?.personal_care.map(item => {
+                                          return {
+                                           name: item?.name?.[USER_PREFERRED_LANGUAGE],
+                                                                 key: item?._id,
+                                          };
+                                        })
+                                      :[{
                         name: 'keyboard',
                         key: '6739df18a4cfd8cc1f107ef9'
                     }, {
@@ -241,7 +252,14 @@ const OfficeSupplies = ({ navigation, route }) => {
                     <>
                         <MultiselectDropdown
                             containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                            data={[{
+                            data={other_personal?.office_supplies_produce
+                                ? other_personal?.office_supplies_produce.map(item => {
+                                                                      return {
+                                                                       name: item?.name?.[USER_PREFERRED_LANGUAGE],
+                                                                                             key: item?._id,
+                                                                      };
+                                                                    })
+                                                                  :[{
                                 name: 'keyboard',
                                 key: '6739df18a4cfd8cc1f107ef9'
                             }, {
@@ -260,13 +278,67 @@ const OfficeSupplies = ({ navigation, route }) => {
                                     <View style={styles.quantityContainer}>
                                         {values.items_produces.map((item, index) => (
                                             <>
-                                                <PurposeInput title={`${t('Item')} ${index + 1}`} value={item.quantity} onChangeText={text =>
-                                                    handleFieldChange(
-                                                        index,
-                                                        'quantity',
-                                                        parseInt(text),
-                                                    )
-                                                } unit={'Litre'} placeholder={'Quantity'} />
+                                                <PurposeInput
+                                                    title={`${other_personal?.office_supplies_produce
+                                                        ? other_personal?.office_supplies_produce.find(
+                                                            i => item?.type == i?._id,
+                                                        )
+                                                            ? other_personal?.office_supplies_produce.find(
+                                                                i => item?.type == i?._id,
+                                                            )?.name[USER_PREFERRED_LANGUAGE]
+                                                            : item?.type
+                                                        : item?.type
+                                                        }`}
+                                                    value={item.quantity}
+                                                    onChangeText={text =>
+                                                        handleFieldChange(index, 'quantity', parseInt(text))
+                                                    }
+                                                    isRight={
+                                                        <CustomDropdown
+                                                            data={
+                                                                other_personal?.dropdown
+                                                                    ? other_personal?.dropdown.map(item => {
+                                                                        return {
+                                                                            label:
+                                                                                item?.name?.[USER_PREFERRED_LANGUAGE],
+                                                                            value: item?._id,
+                                                                        };
+                                                                    })
+                                                                    : [
+                                                                        {
+                                                                            label: 'Kg',
+                                                                            value: '6636117ecb51156c2f52683e',
+                                                                        },
+                                                                        {
+                                                                            label: 'Litres',
+                                                                            value: '6736117ecb51156c2f52643e',
+                                                                        },
+                                                                    ]
+                                                            }
+                                                            value={item?.quantity_unit}
+                                                            noLabel={true}
+                                                            onChange={value => {
+                                                                handleFieldChange(index, 'quantity_unit', value?.value)
+                                                            }}
+                                                            sideDrop={true}
+                                                            style={{
+                                                                height: 30,
+                                                                borderColor: '#fff',
+                                                                width: 72,
+                                                                marginTop: -1,
+                                                                right: 3,
+                                                                // backgroundColor:'red'
+                                                            }}
+                                                            placeholder={t('Unit')}
+                                                            placeholderStyle={{
+                                                                fontSize: 14,
+                                                                fontFamily: fontFamilyRegular,
+                                                                marginRight: 2,
+                                                            }}
+                                                        />
+                                                    }
+                                                    placeholder={'Quantity'}
+                                                />
                                                 {errors.items_produces &&
                                                     errors.items_produces[index]
                                                         ?.quantity && (

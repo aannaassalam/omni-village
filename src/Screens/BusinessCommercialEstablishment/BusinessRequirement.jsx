@@ -366,7 +366,7 @@ const BusinessRequirement = ({ navigation, route }) => {
                 }
                 <Input
                     label={t(
-                        `Other`
+                        `Other Requirement`
                     )}
                     value={values?.other}
                     placeholder={''}

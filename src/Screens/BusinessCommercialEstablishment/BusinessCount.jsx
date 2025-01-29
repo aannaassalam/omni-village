@@ -104,7 +104,7 @@ const BusinessCount = ({ navigation, route }) => {
                                 drafted={item.status === 0}
                                 add={false}
                                 cropName={
-                                    `${t('Business')} ${index + 1}`
+                                    item?.business_name ? item?.business_name : `${t('Business')} ${index + 1}`
                                 }
                                 onPress={() => {
                                     delete_business(item._id);

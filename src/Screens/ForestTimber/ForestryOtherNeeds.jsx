@@ -20,6 +20,7 @@ import { addWaterHarvesting, editWaterHarvesting, getWaterDropdown, getWaterHarv
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
 import { addForestryOtherNeeds, editForestryOtherNeeds, getForestry, getForestryDropdown } from '../../functions/forestry'
+import { fontFamilyRegular } from '../../styles/fontStyle'
 
 const ForestryOtherNeeds = ({ navigation, route }) => {
   const { type, name } = route.params
@@ -74,6 +75,7 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
               quantity: yup.string().required(t('Quantity is required')),
               purpose: yup.string().required(t('Purpose is required')),
               urgency: yup.string().required(t('Urgency is required')),
+              quantity_unit: yup.string().required(t('Quantity unit is required')),
             })).required(t('Forestry type is required'))
           }
 
@@ -101,14 +103,14 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
       console.log(values);
       if (values?.unfulfilled_forest_needs && selectedStatus.length > 0) {
         setSavepopup(true);
-      } else if (!values?.unfulfilled_forest_needs){
+      } else if (!values?.unfulfilled_forest_needs) {
         setSavepopup(true);
-      }else {
+      } else {
         ToastAndroid.show("Please select one value", ToastAndroid.BOTTOM)
       }
     },
   });
-  
+
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.forestry_type];
     newDetailsOfLand[index][field] = value;
@@ -132,6 +134,7 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
         quantity: '',
         purpose: [],
         urgency: "",
+        quantity_unit: ''
       };
     });
     // Update the form's purpose_status_of_land field
@@ -164,8 +167,9 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
             quantity: String(item.quantity),
             purpose: item.purpose,
             urgency: item.urgency,
+            quantity_unit: item?.quantity_unit
           }
-        }) ||[]
+        }) || []
       }
     })
     setSelectedStatus(get_forestry?.forestry_type.map(item => item.type) || [])
@@ -240,12 +244,12 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                       <Text
                         style={[
                           Styles.fieldLabel,
-                          { marginTop: 4, alignSelf: 'center', textTransform:'capitalize' },
+                          { marginTop: 4, alignSelf: 'center', textTransform: 'capitalize' },
                         ]}>
                         {/* {t(`${t('Type')} ${index + 1}`)} */}
-                        {`${forestry?.other_needs_type.find((i) => item?.type == i?._id) ?
+                        {`${forestry?.other_needs_type ? forestry?.other_needs_type.find((i) => item?.type == i?._id) ?
                           forestry?.other_needs_type.find((i) => item?.type == i?._id)?.name[USER_PREFERRED_LANGUAGE]
-                                                                    : item?.type}`}
+                          : item?.type : null}`}
                       </Text>
                       <Divider
                         bold={true}
@@ -298,7 +302,46 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                               )
                             }}
                             isRight={
-                              <AcresElement title={'Unit'} />
+                              <CustomDropdown
+                                data={forestry?.dropdown ? forestry?.dropdown.map(
+                                  item => {
+                                    return {
+                                      label:
+                                        item?.name?.[USER_PREFERRED_LANGUAGE],
+                                      value: item?._id,
+                                    };
+                                  },
+                                ) : [
+                                  {
+                                    label: 'Kg',
+                                    value: '6736117ecb51156c2f52683e',
+                                  },
+                                  {
+                                    label: 'Litres',
+                                    value: '6736117ecb51156c2f52643e',
+                                  }
+                                ]}
+                                value={item?.quantity_unit}
+                                noLabel={true}
+                                onChange={value => {
+                                  handleFieldChange(index, 'quantity_unit', value?.value)
+                                }}
+                                sideDrop={true}
+                                style={{
+                                  height: 30,
+                                  borderColor: '#fff',
+                                  width: 72,
+                                  marginTop: -1,
+                                  right: 3
+                                  // backgroundColor:'red'
+                                }}
+                                placeholder={t('Unit')}
+                                placeholderStyle={{
+                                  fontSize: 14,
+                                  fontFamily: fontFamilyRegular,
+                                  marginRight: 2,
+                                }}
+                              />
                             }
                           />
                           {errors.forestry_type &&
@@ -313,10 +356,10 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                             )}
                           <MultiselectDropdown
                             containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                            data={
+                            data={forestry?.other_needs_purpose ?
                               forestry?.other_needs_purpose.map((item) => {
                                 return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                              })
+                              }) : [{ name: 'Pharmaceutical', key: '6736117ecb51156c2f52383e' }, { name: 'IT/Telecom', key: '6736117ecb51156c2f52683e' }]
                             }
                             setSelectedd={(value) => {
                               handleFieldChange(
@@ -340,12 +383,16 @@ const ForestryOtherNeeds = ({ navigation, route }) => {
                             )}
 
                           <CustomDropdown
-                            data={
+                            data={forestry?.other_needs_urgency ?
                               forestry?.other_needs_urgency.map((item) => {
                                 return {
                                   label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
                                 }
-                              })
+                              }) : [
+                                { label: 'High', value: '6736117ecb51156c2f52389e' },
+                                { label: 'Medium', value: '6736117ecb51156c2f52683e' },
+                                { label: 'Low', value: '6736117ecb51156c2f52753e' }
+                              ]
                             }
                             value={item?.urgency}
                             label={t('Urgency')}

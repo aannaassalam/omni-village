@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader/CustomHeader'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -19,6 +19,7 @@ import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 import { addForestryGeneralInformation, editForestryGeneralInformation, getForestry, getForestryDropdown } from '../../functions/forestry'
+import { fontFamilyRegular } from '../../styles/fontStyle'
 
 const ForestryGeneralInformation = ({ navigation, route }) => {
   const { name, type, forestry_id } = route.params
@@ -35,28 +36,28 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
   })
   const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
     queryKey: [`get_forestry ${type}`],
-      queryFn: () => getForestry(type),
-      refetchOnWindowFocus: true,
+    queryFn: () => getForestry(type),
+    refetchOnWindowFocus: true,
   })
   const { mutate: edit_forestry_general } = useMutation({
     mutationKey: ['edit_forestry_general'],
-      mutationFn: async (data) => {
-          editForestryGeneralInformation(data)
-          queryClient.invalidateQueries()
-      },
-      onSuccess: (data) => { console.log("successsssss save", data, navigation.replace('forestryTimber')) },
-      onError: (error) => console.log("error save", error),
-      onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    mutationFn: async (data) => {
+      editForestryGeneralInformation(data)
+      queryClient.invalidateQueries()
+    },
+    onSuccess: (data) => { console.log("successsssss save", data, navigation.replace('forestryTimber')) },
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
   const { mutate: add_forestry_general } = useMutation({
     mutationKey: ['add_forestry_general'],
-      mutationFn: async (data) => {
-          addForestryGeneralInformation(data)
-          queryClient.invalidateQueries()
-      },
+    mutationFn: async (data) => {
+      addForestryGeneralInformation(data)
+      queryClient.invalidateQueries()
+    },
     onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('forestryTimber') },
-      onError: (error) => console.log("error save", error),
-      onSettled: () => { setDraftpopup(false), setSavepopup(false) }
+    onError: (error) => console.log("error save", error),
+    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
   const scheme = yup.object().shape({
     land_owned_under_forest_cover: yup.string().required(t('Land owned under forest cover is required')),
@@ -75,6 +76,7 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
       yup.object().shape({
         type: yup.string().required(t('Type is required')),
         quantity: yup.number().required(t('Quantity is required')),
+        quantity_unit: yup.string().required(t('Quantity unit is required')),
         purpose: yup.array().required(t('Purpose is required')).min(1, t('Atleast one purpose is required')),
       })
     ).min(1, t('Atleast one other produce harvested required'))
@@ -104,14 +106,14 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
     },
   });
   const handleDraft = () => {
-    let newData ={
-  land_owned_under_forest_cover: values.land_owned_under_forest_cover,
-  timber_logs_harvested: values.timber_logs_harvested,
-  own_forest_cover_land: values.own_forest_cover_land,
-  community_forest: values.community_forest,
-  other_produced_harvested_from_forest: values.other_produced_harvested_from_forest,
-  status:0
-}
+    let newData = {
+      land_owned_under_forest_cover: values.land_owned_under_forest_cover,
+      timber_logs_harvested: values.timber_logs_harvested,
+      own_forest_cover_land: values.own_forest_cover_land,
+      community_forest: values.community_forest,
+      other_produced_harvested_from_forest: values.other_produced_harvested_from_forest,
+      status: 0
+    }
     if (get_forestry?._id) {
       edit_forestry_general({ ...newData, forestry_id: get_forestry?._id })
     } else {
@@ -132,7 +134,7 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
     } else {
       add_forestry_general({ ...newData })
     }
-}
+  }
   const handleFieldChange = (index, field, value) => {
     const newDetailsOfLand = [...values.other_produced_harvested_from_forest];
     newDetailsOfLand[index][field] = value;
@@ -152,6 +154,7 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
       return existingEntry || {
         type: item,
         quantity: '',
+        quantity_unit: '',
         purpose: []
       };
     });
@@ -159,30 +162,49 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
     setFieldValue('other_produced_harvested_from_forest', updatedPurposeStatusOfLand);
   };
 
-  useEffect(()=>{
-resetForm({
-  values:{
-    land_owned_under_forest_cover: String(get_forestry?.land_owned_under_forest_cover)||'',
-    timber_logs_harvested: String(get_forestry?.timber_logs_harvested)|| '',
-    own_forest_cover_land: String(get_forestry?.own_forest_cover_land)|| '',
-    community_forest: String(get_forestry?.community_forest)|| '',
-    other_produced_harvested_from_forest: get_forestry?.other_produced_harvested_from_forest.map((item)=>{
-      return{
-        type:item.type,
-        quantity:String(item.quantity),
-        purpose: item.purpose
+  useEffect(() => {
+    resetForm({
+      values: {
+        land_owned_under_forest_cover: String(get_forestry?.land_owned_under_forest_cover || '') || '',
+        timber_logs_harvested: String(get_forestry?.timber_logs_harvested || '') || '',
+        own_forest_cover_land: String(get_forestry?.own_forest_cover_land || '') || '',
+        community_forest: String(get_forestry?.community_forest || '') || '',
+        other_produced_harvested_from_forest: get_forestry?.other_produced_harvested_from_forest.map((item) => {
+          return {
+            type: item.type,
+            quantity: String(item.quantity),
+            quantity_unit: item.quantity_unit,
+            purpose: item.purpose
+          }
+        }) || []
       }
-    })||[]
-  }
-})
-    setSelectedStatus(get_forestry?.other_produced_harvested_from_forest.map((item)=>{return item?.type}))
-  },[get_forestry])
+    })
+    setSelectedStatus(get_forestry?.other_produced_harvested_from_forest.map((item) => { return item?.type }))
+  }, [get_forestry])
+  const [collapseStates, setCollapseStates] = useState([]);
+
+  useEffect(() => {
+    // Initialize collapseStates with false for all vehicles
+    if (values?.other_produced_harvested_from_forest?.length > 0) {
+      setCollapseStates(Array(values?.other_produced_harvested_from_forest?.length).fill(true));
+    }
+  }, [values?.other_produced_harvested_from_forest?.length]);
+
+  const toggleCollapse = index => {
+    setCollapseStates(prevStates => {
+      // Create a new array to avoid mutating the state directly
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index]; // Toggle the specific index
+      return newStates;
+    });
+  };
+  console.log("first", get_forestry?._id)
   if (isTypeLoading || isLoading) {
-      return (
-          <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-              <ActivityIndicator size={'large'} color={primaryColor} />
-          </View>
-      );
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
   }
   return (
     <View style={styles.container}>
@@ -205,7 +227,8 @@ resetForm({
           keyboardType="numeric"
           onChangeText={handleChange('land_owned_under_forest_cover')}
           isRight={
-            <AcresElement title={user.land_measurement_symbol} />
+            // <AcresElement title={user.land_measurement_symbol} />
+            <AcresElement title={'Sq ft'} />
           }
         />
         {errors.land_owned_under_forest_cover &&
@@ -298,68 +321,132 @@ resetForm({
           selectedd={selectedStatus}
           infoName={t('Type of other produce harvested from forest')}
         />
-        {values?.other_produced_harvested_from_forest.length > 0 && (
-          <View style={styles.innerInputView}>
-            <Divider style={styles.divider2} />
-            <View style={{ width: '100%' }}>
-              {values.other_produced_harvested_from_forest.map((item, index) => (
-                <>
-                  <Input
-                    label={t(
-                      `Quantity`
-                    )}
-                    value={item?.quantity}
-                    placeholder={'0'}
-                    fullLength={true}
-                    keyboardType="numeric"
-                    onChangeText={(text) => handleFieldChange(
-                      index,
-                      'quantity',
-                      parseInt(text),
-                    )}
-                    isRight={
-                      <AcresElement title={'Unit'} />
-                    }
-                  />
-                  {errors.other_produced_harvested_from_forest &&
-                    errors.other_produced_harvested_from_forest[index]
-                      ?.quantity && (
-                      <Text style={Styles.error2}>
-                        {
-                          errors.other_produced_harvested_from_forest[index]
-                            .quantity
-                        }
-                      </Text>
-                    )}
-                  <MultiselectDropdown
-                    containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={forestry?.general_purpose.map((item) => {
-                      return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                    })}
-                    setSelectedd={(value) => handleFieldChange(
-                      index,
-                      'purpose',
-                      value,
-                    )}
-                    selectedd={item?.purpose}
-                    infoName={t('Purpose')}
-                  />
-                  {errors.other_produced_harvested_from_forest &&
-                    errors.other_produced_harvested_from_forest[index]
-                      ?.purpose && (
-                      <Text style={Styles.error2}>
-                        {
-                          errors.other_produced_harvested_from_forest[index]
-                            .purpose
-                        }
-                      </Text>
-                    )}
-                </>
-              ))}
-            </View>
-          </View>
-        )}
+        {values?.other_produced_harvested_from_forest.length > 0 &&
+          <>
 
+            {values.other_produced_harvested_from_forest.map((item, index) => {
+              return <>
+                <View style={[styles.subArea, { marginTop: '3%' }]}>
+                  <Text
+                    style={[
+                      Styles.fieldLabel,
+                      { marginTop: 4, alignSelf: 'center' },
+                    ]}>
+                    {`Enter details for ${forestry?.other_produce_from_forest
+                      ? forestry?.other_produce_from_forest.find(
+                        i => item?.type == i?._id,
+                      )
+                        ? forestry?.other_produce_from_forest.find(
+                          i => item?.type == i?._id,
+                        )?.name[USER_PREFERRED_LANGUAGE]
+                        : item?.type
+                      : null
+                      }`}
+                  </Text>
+                  <Divider
+                    bold={true}
+                    style={[styles.divider, { width: '34%' }]}
+                    horizontalInset={true}
+                  />
+                  <TouchableOpacity onPress={() => toggleCollapse(index)}>
+                    {collapseStates[index] ? (
+                      <Image
+                        source={require('../../../assets/arrowUp.png')}
+                        style={styles.uparrow}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../../assets/arrowDown.png')}
+                        style={styles.uparrow}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {collapseStates[index] &&
+                  <View style={styles.innerInputView}>
+                    <Divider style={styles.divider2} />
+                    <View style={{ width: '100%' }}>
+                      <Input
+                        label={t(
+                          `Quantity`
+                        )}
+                        value={item?.quantity}
+                        placeholder={'0'}
+                        fullLength={true}
+                        keyboardType="numeric"
+                        onChangeText={(text) => handleFieldChange(
+                          index,
+                          'quantity',
+                          parseInt(text),
+                        )}
+                        isRight={<CustomDropdown
+                          data={
+                            forestry?.dropdown ?
+                              forestry?.dropdown.map((item) => {
+                                return {
+                                  label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                                }
+                              }) : [
+                                { label: 'litres', value: '6736117ecb51156c2f52383e' },
+                                { label: 'kWh', value: '6736117ecb51156c2f52383b' }
+                              ]
+                          }
+                          value={item?.quantity_unit}
+                          noLabel={true}
+                          onChange={value => {
+                            handleFieldChange(
+                              index,
+                              'quantity_unit',
+                              value.value,
+                            )
+                          }}
+                          sideDrop={true}
+                          style={{ height: 30, borderColor: '#fff', width: 74, marginTop: -1,right: 6 }}
+                          placeholder={t('Unit')}
+                          placeholderStyle={{ fontSize: 14, fontFamily: fontFamilyRegular, marginRight: 4 }}
+
+                        />}
+                      />
+                      {errors.other_produced_harvested_from_forest &&
+                        errors.other_produced_harvested_from_forest[index]
+                          ?.quantity && (
+                          <Text style={Styles.error2}>
+                            {
+                              errors.other_produced_harvested_from_forest[index]
+                                .quantity
+                            }
+                          </Text>
+                        )}
+                      <MultiselectDropdown
+                        containerStyle={{ marginTop: '5%', paddingTop: 0 }}
+                        data={forestry?.general_purpose.map((item) => {
+                          return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
+                        })}
+                        setSelectedd={(value) => handleFieldChange(
+                          index,
+                          'purpose',
+                          value,
+                        )}
+                        selectedd={item?.purpose}
+                        infoName={t('Purpose')}
+                      />
+                      {errors.other_produced_harvested_from_forest &&
+                        errors.other_produced_harvested_from_forest[index]
+                          ?.purpose && (
+                          <Text style={Styles.error2}>
+                            {
+                              errors.other_produced_harvested_from_forest[index]
+                                .purpose
+                            }
+                          </Text>
+                        )}
+                    </View>
+                  </View>
+                }
+              </>
+            })}
+          </>
+        }
       </KeyboardAwareScrollView>
       <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
         <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />

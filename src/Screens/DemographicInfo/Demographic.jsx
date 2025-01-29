@@ -136,7 +136,7 @@ const Demographic = ({ navigation, route }) => {
           fullLength={true}
           keyboardType='numeric'
           onChangeText={handleChange('height')}
-          isRight={<AcresElement title={'Unit'} />}
+          isRight={<AcresElement title={'Ft'} />}
         />
         {touched?.height && errors?.height && (
           <Text style={Styles.error2}>{String(errors?.height)}</Text>
@@ -148,7 +148,7 @@ const Demographic = ({ navigation, route }) => {
           fullLength={true}
           keyboardType='numeric'
           onChangeText={handleChange('weight')}
-          isRight={<AcresElement title={'Unit'} />}
+          isRight={<AcresElement title={'Kg'} />}
         />
         {touched?.weight && errors?.weight && (
           <Text style={Styles.error2}>{String(errors?.weight)}</Text>
