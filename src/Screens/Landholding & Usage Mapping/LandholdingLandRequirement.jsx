@@ -127,7 +127,7 @@ edit_landholding_specification({...newData, status: 0})
                     keyboardType="numeric"
                     onChangeText={handleChange('required_area')}
                     isRight={
-                        <AcresElement title={user?.land_measurement_symbol} />
+                        <AcresElement title={'sq ft'} />
                     }
                 />
                 {errors.required_area &&

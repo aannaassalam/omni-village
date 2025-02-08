@@ -194,7 +194,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, economic: item })
                                 }
                                 selectedd={values?.economic}
-                                infoName={t('Economic aspirations')}
+                                infoName={t('Spiritual Aspirations')}
                             />
                             {touched?.economic && errors?.economic && (
                                 <Text style={Styles.error2}>{String(errors?.economic)}</Text>
@@ -209,7 +209,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, educational: item })
                                 }
                                 selectedd={values?.educational}
-                                infoName={t('Educational aspirations')}
+                                infoName={t('Intellectual Aspirations')}
                             />
                             {touched?.educational && errors?.educational && (
                                 <Text style={Styles.error2}>{String(errors?.educational)}</Text>
@@ -224,7 +224,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, health_well_being: item })
                                 }
                                 selectedd={values?.health_well_being}
-                                infoName={t('Health & well-being aspirations')}
+                                infoName={t('Social Aspirations')}
                             />
                             {touched?.health_well_being && errors?.health_well_being && (
                                 <Text style={Styles.error2}>{String(errors?.health_well_being)}</Text>
@@ -239,7 +239,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, infrastructure_technology: item })
                                 }
                                 selectedd={values?.infrastructure_technology}
-                                infoName={t('Infrastructure & Technology aspirations')}
+                                infoName={t('Emotional Aspirations')}
                             />
                             {touched?.infrastructure_technology && errors?.infrastructure_technology && (
                                 <Text style={Styles.error2}>{String(errors?.infrastructure_technology)}</Text>
@@ -254,7 +254,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, environmental_sustainability: item })
                                 }
                                 selectedd={values?.environmental_sustainability}
-                                infoName={t('Environmemtal sustainability aspirations')}
+                                infoName={t('Physical aspirations')}
                             />
                             {touched?.environmental_sustainability && errors?.environmental_sustainability && (
                                 <Text style={Styles.error2}>{String(errors?.environmental_sustainability)}</Text>
@@ -269,7 +269,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, cultural: item })
                                 }
                                 selectedd={values?.cultural}
-                                infoName={t('Cultural aspirations')}
+                                infoName={t('Occupational aspirations')}
                             />
                             {touched?.cultural && errors?.cultural && (
                                 <Text style={Styles.error2}>{String(errors?.cultural)}</Text>
@@ -284,7 +284,7 @@ const DemographicAspiration = ({ navigation, route }) => {
                                     setValues({ ...values, community_social: item })
                                 }
                                 selectedd={values?.community_social}
-                                infoName={t('Community social aspirations')}
+                                infoName={t('Environmental aspirations')}
                             />
                             {touched?.community_social && errors?.community_social && (
                                 <Text style={Styles.error2}>{String(errors?.community_social)}</Text>

@@ -147,7 +147,7 @@ const DemographicDisease = ({ navigation, route }) => {
                 {touched?.motor_disablity && errors?.motor_disablity && (
                     <Text style={Styles.error2}>{String(errors?.motor_disablity)}</Text>
                 )}
-                {dropdownData?.['motor_disability'].find((item) => item?._id === values?.motor_disablity)?.name === "Others(if any)" && (
+                {dropdownData?.['motor_disability'].find((item) => item?._id === values?.motor_disablity)?.name === "other (please specify)" && (
                     <Input
                         label={t('Others(If any)')}
                         value={values.other_motor}

@@ -174,7 +174,7 @@ const OtherUsage = ({ navigation, route }) => {
                         })
                     }
                     value={values?.yearly_consumption}
-                    label={t('Yearly water consumption')}
+                    label={t('Daily water consumption')}
                     onChange={value => {
                         setValues({
                             ...values,

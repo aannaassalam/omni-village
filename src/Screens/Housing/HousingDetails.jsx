@@ -55,7 +55,7 @@ const HousingDetails = ({navigation, route}) => {
       .required(t('Land utilised for family housing is required')),
     no_of_units_built: yup
       .number()
-      .required(t('No of units built is required')),
+      .required(t('No of rooms built is required')),
     total_built_area: yup.number().required(t('Total built area is required')),
     no_of_floors: yup.number().required(t('No of floors is required')),
     living_area: yup.number(),
@@ -243,7 +243,7 @@ const HousingDetails = ({navigation, route}) => {
               )}
 
             <Input
-              label={t('Number of units built')}
+              label={t('Number of rooms built')}
               value={values.no_of_units_built}
               placeholder={'0'}
               fullLength={true}

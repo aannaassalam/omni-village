@@ -222,7 +222,7 @@ const HousingRequirement = ({ navigation, route }) => {
                                     fullLength={true}
                                     keyboardType='numeric'
                                     onChangeText={handleChange('required_area')}
-                                    isRight={<AcresElement title={user?.land_measurement_symbol}/>}
+                                    isRight={<AcresElement title={'sq ft'}/>}
                                 />
                                 {touched?.required_area && errors?.required_area && (
                                     <Text style={Styles.error2}>{String(errors?.required_area)}</Text>

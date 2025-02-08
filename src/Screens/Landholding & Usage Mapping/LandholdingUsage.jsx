@@ -247,7 +247,7 @@ const LandholdingUsage = ({ navigation, route }) => {
           fullLength={true}
           keyboardType="numeric"
           onChangeText={handleChange('total_land_area')}
-          isRight={<AcresElement title={user?.land_measurement_symbol} />}
+          isRight={<AcresElement title={'sq ft'} />}
         />
         {touched?.total_land_area && errors?.total_land_area && (
           <Text style={Styles.error2}>{String(errors?.total_land_area)}</Text>

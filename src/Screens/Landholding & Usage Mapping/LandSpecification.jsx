@@ -466,7 +466,7 @@ const LandSpecification = ({navigation, route}) => {
                         )
                       }
                       isRight={
-                        <AcresElement title={user?.land_measurement_symbol} />
+                        <AcresElement title={'sq ft'} />
                       }
                     />
                     {errors.purpose_land_utilised_for &&
@@ -600,7 +600,7 @@ const LandSpecification = ({navigation, route}) => {
                           )
                         }
                         isRight={
-                          <AcresElement title={user?.land_measurement_symbol} />
+                          <AcresElement title={'sq ft'} />
                         }
                       />
                       {errors.purpose_status_of_land &&
