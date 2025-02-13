@@ -51,10 +51,11 @@ const Consumption2 = ({navigation, route}) => {
   const bottomSheetRef = React.useRef(null);
 
   const {data: consumptionCrop = [], isLoading} = useQuery({
-    queryKey: ['consumptionCrop'],
+    queryKey: ['consumptionCrop', typeId],
     queryFn: () => fetchConsumptionCorp(typeId),
     refetchOnWindowFocus: true,
   });
+
   const {
     data: consumption = [],
     isLoading: isConsumptionLoading,
@@ -62,17 +63,19 @@ const Consumption2 = ({navigation, route}) => {
     isFetching,
     error,
   } = useQuery({
-    queryKey: [typeName],
+    queryKey: ['consumptions', typeName],
     queryFn: () => fetchConsumptions(typeName),
     // refetchOnWindowFocus: true,
     // staleTime: 0,
   });
 
+  console.log(consumptionCrop, isLoading, 'fetch', error);
+
   useFocusEffect(
     useCallback(() => {
       // queryClient.invalidateQueries();
       refetch();
-    }, []),
+    }, [refetch]),
   );
 
   const {mutate: saveCrop, isPending} = useMutation({
