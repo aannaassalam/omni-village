@@ -12,8 +12,6 @@ import {login, sentOtp} from '../../functions/AuthScreens';
 import {queryClient} from '../../..';
 
 export default function LoginWithOtp({navigation, route}) {
-  const {data: user} = useUser();
-
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {t} = useTranslation();
@@ -38,9 +36,10 @@ export default function LoginWithOtp({navigation, route}) {
     onSuccess: data => {
       storage.set('token', data?.data?.token);
       storage.set('refresh_token', data?.data?.refreshToken);
+      storage.set('user', JSON.stringify(data?.data?.user));
       storage.set('type', 'villager');
       queryClient.invalidateQueries();
-      if (user?.first_name === '-') {
+      if (data?.data?.user?.first_name === '-') {
         navigation.replace('registerdetails');
         // navigation.replace('loginsuccess');
       } else {

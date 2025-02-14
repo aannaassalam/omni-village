@@ -23,9 +23,6 @@ export default function RegisterSuccessfull({navigation}) {
   useEffect(() => {
     if (!isLoading) {
       const timeout = setTimeout(() => {
-        console.log(user, 'USER');
-        storage.set('user', JSON.stringify(user));
-        console.log(user);
         navigation.replace('home');
       }, 3000);
       return () => clearTimeout(timeout);

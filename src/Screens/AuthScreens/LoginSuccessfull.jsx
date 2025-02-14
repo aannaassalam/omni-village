@@ -26,8 +26,6 @@ export default function LoginSuccessfull({navigation}) {
     let timeout;
     if (!isLoading) {
       timeout = setTimeout(() => {
-      storage.set('type', 'villager');
-        storage.set('user', JSON.stringify(user));
         navigation.replace('home');
       }, 3000);
     }
