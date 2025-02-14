@@ -50,6 +50,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
     const scheme = yup.object().shape({
         required_area: yup.number().required(t('required area is required')),
         purpose_for_required_land: yup.string().required(t('purpose for required land for is required')),
+        other_purpose_of_land: yup.string().required(t('Other purpose for required land for is required')),
         urgency_required_land: yup.string().required(t('urgency for required land is required')),
     });
     const {
@@ -66,6 +67,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
             required_area: '',
             purpose_for_required_land: '',
             urgency_required_land: '',
+            other_purpose_of_land: '',
         },
         validationSchema: scheme,
         onSubmit: async (values) => {
@@ -79,6 +81,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
                 required_area: landholding_requirement?.required_area === null ? '' : String(landholding_requirement?.required_area) || '',
                 purpose_for_required_land: landholding_requirement?.purpose_for_required_land || '',
                 urgency_required_land: landholding_requirement?.urgency_required_land || '',
+                other_purpose_of_land: landholding_requirement?.other_purpose_of_land || '',
             }
         })
     }, [landholding_requirement])
@@ -87,6 +90,7 @@ let newData = {
     required_area: parseInt(values.required_area),
     purpose_for_required_land: values.purpose_for_required_land,
     urgency_required_land: values.urgency_required_land,
+    other_purpose_of_land: values.other_purpose_of_land,
 }
 edit_landholding_specification({...newData, status: 0})
     
@@ -96,6 +100,7 @@ edit_landholding_specification({...newData, status: 0})
                 required_area: parseInt(values.required_area),
                 purpose_for_required_land: values.purpose_for_required_land,
                 urgency_required_land: values.urgency_required_land,
+                other_purpose_of_land: values.other_purpose_of_land,
             }
             edit_landholding_specification({ ...newData, status: 1 })
     }
@@ -151,6 +156,16 @@ edit_landholding_specification({...newData, status: 0})
                 />
                 {touched?.purpose_for_required_land && errors?.purpose_for_required_land && (
                     <Text style={Styles.error2}>{String(errors?.purpose_for_required_land)}</Text>
+                )}
+                {landholding_dropdown?.purpose_requirement.find((item) => item?._id === values?.purpose_for_required_land)?.name?.en === "other (specify)" && (
+                    <Input
+                        label={t('Others(If any)')}
+                        value={values.other_purpose_of_land}
+                        placeholder={''}
+                        fullLength={true}
+                        keyboardType='default'
+                        onChangeText={handleChange('other_purpose_of_land')}
+                    />
                 )}
                 <CustomDropdown
                     data={landholding_dropdown?.urgency_requirement.map((item) => { return { label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id } })}
