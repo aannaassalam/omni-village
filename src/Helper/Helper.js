@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { storage } from './Storage';
-import { USER_PREFERRED_LANGUAGE } from '../i18next';
+import {storage} from './Storage';
+import {USER_PREFERRED_LANGUAGE} from '../i18next';
 
 //let adminUrl = "https://backendapinodejsraju.herokuapp.com/api/";
 let adminUrl = 'https://omnivillage-server-360ba1f0adb3.herokuapp.com/api';
+// let adminUrl = 'http://192.168.1.8:5100/api';
 // let adminUrl = 'http://192.168.0.106:5100/api';
 // let adminUrl = 'http://192.168.92.33:5100/api';
 
@@ -28,7 +29,9 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
       config.url =
         config.url +
-        `${config?.url.includes('?') ? '&' : '?'}language=${USER_PREFERRED_LANGUAGE}&country=${user?.country || ''}`;
+        `${
+          config?.url.includes('?') ? '&' : '?'
+        }language=${USER_PREFERRED_LANGUAGE}&country=${user?.country || ''}`;
       if (config.data) {
         config.data.language = USER_PREFERRED_LANGUAGE;
       }
