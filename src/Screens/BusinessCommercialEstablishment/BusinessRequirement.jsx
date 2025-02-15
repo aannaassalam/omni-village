@@ -244,7 +244,11 @@ const BusinessRequirement = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                                    business_dropdown?.urgency.map((item)=>{
+                                        return{
+                                            label: item?.name[USER_PREFERRED_LANGUAGE], value: item?._id
+                                        }
+                                    })
                                 }
                                 value={values?.skill_urgency}
                                 label={t('Urgency')}
@@ -295,7 +299,11 @@ const BusinessRequirement = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                                    business_dropdown?.urgency.map((item) => {
+                                        return {
+                                            label: item?.name[USER_PREFERRED_LANGUAGE], value: item?._id
+                                        }
+                                    })
                                 }
                                 value={values?.manpower_urgency}
                                 label={t('Urgency')}
@@ -346,7 +354,11 @@ const BusinessRequirement = ({ navigation, route }) => {
                                 )}
                             <CustomDropdown
                                 data={
-                                    [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                                    business_dropdown?.urgency.map((item) => {
+                                        return {
+                                            label: item?.name[USER_PREFERRED_LANGUAGE], value: item?._id
+                                        }
+                                    })
                                 }
                                 value={values?.equipment_urgency}
                                 label={t('Urgency')}
@@ -386,7 +398,11 @@ const BusinessRequirement = ({ navigation, route }) => {
                     <>
                         <CustomDropdown
                             data={
-                                [{ label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e' }, { label: 'IT/Telecom', value: '6736117ecb51156c2f52683e' }]
+                                business_dropdown?.urgency.map((item) => {
+                                    return {
+                                        label: item?.name[USER_PREFERRED_LANGUAGE], value: item?._id
+                                    }
+                                })
                             }
                             value={values?.urgency}
                             label={t('Urgency')}
