@@ -190,8 +190,8 @@ const OfficeSupplies = ({ navigation, route }) => {
                 contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
                 <MultiselectDropdown
                     containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                    data={other_personal?.personal_care
-                        ? other_personal?.personal_care.map(item => {
+                    data={other_personal?.office_supplies
+                        ? other_personal?.office_supplies.map(item => {
                                           return {
                                            name: item?.name?.[USER_PREFERRED_LANGUAGE],
                                                                  key: item?._id,

@@ -330,7 +330,7 @@ const ForestryGeneralInformation = ({ navigation, route }) => {
                   <Text
                     style={[
                       Styles.fieldLabel,
-                      { marginTop: 4, alignSelf: 'center' },
+                      { marginTop: 4, alignSelf: 'center', width: '40%' },
                     ]}>
                     {`Enter details for ${forestry?.other_produce_from_forest
                       ? forestry?.other_produce_from_forest.find(

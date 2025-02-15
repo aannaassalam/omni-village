@@ -18,6 +18,7 @@ import { borderColor, primaryColor } from '../../styles/colors'
 import PopupModal from '../../Components/Popups/PopupModal'
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
 import { addGeneralInformation, editGeneralInformation, getEnergyByType, getEnergyDropdown } from '../../functions/energyFuel'
+import { USER_PREFERRED_LANGUAGE } from '../../i18next'
 
 const EnergyGeneralInformation = ({ navigation, route }) => {
     const { name, type } = route.params
@@ -122,6 +123,7 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
             </View>
         );
     }
+    console.log("ene", energy)
     return (
         <View style={styles.container}>
             <CustomHeader
@@ -142,13 +144,20 @@ const EnergyGeneralInformation = ({ navigation, route }) => {
                     firstBtnText={t('yes')}
                     secondBtntext={t('no')}
                 />
-                {values?.energy_sufficient ?
+                {!values?.energy_sufficient ?
                 <View style={styles.innerInputView}>
                     <Divider style={styles.divider2} />
                     <View style={{ width: '100%' }}>
                         <CustomDropdown
-                            data={
-                                    [{ label: 'Microgrid', value: '6736117ecb51156c2f52383e' }]
+                            data={energy?.sufficient?
+                                     energy?.sufficient.map((item) => {
+                                                        return {
+                                                          label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
+                                                        }
+                                                      }) : [
+                                        { label: '0 percent', value: '67af131b01f33d7cb6707167' },
+                                        { label: '1 percent', value: '67af131b01f33d7cb6707267' },
+                                                      ]
                             }
                             value={values?.extent}
                                 label={t('To what extent it’s not sufficient?')}
