@@ -34,7 +34,8 @@ export default function RegisterWithOtp({navigation, route}) {
     onSuccess: data => {
       storage.set('token', data.token);
       storage.set('refresh_token', data?.refreshToken);
-      storage.set('type', 'villager')
+      storage.set('type', 'villager');
+      storage.set('user', JSON.stringify(data?.user));
       navigation.replace('registerdetails', {edit: false});
     },
     onError: error => {

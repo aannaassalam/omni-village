@@ -115,13 +115,13 @@ const VehicleDetails = ({navigation, route}) => {
       distance_travelled_outside: parseInt(values?.distance_travelled_outside),
       purpose_use_of_vehicle: values?.purpose_use_of_vehicle,
       frequency_of_usage: values?.frequency_of_usage,
-      status:0
+      status: 0,
     };
-      if (mobility_id) {
-          edit_mobility({ ...new_data, mobility_id });
-      }else{
-          add_mobility(new_data);
-      }
+    if (mobility_id) {
+      edit_mobility({...new_data, mobility_id});
+    } else {
+      add_mobility(new_data);
+    }
   };
 
   const onSubmit = () => {
@@ -132,13 +132,13 @@ const VehicleDetails = ({navigation, route}) => {
       distance_travelled_outside: parseInt(values?.distance_travelled_outside),
       purpose_use_of_vehicle: values?.purpose_use_of_vehicle,
       frequency_of_usage: values?.frequency_of_usage,
-      status: 1
+      status: 1,
     };
-      if (mobility_id) {
-          edit_mobility({...new_data, mobility_id});
-      }else{
-          add_mobility(new_data);
-      }
+    if (mobility_id) {
+      edit_mobility({...new_data, mobility_id});
+    } else {
+      add_mobility(new_data);
+    }
   };
   useEffect(() => {
     resetForm({
@@ -233,9 +233,12 @@ const VehicleDetails = ({navigation, route}) => {
         />
         <CustomDropdown
           data={[
-            {label: 'Daily', value: 'daily'},
-            {label: 'Weekly', value: 'weekly'},
-            {label: 'Monthly', value: 'monthly'},
+            {label: 'Daily', value: 'Daily'},
+            {label: 'Several Times a Week', value: 'Several Times a Week'},
+            {label: 'Weekly', value: 'Weekly'},
+            {label: 'Monthly', value: 'Monthly'},
+            {label: 'Occasionally / Rarely', value: 'Occasionally / Rarely'},
+            {label: 'Never', value: 'Never'},
           ]}
           value={values?.frequency_of_usage}
           label={t('Frequency of usage')}
