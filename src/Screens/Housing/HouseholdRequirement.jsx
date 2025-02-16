@@ -30,11 +30,9 @@ const HouseholdRequirement = ({ navigation, route }) => {
     })
     const { mutate: edit_housing } = useMutation({
         mutationKey: ['edit_housing'],
-        mutationFn: async (data) => {
-            editHousing(data)
-            queryClient.invalidateQueries()
-        },
+        mutationFn: editHousing,
         onSuccess: (data) => { 
+            queryClient.invalidateQueries()
             navigation.replace('houseSpecificationQuestioner') 
         },
         onError: (error) => console.log("error save", error),
@@ -42,11 +40,9 @@ const HouseholdRequirement = ({ navigation, route }) => {
     })
     const { mutate: add_housing } = useMutation({
         mutationKey: ['add_housing'],
-        mutationFn: async (data) => {
-            addHousing(data)
-            queryClient.invalidateQueries()
-        },
+        mutationFn: addHousing,
         onSuccess: (data) => {
+            queryClient.invalidateQueries()
             navigation.replace('houseSpecificationQuestioner')
         },
         onError: (error) => console.log("error save", error),

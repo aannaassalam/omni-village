@@ -1,6 +1,6 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Dimensions,
@@ -13,8 +13,8 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import {Divider} from 'react-native-paper';
-import {useDispatch, useSelector} from 'react-redux';
+import { Divider } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import AddBottomSheet from '../../Components/BottomSheet/BottomSheet';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import CustomDashboard from '../../Components/CustomDashboard/CustomDashboard';
@@ -24,31 +24,31 @@ import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import InputWithStorage from '../../Components/CustomInputField/InputWithStorage';
 import InputWithoutRightElement from '../../Components/CustomInputField/InputWithoutRightElement';
 import '../../i18next';
-import {useUser} from '../../Hooks/useUser';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import { useUser } from '../../Hooks/useUser';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   addStorage,
   editStorage,
   fetchStorages,
 } from '../../functions/storageScreen';
-import {addStorageMethod, fetchStorageMethod} from '../../functions/Corps';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { addStorageMethod, fetchStorageMethod } from '../../functions/Corps';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const Storage = ({navigation}) => {
-  const {fontScale} = useWindowDimensions();
+const Storage = ({ navigation }) => {
+  const { fontScale } = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const {data: user} = useUser();
-  const {data: storageMethod, isMethodLoading} = useQuery({
+  const { data: user } = useUser();
+  const { data: storageMethod, isMethodLoading } = useQuery({
     queryKey: ['storage_method'],
     queryFn: fetchStorageMethod,
     refetchOnWindowFocus: true,
   });
 
-  const {data: storage, isLoading} = useQuery({
+  const { data: storage, isLoading } = useQuery({
     queryKey: ['storage'],
     queryFn: fetchStorages,
   });
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [storageList, setStorageList] = useState([
     {
       storage_id: 1,
@@ -114,13 +114,13 @@ const Storage = ({navigation}) => {
       ]),
   });
 
-  const {mutate: addStorageData, isPending: isAddStoragePending} = useMutation({
+  const { mutate: addStorageData, isPending: isAddStoragePending } = useMutation({
     mutationFn: addStorage,
     onSuccess: () => navigation.goBack(),
     onError: err => console.log(err),
   });
 
-  const {mutate: editStorageData, isPending: isEditStoragePending} =
+  const { mutate: editStorageData, isPending: isEditStoragePending } =
     useMutation({
       mutationFn: editStorage,
       onSuccess: () => navigation.goBack(),
@@ -165,7 +165,7 @@ const Storage = ({navigation}) => {
 
   const addingCrop = (index, name, stockId) => {
     if (dropdownVal.name === 'Others') {
-      addingStorageMethodData({name: otherCrop?.name});
+      addingStorageMethodData({ name: otherCrop?.name });
       setDropdownVal({});
       setOtherCrop('');
     } else {
@@ -211,7 +211,6 @@ const Storage = ({navigation}) => {
     }, [storage, t]),
   );
 
-  console.log(JSON.stringify(storageList, null, 2), 'list');
 
   const onContinue = () => {
     if (storageId) {
@@ -236,7 +235,6 @@ const Storage = ({navigation}) => {
       addStorageData(formData);
     }
   };
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.container}>
@@ -246,11 +244,11 @@ const Storage = ({navigation}) => {
           goBack={() => navigation.goBack()}
         />
         <KeyboardAwareScrollView
-          style={{flex: 1}}
+          style={{ flex: 1 }}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{paddingBottom: 20}}>
+          contentContainerStyle={{ paddingBottom: 20 }}>
           {isMethodLoading || isLoading ? (
-            <View style={{padding: 50, marginTop: '80%'}}>
+            <View style={{ padding: 50, marginTop: '80%' }}>
               <ActivityIndicator
                 size={'small'}
                 color="green"
@@ -286,7 +284,7 @@ const Storage = ({navigation}) => {
                         item?.storage_method_name.slice(1)
                       }
                       storagePress={() => {
-                        setStorageItem({...item, index: index});
+                        setStorageItem({ ...item, index: index, storage_name: item?.stock_name.includes('grain' || 'Grains') ? 'grain' : item?.stock_name.includes('poultry') ? 'poultry' : item?.stock_name.includes('vegetables' || 'fruits') ? 'vegetables & fruits' : 'meat' });
                         setCropModal(true);
                       }}
                     />
@@ -307,7 +305,7 @@ const Storage = ({navigation}) => {
           modalVisible={cropModal}
           setModal={setCropModal}
           bottomSheetRef={bottomSheetRef}
-          styleInner={{height: focusOther ? '80%' : '35%'}}>
+          styleInner={{ height: focusOther ? '80%' : '35%' }}>
           <View style={styles.BottomTopContainer}>
             <Text style={styles.headerText}>Add Storage Method</Text>
             <TouchableOpacity
@@ -345,13 +343,13 @@ const Storage = ({navigation}) => {
                 });
               }}
               data={storageMethod?.[storageItem?.storage_name]}
-              defaultVal={{key: '', value: dropdownVal?.name?.name}}
+              defaultVal={{ key: '', value: dropdownVal?.name?.name }}
             />
             {dropdownVal?.name === 'Others' ? (
               <InputWithoutRightElement
                 label={'Storage Name'}
                 placeholder={'Eg: Racks'}
-                onChangeText={e => setOtherCrop({name: e, _id: 0})}
+                onChangeText={e => setOtherCrop({ name: e, _id: 0 })}
                 value={otherCrop?.name}
                 onFocus={() => setFocusOther(true)}
               />
@@ -372,7 +370,7 @@ const Storage = ({navigation}) => {
             </TouchableOpacity>
             <CustomButton
               btnText={'Create'}
-              style={{width: '80%'}}
+              style={{ width: '80%' }}
               onPress={() =>
                 addingCrop(
                   storageItem?.index,
