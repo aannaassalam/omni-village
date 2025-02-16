@@ -52,9 +52,9 @@ const HouseholdRequirement = ({ navigation, route }) => {
         equipment: yup.array().required(t('Equipment is required')),
         furnishing: yup.array().required(t('Furnishing is required')),
         renovation_requirement: yup.boolean(),
-        renovation_urgency: yup.string(),
+        renovation_urgency: yup.string().nullable(),
         expansion_requirement: yup.boolean(),
-        expansion_urgency: yup.string()
+        expansion_urgency: yup.string().nullable()
     });
     const {
         handleChange,
@@ -70,9 +70,9 @@ const HouseholdRequirement = ({ navigation, route }) => {
             equipment:[],
             furnishing: [],
             renovation_requirement: false,
-            renovation_urgency: '',
+            renovation_urgency: null,
             expansion_requirement: false,
-            expansion_urgency: '',
+            expansion_urgency: null,
         },
         validationSchema: scheme,
         onSubmit: async values => {
@@ -114,13 +114,13 @@ const HouseholdRequirement = ({ navigation, route }) => {
                 equipment: housing_data?.equipment || [],
                 furnishing: housing_data?.furnishing || [],
                 renovation_requirement: housing_data?.renovation_requirement || false,
-                renovation_urgency: housing_data?.renovation_urgency|| '',
+                renovation_urgency: housing_data?.renovation_urgency|| null,
                 expansion_requirement: housing_data?.expansion_requirement || false,
-                expansion_urgency: housing_data?.expansion_urgency || '',
+                expansion_urgency: housing_data?.expansion_urgency || null,
             }
         })
     }, [housing_data])
-    console.log("hosususu", housingPhoto)
+    console.log("hosususu", values)
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
@@ -200,6 +200,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
                                 ...values,
                                 renovation_requirement: value?.value,
                             });
+                            if(!value?.value) setValues({...values, renovation_urgency: null})
                         }}
                     />
                     {touched?.renovation_requirement && errors?.renovation_requirement && (
@@ -235,6 +236,7 @@ const HouseholdRequirement = ({ navigation, route }) => {
                                 ...values,
                                 expansion_requirement: value?.value,
                             });
+                            if(!value?.value) setValues({...values, expansion_urgency: null})
                         }}
                     />
                     {touched?.expansion_requirement && errors?.expansion_requirement && (
