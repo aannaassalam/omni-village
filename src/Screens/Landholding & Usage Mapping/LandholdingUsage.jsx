@@ -10,37 +10,35 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
-import { Styles } from '../../styles/globalStyles';
+import {Styles} from '../../styles/globalStyles';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import Geolocation from 'react-native-geolocation-service';
-import { ActivityIndicator, Divider, TextInput } from 'react-native-paper';
-import { fontFamilyMedium } from '../../styles/fontStyle';
+import {ActivityIndicator, Divider, TextInput} from 'react-native-paper';
+import {fontFamilyMedium} from '../../styles/fontStyle';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import * as yup from 'yup';
-import { useFormik } from 'formik';
+import {useFormik} from 'formik';
 import Input from '../../Components/Inputs/Input';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
 import AcresElement from '../../Components/ui/AcresElement';
-import { useUser } from '../../Hooks/useUser';
+import {useUser} from '../../Hooks/useUser';
 import YearPicker from '../../Components/YearPicker/YearPicker';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
-import { primaryColor } from '../../styles/colors';
-import { useQuery } from '@tanstack/react-query';
-import {
-  getLandholding,
-} from '../../functions/landholding';
-import { useFocusEffect } from '@react-navigation/native';
+import {primaryColor} from '../../styles/colors';
+import {useQuery} from '@tanstack/react-query';
+import {getLandholding} from '../../functions/landholding';
+import {useFocusEffect} from '@react-navigation/native';
 
-const LandholdingUsage = ({ navigation, route }) => {
-  const { fontScale } = useWindowDimensions();
+const LandholdingUsage = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { land, data } = route.params;
-  const { t } = useTranslation();
-  const { data: user } = useUser();
+  const {land, data} = route.params;
+  const {t} = useTranslation();
+  const {data: user} = useUser();
   const {
     data: landholding,
     isLoading: isLandholdingLoading,
@@ -164,9 +162,9 @@ const LandholdingUsage = ({ navigation, route }) => {
             error => {
               // See error code charts below.
               console.log(error.code, error.message);
-              setValues({ ...values, address: '' });
+              setValues({...values, address: ''});
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
           );
         } else {
           console.log('Permission not granted');
@@ -181,19 +179,20 @@ const LandholdingUsage = ({ navigation, route }) => {
       values: {
         land_located: landholding?.land_located,
         total_land_area:
-          landholding?.total_land_area === null || landholding?.total_land_area === undefined
+          landholding?.total_land_area === null ||
+          landholding?.total_land_area === undefined
             ? ''
             : String(landholding?.total_land_area) || '',
         year_purchased: landholding?.year_purchased,
         geotag: landholding?.geotag || '',
-      }
+      },
     });
   }, [landholding]);
 
-  console.log("hehehehehe", errors, landholding)
+  console.log('hehehehehe', errors, landholding);
   if (isLandholdingLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+      <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
         <ActivityIndicator size={'large'} color={primaryColor} />
       </View>
     );
@@ -206,27 +205,27 @@ const LandholdingUsage = ({ navigation, route }) => {
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
-        <View style={[styles.subArea, { marginTop: '3%' }]}>
+        contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
+        <View style={[styles.subArea, {marginTop: '3%'}]}>
           <Text
             style={[
               Styles.fieldLabel,
-              { marginTop: 4, alignSelf: 'center', color: '#000' },
+              {marginTop: 4, alignSelf: 'center', color: '#000'},
             ]}>
             {t('landholding details')}
           </Text>
           <Divider
             bold={true}
-            style={[styles.divider, { width: '64%' }]}
+            style={[styles.divider, {width: '64%'}]}
             horizontalInset={true}
           />
         </View>
         <CustomDropdown
           data={[
-            { id: 1, label: 'Inside village', value: 'Inside village' },
-            { id: 2, label: 'Outside village', value: 'Outside village' },
+            {id: 1, label: 'Inside village', value: 'Inside village'},
+            {id: 2, label: 'Outside village', value: 'Outside village'},
           ]}
           value={values.land_located}
           label={t('Where is the Land located ?')}
@@ -252,23 +251,23 @@ const LandholdingUsage = ({ navigation, route }) => {
         {touched?.total_land_area && errors?.total_land_area && (
           <Text style={Styles.error2}>{String(errors?.total_land_area)}</Text>
         )}
-        <View style={[styles.subArea, { marginTop: '3%' }]}>
+        <View style={[styles.subArea, {marginTop: '3%'}]}>
           <Text
             style={[
               Styles.fieldLabel,
-              { marginTop: 4, alignSelf: 'center', color: '#000' },
+              {marginTop: 4, alignSelf: 'center', color: '#000'},
             ]}>
             {t('year purchased/allocated')}
           </Text>
           <Divider
             bold={true}
-            style={[styles.divider, { width: '53%' }]}
+            style={[styles.divider, {width: '53%'}]}
             horizontalInset={true}
           />
         </View>
         <YearPicker
           onYearChange={year => {
-            setValues({ ...values, year_purchased: parseInt(year) });
+            setValues({...values, year_purchased: parseInt(year)});
           }}
           selectedYear={values?.year_purchased}
           label={t('Kindly mention the year of land purchase')}
@@ -276,17 +275,17 @@ const LandholdingUsage = ({ navigation, route }) => {
         {errors.year_purchased && errors.year_purchased && (
           <Text style={Styles.error2}>{errors.year_purchased}</Text>
         )}
-        <View style={[styles.subArea, { marginTop: '3%' }]}>
+        <View style={[styles.subArea, {marginTop: '3%'}]}>
           <Text
             style={[
               Styles.fieldLabel,
-              { marginTop: 4, alignSelf: 'center', color: '#000' },
+              {marginTop: 4, alignSelf: 'center', color: '#000'},
             ]}>
             {t('Geotag location')}
           </Text>
           <Divider
             bold={true}
-            style={[styles.divider, { width: '73%' }]}
+            style={[styles.divider, {width: '73%'}]}
             horizontalInset={true}
           />
         </View>
@@ -294,7 +293,7 @@ const LandholdingUsage = ({ navigation, route }) => {
           <Text
             style={[
               Styles.fieldLabel,
-              { width: '65%', marginTop: 0, alignSelf: 'center' },
+              {width: '65%', marginTop: 0, alignSelf: 'center'},
             ]}>
             {values?.geotag
               ? values?.geotag
@@ -309,7 +308,7 @@ const LandholdingUsage = ({ navigation, route }) => {
       <View style={Styles.bottomBtn}>
         <CustomButton
           btnText={t('next')}
-          style={{ width: '100%', height: 60 }}
+          style={{width: '100%', height: 60}}
           onPress={handleSubmit}
         />
       </View>
@@ -318,7 +317,7 @@ const LandholdingUsage = ({ navigation, route }) => {
 };
 
 export default LandholdingUsage;
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const makeStyles = fontScale =>
   StyleSheet.create({
     container: {

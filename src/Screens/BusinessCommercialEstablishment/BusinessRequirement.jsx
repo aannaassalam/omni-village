@@ -48,26 +48,23 @@ const BusinessRequirement = ({navigation, route}) => {
     queryFn: () => getBusinessById(id),
     refetchOnWindowFocus: true,
   });
-  const {mutate: add_business} = useMutation({
-    mutationKey: ['add_business'],
+  const {mutate: add_business, isPending: isAdding} = useMutation({
     mutationFn: addBusiness,
     onSuccess: data => {
       console.log('successsssss save', data), queryClient.invalidateQueries();
       navigation.replace('businessCount');
+      setDraftpopup(false), setSavepopup(false);
     },
     onError: error => console.log('error save', error),
   });
-  const {mutate: edit_business} = useMutation({
-    mutationKey: ['edit_business'],
+  const {mutate: edit_business, isPending: isEditing} = useMutation({
     mutationFn: editBusiness,
     onSuccess: data => {
       queryClient.invalidateQueries();
       navigation.replace('businessCount');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
   const scheme = yup.object().shape({
     skill_requirement: yup.boolean(),
@@ -476,7 +473,7 @@ const BusinessRequirement = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -484,6 +481,7 @@ const BusinessRequirement = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -509,12 +507,13 @@ const BusinessRequirement = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>

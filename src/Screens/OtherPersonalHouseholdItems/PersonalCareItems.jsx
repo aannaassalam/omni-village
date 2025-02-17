@@ -45,38 +45,26 @@ const PersonalCareItem = ({navigation, route}) => {
     queryFn: () => getOtherPersonal(type),
     refetchOnWindowFocus: true,
   });
-  const {mutate: edit_other_personal} = useMutation({
-    mutationKey: ['edit_other_personal'],
-    mutationFn: async data => {
-      editOtherPersonal(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_other_personal, isPending: isEditing} = useMutation({
+    mutationFn: editOtherPersonal,
     onSuccess: data => {
-      console.log(
-        'successsssss save',
-        data,
-        navigation.replace('otherPersonalHousehold'),
-      );
+      queryClient.invalidateQueries();
+      console.log('successsssss save', data);
+      navigation.replace('otherPersonalHousehold'),
+        setDraftpopup(false),
+        setSavepopup(false);
     },
     onError: error => console.log('error save', error),
-    onSettled: () => {
-      setDraftpopup(false), setSavepopup(false);
-    },
   });
-  const {mutate: add_other_personal} = useMutation({
-    mutationKey: ['add_other_personal'],
-    mutationFn: async data => {
-      addOtherPersonal(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: add_other_personal, isPending: isAdding} = useMutation({
+    mutationFn: addOtherPersonal,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data),
         navigation.replace('otherPersonalHousehold');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
   const scheme = yup.object().shape({
     personal_care_item_use: yup
@@ -231,8 +219,8 @@ const PersonalCareItem = ({navigation, route}) => {
             other_personal?.personal_care
               ? other_personal?.personal_care.map(item => {
                   return {
-                      name: item?.name?.[USER_PREFERRED_LANGUAGE],
-                      key: item?._id,
+                    name: item?.name?.[USER_PREFERRED_LANGUAGE],
+                    key: item?._id,
                   };
                 })
               : [
@@ -298,8 +286,8 @@ const PersonalCareItem = ({navigation, route}) => {
                 other_personal?.personal_care_produce
                   ? other_personal?.personal_care_produce.map(item => {
                       return {
-                          name: item?.name?.[USER_PREFERRED_LANGUAGE],
-                          key: item?._id,
+                        name: item?.name?.[USER_PREFERRED_LANGUAGE],
+                        key: item?._id,
                       };
                     })
                   : [
@@ -448,7 +436,7 @@ const PersonalCareItem = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -456,6 +444,7 @@ const PersonalCareItem = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -481,12 +470,13 @@ const PersonalCareItem = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>

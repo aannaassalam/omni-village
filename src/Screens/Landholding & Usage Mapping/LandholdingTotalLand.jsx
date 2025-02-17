@@ -1,62 +1,58 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import {StyleSheet, Text, View} from 'react-native';
+import React, {useEffect} from 'react';
 import * as yup from 'yup';
-import { useFormik } from 'formik';
-import { useTranslation } from 'react-i18next';
+import {useFormik} from 'formik';
+import {useTranslation} from 'react-i18next';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import ItemHeader from '../../Components/CustomHeader/ItemHeader';
-import { Styles, width } from '../../styles/globalStyles';
+import {Styles, width} from '../../styles/globalStyles';
 import Input from '../../Components/Inputs/Input';
 import CustomButton from '../../Components/CustomButton/CustomButton';
 import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
-import { addLandholdingByUser, editLandholdingByUser, getLandholdingByUser } from '../../functions/landholding';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useUser } from '../../Hooks/useUser';
+import {
+  addLandholdingByUser,
+  editLandholdingByUser,
+  getLandholdingByUser,
+} from '../../functions/landholding';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useUser} from '../../Hooks/useUser';
 
-const LandholdingTotalLand = ({ navigation }) => {
-  const { t } = useTranslation()
-  const queryClient = useQueryClient()
-  const {data: user} = useUser()
-  const {
-    data: landholding
-  } = useQuery({
+const LandholdingTotalLand = ({navigation}) => {
+  const {t} = useTranslation();
+  const queryClient = useQueryClient();
+  const {data: user} = useUser();
+  const {data: landholding} = useQuery({
     queryKey: ['landholding_user'],
     queryFn: () => getLandholdingByUser(),
     refetchOnWindowFocus: true,
   });
-  const { mutate: add_landholding_by_user } = useMutation({
-    mutationKey: ['add_landholding_by_user'],
-    mutationFn: async (data) => {
-      addLandholdingByUser(data)
-      queryClient.invalidateQueries()
+  const {mutate: add_landholding_by_user, isPending: isAdding} = useMutation({
+    mutationFn: addLandholdingByUser,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      console.log('successsssss save', data);
+      navigation.navigate('landSpecificationQuestioner');
     },
-    onSuccess: (data) => {
-      console.log("successsssss save", data)
-      navigation.navigate('landSpecificationQuestioner')
+    onError: error => console.log('error save', error),
+  });
+  const {mutate: edit_landholding_by_user, isPending: isEditing} = useMutation({
+    mutationFn: editLandholdingByUser,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      console.log('successsssss edit save', data);
+      navigation.navigate('landSpecificationQuestioner');
     },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { }
-  })
-  const { mutate: edit_landholding_by_user } = useMutation({
-    mutationKey: ['edit_landholding_by_user'],
-    mutationFn: async (data) => {
-      editLandholdingByUser(data)
-      queryClient.invalidateQueries()
-    },
-    onSuccess: (data) => {
-      console.log("successsssss edit save", data)
-      navigation.navigate('landSpecificationQuestioner')
-    },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { }
-  })
+    onError: error => console.log('error save', error),
+  });
   const scheme = yup.object().shape({
     // total_numbers_of_lands: yup
     //   .number()
     //   .required(t('Total number of lands owned is required'))
     //   .max(20, 'Total number of lands owned cannot be greater than 20!')
     //   .min(1, 'At least one total number of lands owned is required'),
-      land_requirements: yup.boolean().required(t('Land requirements is required')),
+    land_requirements: yup
+      .boolean()
+      .required(t('Land requirements is required')),
   });
   const {
     handleChange,
@@ -76,12 +72,15 @@ const LandholdingTotalLand = ({ navigation }) => {
     onSubmit: async values => {
       console.log(values);
       let new_data = {
-        land_requirements: values.land_requirements
-       }
-       if (landholding?._id) {
-         edit_landholding_by_user({ ...new_data, landholding_by_user_id: landholding?._id, })
-       }
-      add_landholding_by_user(new_data)
+        land_requirements: values.land_requirements,
+      };
+      if (landholding?._id) {
+        edit_landholding_by_user({
+          ...new_data,
+          landholding_by_user_id: landholding?._id,
+        });
+      }
+      add_landholding_by_user(new_data);
     },
   });
 
@@ -90,9 +89,9 @@ const LandholdingTotalLand = ({ navigation }) => {
       setValues({
         // total_numbers_of_lands: landholding?.total_numbers_of_lands,
         land_requirements: landholding?.land_requirements,
-      })
+      });
     }
-  }, [landholding])
+  }, [landholding]);
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -114,13 +113,15 @@ const LandholdingTotalLand = ({ navigation }) => {
           <Text style={Styles.error2}>{String(errors?.total_numbers_of_lands)}</Text>
         )} */}
         <SwitchButton
-        nolabel={false}
-        label={t('Do have any more land requirements?')}
-        selected={values?.land_requirements}
-        firstBtnPress={()=> setValues({...values, land_requirements: true})}
-        secondBtnPress={()=> setValues({...values, land_requirements: false})}
-        firstBtnText={t('yes')}
-        secondBtntext={t('no')}
+          nolabel={false}
+          label={t('Do have any more land requirements?')}
+          selected={values?.land_requirements}
+          firstBtnPress={() => setValues({...values, land_requirements: true})}
+          secondBtnPress={() =>
+            setValues({...values, land_requirements: false})
+          }
+          firstBtnText={t('yes')}
+          secondBtntext={t('no')}
         />
         {touched?.land_requirements && errors?.land_requirements && (
           <Text style={Styles.error2}>{String(errors?.land_requirements)}</Text>
@@ -129,15 +130,16 @@ const LandholdingTotalLand = ({ navigation }) => {
       <View style={Styles.bottomBtn}>
         <CustomButton
           btnText={t('next')}
-          style={{ width: '100%' }}
+          style={{width: '100%'}}
           onPress={handleSubmit}
+          loading={isAdding || isEditing}
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default LandholdingTotalLand
+export default LandholdingTotalLand;
 
 const styles = StyleSheet.create({
   container: {

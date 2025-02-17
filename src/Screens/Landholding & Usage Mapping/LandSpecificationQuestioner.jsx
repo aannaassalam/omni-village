@@ -50,16 +50,12 @@ const LandSpecificationQuestioner = ({navigation}) => {
     refetchOnWindowFocus: true,
   });
   const {mutate: delete_landholding} = useMutation({
-    mutationKey: ['delete_landholding'],
-    mutationFn: async id => {
-      deleteLandholding(id);
-      queryClient.invalidateQueries();
-    },
+    mutationFn: deleteLandholding,
     onSuccess: () => {
+      queryClient.invalidateQueries();
       landholding_number_refetch();
     },
     onError: error => console.log('error save', error),
-    onSettled: () => {},
   });
   useFocusEffect(
     useCallback(() => {

@@ -49,16 +49,11 @@ const HouseSpecificationQuestioner = ({navigation, route}) => {
     refetchOnWindowFocus: true,
   });
   const {mutate: delete_housing} = useMutation({
-    mutationKey: ['delete_housing'],
-    mutationFn: async id => {
-      deleteHousing(id);
-      queryClient.invalidateQueries();
-    },
+    mutationFn: deleteHousing,
     onSuccess: () => {
-      housing_number_refetch();
+      queryClient.invalidateQueries({queryKey: ['housing_by_user']});
     },
     onError: error => console.log('error save', error),
-    onSettled: () => {},
   });
   useFocusEffect(
     useCallback(() => {
@@ -74,81 +69,81 @@ const HouseSpecificationQuestioner = ({navigation, route}) => {
   }
   return (
     <View style={styles.container}>
-          <ItemHeader
-              title={t('housing')}
-              onPress={() => navigation.replace('housing')}
-              edit
-          />
-        <View style={styles.mainContainer}>
-          <FlatList
-            data={get_number_of_housing}
-            keyExtractor={item => item._id}
-            onRefresh={housing_number_refetch}
-            refreshing={housing_number_isFetching}
-            contentContainerStyle={{paddingBottom: 8}}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                style={styles.addAndDeleteButtonSection}
-                onPress={() => {
-                  navigation.navigate('housingDetails', {
-                    house:
-                      item?.name_of_the_house == ''
-                        ? `${t('House')} ${index + 1}`
-                        : item?.name_of_the_house,
-                    data: {house_id: item?._id},
-                  });
-                }}>
-                <AddAndDeleteCropButton
-                  darftStyle={{
-                    borderColor: item.status === 1 ? 'grey' : '#e5c05e',
-                  }}
-                  drafted={item.status === 0}
-                  add={false}
-                  cropName={
+      <ItemHeader
+        title={t('housing')}
+        onPress={() => navigation.replace('housing')}
+        edit
+      />
+      <View style={styles.mainContainer}>
+        <FlatList
+          data={get_number_of_housing}
+          keyExtractor={item => item._id}
+          onRefresh={housing_number_refetch}
+          refreshing={housing_number_isFetching}
+          contentContainerStyle={{paddingBottom: 8}}
+          renderItem={({item, index}) => (
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
+              onPress={() => {
+                navigation.navigate('housingDetails', {
+                  house:
                     item?.name_of_the_house == ''
                       ? `${t('House')} ${index + 1}`
-                      : item?.name_of_the_house
-                  }
-                  onPress={() => {
-                    delete_landholding(item._id);
-                  }}
-                />
-              </TouchableOpacity>
-            )}
-            ListFooterComponent={
-              <TouchableOpacity
-                style={styles.addAndDeleteButtonSection}
+                      : item?.name_of_the_house,
+                  data: {house_id: item?._id},
+                });
+              }}>
+              <AddAndDeleteCropButton
+                darftStyle={{
+                  borderColor: item.status === 1 ? 'grey' : '#e5c05e',
+                }}
+                drafted={item.status === 0}
+                add={false}
+                cropName={
+                  item?.name_of_the_house == ''
+                    ? `${t('House')} ${index + 1}`
+                    : item?.name_of_the_house
+                }
                 onPress={() => {
-                    navigation.navigate('housingDetails', {
-                        house: `${t('House')}`,
-                        data: { house_id: null },
-                    });
-                }}>
-                <AddAndDeleteCropButton
-                  add={true}
-                  cropName={t('add housing')}
-                  onPress={() => {
-                      navigation.navigate('housingDetails', {
-                          house: `${t('House')}`,
-                          data: { house_id: null },
-                      });
-                  }}
-                />
-              </TouchableOpacity>
-            }
-          />
-          {housing?.house_requirements ? (
-            <CustomShowcaseInput
-              key={1}
-              productionName={t(`House Requirements`)}
-              // style={{ width: '100%', }}
-              progressBar={false}
+                  delete_housing(item._id);
+                }}
+              />
+            </TouchableOpacity>
+          )}
+          ListFooterComponent={
+            <TouchableOpacity
+              style={styles.addAndDeleteButtonSection}
               onPress={() => {
-                navigation.navigate('housingRequirement');
-              }}
-            />
-          ) : null}
-        </View>
+                navigation.navigate('housingDetails', {
+                  house: `${t('House')}`,
+                  data: {house_id: null},
+                });
+              }}>
+              <AddAndDeleteCropButton
+                add={true}
+                cropName={t('add housing')}
+                onPress={() => {
+                  navigation.navigate('housingDetails', {
+                    house: `${t('House')}`,
+                    data: {house_id: null},
+                  });
+                }}
+              />
+            </TouchableOpacity>
+          }
+        />
+        {housing?.house_requirements ? (
+          <CustomShowcaseInput
+            key={1}
+            productionName={t(`House Requirements`)}
+            // style={{ width: '100%', }}
+            progressBar={false}
+            onPress={() => {
+              navigation.navigate('housingRequirement');
+            }}
+          />
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -163,9 +158,9 @@ const styles = StyleSheet.create({
   mainContainer: {
     // paddingHorizontal: 22,
   },
-    addAndDeleteButtonSection: {
-        marginTop: '5%',
-    },
+  addAndDeleteButtonSection: {
+    marginTop: '5%',
+  },
   subArea: {
     alignSelf: 'center',
     flexDirection: 'row',

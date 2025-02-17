@@ -354,7 +354,7 @@ const DemographicHabits = ({navigation, route}) => {
           )}
         {dropdownData?.['education_seeking_to_gain'].find(
           item => item?._id === values?.education_seeking_to_gain,
-              )?.name === 'other (specify): [input field]' && (
+        )?.name === 'other (specify): [input field]' && (
           <Input
             label={t('Others(If any)')}
             value={values.other_education_seeking}

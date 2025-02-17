@@ -54,33 +54,23 @@ const LandSpecification = ({navigation, route}) => {
     queryFn: () => getLandholdingDropdown(),
     refetchOnWindowFocus: true,
   });
-  const {mutate: add_landholding} = useMutation({
-    mutationKey: ['add_landholding'],
-    mutationFn: async data => {
-      addLandholding(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: add_landholding, isPending: isAdding} = useMutation({
+    mutationFn: addLandholding,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       navigation.replace('landSpecificationQuestioner');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
-  const {mutate: edit_landholding} = useMutation({
-    mutationKey: ['edit_landholding'],
-    mutationFn: async data => {
-      editLandholding(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_landholding, isPending: isEditing} = useMutation({
+    mutationFn: editLandholding,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       navigation.replace('landSpecificationQuestioner');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
 
   const scheme = yup.object().shape({
@@ -465,9 +455,7 @@ const LandSpecification = ({navigation, route}) => {
                           parseInt(text),
                         )
                       }
-                      isRight={
-                        <AcresElement title={'sq ft'} />
-                      }
+                      isRight={<AcresElement title={'sq ft'} />}
                     />
                     {errors.purpose_land_utilised_for &&
                       errors.purpose_land_utilised_for[index]
@@ -599,9 +587,7 @@ const LandSpecification = ({navigation, route}) => {
                             parseInt(text),
                           )
                         }
-                        isRight={
-                          <AcresElement title={'sq ft'} />
-                        }
+                        isRight={<AcresElement title={'sq ft'} />}
                       />
                       {errors.purpose_status_of_land &&
                         errors.purpose_status_of_land[index]
@@ -663,7 +649,7 @@ const LandSpecification = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -671,6 +657,7 @@ const LandSpecification = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -696,12 +683,13 @@ const LandSpecification = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>

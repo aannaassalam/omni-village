@@ -44,33 +44,23 @@ const Petrol = ({navigation, route}) => {
     queryFn: () => getEnergyByType(type),
     refetchOnWindowFocus: true,
   });
-  const {mutate: edit_petrol_diesel} = useMutation({
-    mutationKey: ['edit_petrol_diesel'],
-    mutationFn: async data => {
-      editPetrolDieselNatural(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_petrol_diesel, isPending: isEditing} = useMutation({
+    mutationFn: editPetrolDieselNatural,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data, navigation.replace('energyFuel'));
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
-  const {mutate: add_petrol_diesel} = useMutation({
-    mutationKey: ['add_petrol_diesel'],
-    mutationFn: async data => {
-      addPetrolDieselNatural(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: add_petrol_diesel, isPending: isAdding} = useMutation({
+    mutationFn: addPetrolDieselNatural,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data), navigation.replace('energyFuel');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
   const scheme = yup.object().shape({
     yearly_petrol_consumption: yup
@@ -324,7 +314,7 @@ const Petrol = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -332,6 +322,7 @@ const Petrol = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -357,12 +348,13 @@ const Petrol = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>

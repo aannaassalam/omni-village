@@ -29,17 +29,15 @@ const BusinessCommercial = ({navigation}) => {
     queryFn: () => getBusinessByUser(),
     refetchOnWindowFocus: true,
   });
-  const {mutate: add_business_by_user} = useMutation({
-    mutationKey: ['add_business_by_user'],
+  const {mutate: add_business_by_user, isPending: isAdding} = useMutation({
     mutationFn: addBusinessByUser,
     onSuccess: data => {
       queryClient.invalidateQueries();
       navigation.navigate('businessCount');
     },
     onError: error => console.log('error save', error),
-    onSettled: () => {},
   });
-  const {mutate: edit_business_by_user} = useMutation({
+  const {mutate: edit_business_by_user, isPending: isEditing} = useMutation({
     mutationKey: ['edit_business_by_user'],
     mutationFn: editBusinessByUser,
     onSuccess: data => {
@@ -131,6 +129,7 @@ const BusinessCommercial = ({navigation}) => {
             btnText={t('next')}
             style={{width: '100%'}}
             onPress={handleSubmit}
+            loading={isAdding || isEditing}
           />
         </View>
       ) : null}

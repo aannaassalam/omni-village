@@ -48,15 +48,13 @@ const BusinessCount = ({navigation, route}) => {
     queryFn: () => getNumberOfBusiness(),
     refetchOnWindowFocus: true,
   });
-  const {mutate: delete_business} = useMutation({
-    mutationKey: ['delete_business'],
+  const {mutate: delete_business, isPending} = useMutation({
     mutationFn: deleteBusiness,
     onSuccess: () => {
       queryClient.invalidateQueries();
       number_of_business_loading_refetch();
     },
     onError: error => console.log('error save', error),
-    onSettled: () => {},
   });
   useFocusEffect(
     useCallback(() => {

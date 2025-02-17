@@ -1,81 +1,100 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import CustomHeader from '../../Components/CustomHeader/CustomHeader'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useTranslation } from 'react-i18next'
+import {Image, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import CustomHeader from '../../Components/CustomHeader/CustomHeader';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {useTranslation} from 'react-i18next';
 import * as yup from 'yup';
-import { useFormik } from 'formik';
-import { useUser } from '../../Hooks/useUser'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import SwitchButton from '../../Components/SwitchButtons/SwitchButton'
-import { Styles } from '../../styles/globalStyles'
-import AcresElement from '../../Components/ui/AcresElement'
-import Input from '../../Components/Inputs/Input'
-import { ActivityIndicator, Divider } from 'react-native-paper'
-import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown'
-import CustomButton from '../../Components/CustomButton/CustomButton'
-import { borderColor, primaryColor } from '../../styles/colors'
-import PopupModal from '../../Components/Popups/PopupModal'
-import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown'
-import { addForestryTimberNeeds, editForestryTimberNeeds, getForestry, getForestryDropdown } from '../../functions/forestry'
-import { USER_PREFERRED_LANGUAGE } from '../../i18next'
+import {useFormik} from 'formik';
+import {useUser} from '../../Hooks/useUser';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import SwitchButton from '../../Components/SwitchButtons/SwitchButton';
+import {Styles} from '../../styles/globalStyles';
+import AcresElement from '../../Components/ui/AcresElement';
+import Input from '../../Components/Inputs/Input';
+import {ActivityIndicator, Divider} from 'react-native-paper';
+import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
+import CustomButton from '../../Components/CustomButton/CustomButton';
+import {borderColor, primaryColor} from '../../styles/colors';
+import PopupModal from '../../Components/Popups/PopupModal';
+import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
+import {
+  addForestryTimberNeeds,
+  editForestryTimberNeeds,
+  getForestry,
+  getForestryDropdown,
+} from '../../functions/forestry';
+import {USER_PREFERRED_LANGUAGE} from '../../i18next';
 
-const TimberNeeds = ({ navigation, route }) => {
-  const { name, type, energy_id } = route.params
-  const { t } = useTranslation()
-  const [savePopup, setSavepopup] = useState(false)
-  const [draftPopup, setDraftpopup] = useState(false)
-  const { data: user } = useUser()
-  const queryClient = useQueryClient()
-  const { data: forestry, isLoading } = useQuery({
+const TimberNeeds = ({navigation, route}) => {
+  const {name, type, energy_id} = route.params;
+  const {t} = useTranslation();
+  const [savePopup, setSavepopup] = useState(false);
+  const [draftPopup, setDraftpopup] = useState(false);
+  const {data: user} = useUser();
+  const queryClient = useQueryClient();
+  const {data: forestry, isLoading} = useQuery({
     queryKey: ['forestry_dropdown'],
     queryFn: () => getForestryDropdown(),
     refetchOnWindowFocus: true,
-  })
-  const { data: get_forestry, isLoading: isTypeLoading } = useQuery({
+  });
+  const {data: get_forestry, isLoading: isTypeLoading} = useQuery({
     queryKey: [`get_forestry ${type}`],
     queryFn: () => getForestry(type),
     refetchOnWindowFocus: true,
-  })
-  const { mutate: edit_forestry_timber } = useMutation({
-    mutationKey: ['edit_forestry_timber'],
-    mutationFn: async (data) => {
-      editForestryTimberNeeds(data)
-      queryClient.invalidateQueries()
+  });
+  const {mutate: edit_forestry_timber, isPending: isEditing} = useMutation({
+    mutationFn: editForestryTimberNeeds,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      navigation.replace('forestryTimber'),
+        setDraftpopup(false),
+        setSavepopup(false);
     },
-    onSuccess: (data) => { console.log("successsssss save", data, navigation.replace('forestryTimber')) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
-  const { mutate: add_forestry_timber } = useMutation({
-    mutationKey: ['add_forestry_timber'],
-    mutationFn: async (data) => {
-      addForestryTimberNeeds(data)
-      queryClient.invalidateQueries()
+    onError: error => console.log('error save', error),
+  });
+  const {mutate: add_forestry_timber, isPending: isAdding} = useMutation({
+    mutationFn: addForestryTimberNeeds,
+    onSuccess: data => {
+      console.log('successsssss save', data),
+        navigation.replace('forestryTimber');
+      queryClient.invalidateQueries();
+      setDraftpopup(false), setSavepopup(false);
     },
-    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('forestryTimber') },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
+    onError: error => console.log('error save', error),
+  });
   const scheme = yup.object().shape({
     timber_needs: yup.boolean().required('Timber needs is required'), // Ensures boolean validation
     quantity: yup
-      .string().test('is-required', 'Quantity is required when Timber Needs is true', function (value) {
-        const { timber_needs } = this.parent; // Access the parent object to check `timber_needs`
-        return timber_needs ? !!value : true; // If `timber_needs` is true, `value` must be present
-      })
-    ,
+      .string()
+      .test(
+        'is-required',
+        'Quantity is required when Timber Needs is true',
+        function (value) {
+          const {timber_needs} = this.parent; // Access the parent object to check `timber_needs`
+          return timber_needs ? !!value : true; // If `timber_needs` is true, `value` must be present
+        },
+      ),
     purpose: yup
-      .array().test('is-required', 'Purpose is required when Timber Needs is true', function (value) {
-        const { timber_needs } = this.parent;
-        return timber_needs ? (value && value.length > 0) : true; // If `timber_needs` is true, `value` must not be empty
-      }),
+      .array()
+      .test(
+        'is-required',
+        'Purpose is required when Timber Needs is true',
+        function (value) {
+          const {timber_needs} = this.parent;
+          return timber_needs ? value && value.length > 0 : true; // If `timber_needs` is true, `value` must not be empty
+        },
+      ),
     urgency: yup
-      .string().test('is-required', 'Urgency is required when Timber Needs is true', function (value) {
-        const { timber_needs } = this.parent;
-        return timber_needs ? !!value : true;
-      }),
-  })
+      .string()
+      .test(
+        'is-required',
+        'Urgency is required when Timber Needs is true',
+        function (value) {
+          const {timber_needs} = this.parent;
+          return timber_needs ? !!value : true;
+        },
+      ),
+  });
   const {
     handleChange,
     handleSubmit,
@@ -85,18 +104,18 @@ const TimberNeeds = ({ navigation, route }) => {
     setFieldValue,
     touched,
     resetForm,
-    setValues
+    setValues,
   } = useFormik({
     initialValues: {
       timber_needs: false,
       quantity: '',
       purpose: [],
-      urgency: ''
+      urgency: '',
     },
     validationSchema: scheme,
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       console.log(values);
-      setSavepopup(true)
+      setSavepopup(true);
     },
   });
 
@@ -106,14 +125,14 @@ const TimberNeeds = ({ navigation, route }) => {
       quantity: values.quantity,
       purpose: values.purpose,
       urgency: values.urgency,
-      status: 0
-    }
+      status: 0,
+    };
     if (get_forestry?._id) {
-      edit_forestry_timber({ ...newData, forestry_id: get_forestry?._id })
+      edit_forestry_timber({...newData, forestry_id: get_forestry?._id});
     } else {
-      add_forestry_timber({ ...newData })
+      add_forestry_timber({...newData});
     }
-  }
+  };
 
   const onSubmit = () => {
     let newData = {
@@ -121,14 +140,14 @@ const TimberNeeds = ({ navigation, route }) => {
       quantity: values.quantity,
       purpose: values.purpose,
       urgency: values.urgency,
-      status: 1
-    }
+      status: 1,
+    };
     if (get_forestry?._id) {
-      edit_forestry_timber({ ...newData, forestry_id: get_forestry?._id })
+      edit_forestry_timber({...newData, forestry_id: get_forestry?._id});
     } else {
-      add_forestry_timber({ ...newData })
+      add_forestry_timber({...newData});
     }
-  }
+  };
   useEffect(() => {
     resetForm({
       values: {
@@ -136,13 +155,13 @@ const TimberNeeds = ({ navigation, route }) => {
         quantity: String(get_forestry?.quantity || '') || '',
         purpose: get_forestry?.purpose || [],
         urgency: get_forestry?.urgency || '',
-      }
-    })
-  }, [get_forestry])
-  console.log("heelellel", get_forestry)
+      },
+    });
+  }, [get_forestry]);
+  console.log('heelellel', get_forestry);
   if (isTypeLoading || isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
+      <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
         <ActivityIndicator size={'large'} color={primaryColor} />
       </View>
     );
@@ -155,26 +174,32 @@ const TimberNeeds = ({ navigation, route }) => {
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+        contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
         <SwitchButton
           nolabel={false}
           label={t('Do you have unfulfilled Timber needs?')}
           selected={values?.timber_needs}
-          firstBtnPress={() => setValues({ ...values, timber_needs: true })}
-          secondBtnPress={() => setValues({ ...values, timber_needs: false, quantity: '', purpose: [], urgency: '' })}
+          firstBtnPress={() => setValues({...values, timber_needs: true})}
+          secondBtnPress={() =>
+            setValues({
+              ...values,
+              timber_needs: false,
+              quantity: '',
+              purpose: [],
+              urgency: '',
+            })
+          }
           firstBtnText={t('yes')}
           secondBtntext={t('no')}
         />
-        {values?.timber_needs ?
+        {values?.timber_needs ? (
           <View style={styles.innerInputView}>
             <Divider style={styles.divider2} />
-            <View style={{ width: '100%' }}>
+            <View style={{width: '100%'}}>
               <Input
-                label={t(
-                  `Quantity`
-                )}
+                label={t(`Quantity`)}
                 value={values?.quantity}
                 placeholder={'0'}
                 fullLength={true}
@@ -184,23 +209,23 @@ const TimberNeeds = ({ navigation, route }) => {
                 //   <AcresElement title={'Unit'} />
                 // }
               />
-              {errors.quantity &&
-                errors.quantity && (
-                  <Text style={Styles.error2}>
-                    {
-                      errors.quantity
-                    }
-                  </Text>
-                )}
+              {errors.quantity && errors.quantity && (
+                <Text style={Styles.error2}>{errors.quantity}</Text>
+              )}
               <MultiselectDropdown
-                containerStyle={{ marginTop: '5%', paddingTop: 0 }}
-                data={forestry?.timber_needs_purpose?
-                  forestry?.timber_needs_purpose.map((item) => {
-                    return { name: item?.name?.[USER_PREFERRED_LANGUAGE], key: item?._id }
-                  }) :[]
+                containerStyle={{marginTop: '5%', paddingTop: 0}}
+                data={
+                  forestry?.timber_needs_purpose
+                    ? forestry?.timber_needs_purpose.map(item => {
+                        return {
+                          name: item?.name?.[USER_PREFERRED_LANGUAGE],
+                          key: item?._id,
+                        };
+                      })
+                    : []
                 }
-                setSelectedd={(value) => {
-                  setValues({ ...values, purpose: value })
+                setSelectedd={value => {
+                  setValues({...values, purpose: value});
                 }}
                 selectedd={values?.purpose}
                 infoName={t('Purpose')}
@@ -209,12 +234,15 @@ const TimberNeeds = ({ navigation, route }) => {
                 <Text style={Styles.error2}>{String(errors?.purpose)}</Text>
               )}
               <CustomDropdown
-                data={forestry?.timber_needs_urgency?
-                  forestry?.timber_needs_urgency.map((item) => {
-                    return {
-                      label: item?.name?.[USER_PREFERRED_LANGUAGE], value: item?._id
-                    }
-                  }) : []
+                data={
+                  forestry?.timber_needs_urgency
+                    ? forestry?.timber_needs_urgency.map(item => {
+                        return {
+                          label: item?.name?.[USER_PREFERRED_LANGUAGE],
+                          value: item?._id,
+                        };
+                      })
+                    : []
                 }
                 value={values?.urgency}
                 label={t('Urgency')}
@@ -230,19 +258,32 @@ const TimberNeeds = ({ navigation, route }) => {
               )}
             </View>
           </View>
-          :
-          null
-        }
+        ) : null}
       </KeyboardAwareScrollView>
-      <View style={[Styles.bottomBtn, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <CustomButton btnText={t('submit')} style={{ width: '48%', height: 60 }} onPress={handleSubmit} />
-        <CustomButton btnText={t('save as draft')} style={{ width: '48%', height: 60, backgroundColor: borderColor }} onPress={() => { setDraftpopup(true) }} btnStyle={{ color: 'black' }} />
+      <View
+        style={[
+          Styles.bottomBtn,
+          {flexDirection: 'row', justifyContent: 'space-between'},
+        ]}>
+        <CustomButton
+          btnText={t('submit')}
+          style={{width: '48%', height: 60}}
+          onPress={handleSubmit}
+        />
+        <CustomButton
+          btnText={t('save as draft')}
+          style={{width: '48%', height: 60, backgroundColor: borderColor}}
+          onPress={() => {
+            setDraftpopup(true);
+          }}
+          btnStyle={{color: 'black'}}
+        />
       </View>
       {/* submit popup */}
       <PopupModal
         modalVisible={savePopup}
         setBottomModalVisible={setSavepopup}
-        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        styleInner={[Styles.savePopup, {width: '90%'}]}>
         <View style={Styles.submitPopup}>
           <View style={Styles.noteImage}>
             <Image
@@ -258,8 +299,10 @@ const TimberNeeds = ({ navigation, route }) => {
             <CustomButton
               style={Styles.submitButton}
               btnText={t('submit')}
-              onPress={() => { onSubmit() }}
-            // loading={isAddPoultryPending || isEditPoultryPending}
+              onPress={() => {
+                onSubmit();
+              }}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -267,6 +310,7 @@ const TimberNeeds = ({ navigation, route }) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -275,7 +319,7 @@ const TimberNeeds = ({ navigation, route }) => {
       <PopupModal
         modalVisible={draftPopup}
         setBottomModalVisible={setDraftpopup}
-        styleInner={[Styles.savePopup, { width: '90%' }]}>
+        styleInner={[Styles.savePopup, {width: '90%'}]}>
         <View style={Styles.submitPopup}>
           <View style={Styles.noteImage}>
             <Image
@@ -292,26 +336,27 @@ const TimberNeeds = ({ navigation, route }) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-            // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
       </PopupModal>
     </View>
-  )
-}
+  );
+};
 
-export default TimberNeeds
+export default TimberNeeds;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   innerInputView: {
     flexDirection: 'row',
@@ -328,4 +373,4 @@ const styles = StyleSheet.create({
     width: '1%',
     borderRadius: 10,
   },
-})
+});

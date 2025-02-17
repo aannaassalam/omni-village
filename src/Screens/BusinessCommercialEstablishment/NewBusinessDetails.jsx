@@ -43,17 +43,14 @@ const NewBusinessDetails = ({navigation, route}) => {
     queryFn: () => getBusinessRequirement(),
     refetchOnWindowFocus: true,
   });
-  const {mutate: edit_business_requirement} = useMutation({
-    mutationKey: ['edit_business'],
+  const {mutate: edit_business_requirement, isPending} = useMutation({
     mutationFn: editBusinessRequirement,
     onSuccess: data => {
       queryClient.invalidateQueries();
       navigation.replace('businessCount');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
   const scheme = yup.object().shape({
     business_wish_to_start: yup
@@ -275,7 +272,7 @@ const NewBusinessDetails = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -283,6 +280,7 @@ const NewBusinessDetails = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isPending}
             />
           </View>
         </View>
@@ -308,12 +306,13 @@ const NewBusinessDetails = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isPending}
             />
           </View>
         </View>

@@ -40,19 +40,14 @@ const HousingRequirement = ({navigation, route}) => {
     queryFn: () => getHousingRequirement(),
     refetchOnWindowFocus: true,
   });
-  const {mutate: edit_housing_specification} = useMutation({
-    mutationKey: ['edit_housing_specification'],
-    mutationFn: async data => {
-      editHousingRequirement(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_housing_specification, isPending} = useMutation({
+    mutationFn: editHousingRequirement,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data), navigation.replace('home');
-    },
-    onError: error => console.log('error save', error),
-    onSettled: () => {
       setDraftpopup(false), setSavepopup(false);
     },
+    onError: error => console.log('error save', error),
   });
   const scheme = yup.object().shape({
     need_new_unit: yup.boolean(),
@@ -317,7 +312,7 @@ const HousingRequirement = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -325,6 +320,7 @@ const HousingRequirement = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isPending}
             />
           </View>
         </View>
@@ -350,12 +346,13 @@ const HousingRequirement = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isPending}
             />
           </View>
         </View>

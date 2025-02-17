@@ -1,44 +1,56 @@
-import { ActivityIndicator, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import React, { useEffect } from 'react';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import React, {useEffect} from 'react';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import * as yup from 'yup';
-import { useFormik } from 'formik';
+import {useFormik} from 'formik';
 import Customdropdown from '../../Components/CustomDropdown/CustomDropdown';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import Input from '../../Components/Inputs/Input';
 import AcresElement from '../../Components/ui/AcresElement';
 import CustomButton from '../../Components/CustomButton/CustomButton';
-import { Styles } from '../../styles/globalStyles';
-import { useQuery } from '@tanstack/react-query';
-import { get_dropdown_data } from '../../functions/AuthScreens';
-import { getDemographic } from '../../functions/demographic';
-import { primaryColor } from '../../styles/colors';
-import { USER_PREFERRED_LANGUAGE } from '../../i18next';
+import {Styles} from '../../styles/globalStyles';
+import {useQuery} from '@tanstack/react-query';
+import {get_dropdown_data} from '../../functions/AuthScreens';
+import {getDemographic} from '../../functions/demographic';
+import {primaryColor} from '../../styles/colors';
+import {USER_PREFERRED_LANGUAGE} from '../../i18next';
 import MultiselectDropdown from '../../Components/MultiselectDropdown/MultiselectDropdown';
 
-const Demographic = ({ navigation, route }) => {
-  const { fontScale } = useWindowDimensions();
+const Demographic = ({navigation, route}) => {
+  const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
-  const { member_id, demographic_id, member_name } = route.params
-  const { data: dropdownData, isLoading: dropdown_loading } = useQuery({
+  const {member_id, demographic_id, member_name} = route.params;
+  const {data: dropdownData, isLoading: dropdown_loading} = useQuery({
     queryKey: ['dropdown_data'],
     queryFn: get_dropdown_data,
-  })
-  const { data: demographic_data, isLoading: demographic_loading } = useQuery({
+  });
+  const {data: demographic_data, isLoading: demographic_loading} = useQuery({
     queryKey: ['demographic_data'],
     queryFn: () => getDemographic(demographic_id),
-    enabled: !!demographic_id
-  })
-  const { t } = useTranslation()
+    enabled: !!demographic_id,
+  });
+  const {t} = useTranslation();
   const scheme = yup.object().shape({
     marital_status: yup.string().required(t('marital status is required')),
     diet: yup.string().required(t('diet is required')),
     height: yup.number().required(t('height is required')),
     weight: yup.number().required(t('weight is required')),
-    language_speak: yup.array().required(t('language speak is required')).min(1),
+    language_speak: yup
+      .array()
+      .required(t('language speak is required'))
+      .min(1),
     language_read: yup.array().required(t('language read is required')).min(1),
-    language_write: yup.array().required(t('language write is required')).min(1),
+    language_write: yup
+      .array()
+      .required(t('language write is required'))
+      .min(1),
   });
   const {
     handleChange,
@@ -48,7 +60,7 @@ const Demographic = ({ navigation, route }) => {
     setFieldTouched,
     touched,
     resetForm,
-    setValues
+    setValues,
   } = useFormik({
     initialValues: {
       marital_status: '',
@@ -60,34 +72,50 @@ const Demographic = ({ navigation, route }) => {
       language_write: [],
     },
     validationSchema: scheme,
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       console.log(values);
       navigation.navigate('demographicOccupation', {
-        demographic: { ...values, height: parseInt(values?.height), weight: parseInt(values?.weight) },
+        demographic: {
+          ...values,
+          height: parseInt(values?.height),
+          weight: parseInt(values?.weight),
+        },
         data: demographic_data?.data,
         member_id,
         demographic_id,
-        member_name
-      })
+        member_name,
+      });
     },
   });
   useEffect(() => {
     resetForm({
       values: {
-        marital_status: demographic_data?.data?.general_data?.marital_status?._id || '',
+        marital_status:
+          demographic_data?.data?.general_data?.marital_status?._id || '',
         diet: demographic_data?.data?.general_data?.diet?._id || '',
         height: String(demographic_data?.data?.general_data?.height || ''),
         weight: String(demographic_data?.data?.general_data?.weight || ''),
-        language_speak: demographic_data?.data?.language?.[0]?.language_speak.map((i) => { return i?._id }) || [],
-        language_read: demographic_data?.data?.language?.[0]?.language_read?.map((i) => { return i?._id }) || [],
-        language_write: demographic_data?.data?.language?.[0]?.language_write?.map((i) => { return i?._id }) || [],
-      }
-    })
-  }, [demographic_data])
+        language_speak:
+          demographic_data?.data?.language?.[0]?.language_speak.map(i => {
+            return i?._id;
+          }) || [],
+        language_read:
+          demographic_data?.data?.language?.[0]?.language_read?.map(i => {
+            return i?._id;
+          }) || [],
+        language_write:
+          demographic_data?.data?.language?.[0]?.language_write?.map(i => {
+            return i?._id;
+          }) || [],
+      },
+    });
+  }, [demographic_data]);
   if (dropdown_loading || demographic_loading) {
-    return <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
-      <ActivityIndicator size={'large'} color={primaryColor} />
-    </View>
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
+        <ActivityIndicator size={'large'} color={primaryColor} />
+      </View>
+    );
   }
   return (
     <View style={styles.container}>
@@ -97,15 +125,16 @@ const Demographic = ({ navigation, route }) => {
         goBack={() => navigation.goBack()}
       />
       <KeyboardAwareScrollView
-        style={{ flex: 1 }}
+        style={{flex: 1}}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 140, paddingHorizontal: 22 }}>
+        contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
         <Customdropdown
-          data={dropdownData?.['marital_status'].map((item) => { return { label: item?.name, value: item?._id } })
-          }
+          data={dropdownData?.['marital_status'].map(item => {
+            return {label: item?.name, value: item?._id};
+          })}
           value={values.marital_status}
           label={t('marital_status')}
-          onChange={(value) => {
+          onChange={value => {
             setValues({
               ...values,
               marital_status: value?.value,
@@ -116,10 +145,12 @@ const Demographic = ({ navigation, route }) => {
           <Text style={Styles.error2}>{String(errors?.marital_status)}</Text>
         )}
         <Customdropdown
-          data={dropdownData?.['diet'].map((item) => { return { id: item?._id, label: item?.name, value: item?._id } })}
+          data={dropdownData?.['diet'].map(item => {
+            return {id: item?._id, label: item?.name, value: item?._id};
+          })}
           value={values.diet}
           label={t('diet')}
-          onChange={(value) => {
+          onChange={value => {
             setValues({
               ...values,
               diet: value?.value,
@@ -134,7 +165,7 @@ const Demographic = ({ navigation, route }) => {
           value={values.height}
           placeholder={'0'}
           fullLength={true}
-          keyboardType='numeric'
+          keyboardType="numeric"
           onChangeText={handleChange('height')}
           isRight={<AcresElement title={'Ft'} />}
         />
@@ -146,7 +177,7 @@ const Demographic = ({ navigation, route }) => {
           value={values.weight}
           placeholder={'0'}
           fullLength={true}
-          keyboardType='numeric'
+          keyboardType="numeric"
           onChangeText={handleChange('weight')}
           isRight={<AcresElement title={'Kg'} />}
         />
@@ -169,12 +200,13 @@ const Demographic = ({ navigation, route }) => {
             marginTop: '5%',
             paddingTop: 0,
           }}
-          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
-          setSelectedd={(item) =>{
-            console.log("speak", item)
-            setValues({ ...values, language_speak: item })
-          }
-          }
+          data={dropdownData?.['language'].map(item => {
+            return {name: item?.name, key: item?._id};
+          })}
+          setSelectedd={item => {
+            console.log('speak', item);
+            setValues({...values, language_speak: item});
+          }}
           selectedd={values?.language_speak}
           infoName={t('which language can you speak?')}
         />
@@ -197,10 +229,10 @@ const Demographic = ({ navigation, route }) => {
             marginTop: '5%',
             paddingTop: 0,
           }}
-          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
-          setSelectedd={(item) =>
-            setValues({ ...values, language_read: item })
-          }
+          data={dropdownData?.['language'].map(item => {
+            return {name: item?.name, key: item?._id};
+          })}
+          setSelectedd={item => setValues({...values, language_read: item})}
           selectedd={values?.language_read}
           infoName={t('which language can you read?')}
         />
@@ -223,10 +255,10 @@ const Demographic = ({ navigation, route }) => {
             marginTop: '5%',
             paddingTop: 0,
           }}
-          data={dropdownData?.['language'].map((item) => { return { name: item?.name, key: item?._id } })}
-          setSelectedd={(item) =>
-            setValues({ ...values, language_write: item })
-          }
+          data={dropdownData?.['language'].map(item => {
+            return {name: item?.name, key: item?._id};
+          })}
+          setSelectedd={item => setValues({...values, language_write: item})}
           selectedd={values?.language_write}
           infoName={t('which language can you write?')}
         />
@@ -235,7 +267,11 @@ const Demographic = ({ navigation, route }) => {
         )}
       </KeyboardAwareScrollView>
       <View style={Styles.bottomBtn}>
-        <CustomButton btnText={t('next')} style={{ width: '100%', height: 60 }} onPress={handleSubmit} />
+        <CustomButton
+          btnText={t('next')}
+          style={{width: '100%', height: 60}}
+          onPress={handleSubmit}
+        />
       </View>
     </View>
   );

@@ -43,27 +43,25 @@ const VehicleDetails = ({navigation, route}) => {
     queryFn: () => getMobilityById(mobility_id),
     refetchOnWindowFocus: true,
   });
-  const {mutate: add_mobility} = useMutation({
-    mutationKey: ['add_mobility'],
-    mutationFn: async data => {
-      addMobility(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: add_mobility, isPending: isAdding} = useMutation({
+    mutationFn: addMobility,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data),
         navigation.replace('vehicleCount');
+      setDraftpopup(false);
+      setSavepopup(false);
     },
     onError: error => console.log('error save', error),
   });
-  const {mutate: edit_mobility} = useMutation({
-    mutationKey: ['edit_mobility'],
-    mutationFn: async data => {
-      editMobility(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_mobility, isPending: isEditing} = useMutation({
+    mutationFn: editMobility,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data),
         navigation.replace('vehicleCount');
+      setDraftpopup(false);
+      setSavepopup(false);
     },
     onError: error => console.log('error save', error),
   });
@@ -297,7 +295,7 @@ const VehicleDetails = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -305,6 +303,7 @@ const VehicleDetails = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>
@@ -330,12 +329,13 @@ const VehicleDetails = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isAdding || isEditing}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isAdding || isEditing}
             />
           </View>
         </View>

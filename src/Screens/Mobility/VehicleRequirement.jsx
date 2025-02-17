@@ -32,6 +32,7 @@ import {
 import {USER_PREFERRED_LANGUAGE} from '../../i18next';
 import {
   editMobilityRequirement,
+  getMobilityDropdown,
   getMobilityRequirement,
 } from '../../functions/mobility';
 import CustomDropdown from '../../Components/CustomDropdown/CustomDropdown';
@@ -46,23 +47,22 @@ const VehicleRequirement = ({navigation, route}) => {
   const queryClient = useQueryClient();
   const {data: mobility, isLoading: isTypeLoading} = useQuery({
     queryKey: [`mobility`],
-    queryFn: () => getMobilityDropdown(),
+    queryFn: getMobilityDropdown,
     // refetchOnWindowFocus: true,
   });
-  const {data: get_mobility_requirement, isLoading: isLoading} = useQuery({
+  const {data: get_mobility_requirement, isLoading} = useQuery({
     queryKey: [`get_mobility_requirement`],
-    queryFn: () => getMobilityRequirement(),
+    queryFn: getMobilityRequirement,
     refetchOnWindowFocus: true,
   });
-  const {mutate: edit_mobility_requirement} = useMutation({
-    mutationKey: ['edit_mobility_requirement'],
-    mutationFn: async data => {
-      editMobilityRequirement(data);
-      queryClient.invalidateQueries();
-    },
+  const {mutate: edit_mobility_requirement, isPending} = useMutation({
+    mutationFn: editMobilityRequirement,
     onSuccess: data => {
+      queryClient.invalidateQueries();
       console.log('successsssss save', data),
         navigation.replace('vehicleCount');
+      setSavepopup(false);
+      setDraftpopup(false);
     },
     onError: error => console.log('error save', error),
   });
@@ -410,7 +410,7 @@ const VehicleRequirement = ({navigation, route}) => {
               onPress={() => {
                 onSubmit();
               }}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
@@ -418,6 +418,7 @@ const VehicleRequirement = ({navigation, route}) => {
               onPress={() => {
                 setSavepopup(false);
               }}
+              disabled={isPending}
             />
           </View>
         </View>
@@ -443,12 +444,13 @@ const VehicleRequirement = ({navigation, route}) => {
               style={Styles.submitButton}
               btnText={t('save')}
               onPress={handleDraft}
-              // loading={isAddPoultryPending || isEditPoultryPending}
+              loading={isPending}
             />
             <CustomButton
               style={Styles.draftButton}
               btnText={t('cancel')}
               onPress={() => setDraftpopup(false)}
+              disabled={isPending}
             />
           </View>
         </View>
