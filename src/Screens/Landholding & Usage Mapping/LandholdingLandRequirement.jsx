@@ -50,7 +50,7 @@ const LandholdingLandRequirement = ({ navigation, route }) => {
     const scheme = yup.object().shape({
         required_area: yup.number().required(t('required area is required')),
         purpose_for_required_land: yup.string().required(t('purpose for required land for is required')),
-        other_purpose_of_land: yup.string().required(t('Other purpose for required land for is required')),
+        other_purpose_of_land: yup.string(),
         urgency_required_land: yup.string().required(t('urgency for required land is required')),
     });
     const {

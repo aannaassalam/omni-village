@@ -30,6 +30,7 @@ import CustomDropdown3 from '../../Components/CustomDropdown/CustomDropdown3';
 import {addFishery, editFishery} from '../../functions/fisheryScreen';
 import '../../i18next';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { useUser } from '../../Hooks/useUser';
 
 const FishTypeInput = ({navigation, route}) => {
   const {cropType, screenName, data, cropId, type} = route.params;
@@ -37,7 +38,8 @@ const FishTypeInput = ({navigation, route}) => {
   const [harvestedProduct, setHarvestedProduct] = useState(true);
   const {fishFeed} = useSelector(state => state.Others);
   const {measurement} = useSelector(state => state.Others);
-  const {userDetails} = useSelector(state => state.auth);
+  const user = useUser()
+  const userDetails = user?.data
   const [productionInfo, setProductionInfo] = useState(true);
   const {fontScale} = useWindowDimensions();
   const {t} = useTranslation();
@@ -159,8 +161,8 @@ const FishTypeInput = ({navigation, route}) => {
     if (Object.keys(errors).length > 0) {
       setSavepopup(false);
     }
-    console.log('error', errors);
   }, [errors]);
+  console.log('error', errors, userDetails);
   const {mutate: addFisheryData, isPending: isAddFisheryPending} = useMutation({
     mutationFn: addFishery,
     onSuccess: _data => {
