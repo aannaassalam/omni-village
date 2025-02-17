@@ -69,8 +69,6 @@ const Consumption2 = ({navigation, route}) => {
     // staleTime: 0,
   });
 
-  console.log(consumptionCrop, isLoading, 'fetch', error);
-
   useFocusEffect(
     useCallback(() => {
       // queryClient.invalidateQueries();

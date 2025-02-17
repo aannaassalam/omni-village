@@ -61,12 +61,18 @@ const Electricity = ({navigation, route}) => {
   });
   const scheme = yup.object().shape({
     electric_grid: yup.bool(),
-    yearly_electricity_consumption: yup
-      .number()
-      .required(t('Yearly electricity consumption is required')),
-    yearly_expenditure_electricity: yup
-      .number()
-      .required(t('Yearly expenditure electricity is required')),
+    yearly_electricity_consumption: yup.number().when('electric_grid', {
+      is: true,
+      then: schema =>
+        schema.required(t('Yearly electricity consumption is required')),
+      otherwise: schema => schema.optional(),
+    }),
+    yearly_expenditure_electricity: yup.number().when('electric_grid', {
+      is: true,
+      then: schema =>
+        schema.required(t('Yearly expenditure electricity is required')),
+      otherwise: schema => schema.optional(),
+    }),
     electricity_stable: yup.bool(),
     microgrid_installed: yup.bool(),
     type: yup.string().required(t('Type is required')),
