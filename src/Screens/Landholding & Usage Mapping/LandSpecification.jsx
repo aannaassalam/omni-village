@@ -289,8 +289,7 @@ const LandSpecification = ({navigation, route}) => {
     // Update the form's purpose_status_of_land field
     setFieldValue('purpose_land_utilised_for', updatedPurposeStatusOfLand);
   };
-  console.log('datatatata', data);
-  if (isLoading) {
+  if (isLoading||isAdding||isEditing) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
         <ActivityIndicator size={'large'} color={primaryColor} />

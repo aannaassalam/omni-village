@@ -87,29 +87,32 @@ const Demographic = ({navigation, route}) => {
       });
     },
   });
+  console.log("demographuc", demographic_id)
   useEffect(() => {
-    resetForm({
-      values: {
-        marital_status:
-          demographic_data?.data?.general_data?.marital_status?._id || '',
-        diet: demographic_data?.data?.general_data?.diet?._id || '',
-        height: String(demographic_data?.data?.general_data?.height || ''),
-        weight: String(demographic_data?.data?.general_data?.weight || ''),
-        language_speak:
-          demographic_data?.data?.language?.[0]?.language_speak.map(i => {
-            return i?._id;
-          }) || [],
-        language_read:
-          demographic_data?.data?.language?.[0]?.language_read?.map(i => {
-            return i?._id;
-          }) || [],
-        language_write:
-          demographic_data?.data?.language?.[0]?.language_write?.map(i => {
-            return i?._id;
-          }) || [],
-      },
-    });
-  }, [demographic_data]);
+    if(demographic_id){
+      resetForm({
+        values: {
+          marital_status:
+            demographic_data?.data?.general_data?.marital_status?._id || '',
+          diet: demographic_data?.data?.general_data?.diet?._id || '',
+          height: String(demographic_data?.data?.general_data?.height || ''),
+          weight: String(demographic_data?.data?.general_data?.weight || ''),
+          language_speak:
+            demographic_data?.data?.language?.[0]?.language_speak.map(i => {
+              return i?._id;
+            }) || [],
+          language_read:
+            demographic_data?.data?.language?.[0]?.language_read?.map(i => {
+              return i?._id;
+            }) || [],
+          language_write:
+            demographic_data?.data?.language?.[0]?.language_write?.map(i => {
+              return i?._id;
+            }) || [],
+        },
+      });
+    }
+  }, [demographic_data, demographic_id]);
   if (dropdown_loading || demographic_loading) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>

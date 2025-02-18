@@ -34,26 +34,28 @@ const OfficerForest = ({ navigation, route }) => {
     refetchOnWindowFocus: true,
   })
 
-  const { mutate: edit_moderator_forest } = useMutation({
-    mutationKey: ['edit_moderator_forest'],
-    mutationFn: async (data) => {
-      editModeratorForestry(data)
-      queryClient.invalidateQueries()
+  const {mutate: edit_moderator_forest} = useMutation({
+    mutationFn: editModeratorForestry,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
-  const { mutate: add_moderator_forest } = useMutation({
-    mutationKey: ['add_moderator_forest'],
-    mutationFn: async (data) => {
-      addModeratorForestry(data)
-      queryClient.invalidateQueries()
+    onError: error => console.log('error save', error),
+  });
+  const {mutate: add_moderator_forest} = useMutation({
+    mutationFn: addModeratorForestry,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
+    onError: error => console.log('error save', error),
+  });
   const scheme = yup.object().shape({
     type_of_forest_accessible: yup.string().required(t('Type of forest is required')),
     area_of_forest_accessible: yup.string().required(t('Area of forest is required')),

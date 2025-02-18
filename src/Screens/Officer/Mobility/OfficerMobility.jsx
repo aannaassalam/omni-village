@@ -35,26 +35,28 @@ const OfficerMobility = ({ navigation, route }) => {
     refetchOnWindowFocus: true,
   })
 
-  const { mutate: edit_moderator_mobility } = useMutation({
-    mutationKey: ['edit_moderator_mobility'],
-    mutationFn: async (data) => {
-      editModeratorMobility(data)
-      queryClient.invalidateQueries()
+  const {mutate: edit_moderator_mobility} = useMutation({
+    mutationFn: editModeratorMobility,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
-  const { mutate: add_moderator_mobility } = useMutation({
-    mutationKey: ['add_moderator_mobility'],
-    mutationFn: async (data) => {
-      addModeratorMobility(data)
-      queryClient.invalidateQueries()
+    onError: error => console.log('error save', error)
+  });
+  const {mutate: add_moderator_mobility} = useMutation({
+    mutationFn: addModeratorMobility,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
+    onError: error => console.log('error save', error),
+  });
   const scheme = yup.object().shape({
     house_connected_to_internal_road: yup.string().required(t('Houses connected to internal road is required')),
     house_not_connected_to_internal_road: yup.string().required(t('Houses not connected to internal road is required')),

@@ -33,22 +33,23 @@ const OfficerDemographic = ({ navigation, route }) => {
     })
 
     const { mutate: edit_moderator_demographic } = useMutation({
-        mutationKey: ['edit_moderator_demographic'],
-        mutationFn: async (data) => {
-            editModeratorDemographic(data)
-            queryClient.invalidateQueries()
+        mutationFn: editModeratorDemographic,
+        onSuccess: (data) => { setDraftpopup(false), 
+            setSavepopup(false), 
+            navigation.replace('officerHome', { village_id: village_id }), 
+            queryClient.invalidateQueries() 
         },
-        onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
         onError: (error) => console.log("error save", error),
-        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
     const { mutate: add_moderator_demographic } = useMutation({
-        mutationKey: ['add_moderator_demographic'],
-        mutationFn: async (data) => {
-            addModeratorDemographic(data)
+        mutationFn:addModeratorDemographic,
+        onSuccess: (data) => {
+            queryClient.invalidateQueries()
+            setDraftpopup(false),
+            setSavepopup(false),
+            navigation.replace('officerHome', { village_id: village_id }),
             queryClient.invalidateQueries()
         },
-        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
         onError: (error) => console.log("error save", error),
         onSettled: () => { setDraftpopup(false), setSavepopup(false) }
     })
@@ -157,7 +158,7 @@ const OfficerDemographic = ({ navigation, route }) => {
             }
         })
         setImages(get_moderator_demographic?.upload_house_picture.map((item, index) => {
-            return `${item.replace("uploads/", "").replace(".png","")}`
+            return `${item.replace("uploads/", "").replace(".png", "")}`
         }))
     }, [get_moderator_demographic])
     console.log("helloooooo", get_moderator_demographic?.upload_house_picture)
@@ -294,15 +295,15 @@ const OfficerDemographic = ({ navigation, route }) => {
                         })}
 
                     </> :
-                    <View style={{flexDirection:'row', flexWrap:'wrap', justifyContent:'space-between'}}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                         {images?.length > 0 ?
                             images?.map((item, index) => {
-                                return <View style={{alignItems:'center'}}>
+                                return <View style={{ alignItems: 'center' }}>
                                     <Image source={require('../../../../assets/imagePlaceholder.png')}
-                                    style={{ width: 100, height: 100 }} />
-                                    <Text style={{color: '#000', fontSize: 12/fontScale, marginTop: 5}}>{item}</Text>
-                                    </View>
-                                
+                                        style={{ width: 100, height: 100 }} />
+                                    <Text style={{ color: '#000', fontSize: 12 / fontScale, marginTop: 5 }}>{item}</Text>
+                                </View>
+
                             })
                             :
                             null
@@ -319,17 +320,17 @@ const OfficerDemographic = ({ navigation, route }) => {
                         justifyContent: 'flex-start'
                     }]}
                     onPress={() => {
-                        if(images?.length>0){
+                        if (images?.length > 0) {
                             setImages([])
                             handleDocumentSelection()
-                        }else{
+                        } else {
                             handleDocumentSelection()
                         }
                     }}>
 
                     <>
                         <Entypo name="upload-to-cloud" size={26} color={'black'} />
-                        <Text style={styles.add_button_text}>{images?.length>0?t('Re-upload House photo'):t('Add House photo')}</Text>
+                        <Text style={styles.add_button_text}>{images?.length > 0 ? t('Re-upload House photo') : t('Add House photo')}</Text>
                     </>
                 </TouchableOpacity>
             </KeyboardAwareScrollView>

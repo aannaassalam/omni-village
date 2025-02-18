@@ -157,10 +157,7 @@ const NewBusinessDetails = ({navigation, route}) => {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{paddingBottom: 140, paddingHorizontal: 22}}>
         <CustomDropdown
-          data={[
-            {label: 'Pharmaceutical', value: '6736117ecb51156c2f52383e'},
-            {label: 'IT/Telecom', value: '6736117ecb51156c2f52683e'},
-          ]}
+          data={business_dropdown?.type_of_business.map((item)=>{return {label: item?.name[USER_PREFERRED_LANGUAGE], value: item?._id};})}
           value={values?.business_wish_to_start}
           label={t('Type of the business you wish to start')}
           onChange={value => {

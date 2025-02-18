@@ -1,5 +1,5 @@
 import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import CustomHeader from '../../Components/CustomHeader/CustomHeader';
 import CustomShowcaseInput from '../../Components/CustomShowcaseInput/CustomShowcaseInput';
 import {useUser} from '../../Hooks/useUser';
@@ -12,15 +12,16 @@ import Input from '../../Components/Inputs/Input';
 import {Divider} from 'react-native-paper';
 import {primaryColor} from '../../styles/colors';
 import ItemHeader from '../../Components/CustomHeader/ItemHeader';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Members = ({navigation}) => {
   const {fontScale} = useWindowDimensions();
   const styles = makeStyles(fontScale);
   const {data: user, refetch: refetchUser} = useUser();
   const {t} = useTranslation();
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     refetchUser();
-  }, []);
+  }, []));
   return (
     <View style={styles.container}>
       <CustomHeader
@@ -50,7 +51,6 @@ const Members = ({navigation}) => {
         </View>
       </View>
       {user?.members.map(item => {
-        console.log('item', item);
         return (
           <CustomShowcaseInput
             key={item?._id}

@@ -33,24 +33,27 @@ const OfficerLandholding = ({ navigation, route }) => {
     refetchOnWindowFocus: true,
   })
   const { mutate: edit_moderator_landholding } = useMutation({
-    mutationKey: ['edit_moderator_landholding'],
-    mutationFn: async (data) => {
-      editModeratorLandholding(data)
+    mutationFn:
+      editModeratorLandholding,
+    onSuccess: (data) => {
       queryClient.invalidateQueries()
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', { village_id: village_id }),
+        queryClient.invalidateQueries()
     },
-    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
     onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
   const { mutate: add_moderator_landholding } = useMutation({
-    mutationKey: ['add_moderator_landholding'],
-    mutationFn: async (data) => {
-      addModeratorLandholding(data)
+    mutationFn:addModeratorLandholding,
+    onSuccess: (data) => {
       queryClient.invalidateQueries()
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', { village_id: village_id }),
+        queryClient.invalidateQueries()
     },
-    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
     onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
   })
   const scheme = yup.object().shape({
     total_area_allocated_village: yup
@@ -184,24 +187,24 @@ const OfficerLandholding = ({ navigation, route }) => {
 
   });
   const onSubmit = () => {
-let data = {
-  total_area_allocated_village: parseFloat(values.total_area_allocated_village),
-  area_unit: values.area_unit,
-  farming_community_infrastructure: parseFloat(values.farming_community_infrastructure),
-  unutilized_area: parseFloat(values.unutilized_area),
-  fallow: parseFloat(values.fallow),
-  under_forest: parseFloat(values.under_forest),
-  under_grassland: parseFloat(values.under_grassland),
-  others: parseFloat(values.others),
-  land_owned_by_non_resident: parseFloat(values.land_owned_by_non_resident),
-  total_area_privately_owned: parseFloat(values.total_area_privately_owned),
-}
-if(get_moderator_landholding?._id){
-  edit_moderator_landholding({ ...data, landholding_id: get_moderator_landholding?._id })
-}else{
-  add_moderator_landholding({ ...data, village_id : village_id})
-}
-   }
+    let data = {
+      total_area_allocated_village: parseFloat(values.total_area_allocated_village),
+      area_unit: values.area_unit,
+      farming_community_infrastructure: parseFloat(values.farming_community_infrastructure),
+      unutilized_area: parseFloat(values.unutilized_area),
+      fallow: parseFloat(values.fallow),
+      under_forest: parseFloat(values.under_forest),
+      under_grassland: parseFloat(values.under_grassland),
+      others: parseFloat(values.others),
+      land_owned_by_non_resident: parseFloat(values.land_owned_by_non_resident),
+      total_area_privately_owned: parseFloat(values.total_area_privately_owned),
+    }
+    if (get_moderator_landholding?._id) {
+      edit_moderator_landholding({ ...data, landholding_id: get_moderator_landholding?._id })
+    } else {
+      add_moderator_landholding({ ...data, village_id: village_id })
+    }
+  }
   const handleDraft = () => { }
   useEffect(() => {
     if (values?.total_area_allocated_village && values?.farming_community_infrastructure) {
@@ -211,7 +214,7 @@ if(get_moderator_landholding?._id){
       })
     }
   }, [values?.total_area_allocated_village, values?.farming_community_infrastructure])
-  useEffect(()=>{
+  useEffect(() => {
     resetForm({
       values: {
         total_area_allocated_village: String(get_moderator_landholding?.total_area_allocated_village || '') || '',
@@ -223,11 +226,11 @@ if(get_moderator_landholding?._id){
         under_grassland: String(get_moderator_landholding?.under_grassland || '') || '',
         others: String(get_moderator_landholding?.others || '') || '',
         land_owned_by_non_resident: String(get_moderator_landholding?.land_owned_by_non_resident || '') || '',
-        total_area_privately_owned:String(get_moderator_landholding?.total_area_privately_owned || '') || '',
+        total_area_privately_owned: String(get_moderator_landholding?.total_area_privately_owned || '') || '',
       }
     })
   }, [get_moderator_landholding])
-  if (isTypeLoading ||  isLoading) {
+  if (isTypeLoading || isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignSelf: 'center' }}>
         <ActivityIndicator size={'large'} color={primaryColor} />
@@ -320,85 +323,85 @@ if(get_moderator_landholding?._id){
               }
             </Text>
           )}
-          {values?.unutilized_area>0?
-        <View style={styles.innerInputView}>
-          <Divider style={styles.divider2} />
-          <View style={{ width: '100%' }}>
-            <Input
-              label={t(
-                `Fallow`
-              )}
-              value={values?.fallow}
-              placeholder={'0'}
-              fullLength={true}
-              keyboardType="numeric"
-              onChangeText={handleChange('fallow')}
-            />
-            {errors.fallow &&
-              touched.fallow && (
-                <Text style={Styles.error2}>
-                  {
-                    errors.fallow
-                  }
-                </Text>
-              )}
-            <Input
-              label={t(
-                `Under forest`
-              )}
-              value={values?.under_forest}
-              placeholder={'0'}
-              fullLength={true}
-              keyboardType="numeric"
-              onChangeText={handleChange('under_forest')}
-            />
-            {errors.under_forest &&
-              touched.under_forest && (
-                <Text style={Styles.error2}>
-                  {
-                    errors.under_forest
-                  }
-                </Text>
-              )}
-            <Input
-              label={t(
-                `Under grassland`
-              )}
-              value={values?.under_grassland}
-              placeholder={'0'}
-              fullLength={true}
-              keyboardType="numeric"
-              onChangeText={handleChange('under_grassland')}
-            />
-            {errors.under_grassland &&
-              touched.under_grassland && (
-                <Text style={Styles.error2}>
-                  {
-                    errors.under_grassland
-                  }
-                </Text>
-              )}
-            <Input
-              label={t(
-                `Others (if any)`
-              )}
-              value={values?.others}
-              placeholder={'0'}
-              fullLength={true}
-              keyboardType="numeric"
-              onChangeText={handleChange('others')}
-            />
-            {errors.others &&
-              touched.others && (
-                <Text style={Styles.error2}>
-                  {
-                    errors.others
-                  }
-                </Text>
-              )}
+        {values?.unutilized_area > 0 ?
+          <View style={styles.innerInputView}>
+            <Divider style={styles.divider2} />
+            <View style={{ width: '100%' }}>
+              <Input
+                label={t(
+                  `Fallow`
+                )}
+                value={values?.fallow}
+                placeholder={'0'}
+                fullLength={true}
+                keyboardType="numeric"
+                onChangeText={handleChange('fallow')}
+              />
+              {errors.fallow &&
+                touched.fallow && (
+                  <Text style={Styles.error2}>
+                    {
+                      errors.fallow
+                    }
+                  </Text>
+                )}
+              <Input
+                label={t(
+                  `Under forest`
+                )}
+                value={values?.under_forest}
+                placeholder={'0'}
+                fullLength={true}
+                keyboardType="numeric"
+                onChangeText={handleChange('under_forest')}
+              />
+              {errors.under_forest &&
+                touched.under_forest && (
+                  <Text style={Styles.error2}>
+                    {
+                      errors.under_forest
+                    }
+                  </Text>
+                )}
+              <Input
+                label={t(
+                  `Under grassland`
+                )}
+                value={values?.under_grassland}
+                placeholder={'0'}
+                fullLength={true}
+                keyboardType="numeric"
+                onChangeText={handleChange('under_grassland')}
+              />
+              {errors.under_grassland &&
+                touched.under_grassland && (
+                  <Text style={Styles.error2}>
+                    {
+                      errors.under_grassland
+                    }
+                  </Text>
+                )}
+              <Input
+                label={t(
+                  `Others (if any)`
+                )}
+                value={values?.others}
+                placeholder={'0'}
+                fullLength={true}
+                keyboardType="numeric"
+                onChangeText={handleChange('others')}
+              />
+              {errors.others &&
+                touched.others && (
+                  <Text style={Styles.error2}>
+                    {
+                      errors.others
+                    }
+                  </Text>
+                )}
+            </View>
           </View>
-        </View>
-          :null
+          : null
         }
         <Input
           label={t(

@@ -39,26 +39,28 @@ const OfficerWater = ({ navigation, route }) => {
     refetchOnWindowFocus: true,
   })
 // console.log("watererre", get_moderator_water_dropdown)
-  const { mutate: edit_moderator_water } = useMutation({
-    mutationKey: ['edit_moderator_water'],
-    mutationFn: async (data) => {
-      editModeratorWater(data)
-      queryClient.invalidateQueries()
+  const {mutate: edit_moderator_water} = useMutation({
+    mutationFn: editModeratorWater,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
-  const { mutate: add_moderator_water } = useMutation({
-    mutationKey: ['add_moderator_water'],
-    mutationFn: async (data) => {
-      addModeratorWater(data)
-      queryClient.invalidateQueries()
+    onError: error => console.log('error save', error)
+  });
+  const {mutate: add_moderator_water} = useMutation({
+    mutationFn: addModeratorWater,
+    onSuccess: data => {
+      queryClient.invalidateQueries();
+      setDraftpopup(false),
+        setSavepopup(false),
+        navigation.replace('officerHome', {village_id: village_id}),
+        queryClient.invalidateQueries();
     },
-    onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
-    onError: (error) => console.log("error save", error),
-    onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-  })
+    onError: error => console.log('error save', error),
+  });
   const scheme = yup.object().shape({
     water_source_available: yup.array().of(
       yup.object().shape({

@@ -29,26 +29,29 @@ const OfficerCommunityMobility = ({ navigation, route }) => {
       refetchOnWindowFocus: true,
     })
 
-    const { mutate: edit_moderator_community } = useMutation({
-        mutationKey: ['edit_moderator_community'],
-        mutationFn: async (data) => {
-            editModeratorCommunityInfrastructure(data)
-            queryClient.invalidateQueries()
-        },
-        onSuccess: (data) => { console.log("successsssss edit", data, navigation.replace('officerHome', { village_id: village_id })) },
-        onError: (error) => console.log("error save", error),
-        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    })
-    const { mutate: add_moderator_community } = useMutation({
-        mutationKey: ['add_moderator_community'],
-        mutationFn: async (data) => {
-            addModeratorCommunityInfrastructure(data)
-            queryClient.invalidateQueries()
-        },
-        onSuccess: (data) => { console.log("successsssss save", data), navigation.replace('officerHome', { village_id: village_id }) },
-        onError: (error) => console.log("error save", error),
-        onSettled: () => { setDraftpopup(false), setSavepopup(false) }
-    })
+    const {mutate: edit_moderator_community} = useMutation({
+      mutationFn: 
+        editModeratorCommunityInfrastructure,
+      onSuccess: data => {
+        queryClient.invalidateQueries();
+        setDraftpopup(false),
+          setSavepopup(false),
+          navigation.replace('officerHome', {village_id: village_id}),
+          queryClient.invalidateQueries();
+      },
+      onError: error => console.log('error save', error),
+    });
+    const {mutate: add_moderator_community} = useMutation({
+      mutationFn: addModeratorCommunityInfrastructure,
+      onSuccess: data => {
+        queryClient.invalidateQueries();
+        setDraftpopup(false),
+          setSavepopup(false),
+          navigation.replace('officerHome', {village_id: village_id}),
+          queryClient.invalidateQueries();
+      },
+      onError: error => console.log('error save', error),
+    });
     const scheme = yup.object().shape({
         mobility: yup.boolean().required(t('Mobility is required')),
         type_of_mobility: yup.array().test(
